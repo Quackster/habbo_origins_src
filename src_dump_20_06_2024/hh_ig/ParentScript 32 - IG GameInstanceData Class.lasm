@@ -1,0 +1,1029 @@
+property pOwnPlayerId, pUserTeamsIndex
+
+on construct me
+  [  0] pushint8 1 .............................. <1>
+  [  2] inv ..................................... <-1>
+  [  3] setprop 790 ............................. pOwnPlayerId = -1
+  [  6] pusharglist 0 ........................... <[:]>
+  [  8] pushproplist ............................ <[:]>
+  [  9] setprop 791 ............................. pUserTeamsIndex = [:]
+  [ 12] getparam 0 .............................. <me>
+  [ 14] getchainedprop 470 ...................... <me.ancestor>
+  [ 17] pusharglist 1 ........................... <me.ancestor>
+  [ 19] objcall 0 ............................... <me.ancestor.construct()>
+  [ 21] pusharglistnoret 1 ...................... <me.ancestor.construct()>
+  [ 23] extcall 38 .............................. return me.ancestor.construct()
+  [ 25] ret
+end
+
+on deconstruct me
+  [  0] pushint8 1 .............................. <1>
+  [  2] inv ..................................... <-1>
+  [  3] setprop 790 ............................. pOwnPlayerId = -1
+  [  6] pusharglist 0 ........................... <[:]>
+  [  8] pushproplist ............................ <[:]>
+  [  9] setprop 791 ............................. pUserTeamsIndex = [:]
+  [ 12] getparam 0 .............................. <me>
+  [ 14] getchainedprop 470 ...................... <me.ancestor>
+  [ 17] pusharglist 1 ........................... <me.ancestor>
+  [ 19] objcall 1 ............................... <me.ancestor.deconstruct()>
+  [ 21] pusharglistnoret 1 ...................... <me.ancestor.deconstruct()>
+  [ 23] extcall 38 .............................. return me.ancestor.deconstruct()
+  [ 25] ret
+end
+
+on Refresh me, tdata
+  [  0] getparam 1 .............................. <tdata>
+  [  2] pushsymb 258 ............................ <#teams>
+  [  5] pusharglist 2 ........................... <tdata, #teams>
+  [  7] objcall 256 ............................. <tdata.getaProp(#teams)>
+  [ 10] setlocal 0 .............................. tAllTeamData = tdata.getaProp(#teams)
+  [ 12] getlocal 0 .............................. <tAllTeamData>
+  [ 14] pusharglist 1 ........................... <tAllTeamData>
+  [ 16] extcall 377 ............................. <listp(tAllTeamData)>
+  [ 19] jmpifz [112] ............................ if listp(tAllTeamData) then
+  [ 22] pushint8 1 .............................. <1>
+  [ 24] setlocal 1
+  [ 26] getlocal 1
+  [ 28] getlocal 0 .............................. <tAllTeamData>
+  [ 30] getobjprop 180 .......................... <tAllTeamData.count>
+  [ 32] lteq
+  [ 33] jmpifz [112] ............................ repeat with i = 1 to tAllTeamData.count
+  [ 36] getlocal 0 .............................. <tAllTeamData>
+  [ 38] getlocal 1 .............................. <i>
+  [ 40] pusharglist 2 ........................... <tAllTeamData, i>
+  [ 42] objcall 181 ............................. <tAllTeamData[i]>
+  [ 44] setlocal 2 .............................. tTeam = tAllTeamData[i]
+  [ 46] getlocal 2 .............................. <tTeam>
+  [ 48] pushsymb 226 ............................ <#players>
+  [ 50] pusharglist 2 ........................... <tTeam, #players>
+  [ 52] objcall 256 ............................. <tTeam.getaProp(#players)>
+  [ 55] setlocal 3 .............................. tPlayers = tTeam.getaProp(#players)
+  [ 57] getlocal 3 .............................. <tPlayers>
+  [ 59] peek 0
+  [ 61] pusharglist 1
+  [ 63] extcall 180
+  [ 65] pushint8 1
+  [ 67] peek 0
+  [ 69] peek 2
+  [ 71] lteq
+  [ 72] jmpifz [101] ............................ repeat with tPlayer in tPlayers
+  [ 75] peek 2
+  [ 77] peek 1
+  [ 79] pusharglist 2
+  [ 81] extcall 181
+  [ 83] setlocal 4
+  [ 85] getparam 0 .............................. <me>
+  [ 87] getlocal 4 .............................. <tPlayer>
+  [ 89] pushint8 1 .............................. <1>
+  [ 91] pusharglistnoret 3 ...................... <me, tPlayer, 1>
+  [ 93] objcall 348 ............................. me.addUserToGame(tPlayer, 1)
+  [ 96] pushint8 1
+  [ 98] add
+  [ 99] endrepeat [ 67]
+  [101] pop 3
+  [103] pushint8 1
+  [105] getlocal 1
+  [107] add
+  [108] setlocal 1
+  [110] endrepeat [ 26]
+  [112] getparam 0 .............................. <me>
+  [114] getchainedprop 470 ...................... <me.ancestor>
+  [117] getparam 1 .............................. <tdata>
+  [119] pusharglistnoret 2 ...................... <me.ancestor, tdata>
+  [121] objcall 476 ............................. me.ancestor.Refresh(tdata)
+  [124] pushint8 1 .............................. <1>
+  [126] pusharglistnoret 1 ...................... <1>
+  [128] extcall 38 .............................. return 1
+  [130] ret
+end
+
+on addUserToGame me, tdata, tHoldAnnounce
+  [  0] getparam 1 .............................. <tdata>
+  [  2] pusharglist 1 ........................... <tdata>
+  [  4] extcall 377 ............................. <listp(tdata)>
+  [  7] not ..................................... <not listp(tdata)>
+  [  8] jmpifz [ 16] ............................ if not listp(tdata) then
+  [ 11] pushzero ................................ <0>
+  [ 12] pusharglistnoret 1 ...................... <0>
+  [ 14] extcall 38 .............................. return 0
+  [ 16] getparam 1 .............................. <tdata>
+  [ 18] pushsymb 214 ............................ <#id>
+  [ 20] pusharglist 2 ........................... <tdata, #id>
+  [ 22] objcall 256 ............................. <tdata.getaProp(#id)>
+  [ 25] setlocal 0 .............................. tUserID = tdata.getaProp(#id)
+  [ 27] getparam 1 .............................. <tdata>
+  [ 29] pushsymb 344 ............................ <#players_required>
+  [ 32] pusharglist 2 ........................... <tdata, #players_required>
+  [ 34] objcall 255 ............................. <tdata.findPos(#players_required)>
+  [ 36] jmpifz [ 61] ............................ if tdata.findPos(#players_required) then
+  [ 39] getparam 0 .............................. <me>
+  [ 41] getchainedprop 482 ...................... <me.pData>
+  [ 44] pushsymb 344 ............................ <#players_required>
+  [ 47] getparam 1 .............................. <tdata>
+  [ 49] pushsymb 344 ............................ <#players_required>
+  [ 52] pusharglist 2 ........................... <tdata, #players_required>
+  [ 54] objcall 256 ............................. <tdata.getaProp(#players_required)>
+  [ 57] pusharglistnoret 3 ...................... <me.pData, #players_required, tdata.getaProp(#players_required)>
+  [ 59] objcall 220 ............................. me.pData.setaProp(#players_required, tdata.getaProp(#players_required))
+  [ 61] getparam 1 .............................. <tdata>
+  [ 63] pushsymb 254 ............................ <#team_id>
+  [ 65] pusharglist 2 ........................... <tdata, #team_id>
+  [ 67] objcall 256 ............................. <tdata.getaProp(#team_id)>
+  [ 70] setlocal 1 .............................. tTeamId = tdata.getaProp(#team_id)
+  [ 72] getlocal 1 .............................. <tTeamId>
+  [ 74] pusharglist 1 ........................... <tTeamId>
+  [ 76] extcall 103 ............................. <voidp(tTeamId)>
+  [ 78] jmpifz [ 86] ............................ if voidp(tTeamId) then
+  [ 81] pushzero ................................ <0>
+  [ 82] pusharglistnoret 1 ...................... <0>
+  [ 84] extcall 38 .............................. return 0
+  [ 86] getparam 0 .............................. <me>
+  [ 88] getlocal 0 .............................. <tUserID>
+  [ 90] pusharglist 2 ........................... <me, tUserID>
+  [ 92] objcall 787 ............................. <me.getTeamIdFromIndex(tUserID)>
+  [ 95] setlocal 2 .............................. tOldTeamId = me.getTeamIdFromIndex(tUserID)
+  [ 97] getlocal 2 .............................. <tOldTeamId>
+  [ 99] pushzero ................................ <0>
+  [100] nteq .................................... <tOldTeamId <> 0>
+  [101] jmpifz [121] ............................ if tOldTeamId <> 0 then
+  [104] getlocal 2 .............................. <tOldTeamId>
+  [106] getlocal 1 .............................. <tTeamId>
+  [108] nteq .................................... <tOldTeamId <> tTeamId>
+  [109] jmpifz [121] ............................ if tOldTeamId <> tTeamId then
+  [112] getparam 0 .............................. <me>
+  [114] getparam 1 .............................. <tdata>
+  [116] pusharglistnoret 2 ...................... <me, tdata>
+  [118] objcall 354 ............................. me.removeUserFromGame(tdata)
+  [121] getparam 0 .............................. <me>
+  [123] getlocal 0 .............................. <tUserID>
+  [125] getlocal 1 .............................. <tTeamId>
+  [127] pusharglistnoret 3 ...................... <me, tUserID, tTeamId>
+  [129] objcall 788 ............................. me.storeToIndex(tUserID, tTeamId)
+  [132] getparam 0 .............................. <me>
+  [134] getchainedprop 482 ...................... <me.pData>
+  [137] pushsymb 331 ............................ <#player_count>
+  [140] getprop 791 ............................. <pUserTeamsIndex>
+  [143] getobjprop 180 .......................... <pUserTeamsIndex.count>
+  [145] pusharglistnoret 3 ...................... <me.pData, #player_count, pUserTeamsIndex.count>
+  [147] objcall 220 ............................. me.pData.setaProp(#player_count, pUserTeamsIndex.count)
+  [149] getparam 0 .............................. <me>
+  [151] getchainedprop 482 ...................... <me.pData>
+  [154] pushsymb 258 ............................ <#teams>
+  [157] pusharglist 2 ........................... <me.pData, #teams>
+  [159] objcall 255 ............................. <me.pData.findPos(#teams)>
+  [161] pushzero ................................ <0>
+  [162] eq ...................................... <me.pData.findPos(#teams) = 0>
+  [163] jmpifz [181] ............................ if me.pData.findPos(#teams) = 0 then
+  [166] getparam 0 .............................. <me>
+  [168] getchainedprop 482 ...................... <me.pData>
+  [171] pushsymb 258 ............................ <#teams>
+  [174] pusharglist 0 ........................... <[:]>
+  [176] pushproplist ............................ <[:]>
+  [177] pusharglistnoret 3 ...................... <me.pData, #teams, [:]>
+  [179] objcall 220 ............................. me.pData.setaProp(#teams, [:])
+  [181] getparam 0 .............................. <me>
+  [183] getchainedprop 482 ...................... <me.pData>
+  [186] pushsymb 258 ............................ <#teams>
+  [189] pusharglist 2 ........................... <me.pData, #teams>
+  [191] objcall 256 ............................. <me.pData.getaProp(#teams)>
+  [194] setlocal 3 .............................. tAllTeamData = me.pData.getaProp(#teams)
+  [196] getlocal 3 .............................. <tAllTeamData>
+  [198] getlocal 1 .............................. <tTeamId>
+  [200] pusharglist 2 ........................... <tAllTeamData, tTeamId>
+  [202] objcall 255 ............................. <tAllTeamData.findPos(tTeamId)>
+  [204] pushzero ................................ <0>
+  [205] eq ...................................... <tAllTeamData.findPos(tTeamId) = 0>
+  [206] jmpifz [225] ............................ if tAllTeamData.findPos(tTeamId) = 0 then
+  [209] getlocal 3 .............................. <tAllTeamData>
+  [211] getlocal 1 .............................. <tTeamId>
+  [213] pushsymb 226 ............................ <#players>
+  [215] pusharglist 0 ........................... <[:]>
+  [217] pushproplist ............................ <[:]>
+  [218] pusharglist 2 ........................... <[#players: [:]]>
+  [220] pushproplist ............................ <[#players: [:]]>
+  [221] pusharglistnoret 3 ...................... <tAllTeamData, tTeamId, [#players: [:]]>
+  [223] objcall 220 ............................. tAllTeamData.setaProp(tTeamId, [#players: [:]])
+  [225] getlocal 3 .............................. <tAllTeamData>
+  [227] getlocal 1 .............................. <tTeamId>
+  [229] pusharglist 2 ........................... <tAllTeamData, tTeamId>
+  [231] objcall 256 ............................. <tAllTeamData.getaProp(tTeamId)>
+  [234] pushsymb 226 ............................ <#players>
+  [236] pusharglist 2 ........................... <tAllTeamData.getaProp(tTeamId), #players>
+  [238] objcall 256 ............................. <tAllTeamData.getaProp(tTeamId).getaProp(#players)>
+  [241] setlocal 4 .............................. tPlayers = tAllTeamData.getaProp(tTeamId).getaProp(#players)
+  [243] pusharglist 0 ........................... <[:]>
+  [245] pushproplist ............................ <[:]>
+  [246] setlocal 5 .............................. tPlayerData = [:]
+  [248] pushsymb 214 ............................ <#id>
+  [250] pushsymb 221 ............................ <#name>
+  [252] pushsymb 252 ............................ <#figure>
+  [254] pushsymb 253 ............................ <#sex>
+  [256] pushsymb 254 ............................ <#team_id>
+  [258] pushsymb 300 ............................ <#room_index>
+  [261] pusharglist 6 ........................... <[#id, #name, #figure, #sex, #team_id, #room_index]>
+  [263] pushlist ................................ <[#id, #name, #figure, #sex, #team_id, #room_index]>
+  [264] peek 0
+  [266] pusharglist 1
+  [268] extcall 180
+  [270] pushint8 1
+  [272] peek 0
+  [274] peek 2
+  [276] lteq
+  [277] jmpifz [323] ............................ repeat with tKey in [#id, #name, #figure, #sex, #team_id, #room_index]
+  [280] peek 2
+  [282] peek 1
+  [284] pusharglist 2
+  [286] extcall 181
+  [288] setlocal 6
+  [290] getparam 1 .............................. <tdata>
+  [292] getlocal 6 .............................. <tKey>
+  [294] pusharglist 2 ........................... <tdata, tKey>
+  [296] objcall 255 ............................. <tdata.findPos(tKey)>
+  [298] jmpifz [318] ............................ if tdata.findPos(tKey) then
+  [301] getlocal 5 .............................. <tPlayerData>
+  [303] getlocal 6 .............................. <tKey>
+  [305] getparam 1 .............................. <tdata>
+  [307] getlocal 6 .............................. <tKey>
+  [309] pusharglist 2 ........................... <tdata, tKey>
+  [311] objcall 256 ............................. <tdata.getaProp(tKey)>
+  [314] pusharglistnoret 3 ...................... <tPlayerData, tKey, tdata.getaProp(tKey)>
+  [316] objcall 220 ............................. tPlayerData.setaProp(tKey, tdata.getaProp(tKey))
+  [318] pushint8 1
+  [320] add
+  [321] endrepeat [272]
+  [323] pop 3
+  [325] getparam 1 .............................. <tdata>
+  [327] pushsymb 221 ............................ <#name>
+  [329] pusharglist 2 ........................... <tdata, #name>
+  [331] objcall 256 ............................. <tdata.getaProp(#name)>
+  [334] getparam 0 .............................. <me>
+  [336] pusharglist 1 ........................... <me>
+  [338] objcall 171 ............................. <me.getOwnPlayerName()>
+  [340] eq ...................................... <tdata.getaProp(#name) = me.getOwnPlayerName()>
+  [341] jmpifz [349] ............................ if tdata.getaProp(#name) = me.getOwnPlayerName() then
+  [344] getlocal 0 .............................. <tUserID>
+  [346] setprop 790 ............................. pOwnPlayerId = tUserID
+  [349] getlocal 4 .............................. <tPlayers>
+  [351] getlocal 0 .............................. <tUserID>
+  [353] getlocal 5 .............................. <tPlayerData>
+  [355] pusharglistnoret 3 ...................... <tPlayers, tUserID, tPlayerData>
+  [357] objcall 220 ............................. tPlayers.setaProp(tUserID, tPlayerData)
+  [359] getparam 2 .............................. <tHoldAnnounce>
+  [361] not ..................................... <not tHoldAnnounce>
+  [362] jmpifz [396] ............................ if not tHoldAnnounce then
+  [365] getparam 0 .............................. <me>
+  [367] pusharglist 1 ........................... <me>
+  [369] objcall 481 ............................. <me.getOwnerIGComponent()>
+  [372] setlocal 7 .............................. towner = me.getOwnerIGComponent()
+  [374] getlocal 7 .............................. <towner>
+  [376] pushzero ................................ <0>
+  [377] nteq .................................... <towner <> 0>
+  [378] jmpifz [396] ............................ if towner <> 0 then
+  [381] getlocal 7 .............................. <towner>
+  [383] getparam 0 .............................. <me>
+  [385] pushsymb 214 ............................ <#id>
+  [387] pusharglist 2 ........................... <me, #id>
+  [389] objcall 63 .............................. <me.getProperty(#id)>
+  [391] pusharglistnoret 2 ...................... <towner, me.getProperty(#id)>
+  [393] objcall 426 ............................. towner.announceUpdate(me.getProperty(#id))
+  [396] pushint8 1 .............................. <1>
+  [398] pusharglistnoret 1 ...................... <1>
+  [400] extcall 38 .............................. return 1
+  [402] ret
+end
+
+on removeUserFromGame me, tdata
+  [  0] getparam 1 .............................. <tdata>
+  [  2] pushsymb 214 ............................ <#id>
+  [  4] pusharglist 2 ........................... <tdata, #id>
+  [  6] objcall 256 ............................. <tdata.getaProp(#id)>
+  [  9] setlocal 0 .............................. tUserID = tdata.getaProp(#id)
+  [ 11] getparam 0 .............................. <me>
+  [ 13] getchainedprop 482 ...................... <me.pData>
+  [ 16] pushsymb 258 ............................ <#teams>
+  [ 19] pusharglist 2 ........................... <me.pData, #teams>
+  [ 21] objcall 256 ............................. <me.pData.getaProp(#teams)>
+  [ 24] setlocal 1 .............................. tAllTeamData = me.pData.getaProp(#teams)
+  [ 26] getlocal 1 .............................. <tAllTeamData>
+  [ 28] pushzero ................................ <0>
+  [ 29] eq ...................................... <tAllTeamData = 0>
+  [ 30] jmpifz [ 38] ............................ if tAllTeamData = 0 then
+  [ 33] pushzero ................................ <0>
+  [ 34] pusharglistnoret 1 ...................... <0>
+  [ 36] extcall 38 .............................. return 0
+  [ 38] getparam 0 .............................. <me>
+  [ 40] getlocal 0 .............................. <tUserID>
+  [ 42] pusharglist 2 ........................... <me, tUserID>
+  [ 44] objcall 787 ............................. <me.getTeamIdFromIndex(tUserID)>
+  [ 47] setlocal 2 .............................. tTeamId = me.getTeamIdFromIndex(tUserID)
+  [ 49] getlocal 2 .............................. <tTeamId>
+  [ 51] pushzero ................................ <0>
+  [ 52] eq ...................................... <tTeamId = 0>
+  [ 53] jmpifz [ 62] ............................ if tTeamId = 0 then
+  [ 56] pushint8 1 .............................. <1>
+  [ 58] pusharglistnoret 1 ...................... <1>
+  [ 60] extcall 38 .............................. return 1
+  [ 62] getparam 0 .............................. <me>
+  [ 64] getlocal 0 .............................. <tUserID>
+  [ 66] pushint8 1 .............................. <1>
+  [ 68] inv ..................................... <-1>
+  [ 69] pusharglistnoret 3 ...................... <me, tUserID, -1>
+  [ 71] objcall 788 ............................. me.storeToIndex(tUserID, -1)
+  [ 74] getprop 790 ............................. <pOwnPlayerId>
+  [ 77] getlocal 0 .............................. <tUserID>
+  [ 79] eq ...................................... <pOwnPlayerId = tUserID>
+  [ 80] jmpifz [ 89] ............................ if pOwnPlayerId = tUserID then
+  [ 83] pushint8 1 .............................. <1>
+  [ 85] inv ..................................... <-1>
+  [ 86] setprop 790 ............................. pOwnPlayerId = -1
+  [ 89] getlocal 1 .............................. <tAllTeamData>
+  [ 91] getlocal 2 .............................. <tTeamId>
+  [ 93] pusharglist 2 ........................... <tAllTeamData, tTeamId>
+  [ 95] objcall 256 ............................. <tAllTeamData.getaProp(tTeamId)>
+  [ 98] setlocal 3 .............................. tTeam = tAllTeamData.getaProp(tTeamId)
+  [100] getlocal 3 .............................. <tTeam>
+  [102] pushsymb 226 ............................ <#players>
+  [104] pusharglist 2 ........................... <tTeam, #players>
+  [106] objcall 256 ............................. <tTeam.getaProp(#players)>
+  [109] setlocal 4 .............................. tPlayers = tTeam.getaProp(#players)
+  [111] getlocal 4 .............................. <tPlayers>
+  [113] getlocal 0 .............................. <tUserID>
+  [115] pusharglist 2 ........................... <tPlayers, tUserID>
+  [117] objcall 255 ............................. <tPlayers.findPos(tUserID)>
+  [119] not ..................................... <not tPlayers.findPos(tUserID)>
+  [120] jmpifz [128] ............................ if not tPlayers.findPos(tUserID) then
+  [123] pushzero ................................ <0>
+  [124] pusharglistnoret 1 ...................... <0>
+  [126] extcall 38 .............................. return 0
+  [128] getlocal 4 .............................. <tPlayers>
+  [130] getlocal 0 .............................. <tUserID>
+  [132] pusharglistnoret 2 ...................... <tPlayers, tUserID>
+  [134] objcall 395 ............................. tPlayers.deleteProp(tUserID)
+  [137] getparam 0 .............................. <me>
+  [139] getchainedprop 482 ...................... <me.pData>
+  [142] pushsymb 331 ............................ <#player_count>
+  [145] getprop 791 ............................. <pUserTeamsIndex>
+  [148] getobjprop 180 .......................... <pUserTeamsIndex.count>
+  [150] pusharglistnoret 3 ...................... <me.pData, #player_count, pUserTeamsIndex.count>
+  [152] objcall 220 ............................. me.pData.setaProp(#player_count, pUserTeamsIndex.count)
+  [154] getparam 1 .............................. <tdata>
+  [156] pushsymb 344 ............................ <#players_required>
+  [159] pusharglist 2 ........................... <tdata, #players_required>
+  [161] objcall 255 ............................. <tdata.findPos(#players_required)>
+  [163] jmpifz [188] ............................ if tdata.findPos(#players_required) then
+  [166] getparam 0 .............................. <me>
+  [168] getchainedprop 482 ...................... <me.pData>
+  [171] pushsymb 344 ............................ <#players_required>
+  [174] getparam 1 .............................. <tdata>
+  [176] pushsymb 344 ............................ <#players_required>
+  [179] pusharglist 2 ........................... <tdata, #players_required>
+  [181] objcall 256 ............................. <tdata.getaProp(#players_required)>
+  [184] pusharglistnoret 3 ...................... <me.pData, #players_required, tdata.getaProp(#players_required)>
+  [186] objcall 220 ............................. me.pData.setaProp(#players_required, tdata.getaProp(#players_required))
+  [188] getparam 0 .............................. <me>
+  [190] pusharglist 1 ........................... <me>
+  [192] objcall 481 ............................. <me.getOwnerIGComponent()>
+  [195] setlocal 5 .............................. towner = me.getOwnerIGComponent()
+  [197] getlocal 5 .............................. <towner>
+  [199] pushzero ................................ <0>
+  [200] nteq .................................... <towner <> 0>
+  [201] jmpifz [219] ............................ if towner <> 0 then
+  [204] getlocal 5 .............................. <towner>
+  [206] getparam 0 .............................. <me>
+  [208] pushsymb 214 ............................ <#id>
+  [210] pusharglist 2 ........................... <me, #id>
+  [212] objcall 63 .............................. <me.getProperty(#id)>
+  [214] pusharglistnoret 2 ...................... <towner, me.getProperty(#id)>
+  [216] objcall 426 ............................. towner.announceUpdate(me.getProperty(#id))
+  [219] pushint8 1 .............................. <1>
+  [221] pusharglistnoret 1 ...................... <1>
+  [223] extcall 38 .............................. return 1
+  [225] ret
+end
+
+on getLevelHighscore me
+  [  0] getparam 0 .............................. <me>
+  [  2] pusharglist 1 ........................... <me>
+  [  4] objcall 789 ............................. <me.getLevelRef()>
+  [  7] setlocal 0 .............................. tLevelRef = me.getLevelRef()
+  [  9] getlocal 0 .............................. <tLevelRef>
+  [ 11] pushzero ................................ <0>
+  [ 12] eq ...................................... <tLevelRef = 0>
+  [ 13] jmpifz [ 21] ............................ if tLevelRef = 0 then
+  [ 16] pushzero ................................ <0>
+  [ 17] pusharglistnoret 1 ...................... <0>
+  [ 19] extcall 38 .............................. return 0
+  [ 21] getlocal 0 .............................. <tLevelRef>
+  [ 23] pusharglist 1 ........................... <tLevelRef>
+  [ 25] objcall 773 ............................. <tLevelRef.getLevelHighscore()>
+  [ 28] pusharglistnoret 1 ...................... <tLevelRef.getLevelHighscore()>
+  [ 30] extcall 38 .............................. return tLevelRef.getLevelHighscore()
+  [ 32] ret
+end
+
+on getLevelTeamHighscore me
+  [  0] getparam 0 .............................. <me>
+  [  2] pusharglist 1 ........................... <me>
+  [  4] objcall 789 ............................. <me.getLevelRef()>
+  [  7] setlocal 0 .............................. tLevelRef = me.getLevelRef()
+  [  9] getlocal 0 .............................. <tLevelRef>
+  [ 11] pushzero ................................ <0>
+  [ 12] eq ...................................... <tLevelRef = 0>
+  [ 13] jmpifz [ 21] ............................ if tLevelRef = 0 then
+  [ 16] pushzero ................................ <0>
+  [ 17] pusharglistnoret 1 ...................... <0>
+  [ 19] extcall 38 .............................. return 0
+  [ 21] getlocal 0 .............................. <tLevelRef>
+  [ 23] pusharglist 1 ........................... <tLevelRef>
+  [ 25] objcall 774 ............................. <tLevelRef.getLevelTeamHighscore()>
+  [ 28] pusharglistnoret 1 ...................... <tLevelRef.getLevelTeamHighscore()>
+  [ 30] extcall 38 .............................. return tLevelRef.getLevelTeamHighscore()
+  [ 32] ret
+end
+
+on getPlayerById me, tID
+  [  0] getparam 0 .............................. <me>
+  [  2] getchainedprop 482 ...................... <me.pData>
+  [  5] pushsymb 258 ............................ <#teams>
+  [  8] pusharglist 2 ........................... <me.pData, #teams>
+  [ 10] objcall 256 ............................. <me.pData.getaProp(#teams)>
+  [ 13] setlocal 0 .............................. tAllTeamData = me.pData.getaProp(#teams)
+  [ 15] getlocal 0 .............................. <tAllTeamData>
+  [ 17] pushzero ................................ <0>
+  [ 18] eq ...................................... <tAllTeamData = 0>
+  [ 19] jmpifz [ 27] ............................ if tAllTeamData = 0 then
+  [ 22] pushzero ................................ <0>
+  [ 23] pusharglistnoret 1 ...................... <0>
+  [ 25] extcall 38 .............................. return 0
+  [ 27] getlocal 0 .............................. <tAllTeamData>
+  [ 29] peek 0
+  [ 31] pusharglist 1
+  [ 33] extcall 180
+  [ 35] pushint8 1
+  [ 37] peek 0
+  [ 39] peek 2
+  [ 41] lteq
+  [ 42] jmpifz [137] ............................ repeat with tTeam in tAllTeamData
+  [ 45] peek 2
+  [ 47] peek 1
+  [ 49] pusharglist 2
+  [ 51] extcall 181
+  [ 53] setlocal 1
+  [ 55] getlocal 1 .............................. <tTeam>
+  [ 57] pushsymb 226 ............................ <#players>
+  [ 59] pusharglist 2 ........................... <tTeam, #players>
+  [ 61] objcall 256 ............................. <tTeam.getaProp(#players)>
+  [ 64] setlocal 2 .............................. tPlayers = tTeam.getaProp(#players)
+  [ 66] getlocal 2 .............................. <tPlayers>
+  [ 68] peek 0
+  [ 70] pusharglist 1
+  [ 72] extcall 180
+  [ 74] pushint8 1
+  [ 76] peek 0
+  [ 78] peek 2
+  [ 80] lteq
+  [ 81] jmpifz [130] ............................ repeat with tPlayer in tPlayers
+  [ 84] peek 2
+  [ 86] peek 1
+  [ 88] pusharglist 2
+  [ 90] extcall 181
+  [ 92] setlocal 3
+  [ 94] getlocal 3 .............................. <tPlayer>
+  [ 96] pusharglist 1 ........................... <tPlayer>
+  [ 98] extcall 377 ............................. <listp(tPlayer)>
+  [101] jmpifz [125] ............................ if listp(tPlayer) then
+  [104] getlocal 3 .............................. <tPlayer>
+  [106] pushsymb 214 ............................ <#id>
+  [108] pusharglist 2 ........................... <tPlayer, #id>
+  [110] objcall 256 ............................. <tPlayer.getaProp(#id)>
+  [113] getparam 1 .............................. <tID>
+  [115] eq ...................................... <tPlayer.getaProp(#id) = tID>
+  [116] jmpifz [125] ............................ if tPlayer.getaProp(#id) = tID then
+  [119] getlocal 3 .............................. <tPlayer>
+  [121] pusharglistnoret 1 ...................... <tPlayer>
+  [123] extcall 38 .............................. return tPlayer
+  [125] pushint8 1
+  [127] add
+  [128] endrepeat [ 76]
+  [130] pop 3
+  [132] pushint8 1
+  [134] add
+  [135] endrepeat [ 37]
+  [137] pop 3
+  [139] pushzero ................................ <0>
+  [140] pusharglistnoret 1 ...................... <0>
+  [142] extcall 38 .............................. return 0
+  [144] ret
+end
+
+on getAllTeamData me
+  [  0] getparam 0 .............................. <me>
+  [  2] getchainedprop 482 ...................... <me.pData>
+  [  5] pushsymb 258 ............................ <#teams>
+  [  8] pusharglist 2 ........................... <me.pData, #teams>
+  [ 10] objcall 256 ............................. <me.pData.getaProp(#teams)>
+  [ 13] pusharglistnoret 1 ...................... <me.pData.getaProp(#teams)>
+  [ 15] extcall 38 .............................. return me.pData.getaProp(#teams)
+  [ 17] ret
+end
+
+on getTeam me, tTeamId
+  [  0] getparam 0 .............................. <me>
+  [  2] getchainedprop 482 ...................... <me.pData>
+  [  5] pushsymb 258 ............................ <#teams>
+  [  8] pusharglist 2 ........................... <me.pData, #teams>
+  [ 10] objcall 256 ............................. <me.pData.getaProp(#teams)>
+  [ 13] setlocal 0 .............................. tTeamData = me.pData.getaProp(#teams)
+  [ 15] getlocal 0 .............................. <tTeamData>
+  [ 17] pusharglist 0 ........................... <>
+  [ 19] extcall 47 .............................. <VOID>
+  [ 21] eq ...................................... <tTeamData = VOID>
+  [ 22] jmpifz [ 30] ............................ if tTeamData = VOID then
+  [ 25] pushzero ................................ <0>
+  [ 26] pusharglistnoret 1 ...................... <0>
+  [ 28] extcall 38 .............................. return 0
+  [ 30] getlocal 0 .............................. <tTeamData>
+  [ 32] getparam 1 .............................. <tTeamId>
+  [ 34] pusharglist 2 ........................... <tTeamData, tTeamId>
+  [ 36] objcall 256 ............................. <tTeamData.getaProp(tTeamId)>
+  [ 39] pusharglistnoret 1 ...................... <tTeamData.getaProp(tTeamId)>
+  [ 41] extcall 38 .............................. return tTeamData.getaProp(tTeamId)
+  [ 43] ret
+end
+
+on getTeamPlayers me, tTeamIndex
+  [  0] getparam 0 .............................. <me>
+  [  2] pusharglist 1 ........................... <me>
+  [  4] objcall 775 ............................. <me.getAllTeamData()>
+  [  7] setlocal 0 .............................. tAllTeamData = me.getAllTeamData()
+  [  9] getlocal 0 .............................. <tAllTeamData>
+  [ 11] pusharglist 1 ........................... <tAllTeamData>
+  [ 13] extcall 377 ............................. <listp(tAllTeamData)>
+  [ 16] not ..................................... <not listp(tAllTeamData)>
+  [ 17] jmpifz [ 25] ............................ if not listp(tAllTeamData) then
+  [ 20] pushzero ................................ <0>
+  [ 21] pusharglistnoret 1 ...................... <0>
+  [ 23] extcall 38 .............................. return 0
+  [ 25] getlocal 0 .............................. <tAllTeamData>
+  [ 27] getparam 1 .............................. <tTeamIndex>
+  [ 29] pusharglist 2 ........................... <tAllTeamData, tTeamIndex>
+  [ 31] objcall 256 ............................. <tAllTeamData.getaProp(tTeamIndex)>
+  [ 34] setlocal 1 .............................. tTeamData = tAllTeamData.getaProp(tTeamIndex)
+  [ 36] getlocal 1 .............................. <tTeamData>
+  [ 38] pusharglist 1 ........................... <tTeamData>
+  [ 40] extcall 377 ............................. <listp(tTeamData)>
+  [ 43] not ..................................... <not listp(tTeamData)>
+  [ 44] jmpifz [ 52] ............................ if not listp(tTeamData) then
+  [ 47] pushzero ................................ <0>
+  [ 48] pusharglistnoret 1 ...................... <0>
+  [ 50] extcall 38 .............................. return 0
+  [ 52] getlocal 1 .............................. <tTeamData>
+  [ 54] pushsymb 226 ............................ <#players>
+  [ 56] pusharglist 2 ........................... <tTeamData, #players>
+  [ 58] objcall 256 ............................. <tTeamData.getaProp(#players)>
+  [ 61] pusharglistnoret 1 ...................... <tTeamData.getaProp(#players)>
+  [ 63] extcall 38 .............................. return tTeamData.getaProp(#players)
+  [ 65] ret
+end
+
+on getPlayerCount me
+  [  0] getparam 0 .............................. <me>
+  [  2] getchainedprop 482 ...................... <me.pData>
+  [  5] pushsymb 331 ............................ <#player_count>
+  [  8] pusharglist 2 ........................... <me.pData, #player_count>
+  [ 10] objcall 255 ............................. <me.pData.findPos(#player_count)>
+  [ 12] pushzero ................................ <0>
+  [ 13] eq ...................................... <me.pData.findPos(#player_count) = 0>
+  [ 14] jmpifz [ 22] ............................ if me.pData.findPos(#player_count) = 0 then
+  [ 17] pushzero ................................ <0>
+  [ 18] pusharglistnoret 1 ...................... <0>
+  [ 20] extcall 38 .............................. return 0
+  [ 22] getparam 0 .............................. <me>
+  [ 24] getchainedprop 482 ...................... <me.pData>
+  [ 27] pushsymb 331 ............................ <#player_count>
+  [ 30] pusharglist 2 ........................... <me.pData, #player_count>
+  [ 32] objcall 256 ............................. <me.pData.getaProp(#player_count)>
+  [ 35] pusharglistnoret 1 ...................... <me.pData.getaProp(#player_count)>
+  [ 37] extcall 38 .............................. return me.pData.getaProp(#player_count)
+  [ 39] ret
+end
+
+on getMaxPlayerCount me
+  [  0] getparam 0 .............................. <me>
+  [  2] getchainedprop 482 ...................... <me.pData>
+  [  5] pushsymb 332 ............................ <#player_max_count>
+  [  8] pusharglist 2 ........................... <me.pData, #player_max_count>
+  [ 10] objcall 255 ............................. <me.pData.findPos(#player_max_count)>
+  [ 12] pushzero ................................ <0>
+  [ 13] eq ...................................... <me.pData.findPos(#player_max_count) = 0>
+  [ 14] jmpifz [ 22] ............................ if me.pData.findPos(#player_max_count) = 0 then
+  [ 17] pushzero ................................ <0>
+  [ 18] pusharglistnoret 1 ...................... <0>
+  [ 20] extcall 38 .............................. return 0
+  [ 22] getparam 0 .............................. <me>
+  [ 24] getchainedprop 482 ...................... <me.pData>
+  [ 27] pushsymb 332 ............................ <#player_max_count>
+  [ 30] pusharglist 2 ........................... <me.pData, #player_max_count>
+  [ 32] objcall 256 ............................. <me.pData.getaProp(#player_max_count)>
+  [ 35] pusharglistnoret 1 ...................... <me.pData.getaProp(#player_max_count)>
+  [ 37] extcall 38 .............................. return me.pData.getaProp(#player_max_count)
+  [ 39] ret
+end
+
+on getTeamSize me, tTeamIndex
+  [  0] getparam 0 .............................. <me>
+  [  2] getparam 1 .............................. <tTeamIndex>
+  [  4] pusharglist 2 ........................... <me, tTeamIndex>
+  [  6] objcall 777 ............................. <me.getTeamPlayers(tTeamIndex)>
+  [  9] setlocal 0 .............................. tdata = me.getTeamPlayers(tTeamIndex)
+  [ 11] getlocal 0 .............................. <tdata>
+  [ 13] pusharglist 1 ........................... <tdata>
+  [ 15] extcall 377 ............................. <listp(tdata)>
+  [ 18] jmpifz [ 32] ............................ if listp(tdata) then / else
+  [ 21] getlocal 0 .............................. <tdata>
+  [ 23] getobjprop 180 .......................... <tdata.count>
+  [ 25] pusharglistnoret 1 ...................... <tdata.count>
+  [ 27] extcall 38 .............................. return tdata.count
+  [ 29] jmp [ 37]
+  [ 32] pushzero ................................ <0>
+  [ 33] pusharglistnoret 1 ...................... <0>
+  [ 35] extcall 38 .............................. return 0
+  [ 37] ret
+end
+
+on getTeamCount me
+  [  0] getparam 0 .............................. <me>
+  [  2] getchainedprop 482 ...................... <me.pData>
+  [  5] pushsymb 251 ............................ <#number_of_teams>
+  [  7] pusharglist 2 ........................... <me.pData, #number_of_teams>
+  [  9] objcall 255 ............................. <me.pData.findPos(#number_of_teams)>
+  [ 11] pushzero ................................ <0>
+  [ 12] eq ...................................... <me.pData.findPos(#number_of_teams) = 0>
+  [ 13] jmpifz [ 21] ............................ if me.pData.findPos(#number_of_teams) = 0 then
+  [ 16] pushzero ................................ <0>
+  [ 17] pusharglistnoret 1 ...................... <0>
+  [ 19] extcall 38 .............................. return 0
+  [ 21] getparam 0 .............................. <me>
+  [ 23] getchainedprop 482 ...................... <me.pData>
+  [ 26] pushsymb 251 ............................ <#number_of_teams>
+  [ 28] pusharglist 2 ........................... <me.pData, #number_of_teams>
+  [ 30] objcall 256 ............................. <me.pData.getaProp(#number_of_teams)>
+  [ 33] pusharglistnoret 1 ...................... <me.pData.getaProp(#number_of_teams)>
+  [ 35] extcall 38 .............................. return me.pData.getaProp(#number_of_teams)
+  [ 37] ret
+end
+
+on getTeamMaxSize me
+  [  0] getparam 0 .............................. <me>
+  [  2] pusharglist 1 ........................... <me>
+  [  4] objcall 590 ............................. <me.getTeamCount()>
+  [  7] setlocal 0 .............................. tTeamCount = me.getTeamCount()
+  [  9] getlocal 0 .............................. <tTeamCount>
+  [ 11] peek 0 .................................. case tTeamCount of
+  [ 13] pushint8 1 .............................. <1>
+  [ 15] eq
+  [ 16] jmpifz [ 26] ............................ (case) 1:
+  [ 19] pushint8 12 ............................. <12>
+  [ 21] setlocal 1 .............................. tCount = 12
+  [ 23] jmp [100]
+  [ 26] peek 0
+  [ 28] pushint8 2 .............................. <2>
+  [ 30] eq
+  [ 31] jmpifz [ 73] ............................ (case) 2:
+  [ 34] getparam 0 .............................. <me>
+  [ 36] pushsymb 61 ............................. <#game_type>
+  [ 38] pusharglist 2 ........................... <me, #game_type>
+  [ 40] objcall 63 .............................. <me.getProperty(#game_type)>
+  [ 42] peek 0 .................................. case me.getProperty(#game_type) of
+  [ 44] pushzero ................................ <0>
+  [ 45] nteq
+  [ 46] jmpifz [ 57] ............................ (case) 0, ...
+  [ 49] peek 0
+  [ 51] pushint8 1 .............................. <1>
+  [ 53] eq
+  [ 54] jmpifz [ 64] ............................ (case) ..., 1:
+  [ 57] pushint8 6 .............................. <6>
+  [ 59] setlocal 1 .............................. tCount = 6
+  [ 61] jmp [ 68] ............................... (case) otherwise:
+  [ 64] pushint8 4 .............................. <4>
+  [ 66] setlocal 1 .............................. tCount = 4
+  [ 68] pop 1 ................................... end case
+  [ 70] jmp [100]
+  [ 73] peek 0
+  [ 75] pushint8 3 .............................. <3>
+  [ 77] eq
+  [ 78] jmpifz [ 88] ............................ (case) 3:
+  [ 81] pushint8 4 .............................. <4>
+  [ 83] setlocal 1 .............................. tCount = 4
+  [ 85] jmp [100]
+  [ 88] peek 0
+  [ 90] pushint8 4 .............................. <4>
+  [ 92] eq
+  [ 93] jmpifz [100] ............................ (case) 4:
+  [ 96] pushint8 3 .............................. <3>
+  [ 98] setlocal 1 .............................. tCount = 3
+  [100] pop 1 ................................... end case
+  [102] getlocal 1 .............................. <tCount>
+  [104] pusharglistnoret 1 ...................... <tCount>
+  [106] extcall 38 .............................. return tCount
+  [108] ret
+end
+
+on checkPlayerRequiredForSlot me, tTeamIndex, tPlayerIndex
+  [  0] getparam 0 .............................. <me>
+  [  2] pushsymb 344 ............................ <#players_required>
+  [  5] pusharglist 2 ........................... <me, #players_required>
+  [  7] objcall 63 .............................. <me.getProperty(#players_required)>
+  [  9] setlocal 0 .............................. tPlayersRequired = me.getProperty(#players_required)
+  [ 11] getlocal 0 .............................. <tPlayersRequired>
+  [ 13] pusharglist 1 ........................... <tPlayersRequired>
+  [ 15] extcall 377 ............................. <listp(tPlayersRequired)>
+  [ 18] not ..................................... <not listp(tPlayersRequired)>
+  [ 19] jmpifz [ 27] ............................ if not listp(tPlayersRequired) then
+  [ 22] pushzero ................................ <0>
+  [ 23] pusharglistnoret 1 ...................... <0>
+  [ 25] extcall 38 .............................. return 0
+  [ 27] getlocal 0 .............................. <tPlayersRequired>
+  [ 29] getparam 1 .............................. <tTeamIndex>
+  [ 31] pusharglist 2 ........................... <tPlayersRequired, tTeamIndex>
+  [ 33] objcall 256 ............................. <tPlayersRequired.getaProp(tTeamIndex)>
+  [ 36] setlocal 1 .............................. tRequiredCount = tPlayersRequired.getaProp(tTeamIndex)
+  [ 38] getlocal 1 .............................. <tRequiredCount>
+  [ 40] pusharglist 1 ........................... <tRequiredCount>
+  [ 42] extcall 103 ............................. <voidp(tRequiredCount)>
+  [ 44] jmpifz [ 52] ............................ if voidp(tRequiredCount) then
+  [ 47] pushzero ................................ <0>
+  [ 48] pusharglistnoret 1 ...................... <0>
+  [ 50] extcall 38 .............................. return 0
+  [ 52] getparam 0 .............................. <me>
+  [ 54] getparam 1 .............................. <tTeamIndex>
+  [ 56] pusharglist 2 ........................... <me, tTeamIndex>
+  [ 58] objcall 778 ............................. <me.getTeamSize(tTeamIndex)>
+  [ 61] setlocal 2 .............................. tTeamSize = me.getTeamSize(tTeamIndex)
+  [ 63] getlocal 2 .............................. <tTeamSize>
+  [ 65] getlocal 1 .............................. <tRequiredCount>
+  [ 67] add ..................................... <tTeamSize + tRequiredCount>
+  [ 68] getparam 2 .............................. <tPlayerIndex>
+  [ 70] eq ...................................... <(tTeamSize + tRequiredCount) = tPlayerIndex>
+  [ 71] pusharglistnoret 1 ...................... <(tTeamSize + tRequiredCount) = tPlayerIndex>
+  [ 73] extcall 38 .............................. return (tTeamSize + tRequiredCount) = tPlayerIndex
+  [ 75] ret
+end
+
+on getGameState me
+  [  0] getparam 0 .............................. <me>
+  [  2] getchainedprop 482 ...................... <me.pData>
+  [  5] pushsymb 281 ............................ <#state>
+  [  8] pusharglist 2 ........................... <me.pData, #state>
+  [ 10] objcall 256 ............................. <me.pData.getaProp(#state)>
+  [ 13] pusharglistnoret 1 ...................... <me.pData.getaProp(#state)>
+  [ 15] extcall 38 .............................. return me.pData.getaProp(#state)
+  [ 17] ret
+end
+
+on getGameStateTimer me
+  [  0] getparam 0 .............................. <me>
+  [  2] getchainedprop 482 ...................... <me.pData>
+  [  5] pushsymb 801 ............................ <#state_timer>
+  [  8] pusharglist 2 ........................... <me.pData, #state_timer>
+  [ 10] objcall 256 ............................. <me.pData.getaProp(#state_timer)>
+  [ 13] pusharglistnoret 1 ...................... <me.pData.getaProp(#state_timer)>
+  [ 15] extcall 38 .............................. return me.pData.getaProp(#state_timer)
+  [ 17] ret
+end
+
+on getBiggestTeamPlayerCount me
+  [  0] pushzero ................................ <0>
+  [  1] setlocal 0 .............................. tResult = 0
+  [  3] getparam 0 .............................. <me>
+  [  5] pusharglist 1 ........................... <me>
+  [  7] objcall 590 ............................. <me.getTeamCount()>
+  [ 10] setlocal 1 .............................. tTeamCount = me.getTeamCount()
+  [ 12] pushint8 1 .............................. <1>
+  [ 14] setlocal 2
+  [ 16] getlocal 2
+  [ 18] getlocal 1 .............................. <tTeamCount>
+  [ 20] lteq
+  [ 21] jmpifz [ 62] ............................ repeat with tTeamIndex = 1 to tTeamCount
+  [ 24] getparam 0 .............................. <me>
+  [ 26] getlocal 2 .............................. <tTeamIndex>
+  [ 28] pusharglist 2 ........................... <me, tTeamIndex>
+  [ 30] objcall 777 ............................. <me.getTeamPlayers(tTeamIndex)>
+  [ 33] setlocal 3 .............................. tTeam = me.getTeamPlayers(tTeamIndex)
+  [ 35] getlocal 3 .............................. <tTeam>
+  [ 37] getobjprop 180 .......................... <tTeam.count>
+  [ 39] setlocal 4 .............................. tPlayerCount = tTeam.count
+  [ 41] getlocal 4 .............................. <tPlayerCount>
+  [ 43] getlocal 0 .............................. <tResult>
+  [ 45] gt ...................................... <tPlayerCount > tResult>
+  [ 46] jmpifz [ 53] ............................ if tPlayerCount > tResult then
+  [ 49] getlocal 4 .............................. <tPlayerCount>
+  [ 51] setlocal 0 .............................. tResult = tPlayerCount
+  [ 53] pushint8 1
+  [ 55] getlocal 2
+  [ 57] add
+  [ 58] setlocal 2
+  [ 60] endrepeat [ 16]
+  [ 62] getlocal 0 .............................. <tResult>
+  [ 64] pusharglistnoret 1 ...................... <tResult>
+  [ 66] extcall 38 .............................. return tResult
+  [ 68] ret
+end
+
+on canStart me
+  [  0] getparam 0 .............................. <me>
+  [  2] getchainedprop 482 ...................... <me.pData>
+  [  5] pushsymb 344 ............................ <#players_required>
+  [  8] pusharglist 2 ........................... <me.pData, #players_required>
+  [ 10] objcall 256 ............................. <me.pData.getaProp(#players_required)>
+  [ 13] setlocal 0 .............................. tList = me.pData.getaProp(#players_required)
+  [ 15] getlocal 0 .............................. <tList>
+  [ 17] pusharglist 1 ........................... <tList>
+  [ 19] extcall 377 ............................. <listp(tList)>
+  [ 22] not ..................................... <not listp(tList)>
+  [ 23] jmpifz [ 32] ............................ if not listp(tList) then
+  [ 26] pushint8 1 .............................. <1>
+  [ 28] pusharglistnoret 1 ...................... <1>
+  [ 30] extcall 38 .............................. return 1
+  [ 32] getlocal 0 .............................. <tList>
+  [ 34] getobjprop 180 .......................... <tList.count>
+  [ 36] pushzero ................................ <0>
+  [ 37] eq ...................................... <tList.count = 0>
+  [ 38] jmpifz [ 47] ............................ if tList.count = 0 then
+  [ 41] pushint8 1 .............................. <1>
+  [ 43] pusharglistnoret 1 ...................... <1>
+  [ 45] extcall 38 .............................. return 1
+  [ 47] pushzero ................................ <0>
+  [ 48] pusharglistnoret 1 ...................... <0>
+  [ 50] extcall 38 .............................. return 0
+  [ 52] ret
+end
+
+on getOwnPlayerTeam me
+  [  0] getparam 0 .............................. <me>
+  [  2] getparam 0 .............................. <me>
+  [  4] pusharglist 1 ........................... <me>
+  [  6] objcall 350 ............................. <me.getOwnPlayerId()>
+  [  9] pusharglist 2 ........................... <me, me.getOwnPlayerId()>
+  [ 11] objcall 787 ............................. <me.getTeamIdFromIndex(me.getOwnPlayerId())>
+  [ 14] pusharglistnoret 1 ...................... <me.getTeamIdFromIndex(me.getOwnPlayerId())>
+  [ 16] extcall 38 .............................. return me.getTeamIdFromIndex(me.getOwnPlayerId())
+  [ 18] ret
+end
+
+on getOwnPlayerName me
+  [  0] pushsymb 267 ............................ <#session>
+  [  3] pusharglist 1 ........................... <#session>
+  [  5] extcall 85 .............................. <getObject(#session)>
+  [  7] setlocal 0 .............................. tSession = getObject(#session)
+  [  9] getlocal 0 .............................. <tSession>
+  [ 11] pushzero ................................ <0>
+  [ 12] eq ...................................... <tSession = 0>
+  [ 13] jmpifz [ 21] ............................ if tSession = 0 then
+  [ 16] pushzero ................................ <0>
+  [ 17] pusharglistnoret 1 ...................... <0>
+  [ 19] extcall 38 .............................. return 0
+  [ 21] getlocal 0 .............................. <tSession>
+  [ 23] pushsymb 356 ............................ <#user_name>
+  [ 26] pusharglist 2 ........................... <tSession, #user_name>
+  [ 28] objcall 357 ............................. <tSession.GET(#user_name)>
+  [ 31] pusharglistnoret 1 ...................... <tSession.GET(#user_name)>
+  [ 33] extcall 38 .............................. return tSession.GET(#user_name)
+  [ 35] ret
+end
+
+on getOwnPlayerId me
+  [  0] getprop 790 ............................. <pOwnPlayerId>
+  [  3] pusharglistnoret 1 ...................... <pOwnPlayerId>
+  [  5] extcall 38 .............................. return pOwnPlayerId
+  [  7] ret
+end
+
+on checkIfOwnerOfGame me
+  [  0] pushsymb 267 ............................ <#session>
+  [  3] pusharglist 1 ........................... <#session>
+  [  5] extcall 85 .............................. <getObject(#session)>
+  [  7] setlocal 0 .............................. tSession = getObject(#session)
+  [  9] getlocal 0 .............................. <tSession>
+  [ 11] pushzero ................................ <0>
+  [ 12] eq ...................................... <tSession = 0>
+  [ 13] jmpifz [ 21] ............................ if tSession = 0 then
+  [ 16] pushzero ................................ <0>
+  [ 17] pusharglistnoret 1 ...................... <0>
+  [ 19] extcall 38 .............................. return 0
+  [ 21] getlocal 0 .............................. <tSession>
+  [ 23] pushsymb 356 ............................ <#user_name>
+  [ 26] pusharglist 2 ........................... <tSession, #user_name>
+  [ 28] objcall 357 ............................. <tSession.GET(#user_name)>
+  [ 31] getparam 0 .............................. <me>
+  [ 33] getchainedprop 482 ...................... <me.pData>
+  [ 36] pushsymb 333 ............................ <#owner_name>
+  [ 39] pusharglist 2 ........................... <me.pData, #owner_name>
+  [ 41] objcall 256 ............................. <me.pData.getaProp(#owner_name)>
+  [ 44] eq ...................................... <tSession.GET(#user_name) = me.pData.getaProp(#owner_name)>
+  [ 45] pusharglistnoret 1 ...................... <tSession.GET(#user_name) = me.pData.getaProp(#owner_name)>
+  [ 47] extcall 38 .............................. return tSession.GET(#user_name) = me.pData.getaProp(#owner_name)
+  [ 49] ret
+end
+
+on hasCompleteData me
+  [  0] getparam 0 .............................. <me>
+  [  2] pusharglist 1 ........................... <me>
+  [  4] objcall 775 ............................. <me.getAllTeamData()>
+  [  7] pusharglist 1 ........................... <me.getAllTeamData()>
+  [  9] extcall 377 ............................. <listp(me.getAllTeamData())>
+  [ 12] pusharglistnoret 1 ...................... <listp(me.getAllTeamData())>
+  [ 14] extcall 38 .............................. return listp(me.getAllTeamData())
+  [ 16] ret
+end
+
+on hasTeamScores me
+  [  0] getparam 0 .............................. <me>
+  [  2] getchainedprop 482 ...................... <me.pData>
+  [  5] pushsymb 227 ............................ <#level_team_scores>
+  [  7] pusharglist 2 ........................... <me.pData, #level_team_scores>
+  [  9] objcall 255 ............................. <me.pData.findPos(#level_team_scores)>
+  [ 11] pushzero ................................ <0>
+  [ 12] gt ...................................... <me.pData.findPos(#level_team_scores) > 0>
+  [ 13] pusharglistnoret 1 ...................... <me.pData.findPos(#level_team_scores) > 0>
+  [ 15] extcall 38 .............................. return me.pData.findPos(#level_team_scores) > 0
+  [ 17] ret
+end
+
+on getTeamIdFromIndex me, tID
+  [  0] getprop 791 ............................. <pUserTeamsIndex>
+  [  3] getparam 1 .............................. <tID>
+  [  5] pusharglist 2 ........................... <pUserTeamsIndex, tID>
+  [  7] objcall 256 ............................. <pUserTeamsIndex.getaProp(tID)>
+  [ 10] pusharglistnoret 1 ...................... <pUserTeamsIndex.getaProp(tID)>
+  [ 12] extcall 38 .............................. return pUserTeamsIndex.getaProp(tID)
+  [ 14] ret
+end
+
+on storeToIndex me, tID, tTeamId
+  [  0] getparam 1 .............................. <tID>
+  [  2] pusharglist 1 ........................... <tID>
+  [  4] extcall 103 ............................. <voidp(tID)>
+  [  6] getparam 2 .............................. <tTeamId>
+  [  8] pusharglist 1 ........................... <tTeamId>
+  [ 10] extcall 103 ............................. <voidp(tTeamId)>
+  [ 12] or ...................................... <voidp(tID) or voidp(tTeamId)>
+  [ 13] jmpifz [ 21] ............................ if voidp(tID) or voidp(tTeamId) then
+  [ 16] pushzero ................................ <0>
+  [ 17] pusharglistnoret 1 ...................... <0>
+  [ 19] extcall 38 .............................. return 0
+  [ 21] getparam 2 .............................. <tTeamId>
+  [ 23] pushint8 1 .............................. <1>
+  [ 25] inv ..................................... <-1>
+  [ 26] eq ...................................... <tTeamId = -1>
+  [ 27] jmpifz [ 43] ............................ if tTeamId = -1 then / else
+  [ 30] getprop 791 ............................. <pUserTeamsIndex>
+  [ 33] getparam 1 .............................. <tID>
+  [ 35] pusharglistnoret 2 ...................... <pUserTeamsIndex, tID>
+  [ 37] objcall 395 ............................. pUserTeamsIndex.deleteProp(tID)
+  [ 40] jmp [ 54]
+  [ 43] getprop 791 ............................. <pUserTeamsIndex>
+  [ 46] getparam 1 .............................. <tID>
+  [ 48] getparam 2 .............................. <tTeamId>
+  [ 50] pusharglistnoret 3 ...................... <pUserTeamsIndex, tID, tTeamId>
+  [ 52] objcall 220 ............................. pUserTeamsIndex.setaProp(tID, tTeamId)
+  [ 54] pushint8 1 .............................. <1>
+  [ 56] pusharglistnoret 1 ...................... <1>
+  [ 58] extcall 38 .............................. return 1
+  [ 60] ret
+end
+
+on getLevelRef me
+  [  0] getparam 0 .............................. <me>
+  [  2] pushsymb 250 ............................ <#level_id>
+  [  4] pusharglist 2 ........................... <me, #level_id>
+  [  6] objcall 63 .............................. <me.getProperty(#level_id)>
+  [  8] setlocal 0 .............................. tLevelId = me.getProperty(#level_id)
+  [ 10] getlocal 0 .............................. <tLevelId>
+  [ 12] pusharglist 1 ........................... <tLevelId>
+  [ 14] extcall 103 ............................. <voidp(tLevelId)>
+  [ 16] jmpifz [ 24] ............................ if voidp(tLevelId) then
+  [ 19] pushzero ................................ <0>
+  [ 20] pusharglistnoret 1 ...................... <0>
+  [ 22] extcall 38 .............................. return 0
+  [ 24] getparam 0 .............................. <me>
+  [ 26] pushcons 0 .............................. <"LevelList">
+  [ 28] pusharglist 2 ........................... <me, "LevelList">
+  [ 30] objcall 52 .............................. <me.getIGComponent("LevelList")>
+  [ 32] setlocal 1 .............................. tService = me.getIGComponent("LevelList")
+  [ 34] getlocal 1 .............................. <tService>
+  [ 36] pushzero ................................ <0>
+  [ 37] eq ...................................... <tService = 0>
+  [ 38] jmpifz [ 46] ............................ if tService = 0 then
+  [ 41] pushzero ................................ <0>
+  [ 42] pusharglistnoret 1 ...................... <0>
+  [ 44] extcall 38 .............................. return 0
+  [ 46] getlocal 1 .............................. <tService>
+  [ 48] getlocal 0 .............................. <tLevelId>
+  [ 50] pusharglist 2 ........................... <tService, tLevelId>
+  [ 52] objcall 460 ............................. <tService.getListEntry(tLevelId)>
+  [ 55] pusharglistnoret 1 ...................... <tService.getListEntry(tLevelId)>
+  [ 57] extcall 38 .............................. return tService.getListEntry(tLevelId)
+  [ 59] ret
+end

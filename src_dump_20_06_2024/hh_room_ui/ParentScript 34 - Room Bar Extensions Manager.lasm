@@ -1,0 +1,559 @@
+property pRoomInvitationClass, pFriendRequestClass, pBottomBarId, pShowInstantFriendRequests, pInvitationData, pFriendRequestData, pVisibleItemID, pVisibleItem
+
+on construct me
+  [  0] pushcons 0 .............................. <"Invitation Class">
+  [  2] setprop 732 ............................. pRoomInvitationClass = "Invitation Class"
+  [  5] pushcons 1 .............................. <"Instant Friend Request Class">
+  [  7] setprop 733 ............................. pFriendRequestClass = "Instant Friend Request Class"
+  [ 10] pushcons 2 .............................. <"Visible Room Bar Extension Item">
+  [ 12] setprop 734 ............................. pVisibleItemID = "Visible Room Bar Extension Item"
+  [ 15] pusharglist 0 ........................... <[:]>
+  [ 17] pushproplist ............................ <[:]>
+  [ 18] setprop 735 ............................. pInvitationData = [:]
+  [ 21] pusharglist 0 ........................... <[:]>
+  [ 23] pushproplist ............................ <[:]>
+  [ 24] setprop 736 ............................. pFriendRequestData = [:]
+  [ 27] pusharglist 0 ........................... <>
+  [ 29] extcall 116 ............................. <VOID>
+  [ 31] setprop 737 ............................. pVisibleItem = VOID
+  [ 34] pushint8 1 .............................. <1>
+  [ 36] setprop 738 ............................. pShowInstantFriendRequests = 1
+  [ 39] pushsymb 739 ............................ <#FriendRequestListOpened>
+  [ 42] getparam 0 .............................. <me>
+  [ 44] pusharglist 1 ........................... <me>
+  [ 46] objcall 19 .............................. <me.getID()>
+  [ 48] pushsymb 721 ............................ <#clearFriendRequestsFromStack>
+  [ 51] pusharglistnoret 3 ...................... <#FriendRequestListOpened, me.getID(), #clearFriendRequestsFromStack>
+  [ 53] extcall 17 .............................. registerMessage(#FriendRequestListOpened, me.getID(), #clearFriendRequestsFromStack)
+  [ 55] pushsymb 740 ............................ <#updateFriendRequestCount>
+  [ 58] getparam 0 .............................. <me>
+  [ 60] pusharglist 1 ........................... <me>
+  [ 62] objcall 19 .............................. <me.getID()>
+  [ 64] pushsymb 725 ............................ <#viewNextItemInStack>
+  [ 67] pusharglistnoret 3 ...................... <#updateFriendRequestCount, me.getID(), #viewNextItemInStack>
+  [ 69] extcall 17 .............................. registerMessage(#updateFriendRequestCount, me.getID(), #viewNextItemInStack)
+  [ 71] pushint8 1 .............................. <1>
+  [ 73] pusharglistnoret 1 ...................... <1>
+  [ 75] extcall 20 .............................. return 1
+  [ 77] ret
+end
+
+on deconstruct me
+  [  0] pushsymb 739 ............................ <#FriendRequestListOpened>
+  [  3] getparam 0 .............................. <me>
+  [  5] pusharglist 1 ........................... <me>
+  [  7] objcall 19 .............................. <me.getID()>
+  [  9] pusharglistnoret 2 ...................... <#FriendRequestListOpened, me.getID()>
+  [ 11] extcall 22 .............................. unregisterMessage(#FriendRequestListOpened, me.getID())
+  [ 13] pushsymb 740 ............................ <#updateFriendRequestCount>
+  [ 16] getparam 0 .............................. <me>
+  [ 18] pusharglist 1 ........................... <me>
+  [ 20] objcall 19 .............................. <me.getID()>
+  [ 22] pusharglistnoret 2 ...................... <#updateFriendRequestCount, me.getID()>
+  [ 24] extcall 22 .............................. unregisterMessage(#updateFriendRequestCount, me.getID())
+  [ 26] pushint8 1 .............................. <1>
+  [ 28] pusharglistnoret 1 ...................... <1>
+  [ 30] extcall 20 .............................. return 1
+  [ 32] ret
+end
+
+on define me, tBottomBarID
+  [  0] getparam 1 .............................. <tBottomBarID>
+  [  2] setprop 55 .............................. pBottomBarId = tBottomBarID
+  [  4] ret
+end
+
+on hideExtensions me
+  [  0] getparam 0 .............................. <me>
+  [  2] pusharglistnoret 1 ...................... <me>
+  [  4] objcall 729 ............................. me.hideInvitation()
+  [  7] getparam 0 .............................. <me>
+  [  9] pusharglistnoret 1 ...................... <me>
+  [ 11] objcall 730 ............................. me.hideFriendRequest()
+  [ 14] ret
+end
+
+on registerInvitation me, tInvitationData
+  [  0] getparam 1 .............................. <tInvitationData>
+  [  2] setprop 735 ............................. pInvitationData = tInvitationData
+  [  5] getparam 0 .............................. <me>
+  [  7] pusharglistnoret 1 ...................... <me>
+  [  9] objcall 722 ............................. me.showPendingInvitation()
+  [ 12] ret
+end
+
+on clearFriendRequestsFromStack me
+  [  0] getparam 0 .............................. <me>
+  [  2] pusharglistnoret 1 ...................... <me>
+  [  4] objcall 730 ............................. me.hideFriendRequest()
+  [  7] getparam 0 .............................. <me>
+  [  9] pusharglistnoret 1 ...................... <me>
+  [ 11] objcall 722 ............................. me.showPendingInvitation()
+  [ 14] ret
+end
+
+on showPendingInvitation me
+  [  0] getprop 737 ............................. <pVisibleItem>
+  [  3] pusharglist 0 ........................... <>
+  [  5] extcall 116 ............................. <VOID>
+  [  7] nteq .................................... <pVisibleItem <> VOID>
+  [  8] jmpifz [ 16] ............................ if pVisibleItem <> VOID then
+  [ 11] pushzero ................................ <0>
+  [ 12] pusharglistnoret 1 ...................... <0>
+  [ 14] extcall 20 .............................. return 0
+  [ 16] getprop 735 ............................. <pInvitationData>
+  [ 19] getobjprop 162 .......................... <pInvitationData.count>
+  [ 21] pushint8 1 .............................. <1>
+  [ 23] lt ...................................... <pInvitationData.count < 1>
+  [ 24] jmpifz [ 32] ............................ if pInvitationData.count < 1 then
+  [ 27] pushzero ................................ <0>
+  [ 28] pusharglistnoret 1 ...................... <0>
+  [ 30] extcall 20 .............................. return 0
+  [ 32] getprop 734 ............................. <pVisibleItemID>
+  [ 35] pusharglist 1 ........................... <pVisibleItemID>
+  [ 37] extcall 107 ............................. <objectExists(pVisibleItemID)>
+  [ 39] jmpifz [ 48] ............................ if objectExists(pVisibleItemID) then
+  [ 42] pushint8 1 .............................. <1>
+  [ 44] pusharglistnoret 1 ...................... <1>
+  [ 46] extcall 20 .............................. return 1
+  [ 48] getprop 734 ............................. <pVisibleItemID>
+  [ 51] getprop 732 ............................. <pRoomInvitationClass>
+  [ 54] pusharglist 2 ........................... <pVisibleItemID, pRoomInvitationClass>
+  [ 56] extcall 16 .............................. <createObject(pVisibleItemID, pRoomInvitationClass)>
+  [ 58] setlocal 0 .............................. tInvitationObj = createObject(pVisibleItemID, pRoomInvitationClass)
+  [ 60] getlocal 0 .............................. <tInvitationObj>
+  [ 62] not ..................................... <not tInvitationObj>
+  [ 63] jmpifz [ 71] ............................ if not tInvitationObj then
+  [ 66] pushzero ................................ <0>
+  [ 67] pusharglistnoret 1 ...................... <0>
+  [ 69] extcall 20 .............................. return 0
+  [ 71] getlocal 0 .............................. <tInvitationObj>
+  [ 73] getprop 735 ............................. <pInvitationData>
+  [ 76] getprop 55 .............................. <pBottomBarId>
+  [ 78] pushcons 3 .............................. <"friend_list_icon">
+  [ 80] pusharglist 4 ........................... <tInvitationObj, pInvitationData, pBottomBarId, "friend_list_icon">
+  [ 82] objcall 141 ............................. <tInvitationObj.show(pInvitationData, pBottomBarId, "friend_list_icon")>
+  [ 84] not ..................................... <not tInvitationObj.show(pInvitationData, pBottomBarId, "friend_list_icon")>
+  [ 85] jmpifz [110] ............................ if not tInvitationObj.show(pInvitationData, pBottomBarId, "friend_list_icon") then
+  [ 88] getprop 734 ............................. <pVisibleItemID>
+  [ 91] pusharglist 1 ........................... <pVisibleItemID>
+  [ 93] extcall 107 ............................. <objectExists(pVisibleItemID)>
+  [ 95] jmpifz [105] ............................ if objectExists(pVisibleItemID) then
+  [ 98] getprop 734 ............................. <pVisibleItemID>
+  [101] pusharglistnoret 1 ...................... <pVisibleItemID>
+  [103] extcall 23 .............................. removeObject(pVisibleItemID)
+  [105] pushzero ................................ <0>
+  [106] pusharglistnoret 1 ...................... <0>
+  [108] extcall 20 .............................. return 0
+  [110] pushsymb 743 ............................ <#invitation>
+  [113] setprop 737 ............................. pVisibleItem = #invitation
+  [116] pushint8 1 .............................. <1>
+  [118] pusharglistnoret 1 ...................... <1>
+  [120] extcall 20 .............................. return 1
+  [122] ret
+end
+
+on showPendingInstantFriendRequest me
+  [  0] getprop 738 ............................. <pShowInstantFriendRequests>
+  [  3] not ..................................... <not pShowInstantFriendRequests>
+  [  4] jmpifz [ 12] ............................ if not pShowInstantFriendRequests then
+  [  7] pushzero ................................ <0>
+  [  8] pusharglistnoret 1 ...................... <0>
+  [ 10] extcall 20 .............................. return 0
+  [ 12] getprop 737 ............................. <pVisibleItem>
+  [ 15] pusharglist 1 ........................... <pVisibleItem>
+  [ 17] extcall 25 .............................. <voidp(pVisibleItem)>
+  [ 19] not ..................................... <not voidp(pVisibleItem)>
+  [ 20] getprop 737 ............................. <pVisibleItem>
+  [ 23] pushsymb 745 ............................ <#friendrequest>
+  [ 26] eq ...................................... <pVisibleItem = #friendrequest>
+  [ 27] not ..................................... <not (pVisibleItem = #friendrequest)>
+  [ 28] and ..................................... <not voidp(pVisibleItem) and not (pVisibleItem = #friendrequest)>
+  [ 29] jmpifz [ 37] ............................ if not voidp(pVisibleItem) and not (pVisibleItem = #friendrequest) then
+  [ 32] pushzero ................................ <0>
+  [ 33] pusharglistnoret 1 ...................... <0>
+  [ 35] extcall 20 .............................. return 0
+  [ 37] getprop 734 ............................. <pVisibleItemID>
+  [ 40] pusharglist 1 ........................... <pVisibleItemID>
+  [ 42] extcall 107 ............................. <objectExists(pVisibleItemID)>
+  [ 44] jmpifz [ 53] ............................ if objectExists(pVisibleItemID) then
+  [ 47] pushint8 1 .............................. <1>
+  [ 49] pusharglistnoret 1 ...................... <1>
+  [ 51] extcall 20 .............................. return 1
+  [ 53] pushsymb 556 ............................ <#friend_list>
+  [ 56] pusharglist 1 ........................... <#friend_list>
+  [ 58] extcall 27 .............................. <threadExists(#friend_list)>
+  [ 60] not ..................................... <not threadExists(#friend_list)>
+  [ 61] jmpifz [ 69] ............................ if not threadExists(#friend_list) then
+  [ 64] pushzero ................................ <0>
+  [ 65] pusharglistnoret 1 ...................... <0>
+  [ 67] extcall 20 .............................. return 0
+  [ 69] pushsymb 77 ............................. <#room>
+  [ 71] pusharglist 1 ........................... <#room>
+  [ 73] extcall 28 .............................. <getThread(#room)>
+  [ 75] pusharglist 1 ........................... <getThread(#room)>
+  [ 77] objcall 29 .............................. <getThread(#room).getComponent()>
+  [ 79] setlocal 0 .............................. tRoomComponent = getThread(#room).getComponent()
+  [ 81] getlocal 0 .............................. <tRoomComponent>
+  [ 83] pusharglist 1 ........................... <tRoomComponent>
+  [ 85] objcall 247 ............................. <tRoomComponent.getRoomData()>
+  [ 87] setlocal 1 .............................. tRoomData = tRoomComponent.getRoomData()
+  [ 89] getlocal 1 .............................. <tRoomData>
+  [ 91] pusharglist 1 ........................... <tRoomData>
+  [ 93] extcall 335 ............................. <ilk(tRoomData)>
+  [ 96] pushsymb 336 ............................ <#propList>
+  [ 99] eq ...................................... <ilk(tRoomData) = #propList>
+  [100] not ..................................... <not (ilk(tRoomData) = #propList)>
+  [101] jmpifz [109] ............................ if not (ilk(tRoomData) = #propList) then
+  [104] pushzero ................................ <0>
+  [105] pusharglistnoret 1 ...................... <0>
+  [107] extcall 20 .............................. return 0
+  [109] getlocal 1 .............................. <tRoomData>
+  [111] pushsymb 249 ............................ <#type>
+  [113] pusharglist 2 ........................... <tRoomData, #type>
+  [115] objcall 164 ............................. <tRoomData[#type]>
+  [117] pushsymb 251 ............................ <#private>
+  [119] eq ...................................... <tRoomData[#type] = #private>
+  [120] getlocal 1 .............................. <tRoomData>
+  [122] pushsymb 249 ............................ <#type>
+  [124] pusharglist 2 ........................... <tRoomData, #type>
+  [126] objcall 164 ............................. <tRoomData[#type]>
+  [128] pushsymb 562 ............................ <#public>
+  [131] eq ...................................... <tRoomData[#type] = #public>
+  [132] or ...................................... <(tRoomData[#type] = #private) or (tRoomData[#type] = #public)>
+  [133] not ..................................... <not ((tRoomData[#type] = #private) or (tRoomData[#type] = #public))>
+  [134] jmpifz [142] ............................ if not ((tRoomData[#type] = #private) or (tRoomData[#type] = #public)) then
+  [137] pushzero ................................ <0>
+  [138] pusharglistnoret 1 ...................... <0>
+  [140] extcall 20 .............................. return 0
+  [142] pushsymb 556 ............................ <#friend_list>
+  [145] pusharglist 1 ........................... <#friend_list>
+  [147] extcall 27 .............................. <threadExists(#friend_list)>
+  [149] not ..................................... <not threadExists(#friend_list)>
+  [150] jmpifz [158] ............................ if not threadExists(#friend_list) then
+  [153] pushzero ................................ <0>
+  [154] pusharglistnoret 1 ...................... <0>
+  [156] extcall 20 .............................. return 0
+  [158] pushsymb 556 ............................ <#friend_list>
+  [161] pusharglist 1 ........................... <#friend_list>
+  [163] extcall 28 .............................. <getThread(#friend_list)>
+  [165] pusharglist 1 ........................... <getThread(#friend_list)>
+  [167] objcall 29 .............................. <getThread(#friend_list).getComponent()>
+  [169] setlocal 2 .............................. tFriendListComponent = getThread(#friend_list).getComponent()
+  [171] pushsymb 556 ............................ <#friend_list>
+  [174] pusharglist 1 ........................... <#friend_list>
+  [176] extcall 28 .............................. <getThread(#friend_list)>
+  [178] pusharglist 1 ........................... <getThread(#friend_list)>
+  [180] objcall 149 ............................. <getThread(#friend_list).getInterface()>
+  [182] setlocal 3 .............................. tFriendListInterface = getThread(#friend_list).getInterface()
+  [184] getlocal 3 .............................. <tFriendListInterface>
+  [186] pusharglist 1 ........................... <tFriendListInterface>
+  [188] objcall 746 ............................. <tFriendListInterface.isFriendRequestViewOpen()>
+  [191] jmpifz [199] ............................ if tFriendListInterface.isFriendRequestViewOpen() then
+  [194] pushzero ................................ <0>
+  [195] pusharglistnoret 1 ...................... <0>
+  [197] extcall 20 .............................. return 0
+  [199] getlocal 2 .............................. <tFriendListComponent>
+  [201] pusharglist 1 ........................... <tFriendListComponent>
+  [203] objcall 747 ............................. <tFriendListComponent.getPendingFriendRequests()>
+  [206] setlocal 4 .............................. tPendingRequests = tFriendListComponent.getPendingFriendRequests()
+  [208] getlocal 4 .............................. <tPendingRequests>
+  [210] getobjprop 162 .......................... <tPendingRequests.count>
+  [212] pushzero ................................ <0>
+  [213] eq ...................................... <tPendingRequests.count = 0>
+  [214] jmpifz [229] ............................ if tPendingRequests.count = 0 then
+  [217] getparam 0 .............................. <me>
+  [219] pusharglistnoret 1 ...................... <me>
+  [221] objcall 730 ............................. me.hideFriendRequest()
+  [224] pushzero ................................ <0>
+  [225] pusharglistnoret 1 ...................... <0>
+  [227] extcall 20 .............................. return 0
+  [229] getlocal 4 .............................. <tPendingRequests>
+  [231] peek 0
+  [233] pusharglist 1
+  [235] extcall 162
+  [237] pushint8 1
+  [239] peek 0
+  [241] peek 2
+  [243] lteq
+  [244] jmpifz [358] ............................ repeat with tPendingRequest in tPendingRequests
+  [247] peek 2
+  [249] peek 1
+  [251] pusharglist 2
+  [253] extcall 164
+  [255] setlocal 5
+  [257] getlocal 0 .............................. <tRoomComponent>
+  [259] getlocal 5 .............................. <tPendingRequest>
+  [261] pushsymb 253 ............................ <#name>
+  [263] pusharglist 2 ........................... <tPendingRequest, #name>
+  [265] objcall 164 ............................. <tPendingRequest[#name]>
+  [267] pusharglist 2 ........................... <tRoomComponent, tPendingRequest[#name]>
+  [269] objcall 748 ............................. <tRoomComponent.getUsersRoomId(tPendingRequest[#name])>
+  [272] setlocal 6 .............................. tRoomID = tRoomComponent.getUsersRoomId(tPendingRequest[#name])
+  [274] getlocal 0 .............................. <tRoomComponent>
+  [276] getlocal 6 .............................. <tRoomID>
+  [278] pusharglist 2 ........................... <tRoomComponent, tRoomID>
+  [280] objcall 332 ............................. <tRoomComponent.getUserObject(tRoomID)>
+  [283] setlocal 7 .............................. tUserObj = tRoomComponent.getUserObject(tRoomID)
+  [285] getlocal 7 .............................. <tUserObj>
+  [287] pushzero ................................ <0>
+  [288] eq ...................................... <tUserObj = 0>
+  [289] not ..................................... <not (tUserObj = 0)>
+  [290] jmpifz [353] ............................ if not (tUserObj = 0) then
+  [293] getprop 734 ............................. <pVisibleItemID>
+  [296] getprop 733 ............................. <pFriendRequestClass>
+  [299] pusharglistnoret 2 ...................... <pVisibleItemID, pFriendRequestClass>
+  [301] extcall 16 .............................. createObject(pVisibleItemID, pFriendRequestClass)
+  [303] getprop 734 ............................. <pVisibleItemID>
+  [306] pusharglist 1 ........................... <pVisibleItemID>
+  [308] extcall 24 .............................. <getObject(pVisibleItemID)>
+  [310] setlocal 8 .............................. tObj = getObject(pVisibleItemID)
+  [312] getlocal 8 .............................. <tObj>
+  [314] getprop 55 .............................. <pBottomBarId>
+  [316] pushcons 3 .............................. <"friend_list_icon">
+  [318] getlocal 5 .............................. <tPendingRequest>
+  [320] getparam 0 .............................. <me>
+  [322] pusharglist 1 ........................... <me>
+  [324] objcall 19 .............................. <me.getID()>
+  [326] pusharglistnoret 5 ...................... <tObj, pBottomBarId, "friend_list_icon", tPendingRequest, me.getID()>
+  [328] objcall 79 .............................. tObj.define(pBottomBarId, "friend_list_icon", tPendingRequest, me.getID())
+  [330] getlocal 8 .............................. <tObj>
+  [332] pusharglistnoret 1 ...................... <tObj>
+  [334] objcall 141 ............................. tObj.show()
+  [336] getlocal 5 .............................. <tPendingRequest>
+  [338] setprop 736 ............................. pFriendRequestData = tPendingRequest
+  [341] pushsymb 745 ............................ <#friendrequest>
+  [344] setprop 737 ............................. pVisibleItem = #friendrequest
+  [347] pushint8 1 .............................. <1>
+  [349] pusharglistnoret 1 ...................... <1>
+  [351] extcall 20 .............................. return 1
+  [353] pushint8 1
+  [355] add
+  [356] endrepeat [239]
+  [358] pop 3
+  [360] pushzero ................................ <0>
+  [361] pusharglistnoret 1 ...................... <0>
+  [363] extcall 20 .............................. return 0
+  [365] ret
+end
+
+on ignoreInstantFriendRequests me
+  [  0] pushzero ................................ <0>
+  [  1] setprop 738 ............................. pShowInstantFriendRequests = 0
+  [  4] getparam 0 .............................. <me>
+  [  6] pusharglistnoret 1 ...................... <me>
+  [  8] objcall 730 ............................. me.hideFriendRequest()
+  [ 11] getparam 0 .............................. <me>
+  [ 13] pusharglistnoret 1 ...................... <me>
+  [ 15] objcall 722 ............................. me.showPendingInvitation()
+  [ 18] ret
+end
+
+on viewNextItemInStack me
+  [  0] getparam 0 .............................. <me>
+  [  2] pusharglist 1 ........................... <me>
+  [  4] objcall 723 ............................. <me.showPendingInstantFriendRequest()>
+  [  7] setlocal 0 .............................. tFrShown = me.showPendingInstantFriendRequest()
+  [  9] getlocal 0 .............................. <tFrShown>
+  [ 11] not ..................................... <not tFrShown>
+  [ 12] jmpifz [ 22] ............................ if not tFrShown then
+  [ 15] getparam 0 .............................. <me>
+  [ 17] pusharglistnoret 1 ...................... <me>
+  [ 19] objcall 722 ............................. me.showPendingInvitation()
+  [ 22] ret
+end
+
+on confirmFriendRequest me, tAccept
+  [  0] pushsymb 556 ............................ <#friend_list>
+  [  3] pusharglist 1 ........................... <#friend_list>
+  [  5] extcall 27 .............................. <threadExists(#friend_list)>
+  [  7] not ..................................... <not threadExists(#friend_list)>
+  [  8] jmpifz [ 16] ............................ if not threadExists(#friend_list) then
+  [ 11] pushzero ................................ <0>
+  [ 12] pusharglistnoret 1 ...................... <0>
+  [ 14] extcall 20 .............................. return 0
+  [ 16] pushsymb 556 ............................ <#friend_list>
+  [ 19] pusharglist 1 ........................... <#friend_list>
+  [ 21] extcall 28 .............................. <getThread(#friend_list)>
+  [ 23] pusharglist 1 ........................... <getThread(#friend_list)>
+  [ 25] objcall 29 .............................. <getThread(#friend_list).getComponent()>
+  [ 27] setlocal 0 .............................. tFriendListComponent = getThread(#friend_list).getComponent()
+  [ 29] pushsymb 556 ............................ <#friend_list>
+  [ 32] pusharglist 1 ........................... <#friend_list>
+  [ 34] extcall 28 .............................. <getThread(#friend_list)>
+  [ 36] pusharglist 1 ........................... <getThread(#friend_list)>
+  [ 38] objcall 149 ............................. <getThread(#friend_list).getInterface()>
+  [ 40] setlocal 1 .............................. tFriendListInterface = getThread(#friend_list).getInterface()
+  [ 42] getprop 736 ............................. <pFriendRequestData>
+  [ 45] pushsymb 714 ............................ <#id>
+  [ 48] pusharglist 2 ........................... <pFriendRequestData, #id>
+  [ 50] objcall 164 ............................. <pFriendRequestData[#id]>
+  [ 52] setlocal 2 .............................. tRequestId = pFriendRequestData[#id]
+  [ 54] getparam 1 .............................. <tAccept>
+  [ 56] jmpifz [106] ............................ if tAccept then / else
+  [ 59] getlocal 0 .............................. <tFriendListComponent>
+  [ 61] pusharglist 1 ........................... <tFriendListComponent>
+  [ 63] objcall 754 ............................. <tFriendListComponent.isFriendListFull()>
+  [ 66] jmpifz [ 90] ............................ if tFriendListComponent.isFriendListFull() then
+  [ 69] pushsymb 755 ............................ <#alert>
+  [ 72] pushcons 4 .............................. <"console_fr_limit_exceeded_error">
+  [ 74] pusharglistnoret 2 ...................... <#alert, "console_fr_limit_exceeded_error">
+  [ 76] extcall 177 ............................. executeMessage(#alert, "console_fr_limit_exceeded_error")
+  [ 78] getparam 0 .............................. <me>
+  [ 80] pusharglistnoret 1 ...................... <me>
+  [ 82] objcall 730 ............................. me.hideFriendRequest()
+  [ 85] pushzero ................................ <0>
+  [ 86] pusharglistnoret 1 ...................... <0>
+  [ 88] extcall 20 .............................. return 0
+  [ 90] getlocal 0 .............................. <tFriendListComponent>
+  [ 92] getprop 736 ............................. <pFriendRequestData>
+  [ 95] pushsymb 756 ............................ <#accepted>
+  [ 98] pusharglistnoret 3 ...................... <tFriendListComponent, pFriendRequestData, #accepted>
+  [100] objcall 757 ............................. tFriendListComponent.updateFriendRequest(pFriendRequestData, #accepted)
+  [103] jmp [119]
+  [106] getlocal 0 .............................. <tFriendListComponent>
+  [108] getprop 736 ............................. <pFriendRequestData>
+  [111] pushsymb 758 ............................ <#rejected>
+  [114] pusharglistnoret 3 ...................... <tFriendListComponent, pFriendRequestData, #rejected>
+  [116] objcall 757 ............................. tFriendListComponent.updateFriendRequest(pFriendRequestData, #rejected)
+  [119] getparam 0 .............................. <me>
+  [121] pusharglistnoret 1 ...................... <me>
+  [123] objcall 730 ............................. me.hideFriendRequest()
+  [126] ret
+end
+
+on acceptInvitation me
+  [  0] getprop 735 ............................. <pInvitationData>
+  [  3] pusharglist 1 ........................... <pInvitationData>
+  [  5] extcall 335 ............................. <ilk(pInvitationData)>
+  [  8] pushsymb 336 ............................ <#propList>
+  [ 11] nteq .................................... <ilk(pInvitationData) <> #propList>
+  [ 12] jmpifz [ 20] ............................ if ilk(pInvitationData) <> #propList then
+  [ 15] pushzero ................................ <0>
+  [ 16] pusharglistnoret 1 ...................... <0>
+  [ 18] extcall 20 .............................. return 0
+  [ 20] getprop 735 ............................. <pInvitationData>
+  [ 23] pushsymb 761 ............................ <#userID>
+  [ 26] pusharglist 2 ........................... <pInvitationData, #userID>
+  [ 28] objcall 250 ............................. <pInvitationData.getaProp(#userID)>
+  [ 30] setlocal 0 .............................. tSenderId = pInvitationData.getaProp(#userID)
+  [ 32] getlocal 0 .............................. <tSenderId>
+  [ 34] pusharglist 1 ........................... <tSenderId>
+  [ 36] extcall 25 .............................. <voidp(tSenderId)>
+  [ 38] jmpifz [ 46] ............................ if voidp(tSenderId) then
+  [ 41] pushzero ................................ <0>
+  [ 42] pusharglistnoret 1 ...................... <0>
+  [ 44] extcall 20 .............................. return 0
+  [ 46] pushcons 5 .............................. <"connection.info.id">
+  [ 48] pusharglist 1 ........................... <"connection.info.id">
+  [ 50] extcall 121 ............................. <getVariable("connection.info.id")>
+  [ 52] pusharglist 1 ........................... <getVariable("connection.info.id")>
+  [ 54] extcall 762 ............................. <connectionExists(getVariable("connection.info.id"))>
+  [ 57] jmpifz [ 84] ............................ if connectionExists(getVariable("connection.info.id")) then
+  [ 60] pushcons 5 .............................. <"connection.info.id">
+  [ 62] pusharglist 1 ........................... <"connection.info.id">
+  [ 64] extcall 121 ............................. <getVariable("connection.info.id")>
+  [ 66] pusharglist 1 ........................... <getVariable("connection.info.id")>
+  [ 68] extcall 134 ............................. <getConnection(getVariable("connection.info.id"))>
+  [ 70] pushcons 6 .............................. <"MSG_ACCEPT_TUTOR_INVITATION">
+  [ 72] pushsymb 396 ............................ <#string>
+  [ 75] getlocal 0 .............................. <tSenderId>
+  [ 77] pusharglist 2 ........................... <[#string: tSenderId]>
+  [ 79] pushproplist ............................ <[#string: tSenderId]>
+  [ 80] pusharglistnoret 3 ...................... <getConnection(getVariable("connection.info.id")), "MSG_ACCEPT_TUTOR_INVITATION", [#string: tSenderId]>
+  [ 82] objcall 136 ............................. getConnection(getVariable("connection.info.id")).send("MSG_ACCEPT_TUTOR_INVITATION", [#string: tSenderId])
+  [ 84] getparam 0 .............................. <me>
+  [ 86] pusharglistnoret 1 ...................... <me>
+  [ 88] objcall 729 ............................. me.hideInvitation()
+  [ 91] ret
+end
+
+on rejectInvitation me
+  [  0] getprop 735 ............................. <pInvitationData>
+  [  3] pushsymb 761 ............................ <#userID>
+  [  6] pusharglist 2 ........................... <pInvitationData, #userID>
+  [  8] objcall 250 ............................. <pInvitationData.getaProp(#userID)>
+  [ 10] setlocal 0 .............................. tSenderId = pInvitationData.getaProp(#userID)
+  [ 12] getlocal 0 .............................. <tSenderId>
+  [ 14] pusharglist 1 ........................... <tSenderId>
+  [ 16] extcall 25 .............................. <voidp(tSenderId)>
+  [ 18] jmpifz [ 26] ............................ if voidp(tSenderId) then
+  [ 21] pushzero ................................ <0>
+  [ 22] pusharglistnoret 1 ...................... <0>
+  [ 24] extcall 20 .............................. return 0
+  [ 26] pushcons 5 .............................. <"connection.info.id">
+  [ 28] pusharglist 1 ........................... <"connection.info.id">
+  [ 30] extcall 121 ............................. <getVariable("connection.info.id")>
+  [ 32] pusharglist 1 ........................... <getVariable("connection.info.id")>
+  [ 34] extcall 762 ............................. <connectionExists(getVariable("connection.info.id"))>
+  [ 37] jmpifz [ 64] ............................ if connectionExists(getVariable("connection.info.id")) then
+  [ 40] pushcons 5 .............................. <"connection.info.id">
+  [ 42] pusharglist 1 ........................... <"connection.info.id">
+  [ 44] extcall 121 ............................. <getVariable("connection.info.id")>
+  [ 46] pusharglist 1 ........................... <getVariable("connection.info.id")>
+  [ 48] extcall 134 ............................. <getConnection(getVariable("connection.info.id"))>
+  [ 50] pushcons 7 .............................. <"MSG_REJECT_TUTOR_INVITATION">
+  [ 52] pushsymb 396 ............................ <#string>
+  [ 55] getlocal 0 .............................. <tSenderId>
+  [ 57] pusharglist 2 ........................... <[#string: tSenderId]>
+  [ 59] pushproplist ............................ <[#string: tSenderId]>
+  [ 60] pusharglistnoret 3 ...................... <getConnection(getVariable("connection.info.id")), "MSG_REJECT_TUTOR_INVITATION", [#string: tSenderId]>
+  [ 62] objcall 136 ............................. getConnection(getVariable("connection.info.id")).send("MSG_REJECT_TUTOR_INVITATION", [#string: tSenderId])
+  [ 64] getparam 0 .............................. <me>
+  [ 66] pusharglistnoret 1 ...................... <me>
+  [ 68] objcall 729 ............................. me.hideInvitation()
+  [ 71] pushsymb 764 ............................ <#room_bar_extension_next_update>
+  [ 74] pushint16 1000 .......................... <1000>
+  [ 77] pushsymb 725 ............................ <#viewNextItemInStack>
+  [ 80] getparam 0 .............................. <me>
+  [ 82] pusharglist 1 ........................... <me>
+  [ 84] objcall 19 .............................. <me.getID()>
+  [ 86] pusharglist 0 ........................... <>
+  [ 88] extcall 116 ............................. <VOID>
+  [ 90] pushint8 1 .............................. <1>
+  [ 92] pusharglistnoret 6 ...................... <#room_bar_extension_next_update, 1000, #viewNextItemInStack, me.getID(), VOID, 1>
+  [ 94] extcall 132 ............................. createTimeout(#room_bar_extension_next_update, 1000, #viewNextItemInStack, me.getID(), VOID, 1)
+  [ 96] ret
+end
+
+on hideInvitation me
+  [  0] getprop 737 ............................. <pVisibleItem>
+  [  3] pushsymb 743 ............................ <#invitation>
+  [  6] eq ...................................... <pVisibleItem = #invitation>
+  [  7] jmpifz [ 24] ............................ if pVisibleItem = #invitation then
+  [ 10] getprop 734 ............................. <pVisibleItemID>
+  [ 13] pusharglistnoret 1 ...................... <pVisibleItemID>
+  [ 15] extcall 23 .............................. removeObject(pVisibleItemID)
+  [ 17] pusharglist 0 ........................... <>
+  [ 19] extcall 116 ............................. <VOID>
+  [ 21] setprop 737 ............................. pVisibleItem = VOID
+  [ 24] pusharglist 0 ........................... <[:]>
+  [ 26] pushproplist ............................ <[:]>
+  [ 27] setprop 735 ............................. pInvitationData = [:]
+  [ 30] ret
+end
+
+on hideFriendRequest me
+  [  0] getprop 737 ............................. <pVisibleItem>
+  [  3] pushsymb 745 ............................ <#friendrequest>
+  [  6] eq ...................................... <pVisibleItem = #friendrequest>
+  [  7] jmpifz [ 24] ............................ if pVisibleItem = #friendrequest then
+  [ 10] getprop 734 ............................. <pVisibleItemID>
+  [ 13] pusharglistnoret 1 ...................... <pVisibleItemID>
+  [ 15] extcall 23 .............................. removeObject(pVisibleItemID)
+  [ 17] pusharglist 0 ........................... <>
+  [ 19] extcall 116 ............................. <VOID>
+  [ 21] setprop 737 ............................. pVisibleItem = VOID
+  [ 24] pusharglist 0 ........................... <[:]>
+  [ 26] pushproplist ............................ <[:]>
+  [ 27] setprop 736 ............................. pFriendRequestData = [:]
+  [ 30] ret
+end
+
+on invitationFollowFailed me
+  [  0] pushsymb 755 ............................ <#alert>
+  [  3] pushcons 8 .............................. <"invitation_follow_failed">
+  [  5] pusharglistnoret 2 ...................... <#alert, "invitation_follow_failed">
+  [  7] extcall 177 ............................. executeMessage(#alert, "invitation_follow_failed")
+  [  9] ret
+end

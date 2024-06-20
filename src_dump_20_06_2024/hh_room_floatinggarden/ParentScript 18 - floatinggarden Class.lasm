@@ -1,0 +1,100 @@
+property pWaterFallFrame, pWaterFallSprite, pAnimTimer
+
+on construct me
+  [  0] pushint8 1 .............................. <1>
+  [  2] setprop 149 ............................. pWaterFallFrame = 1
+  [  4] pushzero ................................ <0>
+  [  5] setprop 82 .............................. pAnimTimer = 0
+  [  7] pushint8 1 .............................. <1>
+  [  9] pusharglistnoret 1 ...................... <1>
+  [ 11] extcall 7 ............................... return 1
+  [ 13] ret
+end
+
+on deconstruct me
+  [  0] getparam 0 .............................. <me>
+  [  2] pusharglist 1 ........................... <me>
+  [  4] objcall 91 .............................. <me.getID()>
+  [  6] pusharglist 1 ........................... <me.getID()>
+  [  8] extcall 90 .............................. <removeUpdate(me.getID())>
+  [ 10] pusharglistnoret 1 ...................... <removeUpdate(me.getID())>
+  [ 12] extcall 7 ............................... return removeUpdate(me.getID())
+  [ 14] ret
+end
+
+on prepare me
+  [  0] getparam 0 .............................. <me>
+  [  2] pusharglist 1 ........................... <me>
+  [  4] objcall 91 .............................. <me.getID()>
+  [  6] pusharglist 1 ........................... <me.getID()>
+  [  8] extcall 92 .............................. <receiveUpdate(me.getID())>
+  [ 10] pusharglistnoret 1 ...................... <receiveUpdate(me.getID())>
+  [ 12] extcall 7 ............................... return receiveUpdate(me.getID())
+  [ 14] ret
+end
+
+on update me
+  [  0] getprop 151 ............................. <pWaterFallSprite>
+  [  2] pusharglist 0 ........................... <>
+  [  4] extcall 97 .............................. <VOID>
+  [  6] eq ...................................... <pWaterFallSprite = VOID>
+  [  7] jmpifz [ 20] ............................ if pWaterFallSprite = VOID then
+  [ 10] getparam 0 .............................. <me>
+  [ 12] pusharglist 1 ........................... <me>
+  [ 14] objcall 152 ............................. <me.getAnimSprites()>
+  [ 16] pusharglistnoret 1 ...................... <me.getAnimSprites()>
+  [ 18] extcall 7 ............................... return me.getAnimSprites()
+  [ 20] getmovieprop 150 ........................ <the milliSeconds>
+  [ 22] getprop 82 .............................. <pAnimTimer>
+  [ 24] pushint16 200 ........................... <200>
+  [ 27] add ..................................... <pAnimTimer + 200>
+  [ 28] gt ...................................... <the milliSeconds > (pAnimTimer + 200)>
+  [ 29] jmpifz [ 68] ............................ if the milliSeconds > (pAnimTimer + 200) then
+  [ 32] getmovieprop 150 ........................ <the milliSeconds>
+  [ 34] setprop 82 .............................. pAnimTimer = the milliSeconds
+  [ 36] getprop 149 ............................. <pWaterFallFrame>
+  [ 38] pushint8 1 .............................. <1>
+  [ 40] add ..................................... <pWaterFallFrame + 1>
+  [ 41] setprop 149 ............................. pWaterFallFrame = pWaterFallFrame + 1
+  [ 43] getprop 149 ............................. <pWaterFallFrame>
+  [ 45] pushint8 4 .............................. <4>
+  [ 47] gt ...................................... <pWaterFallFrame > 4>
+  [ 48] jmpifz [ 55] ............................ if pWaterFallFrame > 4 then
+  [ 51] pushint8 1 .............................. <1>
+  [ 53] setprop 149 ............................. pWaterFallFrame = 1
+  [ 55] getprop 151 ............................. <pWaterFallSprite>
+  [ 57] pushcons 0 .............................. <"watersplash_">
+  [ 59] getprop 149 ............................. <pWaterFallFrame>
+  [ 61] joinstr ................................. <"watersplash_" & pWaterFallFrame>
+  [ 62] pusharglist 1 ........................... <"watersplash_" & pWaterFallFrame>
+  [ 64] extcall 138 ............................. <getMember("watersplash_" & pWaterFallFrame)>
+  [ 66] setobjprop 139 .......................... pWaterFallSprite.member = getMember("watersplash_" & pWaterFallFrame)
+  [ 68] pushint8 1 .............................. <1>
+  [ 70] pusharglistnoret 1 ...................... <1>
+  [ 72] extcall 7 ............................... return 1
+  [ 74] ret
+end
+
+on getAnimSprites me
+  [  0] pushsymb 128 ............................ <#room>
+  [  2] pusharglist 1 ........................... <#room>
+  [  4] extcall 127 ............................. <getThread(#room)>
+  [  6] pusharglist 1 ........................... <getThread(#room)>
+  [  8] objcall 129 ............................. <getThread(#room).getInterface()>
+  [ 10] pusharglist 1 ........................... <getThread(#room).getInterface()>
+  [ 12] objcall 130 ............................. <getThread(#room).getInterface().getRoomVisualizer()>
+  [ 14] setlocal 0 .............................. tObj = getThread(#room).getInterface().getRoomVisualizer()
+  [ 16] getlocal 0 .............................. <tObj>
+  [ 18] pushzero ................................ <0>
+  [ 19] nteq .................................... <tObj <> 0>
+  [ 20] jmpifz [ 33] ............................ if tObj <> 0 then
+  [ 23] getlocal 0 .............................. <tObj>
+  [ 25] pushcons 1 .............................. <"watersplash">
+  [ 27] pusharglist 2 ........................... <tObj, "watersplash">
+  [ 29] objcall 131 ............................. <tObj.getSprById("watersplash")>
+  [ 31] setprop 151 ............................. pWaterFallSprite = tObj.getSprById("watersplash")
+  [ 33] pushint8 1 .............................. <1>
+  [ 35] pusharglistnoret 1 ...................... <1>
+  [ 37] extcall 7 ............................... return 1
+  [ 39] ret
+end

@@ -1,0 +1,1098 @@
+property pGeometry, pRoomGeometry, pTileLineOfSight, pWorldReady, pObjectCache, pWorldMaxX, pWorldMaxY, pTileGrid, pTileSpaceReserveList, pTileWidth, pAccuracyFactor, pLocationClass
+
+on construct me
+  [  0] pushcons 0 .............................. <"gamesystem.location.class">
+  [  2] pusharglist 1 ........................... <"gamesystem.location.class">
+  [  4] extcall 138 ............................. <getClassVariable("gamesystem.location.class")>
+  [  6] setprop 416 ............................. pLocationClass = getClassVariable("gamesystem.location.class")
+  [  9] pushsymb 419 ............................ <#room>
+  [ 12] pusharglist 1 ........................... <#room>
+  [ 14] extcall 418 ............................. <getThread(#room)>
+  [ 17] pusharglist 1 ........................... <getThread(#room)>
+  [ 19] objcall 420 ............................. <getThread(#room).getInterface()>
+  [ 22] pusharglist 1 ........................... <getThread(#room).getInterface()>
+  [ 24] objcall 46 .............................. <getThread(#room).getInterface().getGeometry()>
+  [ 26] setprop 417 ............................. pRoomGeometry = getThread(#room).getInterface().getGeometry()
+  [ 29] pushsymb 140 ............................ <#temp>
+  [ 31] pushcons 1 .............................. <"gamesystem.geometry.class">
+  [ 33] pusharglist 1 ........................... <"gamesystem.geometry.class">
+  [ 35] extcall 138 ............................. <getClassVariable("gamesystem.geometry.class")>
+  [ 37] pusharglist 2 ........................... <#temp, getClassVariable("gamesystem.geometry.class")>
+  [ 39] extcall 137 ............................. <createObject(#temp, getClassVariable("gamesystem.geometry.class"))>
+  [ 41] setprop 421 ............................. pGeometry = createObject(#temp, getClassVariable("gamesystem.geometry.class"))
+  [ 44] getprop 421 ............................. <pGeometry>
+  [ 47] pusharglist 1 ........................... <pGeometry>
+  [ 49] extcall 55 .............................. <objectp(pGeometry)>
+  [ 51] not ..................................... <not objectp(pGeometry)>
+  [ 52] jmpifz [ 69] ............................ if not objectp(pGeometry) then
+  [ 55] getparam 0 .............................. <me>
+  [ 57] pushcons 2 .............................. <"Cannot create pGeometry.">
+  [ 59] pushsymb 0 .............................. <#construct>
+  [ 61] pusharglist 3 ........................... <me, "Cannot create pGeometry.", #construct>
+  [ 63] extcall 62 .............................. <error(me, "Cannot create pGeometry.", #construct)>
+  [ 65] pusharglistnoret 1 ...................... <error(me, "Cannot create pGeometry.", #construct)>
+  [ 67] extcall 53 .............................. return error(me, "Cannot create pGeometry.", #construct)
+  [ 69] pushzero ................................ <0>
+  [ 70] setprop 786 ............................. pWorldReady = 0
+  [ 73] pushint8 32 ............................. <32>
+  [ 75] setprop 422 ............................. pTileWidth = 32
+  [ 78] pushint8 100 ............................ <100>
+  [ 80] setprop 423 ............................. pAccuracyFactor = 100
+  [ 83] pusharglist 0 ........................... <[]>
+  [ 85] pushlist ................................ <[]>
+  [ 86] setprop 424 ............................. pTileGrid = []
+  [ 89] pusharglist 0 ........................... <[:]>
+  [ 91] pushproplist ............................ <[:]>
+  [ 92] setprop 425 ............................. pTileSpaceReserveList = [:]
+  [ 95] pusharglist 0 ........................... <[:]>
+  [ 97] pushproplist ............................ <[:]>
+  [ 98] setprop 787 ............................. pObjectCache = [:]
+  [101] pushint8 1 .............................. <1>
+  [103] pusharglistnoret 1 ...................... <1>
+  [105] extcall 53 .............................. return 1
+  [107] ret
+end
+
+on deconstruct me
+  [  0] pushzero ................................ <0>
+  [  1] setlocal 0 .............................. pReady = 0
+  [  3] pusharglist 0 ........................... <>
+  [  5] extcall 61 .............................. <VOID>
+  [  7] setprop 424 ............................. pTileGrid = VOID
+  [ 10] pusharglist 0 ........................... <>
+  [ 12] extcall 61 .............................. <VOID>
+  [ 14] setlocal 1 .............................. pComponentToAngle = VOID
+  [ 16] pusharglist 0 ........................... <>
+  [ 18] extcall 61 .............................. <VOID>
+  [ 20] setprop 421 ............................. pGeometry = VOID
+  [ 23] pusharglist 0 ........................... <>
+  [ 25] extcall 61 .............................. <VOID>
+  [ 27] setprop 859 ............................. pTileLineOfSight = VOID
+  [ 30] pushint8 1 .............................. <1>
+  [ 32] pusharglistnoret 1 ...................... <1>
+  [ 34] extcall 53 .............................. return 1
+  [ 36] ret
+end
+
+on storeHeightMapArray me, tdata, tWorldWidth, tWorldHeight, tTileClass
+  [  0] getparam 2 .............................. <tWorldWidth>
+  [  2] setprop 430 ............................. pWorldMaxX = tWorldWidth
+  [  5] getparam 3 .............................. <tWorldHeight>
+  [  7] setprop 429 ............................. pWorldMaxY = tWorldHeight
+  [ 10] getparam 0 .............................. <me>
+  [ 12] getparam 1 .............................. <tdata>
+  [ 14] getparam 4 .............................. <tTileClass>
+  [ 16] pusharglist 3 ........................... <me, tdata, tTileClass>
+  [ 18] objcall 898 ............................. <me.createTileGrid(tdata, tTileClass)>
+  [ 21] pusharglistnoret 1 ...................... <me.createTileGrid(tdata, tTileClass)>
+  [ 23] extcall 53 .............................. return me.createTileGrid(tdata, tTileClass)
+  [ 25] ret
+end
+
+on storeHeightmap me, tStr, tWorldWidth, tWorldHeight, tTileClass
+  [  0] getparam 3 .............................. <tWorldHeight>
+  [  2] pusharglist 1 ........................... <tWorldHeight>
+  [  4] extcall 564 ............................. <voidp(tWorldHeight)>
+  [  7] jmpifz [ 25] ............................ if voidp(tWorldHeight) then / else
+  [ 10] getparam 1 .............................. <tStr>
+  [ 12] pushsymb 369 ............................ <#line>
+  [ 15] pusharglist 2 ........................... <tStr, #line>
+  [ 17] objcall 143 ............................. <tStr.line.count>
+  [ 19] setprop 429 ............................. pWorldMaxY = tStr.line.count
+  [ 22] jmp [ 30]
+  [ 25] getparam 3 .............................. <tWorldHeight>
+  [ 27] setprop 429 ............................. pWorldMaxY = tWorldHeight
+  [ 30] getparam 2 .............................. <tWorldWidth>
+  [ 32] pusharglist 1 ........................... <tWorldWidth>
+  [ 34] extcall 564 ............................. <voidp(tWorldWidth)>
+  [ 37] jmpifz [ 61] ............................ if voidp(tWorldWidth) then / else
+  [ 40] getparam 1 .............................. <tStr>
+  [ 42] pushsymb 369 ............................ <#line>
+  [ 45] pushint8 1 .............................. <1>
+  [ 47] pusharglist 3 ........................... <tStr, #line, 1>
+  [ 49] objcall 370 ............................. <tStr.line[1]>
+  [ 52] getobjprop 393 .......................... <tStr.line[1].length>
+  [ 55] setprop 430 ............................. pWorldMaxX = tStr.line[1].length
+  [ 58] jmp [ 66]
+  [ 61] getparam 2 .............................. <tWorldWidth>
+  [ 63] setprop 430 ............................. pWorldMaxX = tWorldWidth
+  [ 66] pusharglist 0 ........................... <[]>
+  [ 68] pushlist ................................ <[]>
+  [ 69] setlocal 0 .............................. tdata = []
+  [ 71] pushint8 1 .............................. <1>
+  [ 73] setlocal 1
+  [ 75] getlocal 1
+  [ 77] getprop 429 ............................. <pWorldMaxY>
+  [ 80] lteq
+  [ 81] jmpifz [144] ............................ repeat with tLocY = 1 to pWorldMaxY
+  [ 84] pushint8 1 .............................. <1>
+  [ 86] setlocal 2
+  [ 88] getlocal 2
+  [ 90] getprop 430 ............................. <pWorldMaxX>
+  [ 93] lteq
+  [ 94] jmpifz [135] ............................ repeat with tLocX = 1 to pWorldMaxX
+  [ 97] getlocal 0 .............................. <tdata>
+  [ 99] getparam 1 .............................. <tStr>
+  [101] pushsymb 369 ............................ <#line>
+  [104] getlocal 1 .............................. <tLocY>
+  [106] pusharglist 3 ........................... <tStr, #line, tLocY>
+  [108] objcall 370 ............................. <tStr.line[tLocY]>
+  [111] pushsymb 431 ............................ <#char>
+  [114] getlocal 2 .............................. <tLocX>
+  [116] pusharglist 3 ........................... <tStr.line[tLocY], #char, tLocX>
+  [118] objcall 290 ............................. <tStr.line[tLocY].char[tLocX]>
+  [121] pusharglistnoret 2 ...................... <tdata, tStr.line[tLocY].char[tLocX]>
+  [123] objcall 385 ............................. tdata.append(tStr.line[tLocY].char[tLocX])
+  [126] pushint8 1
+  [128] getlocal 2
+  [130] add
+  [131] setlocal 2
+  [133] endrepeat [ 88]
+  [135] pushint8 1
+  [137] getlocal 1
+  [139] add
+  [140] setlocal 1
+  [142] endrepeat [ 75]
+  [144] getparam 0 .............................. <me>
+  [146] getlocal 0 .............................. <tdata>
+  [148] getparam 4 .............................. <tTileClass>
+  [150] pusharglist 3 ........................... <me, tdata, tTileClass>
+  [152] objcall 898 ............................. <me.createTileGrid(tdata, tTileClass)>
+  [155] pusharglistnoret 1 ...................... <me.createTileGrid(tdata, tTileClass)>
+  [157] extcall 53 .............................. return me.createTileGrid(tdata, tTileClass)
+  [159] ret
+end
+
+on createTileGrid me, tdata, tTileClass
+  [  0] pusharglist 0 ........................... <[]>
+  [  2] pushlist ................................ <[]>
+  [  3] setprop 424 ............................. pTileGrid = []
+  [  6] getparam 2 .............................. <tTileClass>
+  [  8] pusharglist 0 ........................... <>
+  [ 10] extcall 61 .............................. <VOID>
+  [ 12] eq ...................................... <tTileClass = VOID>
+  [ 13] jmpifz [ 21] ............................ if tTileClass = VOID then
+  [ 16] pusharglist 0 ........................... <[]>
+  [ 18] pushlist ................................ <[]>
+  [ 19] setparam 2 .............................. tTileClass = []
+  [ 21] getparam 2 .............................. <tTileClass>
+  [ 23] getobjprop 282 .......................... <tTileClass.ilk>
+  [ 26] pushsymb 791 ............................ <#list>
+  [ 29] nteq .................................... <tTileClass.ilk <> #list>
+  [ 30] jmpifz [ 42] ............................ if tTileClass.ilk <> #list then
+  [ 33] getparam 2 .............................. <tTileClass>
+  [ 35] pusharglist 1 ........................... <tTileClass>
+  [ 37] extcall 791 ............................. <list(tTileClass)>
+  [ 40] setparam 2 .............................. tTileClass = list(tTileClass)
+  [ 42] getparam 2 .............................. <tTileClass>
+  [ 44] pushint8 1 .............................. <1>
+  [ 46] pushcons 3 .............................. <"gamesystem.tile.class">
+  [ 48] pusharglist 1 ........................... <"gamesystem.tile.class">
+  [ 50] extcall 138 ............................. <getClassVariable("gamesystem.tile.class")>
+  [ 52] pusharglistnoret 3 ...................... <tTileClass, 1, getClassVariable("gamesystem.tile.class")>
+  [ 54] objcall 336 ............................. tTileClass.addAt(1, getClassVariable("gamesystem.tile.class"))
+  [ 57] getparam 0 .............................. <me>
+  [ 59] pusharglist 1 ........................... <me>
+  [ 61] objcall 126 ............................. <me.getFacade()>
+  [ 63] setlocal 0 .............................. tFramework = me.getFacade()
+  [ 65] pushint8 1 .............................. <1>
+  [ 67] setlocal 1 .............................. tCount = 1
+  [ 69] pushint8 1 .............................. <1>
+  [ 71] setlocal 2
+  [ 73] getlocal 2
+  [ 75] getprop 429 ............................. <pWorldMaxY>
+  [ 78] lteq
+  [ 79] jmpifz [225] ............................ repeat with tLocY = 1 to pWorldMaxY
+  [ 82] getprop 424 ............................. <pTileGrid>
+  [ 85] getlocal 2 .............................. <tLocY>
+  [ 87] pusharglist 0 ........................... <[]>
+  [ 89] pushlist ................................ <[]>
+  [ 90] pusharglistnoret 3 ...................... <pTileGrid, tLocY, []>
+  [ 92] objcall 146 ............................. pTileGrid[tLocY] = []
+  [ 94] pushint8 1 .............................. <1>
+  [ 96] setlocal 3
+  [ 98] getlocal 3
+  [100] getprop 430 ............................. <pWorldMaxX>
+  [103] lteq
+  [104] jmpifz [216] ............................ repeat with tLocX = 1 to pWorldMaxX
+  [107] pushsymb 140 ............................ <#temp>
+  [109] getparam 2 .............................. <tTileClass>
+  [111] pusharglist 2 ........................... <#temp, tTileClass>
+  [113] extcall 137 ............................. <createObject(#temp, tTileClass)>
+  [115] setlocal 4 .............................. tTile = createObject(#temp, tTileClass)
+  [117] getprop 424 ............................. <pTileGrid>
+  [120] getlocal 2 .............................. <tLocY>
+  [122] pusharglist 2 ........................... <pTileGrid, tLocY>
+  [124] objcall 99 .............................. <pTileGrid[tLocY]>
+  [126] getlocal 3 .............................. <tLocX>
+  [128] getlocal 4 .............................. <tTile>
+  [130] pusharglistnoret 3 ...................... <pTileGrid[tLocY], tLocX, tTile>
+  [132] objcall 146 ............................. pTileGrid[tLocY][tLocX] = tTile
+  [134] getlocal 3 .............................. <tLocX>
+  [136] pushint8 1 .............................. <1>
+  [138] sub ..................................... <tLocX - 1>
+  [139] setlocal 5 .............................. tTileLocX = tLocX - 1
+  [141] getlocal 2 .............................. <tLocY>
+  [143] pushint8 1 .............................. <1>
+  [145] sub ..................................... <tLocY - 1>
+  [146] setlocal 6 .............................. tTileLocY = tLocY - 1
+  [148] getlocal 5 .............................. <tTileLocX>
+  [150] getprop 422 ............................. <pTileWidth>
+  [153] getprop 423 ............................. <pAccuracyFactor>
+  [156] mul ..................................... <pTileWidth * pAccuracyFactor>
+  [157] mul ..................................... <tTileLocX * (pTileWidth * pAccuracyFactor)>
+  [158] setlocal 7 .............................. tCenterLocX = tTileLocX * (pTileWidth * pAccuracyFactor)
+  [160] getlocal 6 .............................. <tTileLocY>
+  [162] getprop 422 ............................. <pTileWidth>
+  [165] getprop 423 ............................. <pAccuracyFactor>
+  [168] mul ..................................... <pTileWidth * pAccuracyFactor>
+  [169] mul ..................................... <tTileLocY * (pTileWidth * pAccuracyFactor)>
+  [170] setlocal 8 .............................. tCenterLocY = tTileLocY * (pTileWidth * pAccuracyFactor)
+  [172] getlocal 4 .............................. <tTile>
+  [174] getlocal 5 .............................. <tTileLocX>
+  [176] getlocal 6 .............................. <tTileLocY>
+  [178] getlocal 7 .............................. <tCenterLocX>
+  [180] getlocal 8 .............................. <tCenterLocY>
+  [182] getprop 422 ............................. <pTileWidth>
+  [185] getparam 1 .............................. <tdata>
+  [187] getlocal 1 .............................. <tCount>
+  [189] pusharglist 2 ........................... <tdata, tCount>
+  [191] objcall 99 .............................. <tdata[tCount]>
+  [193] getlocal 0 .............................. <tFramework>
+  [195] pusharglistnoret 8 ...................... <tTile, tTileLocX, tTileLocY, tCenterLocX, tCenterLocY, pTileWidth, tdata[tCount], tFramework>
+  [197] objcall 432 ............................. tTile.define(tTileLocX, tTileLocY, tCenterLocX, tCenterLocY, pTileWidth, tdata[tCount], tFramework)
+  [200] getlocal 1 .............................. <tCount>
+  [202] pushint8 1 .............................. <1>
+  [204] add ..................................... <tCount + 1>
+  [205] setlocal 1 .............................. tCount = tCount + 1
+  [207] pushint8 1
+  [209] getlocal 3
+  [211] add
+  [212] setlocal 3
+  [214] endrepeat [ 98]
+  [216] pushint8 1
+  [218] getlocal 2
+  [220] add
+  [221] setlocal 2
+  [223] endrepeat [ 73]
+  [225] pushint8 1 .............................. <1>
+  [227] setprop 786 ............................. pWorldReady = 1
+  [230] getprop 787 ............................. <pObjectCache>
+  [233] getobjprop 143 .......................... <pObjectCache.count>
+  [235] pushzero ................................ <0>
+  [236] gt ...................................... <pObjectCache.count > 0>
+  [237] jmpifz [250] ............................ if pObjectCache.count > 0 then
+  [240] getparam 0 .............................. <me>
+  [242] getprop 787 ............................. <pObjectCache>
+  [245] pusharglistnoret 2 ...................... <me, pObjectCache>
+  [247] objcall 402 ............................. me.storeObjects(pObjectCache)
+  [250] getparam 0 .............................. <me>
+  [252] pusharglist 1 ........................... <me>
+  [254] objcall 59 .............................. <me.getProcManager()>
+  [256] pushsymb 433 ............................ <#world_ready>
+  [259] pusharglistnoret 2 ...................... <me.getProcManager(), #world_ready>
+  [261] objcall 69 .............................. me.getProcManager().distributeEvent(#world_ready)
+  [263] pushint8 1 .............................. <1>
+  [265] pusharglistnoret 1 ...................... <1>
+  [267] extcall 53 .............................. return 1
+  [269] ret
+end
+
+on storeObjects me, tdata
+  [  0] getprop 786 ............................. <pWorldReady>
+  [  3] pushzero ................................ <0>
+  [  4] eq ...................................... <pWorldReady = 0>
+  [  5] jmpifz [ 18] ............................ if pWorldReady = 0 then
+  [  8] getparam 1 .............................. <tdata>
+  [ 10] setprop 787 ............................. pObjectCache = tdata
+  [ 13] pushzero ................................ <0>
+  [ 14] pusharglistnoret 1 ...................... <0>
+  [ 16] extcall 53 .............................. return 0
+  [ 18] getparam 1 .............................. <tdata>
+  [ 20] peek 0
+  [ 22] pusharglist 1
+  [ 24] extcall 143
+  [ 26] pushint8 1
+  [ 28] peek 0
+  [ 30] peek 2
+  [ 32] lteq
+  [ 33] jmpifz [176] ............................ repeat with tItem in tdata
+  [ 36] peek 2
+  [ 38] peek 1
+  [ 40] pusharglist 2
+  [ 42] extcall 99
+  [ 44] setlocal 0
+  [ 46] getlocal 0 .............................. <tItem>
+  [ 48] pushsymb 401 ............................ <#height>
+  [ 51] pusharglist 2 ........................... <tItem, #height>
+  [ 53] objcall 99 .............................. <tItem[#height]>
+  [ 55] pushzero ................................ <0>
+  [ 56] eq ...................................... <tItem[#height] = 0>
+  [ 57] jmpifz [114] ............................ if tItem[#height] = 0 then
+  [ 60] getlocal 0 .............................. <tItem>
+  [ 62] pushsymb 399 ............................ <#dimensions>
+  [ 65] pusharglist 2 ........................... <tItem, #dimensions>
+  [ 67] objcall 99 .............................. <tItem[#dimensions]>
+  [ 69] pusharglist 1 ........................... <tItem[#dimensions]>
+  [ 71] extcall 199 ............................. <listp(tItem[#dimensions])>
+  [ 73] not ..................................... <not listp(tItem[#dimensions])>
+  [ 74] jmpifz [ 90] ............................ if not listp(tItem[#dimensions]) then / else
+  [ 77] getlocal 0 .............................. <tItem>
+  [ 79] pushsymb 401 ............................ <#height>
+  [ 82] pushzero ................................ <0>
+  [ 83] pusharglistnoret 3 ...................... <tItem, #height, 0>
+  [ 85] objcall 146 ............................. tItem[#height] = 0
+  [ 87] jmp [114]
+  [ 90] getlocal 0 .............................. <tItem>
+  [ 92] pushsymb 401 ............................ <#height>
+  [ 95] getlocal 0 .............................. <tItem>
+  [ 97] pushsymb 399 ............................ <#dimensions>
+  [100] pusharglist 2 ........................... <tItem, #dimensions>
+  [102] objcall 99 .............................. <tItem[#dimensions]>
+  [104] pushint8 2 .............................. <2>
+  [106] pusharglist 2 ........................... <tItem[#dimensions], 2>
+  [108] objcall 99 .............................. <tItem[#dimensions][2]>
+  [110] pusharglistnoret 3 ...................... <tItem, #height, tItem[#dimensions][2]>
+  [112] objcall 146 ............................. tItem[#height] = tItem[#dimensions][2]
+  [114] getparam 0 .............................. <me>
+  [116] getlocal 0 .............................. <tItem>
+  [118] pushsymb 395 ............................ <#x>
+  [121] pusharglist 2 ........................... <tItem, #x>
+  [123] objcall 99 .............................. <tItem[#x]>
+  [125] getlocal 0 .............................. <tItem>
+  [127] pushsymb 396 ............................ <#y>
+  [130] pusharglist 2 ........................... <tItem, #y>
+  [132] objcall 99 .............................. <tItem[#y]>
+  [134] getlocal 0 .............................. <tItem>
+  [136] pushsymb 98 ............................. <#id>
+  [138] pusharglist 2 ........................... <tItem, #id>
+  [140] objcall 99 .............................. <tItem[#id]>
+  [142] getlocal 0 .............................. <tItem>
+  [144] pushsymb 401 ............................ <#height>
+  [147] pusharglist 2 ........................... <tItem, #height>
+  [149] objcall 99 .............................. <tItem[#height]>
+  [151] pusharglist 5 ........................... <me, tItem[#x], tItem[#y], tItem[#id], tItem[#height]>
+  [153] objcall 414 ............................. <me.reserveTileForObject(tItem[#x], tItem[#y], tItem[#id], tItem[#height])>
+  [156] not ..................................... <not me.reserveTileForObject(tItem[#x], tItem[#y], tItem[#id], tItem[#height])>
+  [157] jmpifz [171] ............................ if not me.reserveTileForObject(tItem[#x], tItem[#y], tItem[#id], tItem[#height]) then
+  [160] getparam 0 .............................. <me>
+  [162] pushcons 4 .............................. <"Unable to reserve tile for furniture!">
+  [164] pushsymb 402 ............................ <#storeObjects>
+  [167] pusharglistnoret 3 ...................... <me, "Unable to reserve tile for furniture!", #storeObjects>
+  [169] extcall 62 .............................. error(me, "Unable to reserve tile for furniture!", #storeObjects)
+  [171] pushint8 1
+  [173] add
+  [174] endrepeat [ 28]
+  [176] pop 3
+  [178] getparam 0 .............................. <me>
+  [180] pusharglist 1 ........................... <me>
+  [182] objcall 59 .............................. <me.getProcManager()>
+  [184] pushsymb 440 ............................ <#objects_ready>
+  [187] pusharglistnoret 2 ...................... <me.getProcManager(), #objects_ready>
+  [189] objcall 69 .............................. me.getProcManager().distributeEvent(#objects_ready)
+  [191] pushint8 1 .............................. <1>
+  [193] pusharglistnoret 1 ...................... <1>
+  [195] extcall 53 .............................. return 1
+  [197] ret
+end
+
+on initLocation me, tX, tY, tZ
+  [  0] pushsymb 140 ............................ <#temp>
+  [  2] getprop 416 ............................. <pLocationClass>
+  [  5] pusharglist 2 ........................... <#temp, pLocationClass>
+  [  7] extcall 137 ............................. <createObject(#temp, pLocationClass)>
+  [  9] setlocal 0 .............................. tObject = createObject(#temp, pLocationClass)
+  [ 11] getlocal 0 .............................. <tObject>
+  [ 13] pushzero ................................ <0>
+  [ 14] eq ...................................... <tObject = 0>
+  [ 15] jmpifz [ 33] ............................ if tObject = 0 then
+  [ 18] getparam 0 .............................. <me>
+  [ 20] pushcons 5 .............................. <"Cannot initialize location object.">
+  [ 22] pushsymb 410 ............................ <#initLocation>
+  [ 25] pusharglist 3 ........................... <me, "Cannot initialize location object.", #initLocation>
+  [ 27] extcall 62 .............................. <error(me, "Cannot initialize location object.", #initLocation)>
+  [ 29] pusharglistnoret 1 ...................... <error(me, "Cannot initialize location object.", #initLocation)>
+  [ 31] extcall 53 .............................. return error(me, "Cannot initialize location object.", #initLocation)
+  [ 33] getlocal 0 .............................. <tObject>
+  [ 35] getparam 1 .............................. <tX>
+  [ 37] getparam 2 .............................. <tY>
+  [ 39] getparam 3 .............................. <tZ>
+  [ 41] getprop 422 ............................. <pTileWidth>
+  [ 44] getprop 423 ............................. <pAccuracyFactor>
+  [ 47] pusharglistnoret 6 ...................... <tObject, tX, tY, tZ, pTileWidth, pAccuracyFactor>
+  [ 49] objcall 432 ............................. tObject.define(tX, tY, tZ, pTileWidth, pAccuracyFactor)
+  [ 52] getlocal 0 .............................. <tObject>
+  [ 54] pusharglistnoret 1 ...................... <tObject>
+  [ 56] extcall 53 .............................. return tObject
+  [ 58] ret
+end
+
+on initLocationAsTile me, tX, tY, tZ
+  [  0] getparam 0 .............................. <me>
+  [  2] getparam 1 .............................. <tX>
+  [  4] getparam 2 .............................. <tY>
+  [  6] getparam 3 .............................. <tZ>
+  [  8] pusharglist 4 ........................... <me, tX, tY, tZ>
+  [ 10] objcall 410 ............................. <me.initLocation(tX, tY, tZ)>
+  [ 13] setlocal 0 .............................. tObject = me.initLocation(tX, tY, tZ)
+  [ 15] getlocal 0 .............................. <tObject>
+  [ 17] pushzero ................................ <0>
+  [ 18] eq ...................................... <tObject = 0>
+  [ 19] jmpifz [ 27] ............................ if tObject = 0 then
+  [ 22] pushzero ................................ <0>
+  [ 23] pusharglistnoret 1 ...................... <0>
+  [ 25] extcall 53 .............................. return 0
+  [ 27] getlocal 0 .............................. <tObject>
+  [ 29] getparam 1 .............................. <tX>
+  [ 31] getparam 2 .............................. <tY>
+  [ 33] getparam 3 .............................. <tZ>
+  [ 35] pusharglistnoret 4 ...................... <tObject, tX, tY, tZ>
+  [ 37] objcall 441 ............................. tObject.setTileLoc(tX, tY, tZ)
+  [ 40] getlocal 0 .............................. <tObject>
+  [ 42] pusharglistnoret 1 ...................... <tObject>
+  [ 44] extcall 53 .............................. return tObject
+  [ 46] ret
+end
+
+on getTile me, tLocX, tLocY
+  [  0] getparam 1 .............................. <tLocX>
+  [  2] pushint8 1 .............................. <1>
+  [  4] add ..................................... <tLocX + 1>
+  [  5] setparam 1 .............................. tLocX = tLocX + 1
+  [  7] getparam 2 .............................. <tLocY>
+  [  9] pushint8 1 .............................. <1>
+  [ 11] add ..................................... <tLocY + 1>
+  [ 12] setparam 2 .............................. tLocY = tLocY + 1
+  [ 14] getparam 1 .............................. <tLocX>
+  [ 16] pushzero ................................ <0>
+  [ 17] lteq .................................... <tLocX <= 0>
+  [ 18] getparam 2 .............................. <tLocY>
+  [ 20] pushzero ................................ <0>
+  [ 21] lteq .................................... <tLocY <= 0>
+  [ 22] or ...................................... <(tLocX <= 0) or (tLocY <= 0)>
+  [ 23] jmpifz [ 31] ............................ if (tLocX <= 0) or (tLocY <= 0) then
+  [ 26] pushzero ................................ <0>
+  [ 27] pusharglistnoret 1 ...................... <0>
+  [ 29] extcall 53 .............................. return 0
+  [ 31] getprop 424 ............................. <pTileGrid>
+  [ 34] getobjprop 143 .......................... <pTileGrid.count>
+  [ 36] getparam 2 .............................. <tLocY>
+  [ 38] lt ...................................... <pTileGrid.count < tLocY>
+  [ 39] jmpifz [ 47] ............................ if pTileGrid.count < tLocY then
+  [ 42] pushzero ................................ <0>
+  [ 43] pusharglistnoret 1 ...................... <0>
+  [ 45] extcall 53 .............................. return 0
+  [ 47] getprop 424 ............................. <pTileGrid>
+  [ 50] getparam 2 .............................. <tLocY>
+  [ 52] pusharglist 2 ........................... <pTileGrid, tLocY>
+  [ 54] objcall 99 .............................. <pTileGrid[tLocY]>
+  [ 56] setlocal 0 .............................. tRow = pTileGrid[tLocY]
+  [ 58] getlocal 0 .............................. <tRow>
+  [ 60] getobjprop 143 .......................... <tRow.count>
+  [ 62] getparam 1 .............................. <tLocX>
+  [ 64] lt ...................................... <tRow.count < tLocX>
+  [ 65] jmpifz [ 73] ............................ if tRow.count < tLocX then
+  [ 68] pushzero ................................ <0>
+  [ 69] pusharglistnoret 1 ...................... <0>
+  [ 71] extcall 53 .............................. return 0
+  [ 73] getlocal 0 .............................. <tRow>
+  [ 75] getparam 1 .............................. <tLocX>
+  [ 77] pusharglist 2 ........................... <tRow, tLocX>
+  [ 79] objcall 99 .............................. <tRow[tLocX]>
+  [ 81] pusharglistnoret 1 ...................... <tRow[tLocX]>
+  [ 83] extcall 53 .............................. return tRow[tLocX]
+  [ 85] ret
+end
+
+on getTileNeighborInDirection me, tX, tY, tdir
+  [  0] getparam 3 .............................. <tdir>
+  [  2] peek 0 .................................. case tdir of
+  [  4] pushzero ................................ <0>
+  [  5] eq
+  [  6] jmpifz [ 32] ............................ (case) 0:
+  [  9] pop 1
+  [ 11] getparam 0 .............................. <me>
+  [ 13] getparam 1 .............................. <tX>
+  [ 15] getparam 2 .............................. <tY>
+  [ 17] pushint8 1 .............................. <1>
+  [ 19] sub ..................................... <tY - 1>
+  [ 20] pusharglist 3 ........................... <me, tX, tY - 1>
+  [ 22] objcall 412 ............................. <me.getTile(tX, tY - 1)>
+  [ 25] pusharglistnoret 1 ...................... <me.getTile(tX, tY - 1)>
+  [ 27] extcall 53 .............................. return me.getTile(tX, tY - 1)
+  [ 29] jmp [281]
+  [ 32] peek 0
+  [ 34] pushint8 1 .............................. <1>
+  [ 36] eq
+  [ 37] jmpifz [ 66] ............................ (case) 1:
+  [ 40] pop 1
+  [ 42] getparam 0 .............................. <me>
+  [ 44] getparam 1 .............................. <tX>
+  [ 46] pushint8 1 .............................. <1>
+  [ 48] add ..................................... <tX + 1>
+  [ 49] getparam 2 .............................. <tY>
+  [ 51] pushint8 1 .............................. <1>
+  [ 53] sub ..................................... <tY - 1>
+  [ 54] pusharglist 3 ........................... <me, tX + 1, tY - 1>
+  [ 56] objcall 412 ............................. <me.getTile(tX + 1, tY - 1)>
+  [ 59] pusharglistnoret 1 ...................... <me.getTile(tX + 1, tY - 1)>
+  [ 61] extcall 53 .............................. return me.getTile(tX + 1, tY - 1)
+  [ 63] jmp [281]
+  [ 66] peek 0
+  [ 68] pushint8 2 .............................. <2>
+  [ 70] eq
+  [ 71] jmpifz [ 97] ............................ (case) 2:
+  [ 74] pop 1
+  [ 76] getparam 0 .............................. <me>
+  [ 78] getparam 1 .............................. <tX>
+  [ 80] pushint8 1 .............................. <1>
+  [ 82] add ..................................... <tX + 1>
+  [ 83] getparam 2 .............................. <tY>
+  [ 85] pusharglist 3 ........................... <me, tX + 1, tY>
+  [ 87] objcall 412 ............................. <me.getTile(tX + 1, tY)>
+  [ 90] pusharglistnoret 1 ...................... <me.getTile(tX + 1, tY)>
+  [ 92] extcall 53 .............................. return me.getTile(tX + 1, tY)
+  [ 94] jmp [281]
+  [ 97] peek 0
+  [ 99] pushint8 3 .............................. <3>
+  [101] eq
+  [102] jmpifz [131] ............................ (case) 3:
+  [105] pop 1
+  [107] getparam 0 .............................. <me>
+  [109] getparam 1 .............................. <tX>
+  [111] pushint8 1 .............................. <1>
+  [113] add ..................................... <tX + 1>
+  [114] getparam 2 .............................. <tY>
+  [116] pushint8 1 .............................. <1>
+  [118] add ..................................... <tY + 1>
+  [119] pusharglist 3 ........................... <me, tX + 1, tY + 1>
+  [121] objcall 412 ............................. <me.getTile(tX + 1, tY + 1)>
+  [124] pusharglistnoret 1 ...................... <me.getTile(tX + 1, tY + 1)>
+  [126] extcall 53 .............................. return me.getTile(tX + 1, tY + 1)
+  [128] jmp [281]
+  [131] peek 0
+  [133] pushint8 4 .............................. <4>
+  [135] eq
+  [136] jmpifz [162] ............................ (case) 4:
+  [139] pop 1
+  [141] getparam 0 .............................. <me>
+  [143] getparam 1 .............................. <tX>
+  [145] getparam 2 .............................. <tY>
+  [147] pushint8 1 .............................. <1>
+  [149] add ..................................... <tY + 1>
+  [150] pusharglist 3 ........................... <me, tX, tY + 1>
+  [152] objcall 412 ............................. <me.getTile(tX, tY + 1)>
+  [155] pusharglistnoret 1 ...................... <me.getTile(tX, tY + 1)>
+  [157] extcall 53 .............................. return me.getTile(tX, tY + 1)
+  [159] jmp [281]
+  [162] peek 0
+  [164] pushint8 5 .............................. <5>
+  [166] eq
+  [167] jmpifz [196] ............................ (case) 5:
+  [170] pop 1
+  [172] getparam 0 .............................. <me>
+  [174] getparam 1 .............................. <tX>
+  [176] pushint8 1 .............................. <1>
+  [178] sub ..................................... <tX - 1>
+  [179] getparam 2 .............................. <tY>
+  [181] pushint8 1 .............................. <1>
+  [183] add ..................................... <tY + 1>
+  [184] pusharglist 3 ........................... <me, tX - 1, tY + 1>
+  [186] objcall 412 ............................. <me.getTile(tX - 1, tY + 1)>
+  [189] pusharglistnoret 1 ...................... <me.getTile(tX - 1, tY + 1)>
+  [191] extcall 53 .............................. return me.getTile(tX - 1, tY + 1)
+  [193] jmp [281]
+  [196] peek 0
+  [198] pushint8 6 .............................. <6>
+  [200] eq
+  [201] jmpifz [227] ............................ (case) 6:
+  [204] pop 1
+  [206] getparam 0 .............................. <me>
+  [208] getparam 1 .............................. <tX>
+  [210] pushint8 1 .............................. <1>
+  [212] sub ..................................... <tX - 1>
+  [213] getparam 2 .............................. <tY>
+  [215] pusharglist 3 ........................... <me, tX - 1, tY>
+  [217] objcall 412 ............................. <me.getTile(tX - 1, tY)>
+  [220] pusharglistnoret 1 ...................... <me.getTile(tX - 1, tY)>
+  [222] extcall 53 .............................. return me.getTile(tX - 1, tY)
+  [224] jmp [281]
+  [227] peek 0
+  [229] pushint8 7 .............................. <7>
+  [231] eq
+  [232] jmpifz [261] ............................ (case) 7:
+  [235] pop 1
+  [237] getparam 0 .............................. <me>
+  [239] getparam 1 .............................. <tX>
+  [241] pushint8 1 .............................. <1>
+  [243] sub ..................................... <tX - 1>
+  [244] getparam 2 .............................. <tY>
+  [246] pushint8 1 .............................. <1>
+  [248] sub ..................................... <tY - 1>
+  [249] pusharglist 3 ........................... <me, tX - 1, tY - 1>
+  [251] objcall 412 ............................. <me.getTile(tX - 1, tY - 1)>
+  [254] pusharglistnoret 1 ...................... <me.getTile(tX - 1, tY - 1)>
+  [256] extcall 53 .............................. return me.getTile(tX - 1, tY - 1)
+  [258] jmp [281] ............................... (case) otherwise:
+  [261] pop 1
+  [263] getparam 0 .............................. <me>
+  [265] pushcons 6 .............................. <"Invalid direction for tile:">
+  [267] getparam 3 .............................. <tdir>
+  [269] joinpadstr .............................. <"Invalid direction for tile:" && tdir>
+  [270] pushsymb 413 ............................ <#getTileNeighborInDirection>
+  [273] pusharglist 3 ........................... <me, "Invalid direction for tile:" && tdir, #getTileNeighborInDirection>
+  [275] extcall 62 .............................. <error(me, "Invalid direction for tile:" && tdir, #getTileNeighborInDirection)>
+  [277] pusharglistnoret 1 ...................... <error(me, "Invalid direction for tile:" && tdir, #getTileNeighborInDirection)>
+  [279] extcall 53 .............................. return error(me, "Invalid direction for tile:" && tdir, #getTileNeighborInDirection)
+  [281] pop 1 ................................... end case
+  [283] ret
+end
+
+on reserveTileForObject me, tLocX, tLocY, tObjectId, tObjectHeight
+  [  0] getparam 0 .............................. <me>
+  [  2] getparam 1 .............................. <tLocX>
+  [  4] getparam 2 .............................. <tLocY>
+  [  6] pusharglist 3 ........................... <me, tLocX, tLocY>
+  [  8] objcall 412 ............................. <me.getTile(tLocX, tLocY)>
+  [ 11] setlocal 0 .............................. tTile = me.getTile(tLocX, tLocY)
+  [ 13] getlocal 0 .............................. <tTile>
+  [ 15] pushzero ................................ <0>
+  [ 16] eq ...................................... <tTile = 0>
+  [ 17] jmpifz [ 25] ............................ if tTile = 0 then
+  [ 20] pushzero ................................ <0>
+  [ 21] pusharglistnoret 1 ...................... <0>
+  [ 23] extcall 53 .............................. return 0
+  [ 25] getprop 425 ............................. <pTileSpaceReserveList>
+  [ 28] getparam 3 .............................. <tObjectId>
+  [ 30] pusharglist 2 ........................... <pTileSpaceReserveList, tObjectId>
+  [ 32] objcall 99 .............................. <pTileSpaceReserveList[tObjectId]>
+  [ 34] pusharglist 1 ........................... <pTileSpaceReserveList[tObjectId]>
+  [ 36] extcall 199 ............................. <listp(pTileSpaceReserveList[tObjectId])>
+  [ 38] not ..................................... <not listp(pTileSpaceReserveList[tObjectId])>
+  [ 39] jmpifz [ 54] ............................ if not listp(pTileSpaceReserveList[tObjectId]) then
+  [ 42] getprop 425 ............................. <pTileSpaceReserveList>
+  [ 45] getparam 3 .............................. <tObjectId>
+  [ 47] pusharglist 0 ........................... <[]>
+  [ 49] pushlist ................................ <[]>
+  [ 50] pusharglistnoret 3 ...................... <pTileSpaceReserveList, tObjectId, []>
+  [ 52] objcall 142 ............................. pTileSpaceReserveList.setaProp(tObjectId, [])
+  [ 54] getprop 425 ............................. <pTileSpaceReserveList>
+  [ 57] getparam 3 .............................. <tObjectId>
+  [ 59] pusharglist 2 ........................... <pTileSpaceReserveList, tObjectId>
+  [ 61] objcall 99 .............................. <pTileSpaceReserveList[tObjectId]>
+  [ 63] getlocal 0 .............................. <tTile>
+  [ 65] pusharglistnoret 2 ...................... <pTileSpaceReserveList[tObjectId], tTile>
+  [ 67] objcall 385 ............................. pTileSpaceReserveList[tObjectId].append(tTile)
+  [ 70] getlocal 0 .............................. <tTile>
+  [ 72] getparam 3 .............................. <tObjectId>
+  [ 74] pushsymb 401 ............................ <#height>
+  [ 77] getparam 4 .............................. <tObjectHeight>
+  [ 79] pusharglist 2 ........................... <[#height: tObjectHeight]>
+  [ 81] pushproplist ............................ <[#height: tObjectHeight]>
+  [ 82] pusharglist 3 ........................... <tTile, tObjectId, [#height: tObjectHeight]>
+  [ 84] objcall 443 ............................. <tTile.addContent(tObjectId, [#height: tObjectHeight])>
+  [ 87] pusharglistnoret 1 ...................... <tTile.addContent(tObjectId, [#height: tObjectHeight])>
+  [ 89] extcall 53 .............................. return tTile.addContent(tObjectId, [#height: tObjectHeight])
+  [ 91] ret
+end
+
+on clearObjectFromTileSpace me, tObjectId
+  [  0] getprop 425 ............................. <pTileSpaceReserveList>
+  [  3] getparam 1 .............................. <tObjectId>
+  [  5] pusharglist 2 ........................... <pTileSpaceReserveList, tObjectId>
+  [  7] objcall 99 .............................. <pTileSpaceReserveList[tObjectId]>
+  [  9] pusharglist 1 ........................... <pTileSpaceReserveList[tObjectId]>
+  [ 11] extcall 199 ............................. <listp(pTileSpaceReserveList[tObjectId])>
+  [ 13] not ..................................... <not listp(pTileSpaceReserveList[tObjectId])>
+  [ 14] jmpifz [ 23] ............................ if not listp(pTileSpaceReserveList[tObjectId]) then
+  [ 17] pushint8 1 .............................. <1>
+  [ 19] pusharglistnoret 1 ...................... <1>
+  [ 21] extcall 53 .............................. return 1
+  [ 23] getprop 425 ............................. <pTileSpaceReserveList>
+  [ 26] getparam 1 .............................. <tObjectId>
+  [ 28] pusharglist 2 ........................... <pTileSpaceReserveList, tObjectId>
+  [ 30] objcall 99 .............................. <pTileSpaceReserveList[tObjectId]>
+  [ 32] peek 0
+  [ 34] pusharglist 1
+  [ 36] extcall 143
+  [ 38] pushint8 1
+  [ 40] peek 0
+  [ 42] peek 2
+  [ 44] lteq
+  [ 45] jmpifz [ 72] ............................ repeat with tTile in pTileSpaceReserveList[tObjectId]
+  [ 48] peek 2
+  [ 50] peek 1
+  [ 52] pusharglist 2
+  [ 54] extcall 99
+  [ 56] setlocal 0
+  [ 58] getlocal 0 .............................. <tTile>
+  [ 60] getparam 1 .............................. <tObjectId>
+  [ 62] pusharglistnoret 2 ...................... <tTile, tObjectId>
+  [ 64] objcall 446 ............................. tTile.removeContent(tObjectId)
+  [ 67] pushint8 1
+  [ 69] add
+  [ 70] endrepeat [ 40]
+  [ 72] pop 3
+  [ 74] getprop 425 ............................. <pTileSpaceReserveList>
+  [ 77] getparam 1 .............................. <tObjectId>
+  [ 79] pusharglist 0 ........................... <[]>
+  [ 81] pushlist ................................ <[]>
+  [ 82] pusharglistnoret 3 ...................... <pTileSpaceReserveList, tObjectId, []>
+  [ 84] objcall 142 ............................. pTileSpaceReserveList.setaProp(tObjectId, [])
+  [ 86] pushint8 1 .............................. <1>
+  [ 88] pusharglistnoret 1 ...................... <1>
+  [ 90] extcall 53 .............................. return 1
+  [ 92] ret
+end
+
+on getTileAtScreenCoordinate me, tLocX, tLocY
+  [  0] getparam 0 .............................. <me>
+  [  2] pusharglist 1 ........................... <me>
+  [  4] objcall 826 ............................. <me.getRoomGeometry()>
+  [  7] setlocal 0 .............................. tRoomGeometry = me.getRoomGeometry()
+  [  9] getlocal 0 .............................. <tRoomGeometry>
+  [ 11] pushzero ................................ <0>
+  [ 12] eq ...................................... <tRoomGeometry = 0>
+  [ 13] jmpifz [ 21] ............................ if tRoomGeometry = 0 then
+  [ 16] pushzero ................................ <0>
+  [ 17] pusharglistnoret 1 ...................... <0>
+  [ 19] extcall 53 .............................. return 0
+  [ 21] getlocal 0 .............................. <tRoomGeometry>
+  [ 23] getparam 1 .............................. <tLocX>
+  [ 25] getparam 2 .............................. <tLocY>
+  [ 27] pusharglist 3 ........................... <tRoomGeometry, tLocX, tLocY>
+  [ 29] objcall 611 ............................. <tRoomGeometry.getWorldCoordinate(tLocX, tLocY)>
+  [ 32] setlocal 1 .............................. tloc = tRoomGeometry.getWorldCoordinate(tLocX, tLocY)
+  [ 34] getlocal 1 .............................. <tloc>
+  [ 36] pushzero ................................ <0>
+  [ 37] eq ...................................... <tloc = 0>
+  [ 38] jmpifz [ 46] ............................ if tloc = 0 then
+  [ 41] pushzero ................................ <0>
+  [ 42] pusharglistnoret 1 ...................... <0>
+  [ 44] extcall 53 .............................. return 0
+  [ 46] getparam 0 .............................. <me>
+  [ 48] getlocal 1 .............................. <tloc>
+  [ 50] pushint8 1 .............................. <1>
+  [ 52] pusharglist 2 ........................... <tloc, 1>
+  [ 54] objcall 99 .............................. <tloc[1]>
+  [ 56] getlocal 1 .............................. <tloc>
+  [ 58] pushint8 2 .............................. <2>
+  [ 60] pusharglist 2 ........................... <tloc, 2>
+  [ 62] objcall 99 .............................. <tloc[2]>
+  [ 64] pusharglist 3 ........................... <me, tloc[1], tloc[2]>
+  [ 66] objcall 412 ............................. <me.getTile(tloc[1], tloc[2])>
+  [ 69] pusharglistnoret 1 ...................... <me.getTile(tloc[1], tloc[2])>
+  [ 71] extcall 53 .............................. return me.getTile(tloc[1], tloc[2])
+  [ 73] ret
+end
+
+on gettileatworldcoordinate me, tLocX, tLocY
+  [  0] getprop 422 ............................. <pTileWidth>
+  [  3] getprop 423 ............................. <pAccuracyFactor>
+  [  6] mul ..................................... <pTileWidth * pAccuracyFactor>
+  [  7] setlocal 0 .............................. tMultiplier = pTileWidth * pAccuracyFactor
+  [  9] getparam 1 .............................. <tLocX>
+  [ 11] getlocal 0 .............................. <tMultiplier>
+  [ 13] pushint8 2 .............................. <2>
+  [ 15] div ..................................... <tMultiplier / 2>
+  [ 16] inv ..................................... <-(tMultiplier / 2)>
+  [ 17] lt ...................................... <tLocX < -(tMultiplier / 2)>
+  [ 18] getparam 2 .............................. <tLocY>
+  [ 20] getlocal 0 .............................. <tMultiplier>
+  [ 22] pushint8 2 .............................. <2>
+  [ 24] div ..................................... <tMultiplier / 2>
+  [ 25] inv ..................................... <-(tMultiplier / 2)>
+  [ 26] lt ...................................... <tLocY < -(tMultiplier / 2)>
+  [ 27] or ...................................... <(tLocX < -(tMultiplier / 2)) or (tLocY < -(tMultiplier / 2))>
+  [ 28] jmpifz [ 36] ............................ if (tLocX < -(tMultiplier / 2)) or (tLocY < -(tMultiplier / 2)) then
+  [ 31] pushzero ................................ <0>
+  [ 32] pusharglistnoret 1 ...................... <0>
+  [ 34] extcall 53 .............................. return 0
+  [ 36] getparam 0 .............................. <me>
+  [ 38] getparam 1 .............................. <tLocX>
+  [ 40] getlocal 0 .............................. <tMultiplier>
+  [ 42] pushint8 2 .............................. <2>
+  [ 44] div ..................................... <tMultiplier / 2>
+  [ 45] add ..................................... <tLocX + (tMultiplier / 2)>
+  [ 46] getlocal 0 .............................. <tMultiplier>
+  [ 48] div ..................................... <(tLocX + (tMultiplier / 2)) / tMultiplier>
+  [ 49] getparam 2 .............................. <tLocY>
+  [ 51] getlocal 0 .............................. <tMultiplier>
+  [ 53] pushint8 2 .............................. <2>
+  [ 55] div ..................................... <tMultiplier / 2>
+  [ 56] add ..................................... <tLocY + (tMultiplier / 2)>
+  [ 57] getlocal 0 .............................. <tMultiplier>
+  [ 59] div ..................................... <(tLocY + (tMultiplier / 2)) / tMultiplier>
+  [ 60] pusharglist 3 ........................... <me, (tLocX + (tMultiplier / 2)) / tMultiplier, (tLocY + (tMultiplier / 2)) / tMultiplier>
+  [ 62] objcall 412 ............................. <me.getTile((tLocX + (tMultiplier / 2)) / tMultiplier, (tLocY + (tMultiplier / 2)) / tMultiplier)>
+  [ 65] pusharglistnoret 1 ...................... <me.getTile((tLocX + (tMultiplier / 2)) / tMultiplier, (tLocY + (tMultiplier / 2)) / tMultiplier)>
+  [ 67] extcall 53 .............................. return me.getTile((tLocX + (tMultiplier / 2)) / tMultiplier, (tLocY + (tMultiplier / 2)) / tMultiplier)
+  [ 69] ret
+end
+
+on convertTileToWorldCoordinate me, tLocX, tLocY, tlocz
+  [  0] getprop 422 ............................. <pTileWidth>
+  [  3] getprop 423 ............................. <pAccuracyFactor>
+  [  6] mul ..................................... <pTileWidth * pAccuracyFactor>
+  [  7] setlocal 0 .............................. tMultiplier = pTileWidth * pAccuracyFactor
+  [  9] pushsymb 395 ............................ <#x>
+  [ 12] getparam 1 .............................. <tLocX>
+  [ 14] getlocal 0 .............................. <tMultiplier>
+  [ 16] mul ..................................... <tLocX * tMultiplier>
+  [ 17] pushsymb 396 ............................ <#y>
+  [ 20] getparam 2 .............................. <tLocY>
+  [ 22] getlocal 0 .............................. <tMultiplier>
+  [ 24] mul ..................................... <tLocY * tMultiplier>
+  [ 25] pushsymb 397 ............................ <#h>
+  [ 28] getparam 3 .............................. <tlocz>
+  [ 30] getlocal 0 .............................. <tMultiplier>
+  [ 32] mul ..................................... <tlocz * tMultiplier>
+  [ 33] pusharglist 6 ........................... <[#x: tLocX * tMultiplier, #y: tLocY * tMultiplier, #h: tlocz * tMultiplier]>
+  [ 35] pushproplist ............................ <[#x: tLocX * tMultiplier, #y: tLocY * tMultiplier, #h: tlocz * tMultiplier]>
+  [ 36] pusharglistnoret 1 ...................... <[#x: tLocX * tMultiplier, #y: tLocY * tMultiplier, #h: tlocz * tMultiplier]>
+  [ 38] extcall 53 .............................. return [#x: tLocX * tMultiplier, #y: tLocY * tMultiplier, #h: tlocz * tMultiplier]
+  [ 40] ret
+end
+
+on convertTileToScreenCoordinate me, tLocX, tLocY, tlocz
+  [  0] getparam 0 .............................. <me>
+  [  2] getparam 1 .............................. <tLocX>
+  [  4] getparam 2 .............................. <tLocY>
+  [  6] getparam 3 .............................. <tlocz>
+  [  8] pusharglist 4 ........................... <me, tLocX, tLocY, tlocz>
+  [ 10] objcall 41 .............................. <me.convertTileToWorldCoordinate(tLocX, tLocY, tlocz)>
+  [ 12] setlocal 0 .............................. tWorldCoordinate = me.convertTileToWorldCoordinate(tLocX, tLocY, tlocz)
+  [ 14] getparam 0 .............................. <me>
+  [ 16] getlocal 0 .............................. <tWorldCoordinate>
+  [ 18] getobjprop 395 .......................... <tWorldCoordinate.x>
+  [ 21] getlocal 0 .............................. <tWorldCoordinate>
+  [ 23] getobjprop 396 .......................... <tWorldCoordinate.y>
+  [ 26] getlocal 0 .............................. <tWorldCoordinate>
+  [ 28] getobjprop 397 .......................... <tWorldCoordinate.h>
+  [ 31] pusharglist 4 ........................... <me, tWorldCoordinate.x, tWorldCoordinate.y, tWorldCoordinate.h>
+  [ 33] objcall 44 .............................. <me.convertWorldToScreenCoordinate(tWorldCoordinate.x, tWorldCoordinate.y, tWorldCoordinate.h)>
+  [ 35] pusharglistnoret 1 ...................... <me.convertWorldToScreenCoordinate(tWorldCoordinate.x, tWorldCoordinate.y, tWorldCoordinate.h)>
+  [ 37] extcall 53 .............................. return me.convertWorldToScreenCoordinate(tWorldCoordinate.x, tWorldCoordinate.y, tWorldCoordinate.h)
+  [ 39] ret
+end
+
+on convertScreenToTileCoordinate me, tLocX, tLocY
+  [  0] getparam 0 .............................. <me>
+  [  2] pusharglist 1 ........................... <me>
+  [  4] objcall 826 ............................. <me.getRoomGeometry()>
+  [  7] setlocal 0 .............................. tRoomGeometry = me.getRoomGeometry()
+  [  9] getlocal 0 .............................. <tRoomGeometry>
+  [ 11] pushzero ................................ <0>
+  [ 12] eq ...................................... <tRoomGeometry = 0>
+  [ 13] jmpifz [ 21] ............................ if tRoomGeometry = 0 then
+  [ 16] pushzero ................................ <0>
+  [ 17] pusharglistnoret 1 ...................... <0>
+  [ 19] extcall 53 .............................. return 0
+  [ 21] getlocal 0 .............................. <tRoomGeometry>
+  [ 23] getparam 1 .............................. <tLocX>
+  [ 25] getparam 2 .............................. <tLocY>
+  [ 27] pusharglist 3 ........................... <tRoomGeometry, tLocX, tLocY>
+  [ 29] objcall 611 ............................. <tRoomGeometry.getWorldCoordinate(tLocX, tLocY)>
+  [ 32] setlocal 1 .............................. tloc = tRoomGeometry.getWorldCoordinate(tLocX, tLocY)
+  [ 34] getlocal 1 .............................. <tloc>
+  [ 36] pushzero ................................ <0>
+  [ 37] eq ...................................... <tloc = 0>
+  [ 38] jmpifz [ 46] ............................ if tloc = 0 then
+  [ 41] pushzero ................................ <0>
+  [ 42] pusharglistnoret 1 ...................... <0>
+  [ 44] extcall 53 .............................. return 0
+  [ 46] pushsymb 395 ............................ <#x>
+  [ 49] getlocal 1 .............................. <tloc>
+  [ 51] pushint8 1 .............................. <1>
+  [ 53] pusharglist 2 ........................... <tloc, 1>
+  [ 55] objcall 99 .............................. <tloc[1]>
+  [ 57] pushsymb 396 ............................ <#y>
+  [ 60] getlocal 1 .............................. <tloc>
+  [ 62] pushint8 2 .............................. <2>
+  [ 64] pusharglist 2 ........................... <tloc, 2>
+  [ 66] objcall 99 .............................. <tloc[2]>
+  [ 68] pusharglist 4 ........................... <[#x: tloc[1], #y: tloc[2]]>
+  [ 70] pushproplist ............................ <[#x: tloc[1], #y: tloc[2]]>
+  [ 71] pusharglistnoret 1 ...................... <[#x: tloc[1], #y: tloc[2]]>
+  [ 73] extcall 53 .............................. return [#x: tloc[1], #y: tloc[2]]
+  [ 75] ret
+end
+
+on convertworldtotilecoordinate me, tLocX, tLocY
+  [  0] getprop 422 ............................. <pTileWidth>
+  [  3] getprop 423 ............................. <pAccuracyFactor>
+  [  6] mul ..................................... <pTileWidth * pAccuracyFactor>
+  [  7] setlocal 0 .............................. tMultiplier = pTileWidth * pAccuracyFactor
+  [  9] pushsymb 395 ............................ <#x>
+  [ 12] getparam 1 .............................. <tLocX>
+  [ 14] getlocal 0 .............................. <tMultiplier>
+  [ 16] pushint8 2 .............................. <2>
+  [ 18] div ..................................... <tMultiplier / 2>
+  [ 19] add ..................................... <tLocX + (tMultiplier / 2)>
+  [ 20] getlocal 0 .............................. <tMultiplier>
+  [ 22] div ..................................... <(tLocX + (tMultiplier / 2)) / tMultiplier>
+  [ 23] pushsymb 396 ............................ <#y>
+  [ 26] getparam 2 .............................. <tLocY>
+  [ 28] getlocal 0 .............................. <tMultiplier>
+  [ 30] pushint8 2 .............................. <2>
+  [ 32] div ..................................... <tMultiplier / 2>
+  [ 33] add ..................................... <tLocY + (tMultiplier / 2)>
+  [ 34] getlocal 0 .............................. <tMultiplier>
+  [ 36] div ..................................... <(tLocY + (tMultiplier / 2)) / tMultiplier>
+  [ 37] pusharglist 4 ........................... <[#x: (tLocX + (tMultiplier / 2)) / tMultiplier, #y: (tLocY + (tMultiplier / 2)) / tMultiplier]>
+  [ 39] pushproplist ............................ <[#x: (tLocX + (tMultiplier / 2)) / tMultiplier, #y: (tLocY + (tMultiplier / 2)) / tMultiplier]>
+  [ 40] pusharglistnoret 1 ...................... <[#x: (tLocX + (tMultiplier / 2)) / tMultiplier, #y: (tLocY + (tMultiplier / 2)) / tMultiplier]>
+  [ 42] extcall 53 .............................. return [#x: (tLocX + (tMultiplier / 2)) / tMultiplier, #y: (tLocY + (tMultiplier / 2)) / tMultiplier]
+  [ 44] ret
+end
+
+on convertWorldToScreenCoordinate me, tX, tY, tZ
+  [  0] getparam 0 .............................. <me>
+  [  2] pusharglist 1 ........................... <me>
+  [  4] objcall 826 ............................. <me.getRoomGeometry()>
+  [  7] setlocal 0 .............................. tRoomGeometry = me.getRoomGeometry()
+  [  9] getlocal 0 .............................. <tRoomGeometry>
+  [ 11] pushzero ................................ <0>
+  [ 12] eq ...................................... <tRoomGeometry = 0>
+  [ 13] jmpifz [ 21] ............................ if tRoomGeometry = 0 then
+  [ 16] pushzero ................................ <0>
+  [ 17] pusharglistnoret 1 ...................... <0>
+  [ 19] extcall 53 .............................. return 0
+  [ 21] getprop 422 ............................. <pTileWidth>
+  [ 24] getprop 423 ............................. <pAccuracyFactor>
+  [ 27] mul ..................................... <pTileWidth * pAccuracyFactor>
+  [ 28] pusharglist 1 ........................... <pTileWidth * pAccuracyFactor>
+  [ 30] extcall 449 ............................. <float(pTileWidth * pAccuracyFactor)>
+  [ 33] setlocal 1 .............................. tMultiplier = float(pTileWidth * pAccuracyFactor)
+  [ 35] pushfloat32 0.5 ......................... <0.5>
+  [ 40] getparam 1 .............................. <tX>
+  [ 42] getlocal 1 .............................. <tMultiplier>
+  [ 44] div ..................................... <tX / tMultiplier>
+  [ 45] add ..................................... <0.5 + (tX / tMultiplier)>
+  [ 46] setparam 1 .............................. tX = 0.5 + (tX / tMultiplier)
+  [ 48] pushfloat32 0.5 ......................... <0.5>
+  [ 53] inv ..................................... <-0.5>
+  [ 54] getparam 2 .............................. <tY>
+  [ 56] getlocal 1 .............................. <tMultiplier>
+  [ 58] div ..................................... <tY / tMultiplier>
+  [ 59] add ..................................... <-0.5 + (tY / tMultiplier)>
+  [ 60] setparam 2 .............................. tY = -0.5 + (tY / tMultiplier)
+  [ 62] getparam 3 .............................. <tZ>
+  [ 64] getlocal 1 .............................. <tMultiplier>
+  [ 66] div ..................................... <tZ / tMultiplier>
+  [ 67] setparam 3 .............................. tZ = tZ / tMultiplier
+  [ 69] getlocal 0 .............................. <tRoomGeometry>
+  [ 71] getparam 1 .............................. <tX>
+  [ 73] getparam 2 .............................. <tY>
+  [ 75] getparam 3 .............................. <tZ>
+  [ 77] pusharglist 4 ........................... <tRoomGeometry, tX, tY, tZ>
+  [ 79] objcall 450 ............................. <tRoomGeometry.getScreenCoordinate(tX, tY, tZ)>
+  [ 82] setlocal 2 .............................. tloc = tRoomGeometry.getScreenCoordinate(tX, tY, tZ)
+  [ 84] getlocal 2 .............................. <tloc>
+  [ 86] pusharglistnoret 1 ...................... <tloc>
+  [ 88] extcall 53 .............................. return tloc
+  [ 90] ret
+end
+
+on testForLineOfSightInTileMatrix me, tX1, tY1, tX2, tY2, tBlockingLevel, tExcludeFirst, tExcludeLast
+  [  0] getparam 0 .............................. <me>
+  [  2] pusharglist 1 ........................... <me>
+  [  4] objcall 858 ............................. <me.getTileLineOfSight()>
+  [  7] setlocal 0 .............................. tTester = me.getTileLineOfSight()
+  [  9] getlocal 0 .............................. <tTester>
+  [ 11] pushzero ................................ <0>
+  [ 12] eq ...................................... <tTester = 0>
+  [ 13] jmpifz [ 21] ............................ if tTester = 0 then
+  [ 16] pushzero ................................ <0>
+  [ 17] pusharglistnoret 1 ...................... <0>
+  [ 19] extcall 53 .............................. return 0
+  [ 21] getlocal 0 .............................. <tTester>
+  [ 23] getparam 0 .............................. <me>
+  [ 25] getparam 1 .............................. <tX1>
+  [ 27] getparam 2 .............................. <tY1>
+  [ 29] getparam 3 .............................. <tX2>
+  [ 31] getparam 4 .............................. <tY2>
+  [ 33] getparam 5 .............................. <tBlockingLevel>
+  [ 35] getparam 6 .............................. <tExcludeFirst>
+  [ 37] getparam 7 .............................. <tExcludeLast>
+  [ 39] pusharglist 9 ........................... <tTester, me, tX1, tY1, tX2, tY2, tBlockingLevel, tExcludeFirst, tExcludeLast>
+  [ 41] objcall 840 ............................. <tTester.testForLineOfSight(me, tX1, tY1, tX2, tY2, tBlockingLevel, tExcludeFirst, tExcludeLast)>
+  [ 44] pusharglistnoret 1 ...................... <tTester.testForLineOfSight(me, tX1, tY1, tX2, tY2, tBlockingLevel, tExcludeFirst, tExcludeLast)>
+  [ 46] extcall 53 .............................. return tTester.testForLineOfSight(me, tX1, tY1, tX2, tY2, tBlockingLevel, tExcludeFirst, tExcludeLast)
+  [ 48] ret
+end
+
+on isBlockingLineOfSight me, tX, tY, tBlockingLevel
+  [  0] getparam 0 .............................. <me>
+  [  2] getparam 1 .............................. <tX>
+  [  4] getparam 2 .............................. <tY>
+  [  6] pusharglist 3 ........................... <me, tX, tY>
+  [  8] objcall 412 ............................. <me.getTile(tX, tY)>
+  [ 11] setlocal 0 .............................. tTile = me.getTile(tX, tY)
+  [ 13] getlocal 0 .............................. <tTile>
+  [ 15] pushzero ................................ <0>
+  [ 16] eq ...................................... <tTile = 0>
+  [ 17] jmpifz [ 25] ............................ if tTile = 0 then
+  [ 20] pushzero ................................ <0>
+  [ 21] pusharglistnoret 1 ...................... <0>
+  [ 23] extcall 53 .............................. return 0
+  [ 25] getlocal 0 .............................. <tTile>
+  [ 27] getparam 3 .............................. <tBlockingLevel>
+  [ 29] pusharglist 2 ........................... <tTile, tBlockingLevel>
+  [ 31] objcall 847 ............................. <tTile.isBlockingLineOfSight(tBlockingLevel)>
+  [ 34] pusharglistnoret 1 ...................... <tTile.isBlockingLineOfSight(tBlockingLevel)>
+  [ 36] extcall 53 .............................. return tTile.isBlockingLineOfSight(tBlockingLevel)
+  [ 38] ret
+end
+
+on getWorldReady me
+  [  0] getprop 786 ............................. <pWorldReady>
+  [  3] pusharglistnoret 1 ...................... <pWorldReady>
+  [  5] extcall 53 .............................. return pWorldReady
+  [  7] ret
+end
+
+on getGeometry me
+  [  0] getprop 421 ............................. <pGeometry>
+  [  3] pusharglistnoret 1 ...................... <pGeometry>
+  [  5] extcall 53 .............................. return pGeometry
+  [  7] ret
+end
+
+on getRoomGeometry me
+  [  0] getprop 417 ............................. <pRoomGeometry>
+  [  3] pusharglist 1 ........................... <pRoomGeometry>
+  [  5] extcall 55 .............................. <objectp(pRoomGeometry)>
+  [  7] not ..................................... <not objectp(pRoomGeometry)>
+  [  8] jmpifz [ 26] ............................ if not objectp(pRoomGeometry) then
+  [ 11] getparam 0 .............................. <me>
+  [ 13] pushcons 7 .............................. <"Cannot locate room thread geometry object!">
+  [ 15] pushsymb 826 ............................ <#getRoomGeometry>
+  [ 18] pusharglist 3 ........................... <me, "Cannot locate room thread geometry object!", #getRoomGeometry>
+  [ 20] extcall 62 .............................. <error(me, "Cannot locate room thread geometry object!", #getRoomGeometry)>
+  [ 22] pusharglistnoret 1 ...................... <error(me, "Cannot locate room thread geometry object!", #getRoomGeometry)>
+  [ 24] extcall 53 .............................. return error(me, "Cannot locate room thread geometry object!", #getRoomGeometry)
+  [ 26] getprop 417 ............................. <pRoomGeometry>
+  [ 29] pusharglistnoret 1 ...................... <pRoomGeometry>
+  [ 31] extcall 53 .............................. return pRoomGeometry
+  [ 33] ret
+end
+
+on getTileLineOfSight me
+  [  0] getprop 859 ............................. <pTileLineOfSight>
+  [  3] pusharglist 1 ........................... <pTileLineOfSight>
+  [  5] extcall 55 .............................. <objectp(pTileLineOfSight)>
+  [  7] not ..................................... <not objectp(pTileLineOfSight)>
+  [  8] jmpifz [ 26] ............................ if not objectp(pTileLineOfSight) then
+  [ 11] pushsymb 140 ............................ <#temp>
+  [ 13] pushcons 8 .............................. <"gamesystem.tilelineofsight.class">
+  [ 15] pusharglist 1 ........................... <"gamesystem.tilelineofsight.class">
+  [ 17] extcall 138 ............................. <getClassVariable("gamesystem.tilelineofsight.class")>
+  [ 19] pusharglist 2 ........................... <#temp, getClassVariable("gamesystem.tilelineofsight.class")>
+  [ 21] extcall 137 ............................. <createObject(#temp, getClassVariable("gamesystem.tilelineofsight.class"))>
+  [ 23] setprop 859 ............................. pTileLineOfSight = createObject(#temp, getClassVariable("gamesystem.tilelineofsight.class"))
+  [ 26] getprop 859 ............................. <pTileLineOfSight>
+  [ 29] pusharglistnoret 1 ...................... <pTileLineOfSight>
+  [ 31] extcall 53 .............................. return pTileLineOfSight
+  [ 33] ret
+end

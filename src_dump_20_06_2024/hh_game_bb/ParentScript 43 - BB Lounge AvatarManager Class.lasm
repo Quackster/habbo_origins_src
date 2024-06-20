@@ -1,0 +1,197 @@
+property pSkillLevelList, pCreatedAvatarObjList
+
+on construct me
+  [  0] pusharglist 0 ........................... <[:]>
+  [  2] pushproplist ............................ <[:]>
+  [  3] setprop 968 ............................. pSkillLevelList = [:]
+  [  6] pushsymb 290 ............................ <#create_user>
+  [  9] getparam 0 .............................. <me>
+  [ 11] pusharglist 1 ........................... <me>
+  [ 13] objcall 245 ............................. <me.getID()>
+  [ 15] pushsymb 965 ............................ <#storeCreatedAvatarInfo>
+  [ 18] pusharglistnoret 3 ...................... <#create_user, me.getID(), #storeCreatedAvatarInfo>
+  [ 20] extcall 289 ............................. registerMessage(#create_user, me.getID(), #storeCreatedAvatarInfo)
+  [ 23] pushint8 1 .............................. <1>
+  [ 25] pusharglistnoret 1 ...................... <1>
+  [ 27] extcall 28 .............................. return 1
+  [ 29] ret
+end
+
+on deconstruct me
+  [  0] pushsymb 290 ............................ <#create_user>
+  [  3] getparam 0 .............................. <me>
+  [  5] pusharglist 1 ........................... <me>
+  [  7] objcall 245 ............................. <me.getID()>
+  [  9] pusharglistnoret 2 ...................... <#create_user, me.getID()>
+  [ 11] extcall 291 ............................. unregisterMessage(#create_user, me.getID())
+  [ 14] pushint8 1 .............................. <1>
+  [ 16] pusharglistnoret 1 ...................... <1>
+  [ 18] extcall 28 .............................. return 1
+  [ 20] ret
+end
+
+on Refresh me, tTopic, tdata
+  [  0] getparam 1 .............................. <tTopic>
+  [  2] peek 0 .................................. case tTopic of
+  [  4] pushsymb 969 ............................ <#users>
+  [  7] eq
+  [  8] jmpifz [ 22] ............................ (case) #users:
+  [ 11] pop 1
+  [ 13] pushint8 1 .............................. <1>
+  [ 15] pusharglistnoret 1 ...................... <1>
+  [ 17] extcall 28 .............................. return 1
+  [ 19] jmp [ 46]
+  [ 22] peek 0
+  [ 24] pushsymb 774 ............................ <#gameplayerinfo>
+  [ 27] eq
+  [ 28] jmpifz [ 46] ............................ (case) #gameplayerinfo:
+  [ 31] pop 1
+  [ 33] getparam 0 .............................. <me>
+  [ 35] getparam 2 .............................. <tdata>
+  [ 37] pusharglist 2 ........................... <me, tdata>
+  [ 39] objcall 966 ............................. <me.storeSkillLevels(tdata)>
+  [ 42] pusharglistnoret 1 ...................... <me.storeSkillLevels(tdata)>
+  [ 44] extcall 28 .............................. return me.storeSkillLevels(tdata)
+  [ 46] pop 1 ................................... end case
+  [ 48] ret
+end
+
+on storeCreatedAvatarInfo me, tName, tStrId
+  [  0] getprop 968 ............................. <pSkillLevelList>
+  [  3] getparam 2 .............................. <tStrId>
+  [  5] pusharglist 2 ........................... <pSkillLevelList, tStrId>
+  [  7] objcall 115 ............................. <pSkillLevelList.findPos(tStrId)>
+  [  9] pushzero ................................ <0>
+  [ 10] nteq .................................... <pSkillLevelList.findPos(tStrId) <> 0>
+  [ 11] jmpifz [ 34] ............................ if pSkillLevelList.findPos(tStrId) <> 0 then
+  [ 14] getparam 0 .............................. <me>
+  [ 16] getprop 968 ............................. <pSkillLevelList>
+  [ 19] getparam 2 .............................. <tStrId>
+  [ 21] pusharglist 2 ........................... <pSkillLevelList, tStrId>
+  [ 23] objcall 31 .............................. <pSkillLevelList[tStrId]>
+  [ 25] pusharglist 2 ........................... <me, pSkillLevelList[tStrId]>
+  [ 27] objcall 967 ............................. <me.showSkillLevel(pSkillLevelList[tStrId])>
+  [ 30] pusharglistnoret 1 ...................... <me.showSkillLevel(pSkillLevelList[tStrId])>
+  [ 32] extcall 28 .............................. return me.showSkillLevel(pSkillLevelList[tStrId])
+  [ 34] pushint8 1 .............................. <1>
+  [ 36] pusharglistnoret 1 ...................... <1>
+  [ 38] extcall 28 .............................. return 1
+  [ 40] ret
+end
+
+on storeSkillLevels me, tdata
+  [  0] getparam 1 .............................. <tdata>
+  [  2] peek 0
+  [  4] pusharglist 1
+  [  6] extcall 30
+  [  8] pushint8 1
+  [ 10] peek 0
+  [ 12] peek 2
+  [ 14] lteq
+  [ 15] jmpifz [ 69] ............................ repeat with tuser in tdata
+  [ 18] peek 2
+  [ 20] peek 1
+  [ 22] pusharglist 2
+  [ 24] extcall 31
+  [ 26] setlocal 0
+  [ 28] getparam 0 .............................. <me>
+  [ 30] getlocal 0 .............................. <tuser>
+  [ 32] pusharglist 2 ........................... <me, tuser>
+  [ 34] objcall 967 ............................. <me.showSkillLevel(tuser)>
+  [ 37] not ..................................... <not me.showSkillLevel(tuser)>
+  [ 38] jmpifz [ 64] ............................ if not me.showSkillLevel(tuser) then
+  [ 41] getprop 968 ............................. <pSkillLevelList>
+  [ 44] getlocal 0 .............................. <tuser>
+  [ 46] pushsymb 197 ............................ <#id>
+  [ 48] pusharglist 2 ........................... <tuser, #id>
+  [ 50] objcall 31 .............................. <tuser[#id]>
+  [ 52] pusharglist 1 ........................... <tuser[#id]>
+  [ 54] extcall 420 ............................. <string(tuser[#id])>
+  [ 57] getlocal 0 .............................. <tuser>
+  [ 59] pusharglistnoret 3 ...................... <pSkillLevelList, string(tuser[#id]), tuser>
+  [ 61] objcall 352 ............................. pSkillLevelList.addProp(string(tuser[#id]), tuser)
+  [ 64] pushint8 1
+  [ 66] add
+  [ 67] endrepeat [ 10]
+  [ 69] pop 3
+  [ 71] pushint8 1 .............................. <1>
+  [ 73] pusharglistnoret 1 ...................... <1>
+  [ 75] extcall 28 .............................. return 1
+  [ 77] ret
+end
+
+on showSkillLevel me, tdata
+  [  0] getparam 1 .............................. <tdata>
+  [  2] pushsymb 197 ............................ <#id>
+  [  4] pusharglist 2 ........................... <tdata, #id>
+  [  6] objcall 31 .............................. <tdata[#id]>
+  [  8] pusharglist 1 ........................... <tdata[#id]>
+  [ 10] extcall 420 ............................. <string(tdata[#id])>
+  [ 13] setlocal 0 .............................. tStrId = string(tdata[#id])
+  [ 15] getparam 1 .............................. <tdata>
+  [ 17] pushsymb 772 ............................ <#skillvalue>
+  [ 20] pusharglist 2 ........................... <tdata, #skillvalue>
+  [ 22] objcall 31 .............................. <tdata[#skillvalue]>
+  [ 24] setlocal 1 .............................. tSkillValue = tdata[#skillvalue]
+  [ 26] getparam 1 .............................. <tdata>
+  [ 28] pushsymb 773 ............................ <#skilllevel>
+  [ 31] pusharglist 2 ........................... <tdata, #skilllevel>
+  [ 33] objcall 31 .............................. <tdata[#skilllevel]>
+  [ 35] setlocal 2 .............................. tSkillLevel = tdata[#skilllevel]
+  [ 37] pushsymb 386 ............................ <#room_component>
+  [ 40] pusharglist 1 ........................... <#room_component>
+  [ 42] extcall 166 ............................. <getObject(#room_component)>
+  [ 44] setlocal 3 .............................. tRoomComponent = getObject(#room_component)
+  [ 46] getlocal 3 .............................. <tRoomComponent>
+  [ 48] pushzero ................................ <0>
+  [ 49] eq ...................................... <tRoomComponent = 0>
+  [ 50] jmpifz [ 58] ............................ if tRoomComponent = 0 then
+  [ 53] pushzero ................................ <0>
+  [ 54] pusharglistnoret 1 ...................... <0>
+  [ 56] extcall 28 .............................. return 0
+  [ 58] getlocal 3 .............................. <tRoomComponent>
+  [ 60] getlocal 0 .............................. <tStrId>
+  [ 62] pusharglist 2 ........................... <tRoomComponent, tStrId>
+  [ 64] objcall 426 ............................. <tRoomComponent.getUserObject(tStrId)>
+  [ 67] setlocal 4 .............................. tUserObj = tRoomComponent.getUserObject(tStrId)
+  [ 69] getlocal 4 .............................. <tUserObj>
+  [ 71] pushzero ................................ <0>
+  [ 72] eq ...................................... <tUserObj = 0>
+  [ 73] jmpifz [ 81] ............................ if tUserObj = 0 then
+  [ 76] pushzero ................................ <0>
+  [ 77] pusharglistnoret 1 ...................... <0>
+  [ 79] extcall 28 .............................. return 0
+  [ 81] pushcons 0 .............................. <"bb_user_skill">
+  [ 83] pusharglist 1 ........................... <"bb_user_skill">
+  [ 85] extcall 604 ............................. <getText("bb_user_skill")>
+  [ 88] pushcons 1 .............................. <"\\x">
+  [ 90] getlocal 2 .............................. <tSkillLevel>
+  [ 92] pusharglist 3 ........................... <getText("bb_user_skill"), "\\x", tSkillLevel>
+  [ 94] extcall 828 ............................. <replaceChunks(getText("bb_user_skill"), "\\x", tSkillLevel)>
+  [ 97] setlocal 5 .............................. tSkillStr = replaceChunks(getText("bb_user_skill"), "\\x", tSkillLevel)
+  [ 99] getlocal 5 .............................. <tSkillStr>
+  [101] pushcons 2 .............................. <"\\y">
+  [103] getlocal 1 .............................. <tSkillValue>
+  [105] pusharglist 3 ........................... <tSkillStr, "\\y", tSkillValue>
+  [107] extcall 828 ............................. <replaceChunks(tSkillStr, "\\y", tSkillValue)>
+  [110] setlocal 5 .............................. tSkillStr = replaceChunks(tSkillStr, "\\y", tSkillValue)
+  [112] getlocal 5 .............................. <tSkillStr>
+  [114] pushcons 3 .............................. <"\\r">
+  [116] pushcons 4 .............................. <RETURN>
+  [118] pusharglist 3 ........................... <tSkillStr, "\\r", RETURN>
+  [120] extcall 828 ............................. <replaceChunks(tSkillStr, "\\r", RETURN)>
+  [123] setlocal 5 .............................. tSkillStr = replaceChunks(tSkillStr, "\\r", RETURN)
+  [125] getlocal 4 .............................. <tUserObj>
+  [127] getlocal 5 .............................. <tSkillStr>
+  [129] setobjprop 970 .......................... tUserObj.pCustom = tSkillStr
+  [132] getlocal 4 .............................. <tUserObj>
+  [134] pushsymb 971 ............................ <#pInfoStruct>
+  [137] pushsymb 430 ............................ <#custom>
+  [140] getlocal 5 .............................. <tSkillStr>
+  [142] pusharglistnoret 4 ...................... <tUserObj, #pInfoStruct, #custom, tSkillStr>
+  [144] objcall 81 .............................. tUserObj.pInfoStruct[#custom] = tSkillStr
+  [146] pushint8 1 .............................. <1>
+  [148] pusharglistnoret 1 ...................... <1>
+  [150] extcall 28 .............................. return 1
+  [152] ret
+end

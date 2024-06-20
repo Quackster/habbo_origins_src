@@ -1,0 +1,117 @@
+on showprogram me, tMsg
+  [  0] getparam 1 .............................. <tMsg>
+  [  2] pusharglist 1 ........................... <tMsg>
+  [  4] extcall 19 .............................. <voidp(tMsg)>
+  [  6] jmpifz [ 14] ............................ if voidp(tMsg) then
+  [  9] pushzero ................................ <0>
+  [ 10] pusharglistnoret 1 ...................... <0>
+  [ 12] extcall 39 .............................. return 0
+  [ 14] pushsymb 101 ............................ <#room>
+  [ 16] pusharglist 1 ........................... <#room>
+  [ 18] extcall 100 ............................. <getThread(#room)>
+  [ 20] setlocal 0 .............................. tThread = getThread(#room)
+  [ 22] getlocal 0 .............................. <tThread>
+  [ 24] pushzero ................................ <0>
+  [ 25] eq ...................................... <tThread = 0>
+  [ 26] jmpifz [ 34] ............................ if tThread = 0 then
+  [ 29] pushzero ................................ <0>
+  [ 30] pusharglistnoret 1 ...................... <0>
+  [ 32] extcall 39 .............................. return 0
+  [ 34] getlocal 0 .............................. <tThread>
+  [ 36] pusharglist 1 ........................... <tThread>
+  [ 38] objcall 59 .............................. <tThread.getInterface()>
+  [ 40] pusharglist 1 ........................... <tThread.getInterface()>
+  [ 42] objcall 61 .............................. <tThread.getInterface().getRoomVisualizer()>
+  [ 44] setlocal 1 .............................. tRoomVis = tThread.getInterface().getRoomVisualizer()
+  [ 46] getlocal 1 .............................. <tRoomVis>
+  [ 48] pushzero ................................ <0>
+  [ 49] eq ...................................... <tRoomVis = 0>
+  [ 50] jmpifz [ 58] ............................ if tRoomVis = 0 then
+  [ 53] pushzero ................................ <0>
+  [ 54] pusharglistnoret 1 ...................... <0>
+  [ 56] extcall 39 .............................. return 0
+  [ 58] getparam 1 .............................. <tMsg>
+  [ 60] pushsymb 90 ............................. <#show_dest>
+  [ 62] pusharglist 2 ........................... <tMsg, #show_dest>
+  [ 64] objcall 76 .............................. <tMsg[#show_dest]>
+  [ 66] setlocal 2 .............................. tDst = tMsg[#show_dest]
+  [ 68] getparam 1 .............................. <tMsg>
+  [ 70] pushsymb 91 ............................. <#show_command>
+  [ 72] pusharglist 2 ........................... <tMsg, #show_command>
+  [ 74] objcall 76 .............................. <tMsg[#show_command]>
+  [ 76] setlocal 3 .............................. tCmd = tMsg[#show_command]
+  [ 78] getparam 1 .............................. <tMsg>
+  [ 80] pushsymb 92 ............................. <#show_params>
+  [ 82] pusharglist 2 ........................... <tMsg, #show_params>
+  [ 84] objcall 76 .............................. <tMsg[#show_params]>
+  [ 86] setlocal 4 .............................. tNum = tMsg[#show_params]
+  [ 88] getlocal 1 .............................. <tRoomVis>
+  [ 90] pushcons 0 .............................. <"show_">
+  [ 92] getlocal 2 .............................. <tDst>
+  [ 94] joinstr ................................. <"show_" & tDst>
+  [ 95] pusharglist 2 ........................... <tRoomVis, "show_" & tDst>
+  [ 97] objcall 62 .............................. <tRoomVis.getSprById("show_" & tDst)>
+  [ 99] setlocal 5 .............................. tSpr = tRoomVis.getSprById("show_" & tDst)
+  [101] getlocal 5 .............................. <tSpr>
+  [103] not ..................................... <not tSpr>
+  [104] jmpifz [130] ............................ if not tSpr then / else
+  [107] getparam 0 .............................. <me>
+  [109] pushcons 1 .............................. <"Sprite not found:">
+  [111] pushcons 0 .............................. <"show_">
+  [113] joinpadstr .............................. <"Sprite not found:" && "show_">
+  [114] getlocal 2 .............................. <tDst>
+  [116] joinstr ................................. <"Sprite not found:" && "show_" & tDst>
+  [117] pushsymb 89 ............................. <#showprogram>
+  [119] pusharglist 3 ........................... <me, "Sprite not found:" && "show_" & tDst, #showprogram>
+  [121] extcall 102 ............................. <error(me, "Sprite not found:" && "show_" & tDst, #showprogram)>
+  [123] pusharglistnoret 1 ...................... <error(me, "Sprite not found:" && "show_" & tDst, #showprogram)>
+  [125] extcall 39 .............................. return error(me, "Sprite not found:" && "show_" & tDst, #showprogram)
+  [127] jmp [221]
+  [130] getlocal 3 .............................. <tCmd>
+  [132] peek 0 .................................. case tCmd of
+  [134] pushcons 2 .............................. <"visible">
+  [136] eq
+  [137] jmpifz [162] ............................ (case) "visible":
+  [140] getlocal 5 .............................. <tSpr>
+  [142] getchainedprop 6 ........................ <tSpr.member>
+  [144] pushcons 3 .............................. <"flipboard">
+  [146] getlocal 4 .............................. <tNum>
+  [148] joinstr ................................. <"flipboard" & tNum>
+  [149] pusharglist 1 ........................... <"flipboard" & tNum>
+  [151] extcall 10 .............................. <getmemnum("flipboard" & tNum)>
+  [153] pusharglist 1 ........................... <getmemnum("flipboard" & tNum)>
+  [155] extcall 6 ............................... <member(getmemnum("flipboard" & tNum))>
+  [157] setobjprop 103 .......................... tSpr.member.paletteRef = member(getmemnum("flipboard" & tNum))
+  [159] jmp [219]
+  [162] peek 0
+  [164] pushcons 4 .............................. <"litecol">
+  [166] eq
+  [167] jmpifz [192] ............................ (case) "litecol":
+  [170] getlocal 5 .............................. <tSpr>
+  [172] getchainedprop 6 ........................ <tSpr.member>
+  [174] pushcons 5 .............................. <"maglit">
+  [176] getlocal 4 .............................. <tNum>
+  [178] joinstr ................................. <"maglit" & tNum>
+  [179] pusharglist 1 ........................... <"maglit" & tNum>
+  [181] extcall 10 .............................. <getmemnum("maglit" & tNum)>
+  [183] pusharglist 1 ........................... <getmemnum("maglit" & tNum)>
+  [185] extcall 6 ............................... <member(getmemnum("maglit" & tNum))>
+  [187] setobjprop 103 .......................... tSpr.member.paletteRef = member(getmemnum("maglit" & tNum))
+  [189] jmp [219]
+  [192] peek 0
+  [194] pushcons 6 .............................. <"ufol">
+  [196] eq
+  [197] jmpifz [219] ............................ (case) "ufol":
+  [200] getlocal 5 .............................. <tSpr>
+  [202] getchainedprop 6 ........................ <tSpr.member>
+  [204] pushcons 7 .............................. <"ufolamp">
+  [206] getlocal 4 .............................. <tNum>
+  [208] joinstr ................................. <"ufolamp" & tNum>
+  [209] pusharglist 1 ........................... <"ufolamp" & tNum>
+  [211] extcall 10 .............................. <getmemnum("ufolamp" & tNum)>
+  [213] pusharglist 1 ........................... <getmemnum("ufolamp" & tNum)>
+  [215] extcall 6 ............................... <member(getmemnum("ufolamp" & tNum))>
+  [217] setobjprop 103 .......................... tSpr.member.paletteRef = member(getmemnum("ufolamp" & tNum))
+  [219] pop 1 ................................... end case
+  [221] ret
+end

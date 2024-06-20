@@ -1,0 +1,631 @@
+property pHotelClosingID, pLoginFailedID
+
+on construct me
+  [  0] pushcons 0 .............................. <"opening_hours_title">
+  [  2] pusharglist 1 ........................... <"opening_hours_title">
+  [  4] extcall 271 ............................. <getText("opening_hours_title")>
+  [  7] setprop 486 ............................. pHotelClosingID = getText("opening_hours_title")
+  [ 10] pushcons 1 .............................. <"opening_hours_login_failed">
+  [ 12] setprop 487 ............................. pLoginFailedID = "opening_hours_login_failed"
+  [ 15] pushint8 1 .............................. <1>
+  [ 17] pusharglistnoret 1 ...................... <1>
+  [ 19] extcall 48 .............................. return 1
+  [ 21] ret
+end
+
+on deconstruct me
+  [  0] getparam 0 .............................. <me>
+  [  2] pusharglist 1 ........................... <me>
+  [  4] objcall 473 ............................. <me.hideAll()>
+  [  7] pusharglistnoret 1 ...................... <me.hideAll()>
+  [  9] extcall 48 .............................. return me.hideAll()
+  [ 11] ret
+end
+
+on hideAll me
+  [  0] getparam 0 .............................. <me>
+  [  2] pusharglistnoret 1 ...................... <me>
+  [  4] objcall 478 ............................. me.hideHotelClosingAlert()
+  [  7] getparam 0 .............................. <me>
+  [  9] pusharglistnoret 1 ...................... <me>
+  [ 11] objcall 479 ............................. me.hideHotelClosingNotice()
+  [ 14] getparam 0 .............................. <me>
+  [ 16] pusharglistnoret 1 ...................... <me>
+  [ 18] objcall 481 ............................. me.hideHotelClosedNotice()
+  [ 21] getparam 0 .............................. <me>
+  [ 23] pusharglistnoret 1 ...................... <me>
+  [ 25] objcall 480 ............................. me.hideHotelClosedDisconnectNotice()
+  [ 28] pushint8 1 .............................. <1>
+  [ 30] pusharglistnoret 1 ...................... <1>
+  [ 32] extcall 48 .............................. return 1
+  [ 34] ret
+end
+
+on showHotelClosingAlert me, tTimeDelta
+  [  0] getprop 486 ............................. <pHotelClosingID>
+  [  3] pusharglist 1 ........................... <pHotelClosingID>
+  [  5] extcall 249 ............................. <windowExists(pHotelClosingID)>
+  [  7] not ..................................... <not windowExists(pHotelClosingID)>
+  [  8] jmpifz [ 49] ............................ if not windowExists(pHotelClosingID) then / else
+  [ 11] getprop 486 ............................. <pHotelClosingID>
+  [ 14] pushcons 2 .............................. <"habbo_basic.window">
+  [ 16] pushzero ................................ <0>
+  [ 17] pushzero ................................ <0>
+  [ 18] pushsymb 356 ............................ <#modal>
+  [ 21] pusharglistnoret 5 ...................... <pHotelClosingID, "habbo_basic.window", 0, 0, #modal>
+  [ 23] extcall 252 ............................. createWindow(pHotelClosingID, "habbo_basic.window", 0, 0, #modal)
+  [ 25] getprop 486 ............................. <pHotelClosingID>
+  [ 28] pusharglist 1 ........................... <pHotelClosingID>
+  [ 30] extcall 253 ............................. <getWindow(pHotelClosingID)>
+  [ 32] setlocal 0 .............................. tWndObj = getWindow(pHotelClosingID)
+  [ 34] getlocal 0 .............................. <tWndObj>
+  [ 36] pushzero ................................ <0>
+  [ 37] eq ...................................... <tWndObj = 0>
+  [ 38] jmpifz [ 46] ............................ if tWndObj = 0 then
+  [ 41] pushzero ................................ <0>
+  [ 42] pusharglistnoret 1 ...................... <0>
+  [ 44] extcall 48 .............................. return 0
+  [ 46] jmp [ 65]
+  [ 49] getprop 486 ............................. <pHotelClosingID>
+  [ 52] pusharglist 1 ........................... <pHotelClosingID>
+  [ 54] extcall 253 ............................. <getWindow(pHotelClosingID)>
+  [ 56] setlocal 0 .............................. tWndObj = getWindow(pHotelClosingID)
+  [ 58] getlocal 0 .............................. <tWndObj>
+  [ 60] pusharglistnoret 1 ...................... <tWndObj>
+  [ 62] objcall 488 ............................. tWndObj.unmerge()
+  [ 65] pushcons 3 .............................. <"openhrs">
+  [ 67] setlocal 1 .............................. tWindow = "openhrs"
+  [ 69] getlocal 0 .............................. <tWndObj>
+  [ 71] getlocal 1 .............................. <tWindow>
+  [ 73] pushcons 4 .............................. <".window">
+  [ 75] joinstr ................................. <tWindow & ".window">
+  [ 76] pusharglist 2 ........................... <tWndObj, tWindow & ".window">
+  [ 78] objcall 254 ............................. <tWndObj.merge(tWindow & ".window")>
+  [ 80] not ..................................... <not tWndObj.merge(tWindow & ".window")>
+  [ 81] jmpifz [ 95] ............................ if not tWndObj.merge(tWindow & ".window") then
+  [ 84] getparam 0 .............................. <me>
+  [ 86] pusharglist 1 ........................... <me>
+  [ 88] objcall 489 ............................. <me.hideHotelClosingStatusAlert()>
+  [ 91] pusharglistnoret 1 ...................... <me.hideHotelClosingStatusAlert()>
+  [ 93] extcall 48 .............................. return me.hideHotelClosingStatusAlert()
+  [ 95] pushcons 5 .............................. <"opening_hours_text_shutdown">
+  [ 97] setlocal 2 .............................. tTextId = "opening_hours_text_shutdown"
+  [ 99] getlocal 2 .............................. <tTextId>
+  [101] pusharglist 1 ........................... <tTextId>
+  [103] extcall 271 ............................. <getText(tTextId)>
+  [106] setlocal 3 .............................. tText = getText(tTextId)
+  [108] getparam 1 .............................. <tTimeDelta>
+  [110] pusharglist 1 ........................... <tTimeDelta>
+  [112] extcall 71 .............................. <voidp(tTimeDelta)>
+  [114] jmpifz [133] ............................ if voidp(tTimeDelta) then / else
+  [117] getlocal 3 .............................. <tText>
+  [119] pushcons 6 .............................. <"%d%">
+  [121] pushcons 7 .............................. <EMPTY>
+  [123] pusharglist 3 ........................... <tText, "%d%", EMPTY>
+  [125] extcall 360 ............................. <replaceChunks(tText, "%d%", EMPTY)>
+  [128] setlocal 3 .............................. tText = replaceChunks(tText, "%d%", EMPTY)
+  [130] jmp [150]
+  [133] getlocal 3 .............................. <tText>
+  [135] pushcons 6 .............................. <"%d%">
+  [137] getparam 1 .............................. <tTimeDelta>
+  [139] pusharglist 1 ........................... <tTimeDelta>
+  [141] extcall 61 .............................. <string(tTimeDelta)>
+  [143] pusharglist 3 ........................... <tText, "%d%", string(tTimeDelta)>
+  [145] extcall 360 ............................. <replaceChunks(tText, "%d%", string(tTimeDelta))>
+  [148] setlocal 3 .............................. tText = replaceChunks(tText, "%d%", string(tTimeDelta))
+  [150] getlocal 0 .............................. <tWndObj>
+  [152] pushcons 8 .............................. <"openhrs_txt">
+  [154] pusharglist 2 ........................... <tWndObj, "openhrs_txt">
+  [156] objcall 259 ............................. <tWndObj.getElement("openhrs_txt")>
+  [159] getlocal 3 .............................. <tText>
+  [161] pusharglistnoret 2 ...................... <tWndObj.getElement("openhrs_txt"), tText>
+  [163] objcall 265 ............................. tWndObj.getElement("openhrs_txt").setText(tText)
+  [166] getlocal 0 .............................. <tWndObj>
+  [168] pusharglistnoret 1 ...................... <tWndObj>
+  [170] objcall 490 ............................. tWndObj.center()
+  [173] getlocal 0 .............................. <tWndObj>
+  [175] getparam 0 .............................. <me>
+  [177] pusharglist 1 ........................... <me>
+  [179] objcall 42 .............................. <me.getID()>
+  [181] pusharglistnoret 2 ...................... <tWndObj, me.getID()>
+  [183] objcall 255 ............................. tWndObj.registerClient(me.getID())
+  [185] getlocal 0 .............................. <tWndObj>
+  [187] pushsymb 482 ............................ <#eventProcStatus>
+  [190] getparam 0 .............................. <me>
+  [192] pusharglist 1 ........................... <me>
+  [194] objcall 42 .............................. <me.getID()>
+  [196] pushsymb 256 ............................ <#mouseUp>
+  [199] pusharglistnoret 4 ...................... <tWndObj, #eventProcStatus, me.getID(), #mouseUp>
+  [201] objcall 257 ............................. tWndObj.registerProcedure(#eventProcStatus, me.getID(), #mouseUp)
+  [204] ret
+end
+
+on showHotelClosingNotice me
+  [  0] getprop 486 ............................. <pHotelClosingID>
+  [  3] pusharglist 1 ........................... <pHotelClosingID>
+  [  5] extcall 249 ............................. <windowExists(pHotelClosingID)>
+  [  7] not ..................................... <not windowExists(pHotelClosingID)>
+  [  8] jmpifz [ 49] ............................ if not windowExists(pHotelClosingID) then / else
+  [ 11] getprop 486 ............................. <pHotelClosingID>
+  [ 14] pushcons 2 .............................. <"habbo_basic.window">
+  [ 16] pushzero ................................ <0>
+  [ 17] pushzero ................................ <0>
+  [ 18] pushsymb 356 ............................ <#modal>
+  [ 21] pusharglistnoret 5 ...................... <pHotelClosingID, "habbo_basic.window", 0, 0, #modal>
+  [ 23] extcall 252 ............................. createWindow(pHotelClosingID, "habbo_basic.window", 0, 0, #modal)
+  [ 25] getprop 486 ............................. <pHotelClosingID>
+  [ 28] pusharglist 1 ........................... <pHotelClosingID>
+  [ 30] extcall 253 ............................. <getWindow(pHotelClosingID)>
+  [ 32] setlocal 0 .............................. tWndObj = getWindow(pHotelClosingID)
+  [ 34] getlocal 0 .............................. <tWndObj>
+  [ 36] pushzero ................................ <0>
+  [ 37] eq ...................................... <tWndObj = 0>
+  [ 38] jmpifz [ 46] ............................ if tWndObj = 0 then
+  [ 41] pushzero ................................ <0>
+  [ 42] pusharglistnoret 1 ...................... <0>
+  [ 44] extcall 48 .............................. return 0
+  [ 46] jmp [ 65]
+  [ 49] getprop 486 ............................. <pHotelClosingID>
+  [ 52] pusharglist 1 ........................... <pHotelClosingID>
+  [ 54] extcall 253 ............................. <getWindow(pHotelClosingID)>
+  [ 56] setlocal 0 .............................. tWndObj = getWindow(pHotelClosingID)
+  [ 58] getlocal 0 .............................. <tWndObj>
+  [ 60] pusharglistnoret 1 ...................... <tWndObj>
+  [ 62] objcall 488 ............................. tWndObj.unmerge()
+  [ 65] getlocal 0 .............................. <tWndObj>
+  [ 67] pushcons 9 .............................. <"openhrs.window">
+  [ 69] pusharglist 2 ........................... <tWndObj, "openhrs.window">
+  [ 71] objcall 254 ............................. <tWndObj.merge("openhrs.window")>
+  [ 73] not ..................................... <not tWndObj.merge("openhrs.window")>
+  [ 74] jmpifz [ 88] ............................ if not tWndObj.merge("openhrs.window") then
+  [ 77] getparam 0 .............................. <me>
+  [ 79] pusharglist 1 ........................... <me>
+  [ 81] objcall 479 ............................. <me.hideHotelClosingNotice()>
+  [ 84] pusharglistnoret 1 ...................... <me.hideHotelClosingNotice()>
+  [ 86] extcall 48 .............................. return me.hideHotelClosingNotice()
+  [ 88] getlocal 0 .............................. <tWndObj>
+  [ 90] pusharglistnoret 1 ...................... <tWndObj>
+  [ 92] objcall 490 ............................. tWndObj.center()
+  [ 95] pushcons 10 ............................. <"opening_hours_text_disabled">
+  [ 97] pusharglist 1 ........................... <"opening_hours_text_disabled">
+  [ 99] extcall 271 ............................. <getText("opening_hours_text_disabled")>
+  [102] setlocal 1 .............................. tText = getText("opening_hours_text_disabled")
+  [104] getlocal 0 .............................. <tWndObj>
+  [106] pushcons 8 .............................. <"openhrs_txt">
+  [108] pusharglist 2 ........................... <tWndObj, "openhrs_txt">
+  [110] objcall 259 ............................. <tWndObj.getElement("openhrs_txt")>
+  [113] getlocal 1 .............................. <tText>
+  [115] pusharglistnoret 2 ...................... <tWndObj.getElement("openhrs_txt"), tText>
+  [117] objcall 265 ............................. tWndObj.getElement("openhrs_txt").setText(tText)
+  [120] getlocal 0 .............................. <tWndObj>
+  [122] getparam 0 .............................. <me>
+  [124] pusharglist 1 ........................... <me>
+  [126] objcall 42 .............................. <me.getID()>
+  [128] pusharglistnoret 2 ...................... <tWndObj, me.getID()>
+  [130] objcall 255 ............................. tWndObj.registerClient(me.getID())
+  [132] getlocal 0 .............................. <tWndObj>
+  [134] pushsymb 483 ............................ <#eventProcNotice>
+  [137] getparam 0 .............................. <me>
+  [139] pusharglist 1 ........................... <me>
+  [141] objcall 42 .............................. <me.getID()>
+  [143] pushsymb 256 ............................ <#mouseUp>
+  [146] pusharglistnoret 4 ...................... <tWndObj, #eventProcNotice, me.getID(), #mouseUp>
+  [148] objcall 257 ............................. tWndObj.registerProcedure(#eventProcNotice, me.getID(), #mouseUp)
+  [151] ret
+end
+
+on showHotelClosedDisconnectNotice me, tOpenHour, tOpenMinute
+  [  0] getprop 487 ............................. <pLoginFailedID>
+  [  3] pusharglist 1 ........................... <pLoginFailedID>
+  [  5] extcall 249 ............................. <windowExists(pLoginFailedID)>
+  [  7] not ..................................... <not windowExists(pLoginFailedID)>
+  [  8] jmpifz [206] ............................ if not windowExists(pLoginFailedID) then
+  [ 11] getprop 487 ............................. <pLoginFailedID>
+  [ 14] pushcons 11 ............................. <"error.window">
+  [ 16] pushzero ................................ <0>
+  [ 17] pushzero ................................ <0>
+  [ 18] pushsymb 356 ............................ <#modal>
+  [ 21] pusharglistnoret 5 ...................... <pLoginFailedID, "error.window", 0, 0, #modal>
+  [ 23] extcall 252 ............................. createWindow(pLoginFailedID, "error.window", 0, 0, #modal)
+  [ 25] getprop 487 ............................. <pLoginFailedID>
+  [ 28] pusharglist 1 ........................... <pLoginFailedID>
+  [ 30] extcall 253 ............................. <getWindow(pLoginFailedID)>
+  [ 32] setlocal 0 .............................. tWndObj = getWindow(pLoginFailedID)
+  [ 34] getlocal 0 .............................. <tWndObj>
+  [ 36] pushzero ................................ <0>
+  [ 37] eq ...................................... <tWndObj = 0>
+  [ 38] jmpifz [ 46] ............................ if tWndObj = 0 then
+  [ 41] pushzero ................................ <0>
+  [ 42] pusharglistnoret 1 ...................... <0>
+  [ 44] extcall 48 .............................. return 0
+  [ 46] getlocal 0 .............................. <tWndObj>
+  [ 48] pusharglistnoret 1 ...................... <tWndObj>
+  [ 50] objcall 490 ............................. tWndObj.center()
+  [ 53] pushcons 12 ............................. <"opening_hours_text_opening_time">
+  [ 55] pusharglist 1 ........................... <"opening_hours_text_opening_time">
+  [ 57] extcall 271 ............................. <getText("opening_hours_text_opening_time")>
+  [ 60] setlocal 1 .............................. tText = getText("opening_hours_text_opening_time")
+  [ 62] getparam 1 .............................. <tOpenHour>
+  [ 64] pusharglist 1 ........................... <tOpenHour>
+  [ 66] extcall 61 .............................. <string(tOpenHour)>
+  [ 68] setlocal 2 .............................. tHour = string(tOpenHour)
+  [ 70] getlocal 2 .............................. <tHour>
+  [ 72] getobjprop 62 ........................... <tHour.length>
+  [ 74] pushint8 1 .............................. <1>
+  [ 76] eq ...................................... <tHour.length = 1>
+  [ 77] jmpifz [ 87] ............................ if tHour.length = 1 then
+  [ 80] pushcons 13 ............................. <"0">
+  [ 82] getlocal 2 .............................. <tHour>
+  [ 84] joinstr ................................. <"0" & tHour>
+  [ 85] setlocal 2 .............................. tHour = "0" & tHour
+  [ 87] getparam 2 .............................. <tOpenMinute>
+  [ 89] pusharglist 1 ........................... <tOpenMinute>
+  [ 91] extcall 61 .............................. <string(tOpenMinute)>
+  [ 93] setlocal 3 .............................. tMinute = string(tOpenMinute)
+  [ 95] getlocal 3 .............................. <tMinute>
+  [ 97] getobjprop 62 ........................... <tMinute.length>
+  [ 99] pushint8 1 .............................. <1>
+  [101] eq ...................................... <tMinute.length = 1>
+  [102] jmpifz [112] ............................ if tMinute.length = 1 then
+  [105] pushcons 13 ............................. <"0">
+  [107] getlocal 3 .............................. <tMinute>
+  [109] joinstr ................................. <"0" & tMinute>
+  [110] setlocal 3 .............................. tMinute = "0" & tMinute
+  [112] getlocal 1 .............................. <tText>
+  [114] pushcons 14 ............................. <"%h%">
+  [116] getlocal 2 .............................. <tHour>
+  [118] pusharglist 3 ........................... <tText, "%h%", tHour>
+  [120] extcall 360 ............................. <replaceChunks(tText, "%h%", tHour)>
+  [123] setlocal 1 .............................. tText = replaceChunks(tText, "%h%", tHour)
+  [125] getlocal 1 .............................. <tText>
+  [127] pushcons 15 ............................. <"%m%">
+  [129] getlocal 3 .............................. <tMinute>
+  [131] pusharglist 3 ........................... <tText, "%m%", tMinute>
+  [133] extcall 360 ............................. <replaceChunks(tText, "%m%", tMinute)>
+  [136] setlocal 1 .............................. tText = replaceChunks(tText, "%m%", tMinute)
+  [138] getlocal 0 .............................. <tWndObj>
+  [140] pushcons 16 ............................. <"error_title">
+  [142] pusharglist 2 ........................... <tWndObj, "error_title">
+  [144] objcall 259 ............................. <tWndObj.getElement("error_title")>
+  [147] pushcons 17 ............................. <"Alert_ConnectionFailure">
+  [149] pusharglist 1 ........................... <"Alert_ConnectionFailure">
+  [151] extcall 271 ............................. <getText("Alert_ConnectionFailure")>
+  [154] pusharglistnoret 2 ...................... <tWndObj.getElement("error_title"), getText("Alert_ConnectionFailure")>
+  [156] objcall 265 ............................. tWndObj.getElement("error_title").setText(getText("Alert_ConnectionFailure"))
+  [159] getlocal 0 .............................. <tWndObj>
+  [161] pushcons 18 ............................. <"error_text">
+  [163] pusharglist 2 ........................... <tWndObj, "error_text">
+  [165] objcall 259 ............................. <tWndObj.getElement("error_text")>
+  [168] getlocal 1 .............................. <tText>
+  [170] pusharglistnoret 2 ...................... <tWndObj.getElement("error_text"), tText>
+  [172] objcall 265 ............................. tWndObj.getElement("error_text").setText(tText)
+  [175] getlocal 0 .............................. <tWndObj>
+  [177] getparam 0 .............................. <me>
+  [179] pusharglist 1 ........................... <me>
+  [181] objcall 42 .............................. <me.getID()>
+  [183] pusharglistnoret 2 ...................... <tWndObj, me.getID()>
+  [185] objcall 255 ............................. tWndObj.registerClient(me.getID())
+  [187] getlocal 0 .............................. <tWndObj>
+  [189] pushsymb 484 ............................ <#eventProcLoginFailed>
+  [192] getparam 0 .............................. <me>
+  [194] pusharglist 1 ........................... <me>
+  [196] objcall 42 .............................. <me.getID()>
+  [198] pushsymb 256 ............................ <#mouseUp>
+  [201] pusharglistnoret 4 ...................... <tWndObj, #eventProcLoginFailed, me.getID(), #mouseUp>
+  [203] objcall 257 ............................. tWndObj.registerProcedure(#eventProcLoginFailed, me.getID(), #mouseUp)
+  [206] pushint8 1 .............................. <1>
+  [208] pusharglistnoret 1 ...................... <1>
+  [210] extcall 48 .............................. return 1
+  [212] ret
+end
+
+on showHotelClosedNotice me, tOpenHour, tOpenMinute
+  [  0] getprop 486 ............................. <pHotelClosingID>
+  [  3] pusharglist 1 ........................... <pHotelClosingID>
+  [  5] extcall 249 ............................. <windowExists(pHotelClosingID)>
+  [  7] not ..................................... <not windowExists(pHotelClosingID)>
+  [  8] jmpifz [ 49] ............................ if not windowExists(pHotelClosingID) then / else
+  [ 11] getprop 486 ............................. <pHotelClosingID>
+  [ 14] pushcons 2 .............................. <"habbo_basic.window">
+  [ 16] pushzero ................................ <0>
+  [ 17] pushzero ................................ <0>
+  [ 18] pushsymb 356 ............................ <#modal>
+  [ 21] pusharglistnoret 5 ...................... <pHotelClosingID, "habbo_basic.window", 0, 0, #modal>
+  [ 23] extcall 252 ............................. createWindow(pHotelClosingID, "habbo_basic.window", 0, 0, #modal)
+  [ 25] getprop 486 ............................. <pHotelClosingID>
+  [ 28] pusharglist 1 ........................... <pHotelClosingID>
+  [ 30] extcall 253 ............................. <getWindow(pHotelClosingID)>
+  [ 32] setlocal 0 .............................. tWndObj = getWindow(pHotelClosingID)
+  [ 34] getlocal 0 .............................. <tWndObj>
+  [ 36] pushzero ................................ <0>
+  [ 37] eq ...................................... <tWndObj = 0>
+  [ 38] jmpifz [ 46] ............................ if tWndObj = 0 then
+  [ 41] pushzero ................................ <0>
+  [ 42] pusharglistnoret 1 ...................... <0>
+  [ 44] extcall 48 .............................. return 0
+  [ 46] jmp [ 65]
+  [ 49] getprop 486 ............................. <pHotelClosingID>
+  [ 52] pusharglist 1 ........................... <pHotelClosingID>
+  [ 54] extcall 253 ............................. <getWindow(pHotelClosingID)>
+  [ 56] setlocal 0 .............................. tWndObj = getWindow(pHotelClosingID)
+  [ 58] getlocal 0 .............................. <tWndObj>
+  [ 60] pusharglistnoret 1 ...................... <tWndObj>
+  [ 62] objcall 488 ............................. tWndObj.unmerge()
+  [ 65] getlocal 0 .............................. <tWndObj>
+  [ 67] pushcons 9 .............................. <"openhrs.window">
+  [ 69] pusharglist 2 ........................... <tWndObj, "openhrs.window">
+  [ 71] objcall 254 ............................. <tWndObj.merge("openhrs.window")>
+  [ 73] not ..................................... <not tWndObj.merge("openhrs.window")>
+  [ 74] jmpifz [ 88] ............................ if not tWndObj.merge("openhrs.window") then
+  [ 77] getparam 0 .............................. <me>
+  [ 79] pusharglist 1 ........................... <me>
+  [ 81] objcall 481 ............................. <me.hideHotelClosedNotice()>
+  [ 84] pusharglistnoret 1 ...................... <me.hideHotelClosedNotice()>
+  [ 86] extcall 48 .............................. return me.hideHotelClosedNotice()
+  [ 88] getlocal 0 .............................. <tWndObj>
+  [ 90] pusharglistnoret 1 ...................... <tWndObj>
+  [ 92] objcall 490 ............................. tWndObj.center()
+  [ 95] pushcons 19 ............................. <"opening_hours_text_closed">
+  [ 97] pusharglist 1 ........................... <"opening_hours_text_closed">
+  [ 99] extcall 271 ............................. <getText("opening_hours_text_closed")>
+  [102] setlocal 1 .............................. tText = getText("opening_hours_text_closed")
+  [104] getparam 1 .............................. <tOpenHour>
+  [106] pusharglist 1 ........................... <tOpenHour>
+  [108] extcall 61 .............................. <string(tOpenHour)>
+  [110] setlocal 2 .............................. tHour = string(tOpenHour)
+  [112] getlocal 2 .............................. <tHour>
+  [114] getobjprop 62 ........................... <tHour.length>
+  [116] pushint8 1 .............................. <1>
+  [118] eq ...................................... <tHour.length = 1>
+  [119] jmpifz [129] ............................ if tHour.length = 1 then
+  [122] pushcons 13 ............................. <"0">
+  [124] getlocal 2 .............................. <tHour>
+  [126] joinstr ................................. <"0" & tHour>
+  [127] setlocal 2 .............................. tHour = "0" & tHour
+  [129] getparam 2 .............................. <tOpenMinute>
+  [131] pusharglist 1 ........................... <tOpenMinute>
+  [133] extcall 61 .............................. <string(tOpenMinute)>
+  [135] setlocal 3 .............................. tMinute = string(tOpenMinute)
+  [137] getlocal 3 .............................. <tMinute>
+  [139] getobjprop 62 ........................... <tMinute.length>
+  [141] pushint8 1 .............................. <1>
+  [143] eq ...................................... <tMinute.length = 1>
+  [144] jmpifz [154] ............................ if tMinute.length = 1 then
+  [147] pushcons 13 ............................. <"0">
+  [149] getlocal 3 .............................. <tMinute>
+  [151] joinstr ................................. <"0" & tMinute>
+  [152] setlocal 3 .............................. tMinute = "0" & tMinute
+  [154] getlocal 1 .............................. <tText>
+  [156] pushcons 14 ............................. <"%h%">
+  [158] getlocal 2 .............................. <tHour>
+  [160] pusharglist 3 ........................... <tText, "%h%", tHour>
+  [162] extcall 360 ............................. <replaceChunks(tText, "%h%", tHour)>
+  [165] setlocal 1 .............................. tText = replaceChunks(tText, "%h%", tHour)
+  [167] getlocal 1 .............................. <tText>
+  [169] pushcons 15 ............................. <"%m%">
+  [171] getlocal 3 .............................. <tMinute>
+  [173] pusharglist 3 ........................... <tText, "%m%", tMinute>
+  [175] extcall 360 ............................. <replaceChunks(tText, "%m%", tMinute)>
+  [178] setlocal 1 .............................. tText = replaceChunks(tText, "%m%", tMinute)
+  [180] getlocal 0 .............................. <tWndObj>
+  [182] pushcons 8 .............................. <"openhrs_txt">
+  [184] pusharglist 2 ........................... <tWndObj, "openhrs_txt">
+  [186] objcall 259 ............................. <tWndObj.getElement("openhrs_txt")>
+  [189] getlocal 1 .............................. <tText>
+  [191] pusharglistnoret 2 ...................... <tWndObj.getElement("openhrs_txt"), tText>
+  [193] objcall 265 ............................. tWndObj.getElement("openhrs_txt").setText(tText)
+  [196] getlocal 0 .............................. <tWndObj>
+  [198] getparam 0 .............................. <me>
+  [200] pusharglist 1 ........................... <me>
+  [202] objcall 42 .............................. <me.getID()>
+  [204] pusharglistnoret 2 ...................... <tWndObj, me.getID()>
+  [206] objcall 255 ............................. tWndObj.registerClient(me.getID())
+  [208] getlocal 0 .............................. <tWndObj>
+  [210] pushsymb 485 ............................ <#eventProcClosed>
+  [213] getparam 0 .............................. <me>
+  [215] pusharglist 1 ........................... <me>
+  [217] objcall 42 .............................. <me.getID()>
+  [219] pushsymb 256 ............................ <#mouseUp>
+  [222] pusharglistnoret 4 ...................... <tWndObj, #eventProcClosed, me.getID(), #mouseUp>
+  [224] objcall 257 ............................. tWndObj.registerProcedure(#eventProcClosed, me.getID(), #mouseUp)
+  [227] ret
+end
+
+on hideHotelClosingAlert me
+  [  0] getprop 486 ............................. <pHotelClosingID>
+  [  3] pusharglist 1 ........................... <pHotelClosingID>
+  [  5] extcall 249 ............................. <windowExists(pHotelClosingID)>
+  [  7] jmpifz [ 21] ............................ if windowExists(pHotelClosingID) then
+  [ 10] getprop 486 ............................. <pHotelClosingID>
+  [ 13] pusharglist 1 ........................... <pHotelClosingID>
+  [ 15] extcall 251 ............................. <removeWindow(pHotelClosingID)>
+  [ 17] pusharglistnoret 1 ...................... <removeWindow(pHotelClosingID)>
+  [ 19] extcall 48 .............................. return removeWindow(pHotelClosingID)
+  [ 21] pushzero ................................ <0>
+  [ 22] pusharglistnoret 1 ...................... <0>
+  [ 24] extcall 48 .............................. return 0
+  [ 26] ret
+end
+
+on hideHotelClosingNotice me
+  [  0] getprop 486 ............................. <pHotelClosingID>
+  [  3] pusharglist 1 ........................... <pHotelClosingID>
+  [  5] extcall 249 ............................. <windowExists(pHotelClosingID)>
+  [  7] jmpifz [ 21] ............................ if windowExists(pHotelClosingID) then
+  [ 10] getprop 486 ............................. <pHotelClosingID>
+  [ 13] pusharglist 1 ........................... <pHotelClosingID>
+  [ 15] extcall 251 ............................. <removeWindow(pHotelClosingID)>
+  [ 17] pusharglistnoret 1 ...................... <removeWindow(pHotelClosingID)>
+  [ 19] extcall 48 .............................. return removeWindow(pHotelClosingID)
+  [ 21] pushzero ................................ <0>
+  [ 22] pusharglistnoret 1 ...................... <0>
+  [ 24] extcall 48 .............................. return 0
+  [ 26] ret
+end
+
+on hideHotelClosedDisconnectNotice me
+  [  0] getprop 487 ............................. <pLoginFailedID>
+  [  3] pusharglist 1 ........................... <pLoginFailedID>
+  [  5] extcall 249 ............................. <windowExists(pLoginFailedID)>
+  [  7] jmpifz [ 21] ............................ if windowExists(pLoginFailedID) then
+  [ 10] getprop 487 ............................. <pLoginFailedID>
+  [ 13] pusharglist 1 ........................... <pLoginFailedID>
+  [ 15] extcall 251 ............................. <removeWindow(pLoginFailedID)>
+  [ 17] pusharglistnoret 1 ...................... <removeWindow(pLoginFailedID)>
+  [ 19] extcall 48 .............................. return removeWindow(pLoginFailedID)
+  [ 21] pushzero ................................ <0>
+  [ 22] pusharglistnoret 1 ...................... <0>
+  [ 24] extcall 48 .............................. return 0
+  [ 26] ret
+end
+
+on hideHotelClosedNotice me
+  [  0] getprop 486 ............................. <pHotelClosingID>
+  [  3] pusharglist 1 ........................... <pHotelClosingID>
+  [  5] extcall 249 ............................. <windowExists(pHotelClosingID)>
+  [  7] jmpifz [ 21] ............................ if windowExists(pHotelClosingID) then
+  [ 10] getprop 486 ............................. <pHotelClosingID>
+  [ 13] pusharglist 1 ........................... <pHotelClosingID>
+  [ 15] extcall 251 ............................. <removeWindow(pHotelClosingID)>
+  [ 17] pusharglistnoret 1 ...................... <removeWindow(pHotelClosingID)>
+  [ 19] extcall 48 .............................. return removeWindow(pHotelClosingID)
+  [ 21] pushzero ................................ <0>
+  [ 22] pusharglistnoret 1 ...................... <0>
+  [ 24] extcall 48 .............................. return 0
+  [ 26] ret
+end
+
+on eventProcStatus me, tEvent, tElemID, tParam
+  [  0] getparam 1 .............................. <tEvent>
+  [  2] pushsymb 256 ............................ <#mouseUp>
+  [  5] eq ...................................... <tEvent = #mouseUp>
+  [  6] jmpifz [ 68] ............................ if tEvent = #mouseUp then
+  [  9] getparam 2 .............................. <tElemID>
+  [ 11] peek 0 .................................. case tElemID of
+  [ 13] pushcons 20 ............................. <"close">
+  [ 15] eq
+  [ 16] jmpifz [ 35] ............................ (case) "close":
+  [ 19] pop 1
+  [ 21] getparam 0 .............................. <me>
+  [ 23] pusharglist 1 ........................... <me>
+  [ 25] objcall 478 ............................. <me.hideHotelClosingAlert()>
+  [ 28] pusharglistnoret 1 ...................... <me.hideHotelClosingAlert()>
+  [ 30] extcall 48 .............................. return me.hideHotelClosingAlert()
+  [ 32] jmp [ 66]
+  [ 35] peek 0
+  [ 37] pushcons 21 ............................. <"openhrs_ok">
+  [ 39] eq
+  [ 40] jmpifz [ 59] ............................ (case) "openhrs_ok":
+  [ 43] pop 1
+  [ 45] getparam 0 .............................. <me>
+  [ 47] pusharglist 1 ........................... <me>
+  [ 49] objcall 478 ............................. <me.hideHotelClosingAlert()>
+  [ 52] pusharglistnoret 1 ...................... <me.hideHotelClosingAlert()>
+  [ 54] extcall 48 .............................. return me.hideHotelClosingAlert()
+  [ 56] jmp [ 66] ............................... (case) otherwise:
+  [ 59] pop 1
+  [ 61] pushzero ................................ <0>
+  [ 62] pusharglistnoret 1 ...................... <0>
+  [ 64] extcall 48 .............................. return 0
+  [ 66] pop 1 ................................... end case
+  [ 68] pushint8 1 .............................. <1>
+  [ 70] pusharglistnoret 1 ...................... <1>
+  [ 72] extcall 48 .............................. return 1
+  [ 74] ret
+end
+
+on eventProcNotice me, tEvent, tElemID, tParam
+  [  0] getparam 1 .............................. <tEvent>
+  [  2] pushsymb 256 ............................ <#mouseUp>
+  [  5] eq ...................................... <tEvent = #mouseUp>
+  [  6] jmpifz [ 68] ............................ if tEvent = #mouseUp then
+  [  9] getparam 2 .............................. <tElemID>
+  [ 11] peek 0 .................................. case tElemID of
+  [ 13] pushcons 20 ............................. <"close">
+  [ 15] eq
+  [ 16] jmpifz [ 35] ............................ (case) "close":
+  [ 19] pop 1
+  [ 21] getparam 0 .............................. <me>
+  [ 23] pusharglist 1 ........................... <me>
+  [ 25] objcall 479 ............................. <me.hideHotelClosingNotice()>
+  [ 28] pusharglistnoret 1 ...................... <me.hideHotelClosingNotice()>
+  [ 30] extcall 48 .............................. return me.hideHotelClosingNotice()
+  [ 32] jmp [ 66]
+  [ 35] peek 0
+  [ 37] pushcons 21 ............................. <"openhrs_ok">
+  [ 39] eq
+  [ 40] jmpifz [ 59] ............................ (case) "openhrs_ok":
+  [ 43] pop 1
+  [ 45] getparam 0 .............................. <me>
+  [ 47] pusharglist 1 ........................... <me>
+  [ 49] objcall 479 ............................. <me.hideHotelClosingNotice()>
+  [ 52] pusharglistnoret 1 ...................... <me.hideHotelClosingNotice()>
+  [ 54] extcall 48 .............................. return me.hideHotelClosingNotice()
+  [ 56] jmp [ 66] ............................... (case) otherwise:
+  [ 59] pop 1
+  [ 61] pushzero ................................ <0>
+  [ 62] pusharglistnoret 1 ...................... <0>
+  [ 64] extcall 48 .............................. return 0
+  [ 66] pop 1 ................................... end case
+  [ 68] pushint8 1 .............................. <1>
+  [ 70] pusharglistnoret 1 ...................... <1>
+  [ 72] extcall 48 .............................. return 1
+  [ 74] ret
+end
+
+on eventProcLoginFailed me, tEvent, tElemID, tParam
+  [  0] getparam 1 .............................. <tEvent>
+  [  2] pushsymb 256 ............................ <#mouseUp>
+  [  5] eq ...................................... <tEvent = #mouseUp>
+  [  6] jmpifz [ 23] ............................ if tEvent = #mouseUp then
+  [  9] getparam 2 .............................. <tElemID>
+  [ 11] jmp [ 21] ............................... case tElemID of / otherwise:
+  [ 14] pop 1
+  [ 16] pushzero ................................ <0>
+  [ 17] pusharglistnoret 1 ...................... <0>
+  [ 19] extcall 48 .............................. return 0
+  [ 21] pop 1 ................................... end case
+  [ 23] pushint8 1 .............................. <1>
+  [ 25] pusharglistnoret 1 ...................... <1>
+  [ 27] extcall 48 .............................. return 1
+  [ 29] ret
+end
+
+on eventProcClosed me, tEvent, tElemID, tParam
+  [  0] getparam 1 .............................. <tEvent>
+  [  2] pushsymb 256 ............................ <#mouseUp>
+  [  5] eq ...................................... <tEvent = #mouseUp>
+  [  6] jmpifz [ 68] ............................ if tEvent = #mouseUp then
+  [  9] getparam 2 .............................. <tElemID>
+  [ 11] peek 0 .................................. case tElemID of
+  [ 13] pushcons 20 ............................. <"close">
+  [ 15] eq
+  [ 16] jmpifz [ 35] ............................ (case) "close":
+  [ 19] pop 1
+  [ 21] getparam 0 .............................. <me>
+  [ 23] pusharglist 1 ........................... <me>
+  [ 25] objcall 479 ............................. <me.hideHotelClosingNotice()>
+  [ 28] pusharglistnoret 1 ...................... <me.hideHotelClosingNotice()>
+  [ 30] extcall 48 .............................. return me.hideHotelClosingNotice()
+  [ 32] jmp [ 66]
+  [ 35] peek 0
+  [ 37] pushcons 21 ............................. <"openhrs_ok">
+  [ 39] eq
+  [ 40] jmpifz [ 59] ............................ (case) "openhrs_ok":
+  [ 43] pop 1
+  [ 45] getparam 0 .............................. <me>
+  [ 47] pusharglist 1 ........................... <me>
+  [ 49] objcall 479 ............................. <me.hideHotelClosingNotice()>
+  [ 52] pusharglistnoret 1 ...................... <me.hideHotelClosingNotice()>
+  [ 54] extcall 48 .............................. return me.hideHotelClosingNotice()
+  [ 56] jmp [ 66] ............................... (case) otherwise:
+  [ 59] pop 1
+  [ 61] pushzero ................................ <0>
+  [ 62] pusharglistnoret 1 ...................... <0>
+  [ 64] extcall 48 .............................. return 0
+  [ 66] pop 1 ................................... end case
+  [ 68] pushint8 1 .............................. <1>
+  [ 70] pusharglistnoret 1 ...................... <1>
+  [ 72] extcall 48 .............................. return 1
+  [ 74] ret
+end

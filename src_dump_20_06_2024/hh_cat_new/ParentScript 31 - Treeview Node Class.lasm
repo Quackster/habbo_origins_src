@@ -1,0 +1,277 @@
+property pChildren, pRenderer, pData, pState, pSelected
+
+on construct me
+  [  0] pusharglist 0 ........................... <[]>
+  [  2] pushlist ................................ <[]>
+  [  3] setprop 759 ............................. pChildren = []
+  [  6] pusharglist 0 ........................... <>
+  [  8] extcall 55 .............................. <VOID>
+  [ 10] setprop 760 ............................. pRenderer = VOID
+  [ 13] pusharglist 0 ........................... <>
+  [ 15] extcall 55 .............................. <VOID>
+  [ 17] setprop 492 ............................. pData = VOID
+  [ 20] pushsymb 756 ............................ <#closed>
+  [ 23] setprop 706 ............................. pState = #closed
+  [ 26] pushzero ................................ <0>
+  [ 27] setprop 761 ............................. pSelected = 0
+  [ 30] ret
+end
+
+on deconstruct me
+  [  0] getprop 759 ............................. <pChildren>
+  [  3] pusharglist 1 ........................... <pChildren>
+  [  5] objcall 107 ............................. <pChildren.duplicate()>
+  [  7] setlocal 0 .............................. tChildren = pChildren.duplicate()
+  [  9] getlocal 0 .............................. <tChildren>
+  [ 11] peek 0
+  [ 13] pusharglist 1
+  [ 15] extcall 48
+  [ 17] pushint8 1
+  [ 19] peek 0
+  [ 21] peek 2
+  [ 23] lteq
+  [ 24] jmpifz [ 69] ............................ repeat with tChild in tChildren
+  [ 27] peek 2
+  [ 29] peek 1
+  [ 31] pusharglist 2
+  [ 33] extcall 41
+  [ 35] setlocal 1
+  [ 37] getlocal 1 .............................. <tChild>
+  [ 39] pusharglist 1 ........................... <tChild>
+  [ 41] extcall 57 .............................. <objectp(tChild)>
+  [ 43] jmpifz [ 64] ............................ if objectp(tChild) then
+  [ 46] getlocal 1 .............................. <tChild>
+  [ 48] getobjprop 727 .......................... <tChild.valid>
+  [ 51] jmpifz [ 64] ............................ if tChild.valid then
+  [ 54] getlocal 1 .............................. <tChild>
+  [ 56] pusharglist 1 ........................... <tChild>
+  [ 58] objcall 54 .............................. <tChild.getID()>
+  [ 60] pusharglistnoret 1 ...................... <tChild.getID()>
+  [ 62] extcall 168 ............................. removeObject(tChild.getID())
+  [ 64] pushint8 1
+  [ 66] add
+  [ 67] endrepeat [ 19]
+  [ 69] pop 3
+  [ 71] pusharglist 0 ........................... <[]>
+  [ 73] pushlist ................................ <[]>
+  [ 74] setprop 759 ............................. pChildren = []
+  [ 77] pusharglist 0 ........................... <>
+  [ 79] extcall 55 .............................. <VOID>
+  [ 81] setprop 492 ............................. pData = VOID
+  [ 84] getprop 760 ............................. <pRenderer>
+  [ 87] pusharglist 1 ........................... <pRenderer>
+  [ 89] extcall 57 .............................. <objectp(pRenderer)>
+  [ 91] jmpifz [105] ............................ if objectp(pRenderer) then
+  [ 94] getprop 760 ............................. <pRenderer>
+  [ 97] pusharglist 1 ........................... <pRenderer>
+  [ 99] objcall 54 .............................. <pRenderer.getID()>
+  [101] pusharglistnoret 1 ...................... <pRenderer.getID()>
+  [103] extcall 168 ............................. removeObject(pRenderer.getID())
+  [105] ret
+end
+
+on feedData me, tdata, tWidth
+  [  0] getparam 1 .............................. <tdata>
+  [  2] pusharglist 1 ........................... <tdata>
+  [  4] extcall 43 .............................. <ilk(tdata)>
+  [  6] pushsymb 45 ............................. <#propList>
+  [  8] nteq .................................... <ilk(tdata) <> #propList>
+  [  9] jmpifz [ 29] ............................ if ilk(tdata) <> #propList then
+  [ 12] getparam 0 .............................. <me>
+  [ 14] pushcons 0 .............................. <"Node data was not a proplist">
+  [ 16] pushsymb 728 ............................ <#feedData>
+  [ 19] pushsymb 47 ............................. <#major>
+  [ 21] pusharglist 4 ........................... <me, "Node data was not a proplist", #feedData, #major>
+  [ 23] extcall 46 .............................. <error(me, "Node data was not a proplist", #feedData, #major)>
+  [ 25] pusharglistnoret 1 ...................... <error(me, "Node data was not a proplist", #feedData, #major)>
+  [ 27] extcall 37 .............................. return error(me, "Node data was not a proplist", #feedData, #major)
+  [ 29] getparam 1 .............................. <tdata>
+  [ 31] setprop 492 ............................. pData = tdata
+  [ 34] getparam 1 .............................. <tdata>
+  [ 36] pushsymb 329 ............................ <#navigateable>
+  [ 39] pusharglist 2 ........................... <tdata, #navigateable>
+  [ 41] objcall 102 ............................. <tdata.getaProp(#navigateable)>
+  [ 43] jmpifz [105] ............................ if tdata.getaProp(#navigateable) then
+  [ 46] pushsymb 338 ............................ <#random>
+  [ 49] pushcons 1 .............................. <"Treeview Node Renderer Class">
+  [ 51] pusharglist 2 ........................... <#random, "Treeview Node Renderer Class">
+  [ 53] extcall 155 ............................. <createObject(#random, "Treeview Node Renderer Class")>
+  [ 55] setlocal 0 .............................. tRenderer = createObject(#random, "Treeview Node Renderer Class")
+  [ 57] getlocal 0 .............................. <tRenderer>
+  [ 59] pushzero ................................ <0>
+  [ 60] eq ...................................... <tRenderer = 0>
+  [ 61] jmpifz [ 84] ............................ if tRenderer = 0 then / else
+  [ 64] getparam 0 .............................. <me>
+  [ 66] pushcons 2 .............................. <"Unable to create node renderer">
+  [ 68] pushsymb 728 ............................ <#feedData>
+  [ 71] pushsymb 47 ............................. <#major>
+  [ 73] pusharglist 4 ........................... <me, "Unable to create node renderer", #feedData, #major>
+  [ 75] extcall 46 .............................. <error(me, "Unable to create node renderer", #feedData, #major)>
+  [ 77] pusharglistnoret 1 ...................... <error(me, "Unable to create node renderer", #feedData, #major)>
+  [ 79] extcall 37 .............................. return error(me, "Unable to create node renderer", #feedData, #major)
+  [ 81] jmp [105]
+  [ 84] getlocal 0 .............................. <tRenderer>
+  [ 86] setprop 760 ............................. pRenderer = tRenderer
+  [ 89] getprop 760 ............................. <pRenderer>
+  [ 92] getparam 0 .............................. <me>
+  [ 94] pushsymb 33 ............................. <#width>
+  [ 96] getparam 2 .............................. <tWidth>
+  [ 98] pusharglist 2 ........................... <[#width: tWidth]>
+  [100] pushproplist ............................ <[#width: tWidth]>
+  [101] pusharglistnoret 3 ...................... <pRenderer, me, [#width: tWidth]>
+  [103] objcall 237 ............................. pRenderer.define(me, [#width: tWidth])
+  [105] pushint8 1 .............................. <1>
+  [107] pusharglistnoret 1 ...................... <1>
+  [109] extcall 37 .............................. return 1
+  [111] ret
+end
+
+on getData me, tKey
+  [  0] getprop 492 ............................. <pData>
+  [  3] pusharglist 1 ........................... <pData>
+  [  5] extcall 43 .............................. <ilk(pData)>
+  [  7] pushsymb 45 ............................. <#propList>
+  [  9] nteq .................................... <ilk(pData) <> #propList>
+  [ 10] jmpifz [ 21] ............................ if ilk(pData) <> #propList then
+  [ 13] pusharglist 0 ........................... <>
+  [ 15] extcall 55 .............................. <VOID>
+  [ 17] pusharglistnoret 1 ...................... <VOID>
+  [ 19] extcall 37 .............................. return VOID
+  [ 21] getprop 492 ............................. <pData>
+  [ 24] getparam 1 .............................. <tKey>
+  [ 26] pusharglist 2 ........................... <pData, tKey>
+  [ 28] objcall 102 ............................. <pData.getaProp(tKey)>
+  [ 30] pusharglistnoret 1 ...................... <pData.getaProp(tKey)>
+  [ 32] extcall 37 .............................. return pData.getaProp(tKey)
+  [ 34] ret
+end
+
+on addChild me, tChild
+  [  0] getprop 759 ............................. <pChildren>
+  [  3] getparam 1 .............................. <tChild>
+  [  5] pusharglistnoret 2 ...................... <pChildren, tChild>
+  [  7] objcall 339 ............................. pChildren.add(tChild)
+  [ 10] ret
+end
+
+on getChildren me
+  [  0] getprop 759 ............................. <pChildren>
+  [  3] pusharglistnoret 1 ...................... <pChildren>
+  [  5] extcall 37 .............................. return pChildren
+  [  7] ret
+end
+
+on hasChildren me
+  [  0] getprop 759 ............................. <pChildren>
+  [  3] getobjprop 48 ........................... <pChildren.count>
+  [  5] pushzero ................................ <0>
+  [  6] lt ...................................... <pChildren.count < 0>
+  [  7] jmpifz [ 15] ............................ if pChildren.count < 0 then
+  [ 10] pushzero ................................ <0>
+  [ 11] pusharglistnoret 1 ...................... <0>
+  [ 13] extcall 37 .............................. return 0
+  [ 15] pushzero ................................ <0>
+  [ 16] setlocal 0 .............................. tChildVisible = 0
+  [ 18] getprop 759 ............................. <pChildren>
+  [ 21] peek 0
+  [ 23] pusharglist 1
+  [ 25] extcall 48
+  [ 27] pushint8 1
+  [ 29] peek 0
+  [ 31] peek 2
+  [ 33] lteq
+  [ 34] jmpifz [ 69] ............................ repeat with tChild in pChildren
+  [ 37] peek 2
+  [ 39] peek 1
+  [ 41] pusharglist 2
+  [ 43] extcall 41
+  [ 45] setlocal 1
+  [ 47] getlocal 1 .............................. <tChild>
+  [ 49] pushsymb 329 ............................ <#navigateable>
+  [ 52] pusharglist 2 ........................... <tChild, #navigateable>
+  [ 54] objcall 746 ............................. <tChild.getData(#navigateable)>
+  [ 57] jmpifz [ 64] ............................ if tChild.getData(#navigateable) then
+  [ 60] pushint8 1 .............................. <1>
+  [ 62] setlocal 0 .............................. tChildVisible = 1
+  [ 64] pushint8 1
+  [ 66] add
+  [ 67] endrepeat [ 29]
+  [ 69] pop 3
+  [ 71] getlocal 0 .............................. <tChildVisible>
+  [ 73] pusharglistnoret 1 ...................... <tChildVisible>
+  [ 75] extcall 37 .............................. return tChildVisible
+  [ 77] ret
+end
+
+on setState me, tstate
+  [  0] getprop 706 ............................. <pState>
+  [  3] getparam 1 .............................. <tstate>
+  [  5] nteq .................................... <pState <> tstate>
+  [  6] jmpifz [ 34] ............................ if pState <> tstate then
+  [  9] getparam 1 .............................. <tstate>
+  [ 11] setprop 706 ............................. pState = tstate
+  [ 14] getprop 760 ............................. <pRenderer>
+  [ 17] pusharglist 1 ........................... <pRenderer>
+  [ 19] extcall 78 .............................. <voidp(pRenderer)>
+  [ 21] not ..................................... <not voidp(pRenderer)>
+  [ 22] jmpifz [ 34] ............................ if not voidp(pRenderer) then
+  [ 25] getprop 760 ............................. <pRenderer>
+  [ 28] getparam 1 .............................. <tstate>
+  [ 30] pusharglistnoret 2 ...................... <pRenderer, tstate>
+  [ 32] objcall 80 .............................. pRenderer.setState(tstate)
+  [ 34] ret
+end
+
+on select me, tstate
+  [  0] getprop 761 ............................. <pSelected>
+  [  3] getparam 1 .............................. <tstate>
+  [  5] nteq .................................... <pSelected <> tstate>
+  [  6] jmpifz [ 35] ............................ if pSelected <> tstate then
+  [  9] getparam 1 .............................. <tstate>
+  [ 11] setprop 761 ............................. pSelected = tstate
+  [ 14] getprop 760 ............................. <pRenderer>
+  [ 17] pusharglist 1 ........................... <pRenderer>
+  [ 19] extcall 78 .............................. <voidp(pRenderer)>
+  [ 21] not ..................................... <not voidp(pRenderer)>
+  [ 22] jmpifz [ 35] ............................ if not voidp(pRenderer) then
+  [ 25] getprop 760 ............................. <pRenderer>
+  [ 28] getparam 1 .............................. <tstate>
+  [ 30] pusharglistnoret 2 ...................... <pRenderer, tstate>
+  [ 32] objcall 737 ............................. pRenderer.select(tstate)
+  [ 35] ret
+end
+
+on getState me
+  [  0] getprop 706 ............................. <pState>
+  [  3] pusharglistnoret 1 ...................... <pState>
+  [  5] extcall 37 .............................. return pState
+  [  7] ret
+end
+
+on getSelected me
+  [  0] getprop 761 ............................. <pSelected>
+  [  3] pusharglistnoret 1 ...................... <pSelected>
+  [  5] extcall 37 .............................. return pSelected
+  [  7] ret
+end
+
+on getImage me
+  [  0] getprop 760 ............................. <pRenderer>
+  [  3] pusharglist 1 ........................... <pRenderer>
+  [  5] extcall 78 .............................. <voidp(pRenderer)>
+  [  7] getprop 760 ............................. <pRenderer>
+  [ 10] pushzero ................................ <0>
+  [ 11] eq ...................................... <pRenderer = 0>
+  [ 12] or ...................................... <voidp(pRenderer) or (pRenderer = 0)>
+  [ 13] jmpifz [ 24] ............................ if voidp(pRenderer) or (pRenderer = 0) then
+  [ 16] pusharglist 0 ........................... <>
+  [ 18] extcall 55 .............................. <VOID>
+  [ 20] pusharglistnoret 1 ...................... <VOID>
+  [ 22] extcall 37 .............................. return VOID
+  [ 24] getprop 760 ............................. <pRenderer>
+  [ 27] pusharglist 1 ........................... <pRenderer>
+  [ 29] objcall 177 ............................. <pRenderer.getImage()>
+  [ 31] pusharglistnoret 1 ...................... <pRenderer.getImage()>
+  [ 33] extcall 37 .............................. return pRenderer.getImage()
+  [ 35] ret
+end

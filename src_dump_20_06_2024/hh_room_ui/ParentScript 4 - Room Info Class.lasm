@@ -1,0 +1,659 @@
+property pWindowID, pUseRatings, pEventInfoWindowID
+
+on construct me
+  [  0] pushcons 0 .............................. <"RoomInfoWindow">
+  [  2] setprop 242 ............................. pWindowID = "RoomInfoWindow"
+  [  4] pushcons 1 .............................. <"EventInfoWindow">
+  [  6] setprop 243 ............................. pEventInfoWindowID = "EventInfoWindow"
+  [  8] pushzero ................................ <0>
+  [  9] setprop 244 ............................. pUseRatings = 0
+  [ 11] pushcons 2 .............................. <"room.rating.enable">
+  [ 13] pusharglist 1 ........................... <"room.rating.enable">
+  [ 15] extcall 69 .............................. <variableExists("room.rating.enable")>
+  [ 17] jmpifz [ 36] ............................ if variableExists("room.rating.enable") then
+  [ 20] pushcons 2 .............................. <"room.rating.enable">
+  [ 22] pusharglist 1 ........................... <"room.rating.enable">
+  [ 24] extcall 121 ............................. <getVariable("room.rating.enable")>
+  [ 26] pushint8 1 .............................. <1>
+  [ 28] eq ...................................... <getVariable("room.rating.enable") = 1>
+  [ 29] jmpifz [ 36] ............................ if getVariable("room.rating.enable") = 1 then
+  [ 32] pushint8 1 .............................. <1>
+  [ 34] setprop 244 ............................. pUseRatings = 1
+  [ 36] pushsymb 245 ............................ <#roomRatingChanged>
+  [ 38] getparam 0 .............................. <me>
+  [ 40] pusharglist 1 ........................... <me>
+  [ 42] objcall 19 .............................. <me.getID()>
+  [ 44] pushsymb 233 ............................ <#updateRatingData>
+  [ 46] pusharglistnoret 3 ...................... <#roomRatingChanged, me.getID(), #updateRatingData>
+  [ 48] extcall 17 .............................. registerMessage(#roomRatingChanged, me.getID(), #updateRatingData)
+  [ 50] pushsymb 246 ............................ <#roomEventInfoUpdated>
+  [ 52] getparam 0 .............................. <me>
+  [ 54] pusharglist 1 ........................... <me>
+  [ 56] objcall 19 .............................. <me.getID()>
+  [ 58] pushsymb 235 ............................ <#updateRoomEventInfo>
+  [ 60] pusharglistnoret 3 ...................... <#roomEventInfoUpdated, me.getID(), #updateRoomEventInfo>
+  [ 62] extcall 17 .............................. registerMessage(#roomEventInfoUpdated, me.getID(), #updateRoomEventInfo)
+  [ 64] pushint8 1 .............................. <1>
+  [ 66] pusharglistnoret 1 ...................... <1>
+  [ 68] extcall 20 .............................. return 1
+  [ 70] ret
+end
+
+on deconstruct me
+  [  0] pushint8 1 .............................. <1>
+  [  2] pusharglistnoret 1 ...................... <1>
+  [  4] extcall 20 .............................. return 1
+  [  6] ret
+end
+
+on showRoomInfo me
+  [  0] pushsymb 77 ............................. <#room>
+  [  2] pusharglist 1 ........................... <#room>
+  [  4] extcall 28 .............................. <getThread(#room)>
+  [  6] pusharglist 1 ........................... <getThread(#room)>
+  [  8] objcall 29 .............................. <getThread(#room).getComponent()>
+  [ 10] pusharglist 1 ........................... <getThread(#room).getComponent()>
+  [ 12] objcall 247 ............................. <getThread(#room).getComponent().getRoomData()>
+  [ 14] setlocal 0 .............................. tRoomData = getThread(#room).getComponent().getRoomData()
+  [ 16] getlocal 0 .............................. <tRoomData>
+  [ 18] pusharglist 1 ........................... <tRoomData>
+  [ 20] extcall 248 ............................. <listp(tRoomData)>
+  [ 22] jmpifz [ 35] ............................ if listp(tRoomData) then
+  [ 25] getlocal 0 .............................. <tRoomData>
+  [ 27] pushsymb 249 ............................ <#type>
+  [ 29] pusharglist 2 ........................... <tRoomData, #type>
+  [ 31] objcall 250 ............................. <tRoomData.getaProp(#type)>
+  [ 33] setlocal 1 .............................. tRoomType = tRoomData.getaProp(#type)
+  [ 35] getlocal 1 .............................. <tRoomType>
+  [ 37] pushsymb 251 ............................ <#private>
+  [ 39] eq ...................................... <tRoomType = #private>
+  [ 40] jmpifz [139] ............................ if tRoomType = #private then / else
+  [ 43] getparam 0 .............................. <me>
+  [ 45] pusharglist 1 ........................... <me>
+  [ 47] objcall 231 ............................. <me.createInfoWindow()>
+  [ 49] setlocal 2 .............................. tWndObj = me.createInfoWindow()
+  [ 51] getlocal 2 .............................. <tWndObj>
+  [ 53] pushzero ................................ <0>
+  [ 54] eq ...................................... <tWndObj = 0>
+  [ 55] jmpifz [ 63] ............................ if tWndObj = 0 then
+  [ 58] pushzero ................................ <0>
+  [ 59] pusharglistnoret 1 ...................... <0>
+  [ 61] extcall 20 .............................. return 0
+  [ 63] pushsymb 77 ............................. <#room>
+  [ 65] pusharglist 1 ........................... <#room>
+  [ 67] extcall 28 .............................. <getThread(#room)>
+  [ 69] pusharglist 1 ........................... <getThread(#room)>
+  [ 71] objcall 29 .............................. <getThread(#room).getComponent()>
+  [ 73] getobjprop 252 .......................... <getThread(#room).getComponent().pSaveData>
+  [ 75] setlocal 0 .............................. tRoomData = getThread(#room).getComponent().pSaveData
+  [ 77] getlocal 2 .............................. <tWndObj>
+  [ 79] pushcons 3 .............................. <"room_info_room_name">
+  [ 81] pusharglist 2 ........................... <tWndObj, "room_info_room_name">
+  [ 83] objcall 87 .............................. <tWndObj.getElement("room_info_room_name")>
+  [ 85] getlocal 0 .............................. <tRoomData>
+  [ 87] pushsymb 253 ............................ <#name>
+  [ 89] pusharglist 2 ........................... <tRoomData, #name>
+  [ 91] objcall 164 ............................. <tRoomData[#name]>
+  [ 93] pusharglistnoret 2 ...................... <tWndObj.getElement("room_info_room_name"), tRoomData[#name]>
+  [ 95] objcall 110 ............................. tWndObj.getElement("room_info_room_name").setText(tRoomData[#name])
+  [ 97] getlocal 2 .............................. <tWndObj>
+  [ 99] pushcons 4 .............................. <"room_info_owner">
+  [101] pusharglist 2 ........................... <tWndObj, "room_info_owner">
+  [103] objcall 87 .............................. <tWndObj.getElement("room_info_owner")>
+  [105] pushcons 5 .............................. <"room_owner">
+  [107] pusharglist 1 ........................... <"room_owner">
+  [109] extcall 109 ............................. <getText("room_owner")>
+  [111] getlocal 0 .............................. <tRoomData>
+  [113] pushsymb 254 ............................ <#owner>
+  [115] pusharglist 2 ........................... <tRoomData, #owner>
+  [117] objcall 164 ............................. <tRoomData[#owner]>
+  [119] joinpadstr .............................. <getText("room_owner") && tRoomData[#owner]>
+  [120] pusharglistnoret 2 ...................... <tWndObj.getElement("room_info_owner"), getText("room_owner") && tRoomData[#owner]>
+  [122] objcall 110 ............................. tWndObj.getElement("room_info_owner").setText(getText("room_owner") && tRoomData[#owner])
+  [124] getparam 0 .............................. <me>
+  [126] pusharglistnoret 1 ...................... <me>
+  [128] objcall 233 ............................. me.updateRatingData()
+  [130] getparam 0 .............................. <me>
+  [132] pusharglistnoret 1 ...................... <me>
+  [134] objcall 235 ............................. me.updateRoomEventInfo()
+  [136] jmp [145]
+  [139] getparam 0 .............................. <me>
+  [141] pusharglistnoret 1 ...................... <me>
+  [143] objcall 36 .............................. me.hideRoomInfo()
+  [145] ret
+end
+
+on hideRoomInfo me
+  [  0] getprop 242 ............................. <pWindowID>
+  [  2] pusharglist 1 ........................... <pWindowID>
+  [  4] extcall 75 .............................. <windowExists(pWindowID)>
+  [  6] jmpifz [ 15] ............................ if windowExists(pWindowID) then
+  [  9] getprop 242 ............................. <pWindowID>
+  [ 11] pusharglistnoret 1 ...................... <pWindowID>
+  [ 13] extcall 106 ............................. removeWindow(pWindowID)
+  [ 15] getprop 243 ............................. <pEventInfoWindowID>
+  [ 17] pusharglist 1 ........................... <pEventInfoWindowID>
+  [ 19] extcall 75 .............................. <windowExists(pEventInfoWindowID)>
+  [ 21] jmpifz [ 30] ............................ if windowExists(pEventInfoWindowID) then
+  [ 24] getprop 243 ............................. <pEventInfoWindowID>
+  [ 26] pusharglistnoret 1 ...................... <pEventInfoWindowID>
+  [ 28] extcall 106 ............................. removeWindow(pEventInfoWindowID)
+  [ 30] ret
+end
+
+on createInfoWindow me
+  [  0] getprop 242 ............................. <pWindowID>
+  [  2] pusharglist 1 ........................... <pWindowID>
+  [  4] extcall 75 .............................. <windowExists(pWindowID)>
+  [  6] not ..................................... <not windowExists(pWindowID)>
+  [  7] jmpifz [ 92] ............................ if not windowExists(pWindowID) then / else
+  [ 10] getprop 242 ............................. <pWindowID>
+  [ 12] pushcons 6 .............................. <"room_info.window">
+  [ 14] pushint8 10 ............................. <10>
+  [ 16] pushint16 420 ........................... <420>
+  [ 19] pusharglist 4 ........................... <pWindowID, "room_info.window", 10, 420>
+  [ 21] extcall 76 .............................. <createWindow(pWindowID, "room_info.window", 10, 420)>
+  [ 23] setlocal 0 .............................. tSuccess = createWindow(pWindowID, "room_info.window", 10, 420)
+  [ 25] getlocal 0 .............................. <tSuccess>
+  [ 27] pushzero ................................ <0>
+  [ 28] eq ...................................... <tSuccess = 0>
+  [ 29] jmpifz [ 40] ............................ if tSuccess = 0 then / else
+  [ 32] pushzero ................................ <0>
+  [ 33] pusharglistnoret 1 ...................... <0>
+  [ 35] extcall 20 .............................. return 0
+  [ 37] jmp [ 89]
+  [ 40] getprop 242 ............................. <pWindowID>
+  [ 42] pusharglist 1 ........................... <pWindowID>
+  [ 44] extcall 80 .............................. <getWindow(pWindowID)>
+  [ 46] setlocal 1 .............................. tWndObj = getWindow(pWindowID)
+  [ 48] getlocal 1 .............................. <tWndObj>
+  [ 50] pushcons 7 .............................. <"window.default.locz">
+  [ 52] pusharglist 1 ........................... <"window.default.locz">
+  [ 54] extcall 70 .............................. <getIntVariable("window.default.locz")>
+  [ 56] pushint8 110 ............................ <110>
+  [ 58] sub ..................................... <getIntVariable("window.default.locz") - 110>
+  [ 59] pusharglistnoret 2 ...................... <tWndObj, getIntVariable("window.default.locz") - 110>
+  [ 61] objcall 86 .............................. tWndObj.moveZ(getIntVariable("window.default.locz") - 110)
+  [ 63] getlocal 1 .............................. <tWndObj>
+  [ 65] pusharglistnoret 1 ...................... <tWndObj>
+  [ 67] objcall 81 .............................. tWndObj.lock()
+  [ 69] getlocal 1 .............................. <tWndObj>
+  [ 71] pushsymb 240 ............................ <#eventProcInfo>
+  [ 73] getparam 0 .............................. <me>
+  [ 75] pusharglist 1 ........................... <me>
+  [ 77] objcall 19 .............................. <me.getID()>
+  [ 79] pusharglistnoret 3 ...................... <tWndObj, #eventProcInfo, me.getID()>
+  [ 81] objcall 93 .............................. tWndObj.registerProcedure(#eventProcInfo, me.getID())
+  [ 83] getlocal 1 .............................. <tWndObj>
+  [ 85] pusharglistnoret 1 ...................... <tWndObj>
+  [ 87] extcall 20 .............................. return tWndObj
+  [ 89] jmp [102]
+  [ 92] getprop 242 ............................. <pWindowID>
+  [ 94] pusharglist 1 ........................... <pWindowID>
+  [ 96] extcall 80 .............................. <getWindow(pWindowID)>
+  [ 98] pusharglistnoret 1 ...................... <getWindow(pWindowID)>
+  [100] extcall 20 .............................. return getWindow(pWindowID)
+  [102] ret
+end
+
+on sendFlatRate me, tValue
+  [  0] pushsymb 77 ............................. <#room>
+  [  2] pusharglist 1 ........................... <#room>
+  [  4] extcall 28 .............................. <getThread(#room)>
+  [  6] pusharglist 1 ........................... <getThread(#room)>
+  [  8] objcall 29 .............................. <getThread(#room).getComponent()>
+  [ 10] pusharglist 1 ........................... <getThread(#room).getComponent()>
+  [ 12] objcall 193 ............................. <getThread(#room).getComponent().getRoomConnection()>
+  [ 14] pushcons 8 .............................. <"RATEFLAT">
+  [ 16] pushsymb 194 ............................ <#integer>
+  [ 18] getparam 1 .............................. <tValue>
+  [ 20] pusharglist 2 ........................... <[#integer: tValue]>
+  [ 22] pushproplist ............................ <[#integer: tValue]>
+  [ 23] pusharglistnoret 3 ...................... <getThread(#room).getComponent().getRoomConnection(), "RATEFLAT", [#integer: tValue]>
+  [ 25] objcall 136 ............................. getThread(#room).getComponent().getRoomConnection().send("RATEFLAT", [#integer: tValue])
+  [ 27] ret
+end
+
+on updateRatingData me
+  [  0] getprop 242 ............................. <pWindowID>
+  [  2] pusharglist 1 ........................... <pWindowID>
+  [  4] extcall 80 .............................. <getWindow(pWindowID)>
+  [  6] setlocal 0 .............................. tWndObj = getWindow(pWindowID)
+  [  8] getlocal 0 .............................. <tWndObj>
+  [ 10] pushzero ................................ <0>
+  [ 11] eq ...................................... <tWndObj = 0>
+  [ 12] jmpifz [ 20] ............................ if tWndObj = 0 then
+  [ 15] pushzero ................................ <0>
+  [ 16] pusharglistnoret 1 ...................... <0>
+  [ 18] extcall 20 .............................. return 0
+  [ 20] getlocal 0 .............................. <tWndObj>
+  [ 22] pushcons 9 .............................. <"room_info_rate_plus">
+  [ 24] pusharglist 2 ........................... <tWndObj, "room_info_rate_plus">
+  [ 26] objcall 100 ............................. <tWndObj.elementExists("room_info_rate_plus")>
+  [ 28] not ..................................... <not tWndObj.elementExists("room_info_rate_plus")>
+  [ 29] jmpifz [ 37] ............................ if not tWndObj.elementExists("room_info_rate_plus") then
+  [ 32] pushzero ................................ <0>
+  [ 33] pusharglistnoret 1 ...................... <0>
+  [ 35] extcall 20 .............................. return 0
+  [ 37] getprop 244 ............................. <pUseRatings>
+  [ 39] not ..................................... <not pUseRatings>
+  [ 40] jmpifz [ 55] ............................ if not pUseRatings then
+  [ 43] getparam 0 .............................. <me>
+  [ 45] pusharglistnoret 1 ...................... <me>
+  [ 47] objcall 234 ............................. me.hideRatingElements()
+  [ 49] pushint8 1 .............................. <1>
+  [ 51] pusharglistnoret 1 ...................... <1>
+  [ 53] extcall 20 .............................. return 1
+  [ 55] pushsymb 77 ............................. <#room>
+  [ 57] pusharglist 1 ........................... <#room>
+  [ 59] extcall 28 .............................. <getThread(#room)>
+  [ 61] pusharglist 1 ........................... <getThread(#room)>
+  [ 63] objcall 29 .............................. <getThread(#room).getComponent()>
+  [ 65] pusharglist 1 ........................... <getThread(#room).getComponent()>
+  [ 67] objcall 259 ............................. <getThread(#room).getComponent().getRoomRating()>
+  [ 70] setlocal 1 .............................. tRoomRatings = getThread(#room).getComponent().getRoomRating()
+  [ 72] getlocal 1 .............................. <tRoomRatings>
+  [ 74] pushsymb 260 ............................ <#rate>
+  [ 77] pusharglist 2 ........................... <tRoomRatings, #rate>
+  [ 79] objcall 164 ............................. <tRoomRatings[#rate]>
+  [ 81] pushint8 1 .............................. <1>
+  [ 83] inv ..................................... <-1>
+  [ 84] eq ...................................... <tRoomRatings[#rate] = -1>
+  [ 85] jmpifz [158] ............................ if tRoomRatings[#rate] = -1 then / else
+  [ 88] getlocal 0 .............................. <tWndObj>
+  [ 90] pushcons 9 .............................. <"room_info_rate_plus">
+  [ 92] pusharglist 2 ........................... <tWndObj, "room_info_rate_plus">
+  [ 94] objcall 87 .............................. <tWndObj.getElement("room_info_rate_plus")>
+  [ 96] pushsymb 261 ............................ <#visible>
+  [ 99] pushint8 1 .............................. <1>
+  [101] pusharglistnoret 3 ...................... <tWndObj.getElement("room_info_rate_plus"), #visible, 1>
+  [103] objcall 90 .............................. tWndObj.getElement("room_info_rate_plus").setProperty(#visible, 1)
+  [105] getlocal 0 .............................. <tWndObj>
+  [107] pushcons 10 ............................. <"room_info_rate_minus">
+  [109] pusharglist 2 ........................... <tWndObj, "room_info_rate_minus">
+  [111] objcall 87 .............................. <tWndObj.getElement("room_info_rate_minus")>
+  [113] pushsymb 261 ............................ <#visible>
+  [116] pushint8 1 .............................. <1>
+  [118] pusharglistnoret 3 ...................... <tWndObj.getElement("room_info_rate_minus"), #visible, 1>
+  [120] objcall 90 .............................. tWndObj.getElement("room_info_rate_minus").setProperty(#visible, 1)
+  [122] getlocal 0 .............................. <tWndObj>
+  [124] pushcons 11 ............................. <"room_info_rate_room">
+  [126] pusharglist 2 ........................... <tWndObj, "room_info_rate_room">
+  [128] objcall 87 .............................. <tWndObj.getElement("room_info_rate_room")>
+  [130] pushsymb 261 ............................ <#visible>
+  [133] pushint8 1 .............................. <1>
+  [135] pusharglistnoret 3 ...................... <tWndObj.getElement("room_info_rate_room"), #visible, 1>
+  [137] objcall 90 .............................. tWndObj.getElement("room_info_rate_room").setProperty(#visible, 1)
+  [139] getlocal 0 .............................. <tWndObj>
+  [141] pushcons 12 ............................. <"room_info_rate_value">
+  [143] pusharglist 2 ........................... <tWndObj, "room_info_rate_value">
+  [145] objcall 87 .............................. <tWndObj.getElement("room_info_rate_value")>
+  [147] pushsymb 261 ............................ <#visible>
+  [150] pushzero ................................ <0>
+  [151] pusharglistnoret 3 ...................... <tWndObj.getElement("room_info_rate_value"), #visible, 0>
+  [153] objcall 90 .............................. tWndObj.getElement("room_info_rate_value").setProperty(#visible, 0)
+  [155] jmp [255]
+  [158] getlocal 0 .............................. <tWndObj>
+  [160] pushcons 9 .............................. <"room_info_rate_plus">
+  [162] pusharglist 2 ........................... <tWndObj, "room_info_rate_plus">
+  [164] objcall 87 .............................. <tWndObj.getElement("room_info_rate_plus")>
+  [166] pushsymb 261 ............................ <#visible>
+  [169] pushzero ................................ <0>
+  [170] pusharglistnoret 3 ...................... <tWndObj.getElement("room_info_rate_plus"), #visible, 0>
+  [172] objcall 90 .............................. tWndObj.getElement("room_info_rate_plus").setProperty(#visible, 0)
+  [174] getlocal 0 .............................. <tWndObj>
+  [176] pushcons 10 ............................. <"room_info_rate_minus">
+  [178] pusharglist 2 ........................... <tWndObj, "room_info_rate_minus">
+  [180] objcall 87 .............................. <tWndObj.getElement("room_info_rate_minus")>
+  [182] pushsymb 261 ............................ <#visible>
+  [185] pushzero ................................ <0>
+  [186] pusharglistnoret 3 ...................... <tWndObj.getElement("room_info_rate_minus"), #visible, 0>
+  [188] objcall 90 .............................. tWndObj.getElement("room_info_rate_minus").setProperty(#visible, 0)
+  [190] getlocal 0 .............................. <tWndObj>
+  [192] pushcons 11 ............................. <"room_info_rate_room">
+  [194] pusharglist 2 ........................... <tWndObj, "room_info_rate_room">
+  [196] objcall 87 .............................. <tWndObj.getElement("room_info_rate_room")>
+  [198] pushsymb 261 ............................ <#visible>
+  [201] pushzero ................................ <0>
+  [202] pusharglistnoret 3 ...................... <tWndObj.getElement("room_info_rate_room"), #visible, 0>
+  [204] objcall 90 .............................. tWndObj.getElement("room_info_rate_room").setProperty(#visible, 0)
+  [206] getlocal 0 .............................. <tWndObj>
+  [208] pushcons 12 ............................. <"room_info_rate_value">
+  [210] pusharglist 2 ........................... <tWndObj, "room_info_rate_value">
+  [212] objcall 87 .............................. <tWndObj.getElement("room_info_rate_value")>
+  [214] pushsymb 261 ............................ <#visible>
+  [217] pushint8 1 .............................. <1>
+  [219] pusharglistnoret 3 ...................... <tWndObj.getElement("room_info_rate_value"), #visible, 1>
+  [221] objcall 90 .............................. tWndObj.getElement("room_info_rate_value").setProperty(#visible, 1)
+  [223] pushcons 13 ............................. <"room_info_rated">
+  [225] pusharglist 1 ........................... <"room_info_rated">
+  [227] extcall 109 ............................. <getText("room_info_rated")>
+  [229] getlocal 1 .............................. <tRoomRatings>
+  [231] pushsymb 260 ............................ <#rate>
+  [234] pusharglist 2 ........................... <tRoomRatings, #rate>
+  [236] objcall 164 ............................. <tRoomRatings[#rate]>
+  [238] joinpadstr .............................. <getText("room_info_rated") && tRoomRatings[#rate]>
+  [239] setlocal 2 .............................. tRateText = getText("room_info_rated") && tRoomRatings[#rate]
+  [241] getlocal 0 .............................. <tWndObj>
+  [243] pushcons 12 ............................. <"room_info_rate_value">
+  [245] pusharglist 2 ........................... <tWndObj, "room_info_rate_value">
+  [247] objcall 87 .............................. <tWndObj.getElement("room_info_rate_value")>
+  [249] getlocal 2 .............................. <tRateText>
+  [251] pusharglistnoret 2 ...................... <tWndObj.getElement("room_info_rate_value"), tRateText>
+  [253] objcall 110 ............................. tWndObj.getElement("room_info_rate_value").setText(tRateText)
+  [255] ret
+end
+
+on hideRatingElements me
+  [  0] getprop 242 ............................. <pWindowID>
+  [  2] pusharglist 1 ........................... <pWindowID>
+  [  4] extcall 80 .............................. <getWindow(pWindowID)>
+  [  6] setlocal 0 .............................. tWndObj = getWindow(pWindowID)
+  [  8] getlocal 0 .............................. <tWndObj>
+  [ 10] pushcons 11 ............................. <"room_info_rate_room">
+  [ 12] pusharglist 2 ........................... <tWndObj, "room_info_rate_room">
+  [ 14] objcall 87 .............................. <tWndObj.getElement("room_info_rate_room")>
+  [ 16] pushsymb 261 ............................ <#visible>
+  [ 19] pushzero ................................ <0>
+  [ 20] pusharglistnoret 3 ...................... <tWndObj.getElement("room_info_rate_room"), #visible, 0>
+  [ 22] objcall 90 .............................. tWndObj.getElement("room_info_rate_room").setProperty(#visible, 0)
+  [ 24] getlocal 0 .............................. <tWndObj>
+  [ 26] pushcons 9 .............................. <"room_info_rate_plus">
+  [ 28] pusharglist 2 ........................... <tWndObj, "room_info_rate_plus">
+  [ 30] objcall 87 .............................. <tWndObj.getElement("room_info_rate_plus")>
+  [ 32] pushsymb 261 ............................ <#visible>
+  [ 35] pushzero ................................ <0>
+  [ 36] pusharglistnoret 3 ...................... <tWndObj.getElement("room_info_rate_plus"), #visible, 0>
+  [ 38] objcall 90 .............................. tWndObj.getElement("room_info_rate_plus").setProperty(#visible, 0)
+  [ 40] getlocal 0 .............................. <tWndObj>
+  [ 42] pushcons 10 ............................. <"room_info_rate_minus">
+  [ 44] pusharglist 2 ........................... <tWndObj, "room_info_rate_minus">
+  [ 46] objcall 87 .............................. <tWndObj.getElement("room_info_rate_minus")>
+  [ 48] pushsymb 261 ............................ <#visible>
+  [ 51] pushzero ................................ <0>
+  [ 52] pusharglistnoret 3 ...................... <tWndObj.getElement("room_info_rate_minus"), #visible, 0>
+  [ 54] objcall 90 .............................. tWndObj.getElement("room_info_rate_minus").setProperty(#visible, 0)
+  [ 56] getlocal 0 .............................. <tWndObj>
+  [ 58] pushcons 12 ............................. <"room_info_rate_value">
+  [ 60] pusharglist 2 ........................... <tWndObj, "room_info_rate_value">
+  [ 62] objcall 87 .............................. <tWndObj.getElement("room_info_rate_value")>
+  [ 64] pushsymb 261 ............................ <#visible>
+  [ 67] pushzero ................................ <0>
+  [ 68] pusharglistnoret 3 ...................... <tWndObj.getElement("room_info_rate_value"), #visible, 0>
+  [ 70] objcall 90 .............................. tWndObj.getElement("room_info_rate_value").setProperty(#visible, 0)
+  [ 72] ret
+end
+
+on updateRoomEventInfo me
+  [  0] pushsymb 77 ............................. <#room>
+  [  2] pusharglist 1 ........................... <#room>
+  [  4] extcall 28 .............................. <getThread(#room)>
+  [  6] pusharglist 1 ........................... <getThread(#room)>
+  [  8] objcall 29 .............................. <getThread(#room).getComponent()>
+  [ 10] pusharglist 1 ........................... <getThread(#room).getComponent()>
+  [ 12] objcall 264 ............................. <getThread(#room).getComponent().getRoomEvent()>
+  [ 15] setlocal 0 .............................. tRoomEventData = getThread(#room).getComponent().getRoomEvent()
+  [ 17] getlocal 0 .............................. <tRoomEventData>
+  [ 19] pusharglist 1 ........................... <tRoomEventData>
+  [ 21] extcall 25 .............................. <voidp(tRoomEventData)>
+  [ 23] jmpifz [ 31] ............................ if voidp(tRoomEventData) then
+  [ 26] pushzero ................................ <0>
+  [ 27] pusharglistnoret 1 ...................... <0>
+  [ 29] extcall 20 .............................. return 0
+  [ 31] getprop 242 ............................. <pWindowID>
+  [ 33] pusharglist 1 ........................... <pWindowID>
+  [ 35] extcall 80 .............................. <getWindow(pWindowID)>
+  [ 37] setlocal 1 .............................. tWnd = getWindow(pWindowID)
+  [ 39] getlocal 1 .............................. <tWnd>
+  [ 41] pushzero ................................ <0>
+  [ 42] eq ...................................... <tWnd = 0>
+  [ 43] jmpifz [ 51] ............................ if tWnd = 0 then
+  [ 46] pushzero ................................ <0>
+  [ 47] pusharglistnoret 1 ...................... <0>
+  [ 49] extcall 20 .............................. return 0
+  [ 51] getlocal 1 .............................. <tWnd>
+  [ 53] pushcons 14 ............................. <"roominfo_event_link">
+  [ 55] pusharglist 2 ........................... <tWnd, "roominfo_event_link">
+  [ 57] objcall 87 .............................. <tWnd.getElement("roominfo_event_link")>
+  [ 59] setlocal 2 .............................. tLinkElem = tWnd.getElement("roominfo_event_link")
+  [ 61] getlocal 0 .............................. <tRoomEventData>
+  [ 63] pushsymb 265 ............................ <#hostID>
+  [ 66] pusharglist 2 ........................... <tRoomEventData, #hostID>
+  [ 68] objcall 250 ............................. <tRoomEventData.getaProp(#hostID)>
+  [ 70] setlocal 3 .............................. tHostID = tRoomEventData.getaProp(#hostID)
+  [ 72] getlocal 3 .............................. <tHostID>
+  [ 74] pushzero ................................ <0>
+  [ 75] gt ...................................... <tHostID > 0>
+  [ 76] jmpifz [106] ............................ if tHostID > 0 then / else
+  [ 79] getlocal 2 .............................. <tLinkElem>
+  [ 81] pusharglistnoret 1 ...................... <tLinkElem>
+  [ 83] objcall 141 ............................. tLinkElem.show()
+  [ 85] getlocal 0 .............................. <tRoomEventData>
+  [ 87] pushsymb 253 ............................ <#name>
+  [ 89] pusharglist 2 ........................... <tRoomEventData, #name>
+  [ 91] objcall 250 ............................. <tRoomEventData.getaProp(#name)>
+  [ 93] setlocal 4 .............................. tName = tRoomEventData.getaProp(#name)
+  [ 95] getlocal 2 .............................. <tLinkElem>
+  [ 97] getlocal 4 .............................. <tName>
+  [ 99] pusharglistnoret 2 ...................... <tLinkElem, tName>
+  [101] objcall 110 ............................. tLinkElem.setText(tName)
+  [103] jmp [112]
+  [106] getlocal 2 .............................. <tLinkElem>
+  [108] pusharglistnoret 1 ...................... <tLinkElem>
+  [110] objcall 101 ............................. tLinkElem.hide()
+  [112] ret
+end
+
+on showEventInfo me
+  [  0] pushsymb 77 ............................. <#room>
+  [  2] pusharglist 1 ........................... <#room>
+  [  4] extcall 28 .............................. <getThread(#room)>
+  [  6] pusharglist 1 ........................... <getThread(#room)>
+  [  8] objcall 29 .............................. <getThread(#room).getComponent()>
+  [ 10] pusharglist 1 ........................... <getThread(#room).getComponent()>
+  [ 12] objcall 264 ............................. <getThread(#room).getComponent().getRoomEvent()>
+  [ 15] setlocal 0 .............................. tRoomEventData = getThread(#room).getComponent().getRoomEvent()
+  [ 17] getprop 243 ............................. <pEventInfoWindowID>
+  [ 19] pushcons 15 ............................. <"eventinfo_bubble.window">
+  [ 21] pusharglistnoret 2 ...................... <pEventInfoWindowID, "eventinfo_bubble.window">
+  [ 23] extcall 76 .............................. createWindow(pEventInfoWindowID, "eventinfo_bubble.window")
+  [ 25] getprop 243 ............................. <pEventInfoWindowID>
+  [ 27] pusharglist 1 ........................... <pEventInfoWindowID>
+  [ 29] extcall 80 .............................. <getWindow(pEventInfoWindowID)>
+  [ 31] setlocal 1 .............................. tWnd = getWindow(pEventInfoWindowID)
+  [ 33] getlocal 1 .............................. <tWnd>
+  [ 35] pushcons 16 ............................. <"room_info_event_details.window">
+  [ 37] pusharglistnoret 2 ...................... <tWnd, "room_info_event_details.window">
+  [ 39] objcall 85 .............................. tWnd.merge("room_info_event_details.window")
+  [ 41] getlocal 0 .............................. <tRoomEventData>
+  [ 43] pushsymb 253 ............................ <#name>
+  [ 45] pusharglist 2 ........................... <tRoomEventData, #name>
+  [ 47] objcall 250 ............................. <tRoomEventData.getaProp(#name)>
+  [ 49] setlocal 2 .............................. tName = tRoomEventData.getaProp(#name)
+  [ 51] getlocal 0 .............................. <tRoomEventData>
+  [ 53] pushsymb 270 ............................ <#desc>
+  [ 56] pusharglist 2 ........................... <tRoomEventData, #desc>
+  [ 58] objcall 250 ............................. <tRoomEventData.getaProp(#desc)>
+  [ 60] setlocal 3 .............................. tDesc = tRoomEventData.getaProp(#desc)
+  [ 62] getlocal 1 .............................. <tWnd>
+  [ 64] pushcons 17 ............................. <"room_info_event_details_header">
+  [ 66] pusharglist 2 ........................... <tWnd, "room_info_event_details_header">
+  [ 68] objcall 87 .............................. <tWnd.getElement("room_info_event_details_header")>
+  [ 70] getlocal 2 .............................. <tName>
+  [ 72] pusharglistnoret 2 ...................... <tWnd.getElement("room_info_event_details_header"), tName>
+  [ 74] objcall 110 ............................. tWnd.getElement("room_info_event_details_header").setText(tName)
+  [ 76] getlocal 1 .............................. <tWnd>
+  [ 78] pushcons 18 ............................. <"room_info_event_details_text">
+  [ 80] pusharglist 2 ........................... <tWnd, "room_info_event_details_text">
+  [ 82] objcall 87 .............................. <tWnd.getElement("room_info_event_details_text")>
+  [ 84] getlocal 3 .............................. <tDesc>
+  [ 86] pusharglistnoret 2 ...................... <tWnd.getElement("room_info_event_details_text"), tDesc>
+  [ 88] objcall 110 ............................. tWnd.getElement("room_info_event_details_text").setText(tDesc)
+  [ 90] getlocal 1 .............................. <tWnd>
+  [ 92] pushsymb 241 ............................ <#eventProcEventInfo>
+  [ 94] getparam 0 .............................. <me>
+  [ 96] pusharglist 1 ........................... <me>
+  [ 98] objcall 19 .............................. <me.getID()>
+  [100] pushsymb 92 ............................. <#mouseUp>
+  [102] pusharglistnoret 4 ...................... <tWnd, #eventProcEventInfo, me.getID(), #mouseUp>
+  [104] objcall 93 .............................. tWnd.registerProcedure(#eventProcEventInfo, me.getID(), #mouseUp)
+  [106] getlocal 1 .............................. <tWnd>
+  [108] pushint8 5 .............................. <5>
+  [110] pushint16 355 ........................... <355>
+  [113] pusharglistnoret 3 ...................... <tWnd, 5, 355>
+  [115] objcall 271 ............................. tWnd.moveTo(5, 355)
+  [118] pushsymb 171 ............................ <#session>
+  [120] pusharglist 1 ........................... <#session>
+  [122] extcall 24 .............................. <getObject(#session)>
+  [124] setlocal 4 .............................. tSessionObj = getObject(#session)
+  [126] getlocal 4 .............................. <tSessionObj>
+  [128] pushcons 19 ............................. <"user_rights">
+  [130] pusharglist 2 ........................... <tSessionObj, "user_rights">
+  [132] objcall 172 ............................. <tSessionObj.GET("user_rights")>
+  [134] setlocal 5 .............................. tUserRights = tSessionObj.GET("user_rights")
+  [136] getlocal 4 .............................. <tSessionObj>
+  [138] pushcons 5 .............................. <"room_owner">
+  [140] pusharglist 2 ........................... <tSessionObj, "room_owner">
+  [142] objcall 172 ............................. <tSessionObj.GET("room_owner")>
+  [144] setlocal 6 .............................. tRoomOwner = tSessionObj.GET("room_owner")
+  [146] getlocal 5 .............................. <tUserRights>
+  [148] pushcons 20 ............................. <"fuse_cancel_roomevent">
+  [150] pusharglist 2 ........................... <tUserRights, "fuse_cancel_roomevent">
+  [152] objcall 173 ............................. <tUserRights.getOne("fuse_cancel_roomevent")>
+  [154] pushzero ................................ <0>
+  [155] nteq .................................... <tUserRights.getOne("fuse_cancel_roomevent") <> 0>
+  [156] setlocal 7 .............................. tCanQuit = tUserRights.getOne("fuse_cancel_roomevent") <> 0
+  [158] getlocal 6 .............................. <tRoomOwner>
+  [160] getlocal 7 .............................. <tCanQuit>
+  [162] or ...................................... <tRoomOwner or tCanQuit>
+  [163] jmpifz [193] ............................ if tRoomOwner or tCanQuit then / else
+  [166] getlocal 1 .............................. <tWnd>
+  [168] pushcons 21 ............................. <"room_info_event_details_quit">
+  [170] pusharglist 2 ........................... <tWnd, "room_info_event_details_quit">
+  [172] objcall 87 .............................. <tWnd.getElement("room_info_event_details_quit")>
+  [174] pusharglistnoret 1 ...................... <tWnd.getElement("room_info_event_details_quit")>
+  [176] objcall 141 ............................. tWnd.getElement("room_info_event_details_quit").show()
+  [178] getlocal 1 .............................. <tWnd>
+  [180] pushcons 22 ............................. <"room_info_event_details_edit">
+  [182] pusharglist 2 ........................... <tWnd, "room_info_event_details_edit">
+  [184] objcall 87 .............................. <tWnd.getElement("room_info_event_details_edit")>
+  [186] pusharglistnoret 1 ...................... <tWnd.getElement("room_info_event_details_edit")>
+  [188] objcall 141 ............................. tWnd.getElement("room_info_event_details_edit").show()
+  [190] jmp [217]
+  [193] getlocal 1 .............................. <tWnd>
+  [195] pushcons 21 ............................. <"room_info_event_details_quit">
+  [197] pusharglist 2 ........................... <tWnd, "room_info_event_details_quit">
+  [199] objcall 87 .............................. <tWnd.getElement("room_info_event_details_quit")>
+  [201] pusharglistnoret 1 ...................... <tWnd.getElement("room_info_event_details_quit")>
+  [203] objcall 101 ............................. tWnd.getElement("room_info_event_details_quit").hide()
+  [205] getlocal 1 .............................. <tWnd>
+  [207] pushcons 22 ............................. <"room_info_event_details_edit">
+  [209] pusharglist 2 ........................... <tWnd, "room_info_event_details_edit">
+  [211] objcall 87 .............................. <tWnd.getElement("room_info_event_details_edit")>
+  [213] pusharglistnoret 1 ...................... <tWnd.getElement("room_info_event_details_edit")>
+  [215] objcall 101 ............................. tWnd.getElement("room_info_event_details_edit").hide()
+  [217] ret
+end
+
+on removeEventInfo me
+  [  0] getprop 243 ............................. <pEventInfoWindowID>
+  [  2] pusharglistnoret 1 ...................... <pEventInfoWindowID>
+  [  4] extcall 106 ............................. removeWindow(pEventInfoWindowID)
+  [  6] ret
+end
+
+on quitEvent me
+  [  0] pushcons 23 ............................. <"connection.info.id">
+  [  2] pushsymb 135 ............................ <#Info>
+  [  4] pusharglist 2 ........................... <"connection.info.id", #Info>
+  [  6] extcall 121 ............................. <getVariable("connection.info.id", #Info)>
+  [  8] pusharglist 1 ........................... <getVariable("connection.info.id", #Info)>
+  [ 10] extcall 134 ............................. <getConnection(getVariable("connection.info.id", #Info))>
+  [ 12] setlocal 0 .............................. tConn = getConnection(getVariable("connection.info.id", #Info))
+  [ 14] getlocal 0 .............................. <tConn>
+  [ 16] pushcons 24 ............................. <"QUIT_ROOMEVENT">
+  [ 18] pusharglistnoret 2 ...................... <tConn, "QUIT_ROOMEVENT">
+  [ 20] objcall 136 ............................. tConn.send("QUIT_ROOMEVENT")
+  [ 22] getparam 0 .............................. <me>
+  [ 24] pusharglistnoret 1 ...................... <me>
+  [ 26] objcall 237 ............................. me.removeEventInfo()
+  [ 28] ret
+end
+
+on editEvent me
+  [  0] pushsymb 277 ............................ <#editRoomevent>
+  [  3] pusharglistnoret 1 ...................... <#editRoomevent>
+  [  5] extcall 177 ............................. executeMessage(#editRoomevent)
+  [  7] getparam 0 .............................. <me>
+  [  9] pusharglistnoret 1 ...................... <me>
+  [ 11] objcall 237 ............................. me.removeEventInfo()
+  [ 13] ret
+end
+
+on eventProcInfo me, tEvent, tSprID, tParam
+  [  0] getparam 1 .............................. <tEvent>
+  [  2] pushsymb 92 ............................. <#mouseUp>
+  [  4] nteq .................................... <tEvent <> #mouseUp>
+  [  5] jmpifz [ 13] ............................ if tEvent <> #mouseUp then
+  [  8] pushzero ................................ <0>
+  [  9] pusharglistnoret 1 ...................... <0>
+  [ 11] extcall 20 .............................. return 0
+  [ 13] getparam 2 .............................. <tSprID>
+  [ 15] peek 0 .................................. case tSprID of
+  [ 17] pushcons 9 .............................. <"room_info_rate_plus">
+  [ 19] eq
+  [ 20] jmpifz [ 34] ............................ (case) "room_info_rate_plus":
+  [ 23] getparam 0 .............................. <me>
+  [ 25] pushint8 1 .............................. <1>
+  [ 27] pusharglistnoret 2 ...................... <me, 1>
+  [ 29] objcall 232 ............................. me.sendFlatRate(1)
+  [ 31] jmp [ 68]
+  [ 34] peek 0
+  [ 36] pushcons 10 ............................. <"room_info_rate_minus">
+  [ 38] eq
+  [ 39] jmpifz [ 54] ............................ (case) "room_info_rate_minus":
+  [ 42] getparam 0 .............................. <me>
+  [ 44] pushint8 1 .............................. <1>
+  [ 46] inv ..................................... <-1>
+  [ 47] pusharglistnoret 2 ...................... <me, -1>
+  [ 49] objcall 232 ............................. me.sendFlatRate(-1)
+  [ 51] jmp [ 68]
+  [ 54] peek 0
+  [ 56] pushcons 14 ............................. <"roominfo_event_link">
+  [ 58] eq
+  [ 59] jmpifz [ 68] ............................ (case) "roominfo_event_link":
+  [ 62] getparam 0 .............................. <me>
+  [ 64] pusharglistnoret 1 ...................... <me>
+  [ 66] objcall 236 ............................. me.showEventInfo()
+  [ 68] pop 1 ................................... end case
+  [ 70] ret
+end
+
+on eventProcEventInfo me, tEvent, tSprID, tParam
+  [  0] getparam 2 .............................. <tSprID>
+  [  2] peek 0 .................................. case tSprID of
+  [  4] pushcons 25 ............................. <"room_info_event_details_close">
+  [  6] eq
+  [  7] jmpifz [ 19] ............................ (case) "room_info_event_details_close":
+  [ 10] getparam 0 .............................. <me>
+  [ 12] pusharglistnoret 1 ...................... <me>
+  [ 14] objcall 237 ............................. me.removeEventInfo()
+  [ 16] jmp [ 50]
+  [ 19] peek 0
+  [ 21] pushcons 21 ............................. <"room_info_event_details_quit">
+  [ 23] eq
+  [ 24] jmpifz [ 36] ............................ (case) "room_info_event_details_quit":
+  [ 27] getparam 0 .............................. <me>
+  [ 29] pusharglistnoret 1 ...................... <me>
+  [ 31] objcall 238 ............................. me.quitEvent()
+  [ 33] jmp [ 50]
+  [ 36] peek 0
+  [ 38] pushcons 22 ............................. <"room_info_event_details_edit">
+  [ 40] eq
+  [ 41] jmpifz [ 50] ............................ (case) "room_info_event_details_edit":
+  [ 44] getparam 0 .............................. <me>
+  [ 46] pusharglistnoret 1 ...................... <me>
+  [ 48] objcall 239 ............................. me.editEvent()
+  [ 50] pop 1 ................................... end case
+  [ 52] ret
+end

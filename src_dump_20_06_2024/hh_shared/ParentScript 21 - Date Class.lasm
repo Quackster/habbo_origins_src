@@ -1,0 +1,128 @@
+property pDateFormat
+
+on construct me
+  [  0] pushcons 0 .............................. <"dd-mm-yyyy">
+  [  2] setprop 770 ............................. pDateFormat = "dd-mm-yyyy"
+  [  5] pushzero ................................ <0>
+  [  6] setlocal 0 .............................. pUseAMPM = 0
+  [  8] pushint8 1 .............................. <1>
+  [ 10] pusharglistnoret 1 ...................... <1>
+  [ 12] extcall 44 .............................. return 1
+  [ 14] ret
+end
+
+on deconstruct me
+  [  0] pushint8 1 .............................. <1>
+  [  2] pusharglistnoret 1 ...................... <1>
+  [  4] extcall 44 .............................. return 1
+  [  6] ret
+end
+
+on define me, tDateFormat
+  [  0] getparam 1 .............................. <tDateFormat>
+  [  2] pusharglist 1 ........................... <tDateFormat>
+  [  4] extcall 71 .............................. <voidp(tDateFormat)>
+  [  6] jmpifz [ 13] ............................ if voidp(tDateFormat) then
+  [  9] pushcons 0 .............................. <"dd-mm-yyyy">
+  [ 11] setlocal 0 .............................. tDateType = "dd-mm-yyyy"
+  [ 13] getparam 1 .............................. <tDateFormat>
+  [ 15] setprop 770 ............................. pDateFormat = tDateFormat
+  [ 18] ret
+end
+
+on getLocalDateFromStr me, tDateStr
+  [  0] getparam 1 .............................. <tDateStr>
+  [  2] pusharglist 1 ........................... <tDateStr>
+  [  4] extcall 107 ............................. <stringp(tDateStr)>
+  [  6] not ..................................... <not stringp(tDateStr)>
+  [  7] jmpifz [ 15] ............................ if not stringp(tDateStr) then
+  [ 10] pushzero ................................ <0>
+  [ 11] pusharglistnoret 1 ...................... <0>
+  [ 13] extcall 44 .............................. return 0
+  [ 15] getmovieprop 197 ........................ <the itemDelimiter>
+  [ 17] setlocal 0 .............................. tItemDeLim = the itemDelimiter
+  [ 19] pushcons 1 .............................. <"-">
+  [ 21] setmovieprop 197 ........................ the itemDelimiter = "-"
+  [ 23] getparam 1 .............................. <tDateStr>
+  [ 25] pushsymb 198 ............................ <#item>
+  [ 27] pusharglist 2 ........................... <tDateStr, #item>
+  [ 29] objcall 78 .............................. <tDateStr.item.count>
+  [ 31] pushint8 3 .............................. <3>
+  [ 33] lt ...................................... <tDateStr.item.count < 3>
+  [ 34] jmpifz [ 41] ............................ if tDateStr.item.count < 3 then
+  [ 37] pushcons 2 .............................. <".">
+  [ 39] setmovieprop 197 ........................ the itemDelimiter = "."
+  [ 41] getparam 0 .............................. <me>
+  [ 43] getparam 1 .............................. <tDateStr>
+  [ 45] pushsymb 198 ............................ <#item>
+  [ 47] pushint8 1 .............................. <1>
+  [ 49] pusharglist 3 ........................... <tDateStr, #item, 1>
+  [ 51] objcall 104 ............................. <tDateStr.item[1]>
+  [ 53] getparam 1 .............................. <tDateStr>
+  [ 55] pushsymb 198 ............................ <#item>
+  [ 57] pushint8 2 .............................. <2>
+  [ 59] pusharglist 3 ........................... <tDateStr, #item, 2>
+  [ 61] objcall 104 ............................. <tDateStr.item[2]>
+  [ 63] getparam 1 .............................. <tDateStr>
+  [ 65] pushsymb 198 ............................ <#item>
+  [ 67] pushint8 3 .............................. <3>
+  [ 69] pusharglist 3 ........................... <tDateStr, #item, 3>
+  [ 71] objcall 104 ............................. <tDateStr.item[3]>
+  [ 73] pusharglist 4 ........................... <me, tDateStr.item[1], tDateStr.item[2], tDateStr.item[3]>
+  [ 75] objcall 769 ............................. <me.getLocalDate(tDateStr.item[1], tDateStr.item[2], tDateStr.item[3])>
+  [ 78] setlocal 1 .............................. tLocalDate = me.getLocalDate(tDateStr.item[1], tDateStr.item[2], tDateStr.item[3])
+  [ 80] getlocal 0 .............................. <tItemDeLim>
+  [ 82] setmovieprop 197 ........................ the itemDelimiter = tItemDeLim
+  [ 84] getlocal 1 .............................. <tLocalDate>
+  [ 86] pusharglistnoret 1 ...................... <tLocalDate>
+  [ 88] extcall 44 .............................. return tLocalDate
+  [ 90] ret
+end
+
+on getLocalDate me, tDay, tMonth, tYear
+  [  0] getparam 1 .............................. <tDay>
+  [  2] pusharglist 1 ........................... <tDay>
+  [  4] extcall 71 .............................. <voidp(tDay)>
+  [  6] getparam 2 .............................. <tMonth>
+  [  8] pusharglist 1 ........................... <tMonth>
+  [ 10] extcall 71 .............................. <voidp(tMonth)>
+  [ 12] or ...................................... <voidp(tDay) or voidp(tMonth)>
+  [ 13] getparam 3 .............................. <tYear>
+  [ 15] pusharglist 1 ........................... <tYear>
+  [ 17] extcall 71 .............................. <voidp(tYear)>
+  [ 19] or ...................................... <voidp(tDay) or voidp(tMonth) or voidp(tYear)>
+  [ 20] jmpifz [ 30] ............................ if voidp(tDay) or voidp(tMonth) or voidp(tYear) then
+  [ 23] getprop 770 ............................. <pDateFormat>
+  [ 26] pusharglistnoret 1 ...................... <pDateFormat>
+  [ 28] extcall 44 .............................. return pDateFormat
+  [ 30] getprop 770 ............................. <pDateFormat>
+  [ 33] setlocal 0 .............................. tDate = pDateFormat
+  [ 35] getlocal 0 .............................. <tDate>
+  [ 37] pushcons 3 .............................. <"dd">
+  [ 39] getparam 1 .............................. <tDay>
+  [ 41] pusharglist 1 ........................... <tDay>
+  [ 43] extcall 101 ............................. <integer(tDay)>
+  [ 45] pusharglist 3 ........................... <tDate, "dd", integer(tDay)>
+  [ 47] extcall 220 ............................. <replaceChunks(tDate, "dd", integer(tDay))>
+  [ 49] setlocal 0 .............................. tDate = replaceChunks(tDate, "dd", integer(tDay))
+  [ 51] getlocal 0 .............................. <tDate>
+  [ 53] pushcons 4 .............................. <"mm">
+  [ 55] getparam 2 .............................. <tMonth>
+  [ 57] pusharglist 1 ........................... <tMonth>
+  [ 59] extcall 101 ............................. <integer(tMonth)>
+  [ 61] pusharglist 3 ........................... <tDate, "mm", integer(tMonth)>
+  [ 63] extcall 220 ............................. <replaceChunks(tDate, "mm", integer(tMonth))>
+  [ 65] setlocal 0 .............................. tDate = replaceChunks(tDate, "mm", integer(tMonth))
+  [ 67] getlocal 0 .............................. <tDate>
+  [ 69] pushcons 5 .............................. <"yyyy">
+  [ 71] getparam 3 .............................. <tYear>
+  [ 73] pusharglist 1 ........................... <tYear>
+  [ 75] extcall 101 ............................. <integer(tYear)>
+  [ 77] pusharglist 3 ........................... <tDate, "yyyy", integer(tYear)>
+  [ 79] extcall 220 ............................. <replaceChunks(tDate, "yyyy", integer(tYear))>
+  [ 81] setlocal 0 .............................. tDate = replaceChunks(tDate, "yyyy", integer(tYear))
+  [ 83] getlocal 0 .............................. <tDate>
+  [ 85] pusharglistnoret 1 ...................... <tDate>
+  [ 87] extcall 44 .............................. return tDate
+  [ 89] ret
+end

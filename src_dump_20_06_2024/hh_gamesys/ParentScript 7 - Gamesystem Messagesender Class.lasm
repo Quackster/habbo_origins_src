@@ -1,0 +1,1028 @@
+property pConnectionId, pUpdateInterval
+
+on construct me
+  [  0] pushcons 0 .............................. <"connection.info.id">
+  [  2] pusharglist 1 ........................... <"connection.info.id">
+  [  4] extcall 640 ............................. <getVariableValue("connection.info.id")>
+  [  7] setprop 790 ............................. pConnectionId = getVariableValue("connection.info.id")
+  [ 10] pushcons 1 .............................. <"gamesystem.instancelist.updatetime">
+  [ 12] pushint16 15000 ......................... <15000>
+  [ 15] pusharglist 2 ........................... <"gamesystem.instancelist.updatetime", 15000>
+  [ 17] extcall 191 ............................. <getIntVariable("gamesystem.instancelist.updatetime", 15000)>
+  [ 19] setprop 791 ............................. pUpdateInterval = getIntVariable("gamesystem.instancelist.updatetime", 15000)
+  [ 22] pushint8 1 .............................. <1>
+  [ 24] pusharglistnoret 1 ...................... <1>
+  [ 26] extcall 28 .............................. return 1
+  [ 28] ret
+end
+
+on deconstruct me
+  [  0] getparam 0 .............................. <me>
+  [  2] pushzero ................................ <0>
+  [  3] pusharglistnoret 2 ...................... <me, 0>
+  [  5] objcall 684 ............................. me.setInstanceListUpdates(0)
+  [  8] pushint8 1 .............................. <1>
+  [ 10] pusharglistnoret 1 ...................... <1>
+  [ 12] extcall 28 .............................. return 1
+  [ 14] ret
+end
+
+on setInstanceListUpdates me, tBoolean
+  [  0] pushsymb 792 ............................ <#gamesystem_update>
+  [  3] setlocal 0 .............................. tTimeOutId = #gamesystem_update
+  [  5] getparam 0 .............................. <me>
+  [  7] pusharglist 1 ........................... <me>
+  [  9] objcall 716 ............................. <me.getVariableManager()>
+  [ 12] setlocal 1 .............................. tVarMgrObj = me.getVariableManager()
+  [ 14] getlocal 1 .............................. <tVarMgrObj>
+  [ 16] pushsymb 770 ............................ <#instancelist_timestamp>
+  [ 19] pusharglist 2 ........................... <tVarMgrObj, #instancelist_timestamp>
+  [ 21] objcall 760 ............................. <tVarMgrObj.exists(#instancelist_timestamp)>
+  [ 24] not ..................................... <not tVarMgrObj.exists(#instancelist_timestamp)>
+  [ 25] jmpifz [ 39] ............................ if not tVarMgrObj.exists(#instancelist_timestamp) then
+  [ 28] getlocal 1 .............................. <tVarMgrObj>
+  [ 30] pushsymb 770 ............................ <#instancelist_timestamp>
+  [ 33] pushzero ................................ <0>
+  [ 34] pusharglistnoret 3 ...................... <tVarMgrObj, #instancelist_timestamp, 0>
+  [ 36] objcall 491 ............................. tVarMgrObj.set(#instancelist_timestamp, 0)
+  [ 39] getparam 1 .............................. <tBoolean>
+  [ 41] jmpifz [116] ............................ if tBoolean then / else
+  [ 44] getlocal 1 .............................. <tVarMgrObj>
+  [ 46] pushsymb 770 ............................ <#instancelist_timestamp>
+  [ 49] pusharglist 2 ........................... <tVarMgrObj, #instancelist_timestamp>
+  [ 51] objcall 294 ............................. <tVarMgrObj.get(#instancelist_timestamp)>
+  [ 54] getmovieprop 100 ........................ <the milliSeconds>
+  [ 56] getprop 791 ............................. <pUpdateInterval>
+  [ 59] add ..................................... <the milliSeconds + pUpdateInterval>
+  [ 60] lt ...................................... <tVarMgrObj.get(#instancelist_timestamp) < (the milliSeconds + pUpdateInterval)>
+  [ 61] jmpifz [ 76] ............................ if tVarMgrObj.get(#instancelist_timestamp) < (the milliSeconds + pUpdateInterval) then
+  [ 64] getparam 0 .............................. <me>
+  [ 66] pusharglist 1 ........................... <me>
+  [ 68] objcall 703 ............................. <me.getMessageSender()>
+  [ 71] pusharglistnoret 1 ...................... <me.getMessageSender()>
+  [ 73] objcall 685 ............................. me.getMessageSender().sendGetInstanceList()
+  [ 76] getlocal 0 .............................. <tTimeOutId>
+  [ 78] pusharglist 1 ........................... <tTimeOutId>
+  [ 80] extcall 52 .............................. <timeoutExists(tTimeOutId)>
+  [ 82] jmpifz [ 91] ............................ if timeoutExists(tTimeOutId) then
+  [ 85] pushint8 1 .............................. <1>
+  [ 87] pusharglistnoret 1 ...................... <1>
+  [ 89] extcall 28 .............................. return 1
+  [ 91] getlocal 0 .............................. <tTimeOutId>
+  [ 93] getprop 791 ............................. <pUpdateInterval>
+  [ 96] pushsymb 685 ............................ <#sendGetInstanceList>
+  [ 99] getparam 0 .............................. <me>
+  [101] pusharglist 1 ........................... <me>
+  [103] objcall 45 .............................. <me.getID()>
+  [105] pusharglist 4 ........................... <tTimeOutId, pUpdateInterval, #sendGetInstanceList, me.getID()>
+  [107] extcall 101 ............................. <createTimeout(tTimeOutId, pUpdateInterval, #sendGetInstanceList, me.getID())>
+  [109] pusharglistnoret 1 ...................... <createTimeout(tTimeOutId, pUpdateInterval, #sendGetInstanceList, me.getID())>
+  [111] extcall 28 .............................. return createTimeout(tTimeOutId, pUpdateInterval, #sendGetInstanceList, me.getID())
+  [113] jmp [148]
+  [116] getlocal 1 .............................. <tVarMgrObj>
+  [118] pushsymb 770 ............................ <#instancelist_timestamp>
+  [121] pushzero ................................ <0>
+  [122] pusharglistnoret 3 ...................... <tVarMgrObj, #instancelist_timestamp, 0>
+  [124] objcall 491 ............................. tVarMgrObj.set(#instancelist_timestamp, 0)
+  [127] getlocal 0 .............................. <tTimeOutId>
+  [129] pusharglist 1 ........................... <tTimeOutId>
+  [131] extcall 52 .............................. <timeoutExists(tTimeOutId)>
+  [133] jmpifz [142] ............................ if timeoutExists(tTimeOutId) then
+  [136] getlocal 0 .............................. <tTimeOutId>
+  [138] pusharglistnoret 1 ...................... <tTimeOutId>
+  [140] extcall 53 .............................. removeTimeout(tTimeOutId)
+  [142] pushint8 1 .............................. <1>
+  [144] pusharglistnoret 1 ...................... <1>
+  [146] extcall 28 .............................. return 1
+  [148] ret
+end
+
+on sendGetInstanceList me
+  [  0] getprop 790 ............................. <pConnectionId>
+  [  3] pusharglist 1 ........................... <pConnectionId>
+  [  5] extcall 795 ............................. <connectionExists(pConnectionId)>
+  [  8] not ..................................... <not connectionExists(pConnectionId)>
+  [  9] jmpifz [ 32] ............................ if not connectionExists(pConnectionId) then
+  [ 12] getparam 0 .............................. <me>
+  [ 14] pushcons 2 .............................. <"Connection not found:">
+  [ 16] getprop 790 ............................. <pConnectionId>
+  [ 19] joinpadstr .............................. <"Connection not found:" && pConnectionId>
+  [ 20] pushsymb 685 ............................ <#sendGetInstanceList>
+  [ 23] pusharglist 3 ........................... <me, "Connection not found:" && pConnectionId, #sendGetInstanceList>
+  [ 25] extcall 504 ............................. <error(me, "Connection not found:" && pConnectionId, #sendGetInstanceList)>
+  [ 28] pusharglistnoret 1 ...................... <error(me, "Connection not found:" && pConnectionId, #sendGetInstanceList)>
+  [ 30] extcall 28 .............................. return error(me, "Connection not found:" && pConnectionId, #sendGetInstanceList)
+  [ 32] getparam 0 .............................. <me>
+  [ 34] pusharglist 1 ........................... <me>
+  [ 36] objcall 716 ............................. <me.getVariableManager()>
+  [ 39] pushsymb 756 ............................ <#game_status>
+  [ 42] pushsymb 757 ............................ <#none>
+  [ 45] pusharglistnoret 3 ...................... <me.getVariableManager(), #game_status, #none>
+  [ 47] objcall 491 ............................. me.getVariableManager().set(#game_status, #none)
+  [ 50] getprop 790 ............................. <pConnectionId>
+  [ 53] pusharglist 1 ........................... <pConnectionId>
+  [ 55] extcall 796 ............................. <getConnection(pConnectionId)>
+  [ 58] pushcons 3 .............................. <"GETINSTANCELIST">
+  [ 60] pusharglist 2 ........................... <getConnection(pConnectionId), "GETINSTANCELIST">
+  [ 62] objcall 797 ............................. <getConnection(pConnectionId).send("GETINSTANCELIST")>
+  [ 65] pusharglistnoret 1 ...................... <getConnection(pConnectionId).send("GETINSTANCELIST")>
+  [ 67] extcall 28 .............................. return getConnection(pConnectionId).send("GETINSTANCELIST")
+  [ 69] ret
+end
+
+on sendObserveInstance me, tid
+  [  0] getprop 790 ............................. <pConnectionId>
+  [  3] pusharglist 1 ........................... <pConnectionId>
+  [  5] extcall 795 ............................. <connectionExists(pConnectionId)>
+  [  8] not ..................................... <not connectionExists(pConnectionId)>
+  [  9] jmpifz [ 32] ............................ if not connectionExists(pConnectionId) then
+  [ 12] getparam 0 .............................. <me>
+  [ 14] pushcons 2 .............................. <"Connection not found:">
+  [ 16] getprop 790 ............................. <pConnectionId>
+  [ 19] joinpadstr .............................. <"Connection not found:" && pConnectionId>
+  [ 20] pushsymb 704 ............................ <#sendObserveInstance>
+  [ 23] pusharglist 3 ........................... <me, "Connection not found:" && pConnectionId, #sendObserveInstance>
+  [ 25] extcall 504 ............................. <error(me, "Connection not found:" && pConnectionId, #sendObserveInstance)>
+  [ 28] pusharglistnoret 1 ...................... <error(me, "Connection not found:" && pConnectionId, #sendObserveInstance)>
+  [ 30] extcall 28 .............................. return error(me, "Connection not found:" && pConnectionId, #sendObserveInstance)
+  [ 32] getprop 790 ............................. <pConnectionId>
+  [ 35] pusharglist 1 ........................... <pConnectionId>
+  [ 37] extcall 796 ............................. <getConnection(pConnectionId)>
+  [ 40] pushcons 4 .............................. <"OBSERVEINSTANCE">
+  [ 42] pushsymb 217 ............................ <#integer>
+  [ 44] getparam 1 .............................. <tid>
+  [ 46] pusharglist 2 ........................... <[#integer: tid]>
+  [ 48] pushproplist ............................ <[#integer: tid]>
+  [ 49] pusharglist 3 ........................... <getConnection(pConnectionId), "OBSERVEINSTANCE", [#integer: tid]>
+  [ 51] objcall 797 ............................. <getConnection(pConnectionId).send("OBSERVEINSTANCE", [#integer: tid])>
+  [ 54] pusharglistnoret 1 ...................... <getConnection(pConnectionId).send("OBSERVEINSTANCE", [#integer: tid])>
+  [ 56] extcall 28 .............................. return getConnection(pConnectionId).send("OBSERVEINSTANCE", [#integer: tid])
+  [ 58] ret
+end
+
+on sendUnobserveInstance me
+  [  0] getprop 790 ............................. <pConnectionId>
+  [  3] pusharglist 1 ........................... <pConnectionId>
+  [  5] extcall 795 ............................. <connectionExists(pConnectionId)>
+  [  8] not ..................................... <not connectionExists(pConnectionId)>
+  [  9] jmpifz [ 32] ............................ if not connectionExists(pConnectionId) then
+  [ 12] getparam 0 .............................. <me>
+  [ 14] pushcons 2 .............................. <"Connection not found:">
+  [ 16] getprop 790 ............................. <pConnectionId>
+  [ 19] joinpadstr .............................. <"Connection not found:" && pConnectionId>
+  [ 20] pushsymb 705 ............................ <#sendUnobserveInstance>
+  [ 23] pusharglist 3 ........................... <me, "Connection not found:" && pConnectionId, #sendUnobserveInstance>
+  [ 25] extcall 504 ............................. <error(me, "Connection not found:" && pConnectionId, #sendUnobserveInstance)>
+  [ 28] pusharglistnoret 1 ...................... <error(me, "Connection not found:" && pConnectionId, #sendUnobserveInstance)>
+  [ 30] extcall 28 .............................. return error(me, "Connection not found:" && pConnectionId, #sendUnobserveInstance)
+  [ 32] getparam 0 .............................. <me>
+  [ 34] pusharglist 1 ........................... <me>
+  [ 36] objcall 716 ............................. <me.getVariableManager()>
+  [ 39] pushsymb 699 ............................ <#observed_instance_data>
+  [ 42] pusharglist 0 ........................... <[:]>
+  [ 44] pushproplist ............................ <[:]>
+  [ 45] pusharglistnoret 3 ...................... <me.getVariableManager(), #observed_instance_data, [:]>
+  [ 47] objcall 491 ............................. me.getVariableManager().set(#observed_instance_data, [:])
+  [ 50] getparam 0 .............................. <me>
+  [ 52] pusharglist 1 ........................... <me>
+  [ 54] objcall 716 ............................. <me.getVariableManager()>
+  [ 57] pushsymb 756 ............................ <#game_status>
+  [ 60] pushsymb 757 ............................ <#none>
+  [ 63] pusharglistnoret 3 ...................... <me.getVariableManager(), #game_status, #none>
+  [ 65] objcall 491 ............................. me.getVariableManager().set(#game_status, #none)
+  [ 68] getparam 0 .............................. <me>
+  [ 70] pushint8 1 .............................. <1>
+  [ 72] pusharglistnoret 2 ...................... <me, 1>
+  [ 74] objcall 684 ............................. me.setInstanceListUpdates(1)
+  [ 77] getprop 790 ............................. <pConnectionId>
+  [ 80] pusharglist 1 ........................... <pConnectionId>
+  [ 82] extcall 796 ............................. <getConnection(pConnectionId)>
+  [ 85] pushcons 5 .............................. <"UNOBSERVEINSTANCE">
+  [ 87] pusharglist 2 ........................... <getConnection(pConnectionId), "UNOBSERVEINSTANCE">
+  [ 89] objcall 797 ............................. <getConnection(pConnectionId).send("UNOBSERVEINSTANCE")>
+  [ 92] pusharglistnoret 1 ...................... <getConnection(pConnectionId).send("UNOBSERVEINSTANCE")>
+  [ 94] extcall 28 .............................. return getConnection(pConnectionId).send("UNOBSERVEINSTANCE")
+  [ 96] ret
+end
+
+on sendInitiateCreateGame me, tTeamId
+  [  0] getprop 790 ............................. <pConnectionId>
+  [  3] pusharglist 1 ........................... <pConnectionId>
+  [  5] extcall 795 ............................. <connectionExists(pConnectionId)>
+  [  8] not ..................................... <not connectionExists(pConnectionId)>
+  [  9] jmpifz [ 32] ............................ if not connectionExists(pConnectionId) then
+  [ 12] getparam 0 .............................. <me>
+  [ 14] pushcons 2 .............................. <"Connection not found:">
+  [ 16] getprop 790 ............................. <pConnectionId>
+  [ 19] joinpadstr .............................. <"Connection not found:" && pConnectionId>
+  [ 20] pushsymb 798 ............................ <#sendNavigate>
+  [ 23] pusharglist 3 ........................... <me, "Connection not found:" && pConnectionId, #sendNavigate>
+  [ 25] extcall 504 ............................. <error(me, "Connection not found:" && pConnectionId, #sendNavigate)>
+  [ 28] pusharglistnoret 1 ...................... <error(me, "Connection not found:" && pConnectionId, #sendNavigate)>
+  [ 30] extcall 28 .............................. return error(me, "Connection not found:" && pConnectionId, #sendNavigate)
+  [ 32] getparam 0 .............................. <me>
+  [ 34] pushzero ................................ <0>
+  [ 35] pusharglistnoret 2 ...................... <me, 0>
+  [ 37] objcall 684 ............................. me.setInstanceListUpdates(0)
+  [ 40] getparam 0 .............................. <me>
+  [ 42] pusharglist 1 ........................... <me>
+  [ 44] objcall 716 ............................. <me.getVariableManager()>
+  [ 47] pushsymb 756 ............................ <#game_status>
+  [ 50] pushsymb 757 ............................ <#none>
+  [ 53] pusharglistnoret 3 ...................... <me.getVariableManager(), #game_status, #none>
+  [ 55] objcall 491 ............................. me.getVariableManager().set(#game_status, #none)
+  [ 58] getparam 1 .............................. <tTeamId>
+  [ 60] pusharglist 0 ........................... <>
+  [ 62] extcall 31 .............................. <VOID>
+  [ 64] nteq .................................... <tTeamId <> VOID>
+  [ 65] jmpifz [108] ............................ if tTeamId <> VOID then / else
+  [ 68] getparam 1 .............................. <tTeamId>
+  [ 70] pushint8 1 .............................. <1>
+  [ 72] sub ..................................... <tTeamId - 1>
+  [ 73] setparam 1 .............................. tTeamId = tTeamId - 1
+  [ 75] getprop 790 ............................. <pConnectionId>
+  [ 78] pusharglist 1 ........................... <pConnectionId>
+  [ 80] extcall 796 ............................. <getConnection(pConnectionId)>
+  [ 83] pushcons 6 .............................. <"INITIATECREATEGAME">
+  [ 85] pushsymb 217 ............................ <#integer>
+  [ 87] getparam 1 .............................. <tTeamId>
+  [ 89] pusharglist 1 ........................... <tTeamId>
+  [ 91] extcall 217 ............................. <integer(tTeamId)>
+  [ 93] pusharglist 2 ........................... <[#integer: integer(tTeamId)]>
+  [ 95] pushproplist ............................ <[#integer: integer(tTeamId)]>
+  [ 96] pusharglist 3 ........................... <getConnection(pConnectionId), "INITIATECREATEGAME", [#integer: integer(tTeamId)]>
+  [ 98] objcall 797 ............................. <getConnection(pConnectionId).send("INITIATECREATEGAME", [#integer: integer(tTeamId)])>
+  [101] pusharglistnoret 1 ...................... <getConnection(pConnectionId).send("INITIATECREATEGAME", [#integer: integer(tTeamId)])>
+  [103] extcall 28 .............................. return getConnection(pConnectionId).send("INITIATECREATEGAME", [#integer: integer(tTeamId)])
+  [105] jmp [127]
+  [108] getprop 790 ............................. <pConnectionId>
+  [111] pusharglist 1 ........................... <pConnectionId>
+  [113] extcall 796 ............................. <getConnection(pConnectionId)>
+  [116] pushcons 6 .............................. <"INITIATECREATEGAME">
+  [118] pusharglist 2 ........................... <getConnection(pConnectionId), "INITIATECREATEGAME">
+  [120] objcall 797 ............................. <getConnection(pConnectionId).send("INITIATECREATEGAME")>
+  [123] pusharglistnoret 1 ...................... <getConnection(pConnectionId).send("INITIATECREATEGAME")>
+  [125] extcall 28 .............................. return getConnection(pConnectionId).send("INITIATECREATEGAME")
+  [127] ret
+end
+
+on sendGameParameterValues me, tParamList, tTeamId
+  [  0] getparam 0 .............................. <me>
+  [  2] pusharglist 1 ........................... <me>
+  [  4] objcall 689 ............................. <me.getBaseLogic()>
+  [  7] pusharglist 1 ........................... <me.getBaseLogic()>
+  [  9] objcall 738 ............................. <me.getBaseLogic().getGameStatus()>
+  [ 12] pushsymb 776 ............................ <#create_requested>
+  [ 15] eq ...................................... <me.getBaseLogic().getGameStatus() = #create_requested>
+  [ 16] jmpifz [ 24] ............................ if me.getBaseLogic().getGameStatus() = #create_requested then
+  [ 19] pushzero ................................ <0>
+  [ 20] pusharglistnoret 1 ...................... <0>
+  [ 22] extcall 28 .............................. return 0
+  [ 24] getparam 2 .............................. <tTeamId>
+  [ 26] pushint8 1 .............................. <1>
+  [ 28] sub ..................................... <tTeamId - 1>
+  [ 29] setparam 2 .............................. tTeamId = tTeamId - 1
+  [ 31] getprop 790 ............................. <pConnectionId>
+  [ 34] pusharglist 1 ........................... <pConnectionId>
+  [ 36] extcall 795 ............................. <connectionExists(pConnectionId)>
+  [ 39] not ..................................... <not connectionExists(pConnectionId)>
+  [ 40] jmpifz [ 63] ............................ if not connectionExists(pConnectionId) then
+  [ 43] getparam 0 .............................. <me>
+  [ 45] pushcons 2 .............................. <"Connection not found:">
+  [ 47] getprop 790 ............................. <pConnectionId>
+  [ 50] joinpadstr .............................. <"Connection not found:" && pConnectionId>
+  [ 51] pushsymb 798 ............................ <#sendNavigate>
+  [ 54] pusharglist 3 ........................... <me, "Connection not found:" && pConnectionId, #sendNavigate>
+  [ 56] extcall 504 ............................. <error(me, "Connection not found:" && pConnectionId, #sendNavigate)>
+  [ 59] pusharglistnoret 1 ...................... <error(me, "Connection not found:" && pConnectionId, #sendNavigate)>
+  [ 61] extcall 28 .............................. return error(me, "Connection not found:" && pConnectionId, #sendNavigate)
+  [ 63] getparam 0 .............................. <me>
+  [ 65] pushzero ................................ <0>
+  [ 66] pusharglistnoret 2 ...................... <me, 0>
+  [ 68] objcall 684 ............................. me.setInstanceListUpdates(0)
+  [ 71] getparam 0 .............................. <me>
+  [ 73] pusharglist 1 ........................... <me>
+  [ 75] objcall 716 ............................. <me.getVariableManager()>
+  [ 78] pushsymb 700 ............................ <#gameparametervalues_format>
+  [ 81] pusharglist 2 ........................... <me.getVariableManager(), #gameparametervalues_format>
+  [ 83] objcall 294 ............................. <me.getVariableManager().get(#gameparametervalues_format)>
+  [ 86] setlocal 0 .............................. tStruct = me.getVariableManager().get(#gameparametervalues_format)
+  [ 88] pushsymb 217 ............................ <#integer>
+  [ 90] getlocal 0 .............................. <tStruct>
+  [ 92] getobjprop 42 ........................... <tStruct.count>
+  [ 94] pusharglist 2 ........................... <[#integer: tStruct.count]>
+  [ 96] pushproplist ............................ <[#integer: tStruct.count]>
+  [ 97] setlocal 1 .............................. tOutput = [#integer: tStruct.count]
+  [ 99] pushint8 1 .............................. <1>
+  [101] setlocal 2
+  [103] getlocal 2
+  [105] getlocal 0 .............................. <tStruct>
+  [107] getobjprop 42 ........................... <tStruct.count>
+  [109] lteq
+  [110] jmpifz [416] ............................ repeat with i = 1 to tStruct.count
+  [113] getlocal 0 .............................. <tStruct>
+  [115] getlocal 2 .............................. <i>
+  [117] pusharglist 2 ........................... <tStruct, i>
+  [119] objcall 35 .............................. <tStruct[i]>
+  [121] setlocal 3 .............................. tValueData = tStruct[i]
+  [123] getparam 1 .............................. <tParamList>
+  [125] getlocal 3 .............................. <tValueData>
+  [127] pushsymb 230 ............................ <#name>
+  [129] pusharglist 2 ........................... <tValueData, #name>
+  [131] objcall 35 .............................. <tValueData[#name]>
+  [133] pusharglist 2 ........................... <tParamList, tValueData[#name]>
+  [135] objcall 35 .............................. <tParamList[tValueData[#name]]>
+  [137] setlocal 4 .............................. tValue = tParamList[tValueData[#name]]
+  [139] getlocal 3 .............................. <tValueData>
+  [141] pushsymb 230 ............................ <#name>
+  [143] pusharglist 2 ........................... <tValueData, #name>
+  [145] objcall 35 .............................. <tValueData[#name]>
+  [147] pushcons 7 .............................. <"secondsUntilStart">
+  [149] eq ...................................... <tValueData[#name] = "secondsUntilStart">
+  [150] jmpifz [164] ............................ if tValueData[#name] = "secondsUntilStart" then
+  [153] getlocal 3 .............................. <tValueData>
+  [155] pushsymb 800 ............................ <#max>
+  [158] pushint8 90 ............................. <90>
+  [160] pusharglistnoret 3 ...................... <tValueData, #max, 90>
+  [162] objcall 71 .............................. tValueData[#max] = 90
+  [164] getlocal 3 .............................. <tValueData>
+  [166] pushsymb 230 ............................ <#name>
+  [168] pusharglist 2 ........................... <tValueData, #name>
+  [170] objcall 35 .............................. <tValueData[#name]>
+  [172] pushcons 8 .............................. <"gameLengthSeconds">
+  [174] eq ...................................... <tValueData[#name] = "gameLengthSeconds">
+  [175] jmpifz [190] ............................ if tValueData[#name] = "gameLengthSeconds" then
+  [178] getlocal 3 .............................. <tValueData>
+  [180] pushsymb 800 ............................ <#max>
+  [183] pushint16 150 ........................... <150>
+  [186] pusharglistnoret 3 ...................... <tValueData, #max, 150>
+  [188] objcall 71 .............................. tValueData[#max] = 150
+  [190] getlocal 3 .............................. <tValueData>
+  [192] pushsymb 230 ............................ <#name>
+  [194] pusharglist 2 ........................... <tValueData, #name>
+  [196] objcall 35 .............................. <tValueData[#name]>
+  [198] pushcons 9 .............................. <"secondsUntilRestart">
+  [200] eq ...................................... <tValueData[#name] = "secondsUntilRestart">
+  [201] jmpifz [215] ............................ if tValueData[#name] = "secondsUntilRestart" then
+  [204] getlocal 3 .............................. <tValueData>
+  [206] pushsymb 800 ............................ <#max>
+  [209] pushint8 60 ............................. <60>
+  [211] pusharglistnoret 3 ...................... <tValueData, #max, 60>
+  [213] objcall 71 .............................. tValueData[#max] = 60
+  [215] getlocal 4 .............................. <tValue>
+  [217] pusharglist 0 ........................... <>
+  [219] extcall 31 .............................. <VOID>
+  [221] eq ...................................... <tValue = VOID>
+  [222] jmpifz [241] ............................ if tValue = VOID then
+  [225] getparam 0 .............................. <me>
+  [227] pushcons 10 ............................. <"Invalid game parameter values!">
+  [229] pushsymb 707 ............................ <#sendGameParameterValues>
+  [232] pusharglist 3 ........................... <me, "Invalid game parameter values!", #sendGameParameterValues>
+  [234] extcall 504 ............................. <error(me, "Invalid game parameter values!", #sendGameParameterValues)>
+  [237] pusharglistnoret 1 ...................... <error(me, "Invalid game parameter values!", #sendGameParameterValues)>
+  [239] extcall 28 .............................. return error(me, "Invalid game parameter values!", #sendGameParameterValues)
+  [241] getlocal 1 .............................. <tOutput>
+  [243] pushsymb 56 ............................. <#string>
+  [245] getlocal 3 .............................. <tValueData>
+  [247] pushsymb 230 ............................ <#name>
+  [249] pusharglist 2 ........................... <tValueData, #name>
+  [251] objcall 35 .............................. <tValueData[#name]>
+  [253] pusharglistnoret 3 ...................... <tOutput, #string, tValueData[#name]>
+  [255] objcall 165 ............................. tOutput.addProp(#string, tValueData[#name])
+  [257] getlocal 3 .............................. <tValueData>
+  [259] pushsymb 319 ............................ <#type>
+  [262] pusharglist 2 ........................... <tValueData, #type>
+  [264] objcall 35 .............................. <tValueData[#type]>
+  [266] pushsymb 217 ............................ <#integer>
+  [268] eq ...................................... <tValueData[#type] = #integer>
+  [269] jmpifz [367] ............................ if tValueData[#type] = #integer then
+  [272] getlocal 4 .............................. <tValue>
+  [274] pusharglist 1 ........................... <tValue>
+  [276] extcall 217 ............................. <integer(tValue)>
+  [278] setlocal 4 .............................. tValue = integer(tValue)
+  [280] getlocal 4 .............................. <tValue>
+  [282] getlocal 3 .............................. <tValueData>
+  [284] pushsymb 799 ............................ <#min>
+  [287] pusharglist 2 ........................... <tValueData, #min>
+  [289] objcall 35 .............................. <tValueData[#min]>
+  [291] lt ...................................... <tValue < tValueData[#min]>
+  [292] getlocal 4 .............................. <tValue>
+  [294] getlocal 3 .............................. <tValueData>
+  [296] pushsymb 800 ............................ <#max>
+  [299] pusharglist 2 ........................... <tValueData, #max>
+  [301] objcall 35 .............................. <tValueData[#max]>
+  [303] gt ...................................... <tValue > tValueData[#max]>
+  [304] or ...................................... <(tValue < tValueData[#min]) or (tValue > tValueData[#max])>
+  [305] jmpifz [345] ............................ if (tValue < tValueData[#min]) or (tValue > tValueData[#max]) then
+  [308] getparam 0 .............................. <me>
+  [310] pushcons 11 ............................. <"Invalid game parameter value:">
+  [312] getlocal 3 .............................. <tValueData>
+  [314] pushsymb 230 ............................ <#name>
+  [316] pusharglist 2 ........................... <tValueData, #name>
+  [318] objcall 35 .............................. <tValueData[#name]>
+  [320] joinpadstr .............................. <"Invalid game parameter value:" && tValueData[#name]>
+  [321] pushsymb 707 ............................ <#sendGameParameterValues>
+  [324] pusharglistnoret 3 ...................... <me, "Invalid game parameter value:" && tValueData[#name], #sendGameParameterValues>
+  [326] extcall 504 ............................. error(me, "Invalid game parameter value:" && tValueData[#name], #sendGameParameterValues)
+  [329] getparam 0 .............................. <me>
+  [331] pushcons 10 ............................. <"Invalid game parameter values!">
+  [333] pushsymb 707 ............................ <#sendGameParameterValues>
+  [336] pusharglist 3 ........................... <me, "Invalid game parameter values!", #sendGameParameterValues>
+  [338] extcall 504 ............................. <error(me, "Invalid game parameter values!", #sendGameParameterValues)>
+  [341] pusharglistnoret 1 ...................... <error(me, "Invalid game parameter values!", #sendGameParameterValues)>
+  [343] extcall 28 .............................. return error(me, "Invalid game parameter values!", #sendGameParameterValues)
+  [345] getlocal 1 .............................. <tOutput>
+  [347] pushsymb 217 ............................ <#integer>
+  [349] pushzero ................................ <0>
+  [350] pusharglistnoret 3 ...................... <tOutput, #integer, 0>
+  [352] objcall 165 ............................. tOutput.addProp(#integer, 0)
+  [354] getlocal 1 .............................. <tOutput>
+  [356] pushsymb 217 ............................ <#integer>
+  [358] getlocal 4 .............................. <tValue>
+  [360] pusharglistnoret 3 ...................... <tOutput, #integer, tValue>
+  [362] objcall 165 ............................. tOutput.addProp(#integer, tValue)
+  [364] jmp [406] ............................... next repeat
+  [367] getlocal 3 .............................. <tValueData>
+  [369] pushsymb 319 ............................ <#type>
+  [372] pusharglist 2 ........................... <tValueData, #type>
+  [374] objcall 35 .............................. <tValueData[#type]>
+  [376] pushsymb 56 ............................. <#string>
+  [378] eq ...................................... <tValueData[#type] = #string>
+  [379] jmpifz [406] ............................ if tValueData[#type] = #string then
+  [382] getlocal 1 .............................. <tOutput>
+  [384] pushsymb 217 ............................ <#integer>
+  [386] pushint8 1 .............................. <1>
+  [388] pusharglistnoret 3 ...................... <tOutput, #integer, 1>
+  [390] objcall 165 ............................. tOutput.addProp(#integer, 1)
+  [392] getlocal 1 .............................. <tOutput>
+  [394] pushsymb 56 ............................. <#string>
+  [396] getlocal 4 .............................. <tValue>
+  [398] pusharglist 1 ........................... <tValue>
+  [400] extcall 56 .............................. <string(tValue)>
+  [402] pusharglistnoret 3 ...................... <tOutput, #string, string(tValue)>
+  [404] objcall 165 ............................. tOutput.addProp(#string, string(tValue))
+  [406] pushint8 1
+  [408] getlocal 2
+  [410] add
+  [411] setlocal 2
+  [413] endrepeat [103]
+  [416] getparam 0 .............................. <me>
+  [418] pusharglist 1 ........................... <me>
+  [420] objcall 716 ............................. <me.getVariableManager()>
+  [423] pushsymb 756 ............................ <#game_status>
+  [426] pushsymb 776 ............................ <#create_requested>
+  [429] pusharglistnoret 3 ...................... <me.getVariableManager(), #game_status, #create_requested>
+  [431] objcall 491 ............................. me.getVariableManager().set(#game_status, #create_requested)
+  [434] getlocal 1 .............................. <tOutput>
+  [436] pushsymb 217 ............................ <#integer>
+  [438] getparam 2 .............................. <tTeamId>
+  [440] pusharglistnoret 3 ...................... <tOutput, #integer, tTeamId>
+  [442] objcall 165 ............................. tOutput.addProp(#integer, tTeamId)
+  [444] getprop 790 ............................. <pConnectionId>
+  [447] pusharglist 1 ........................... <pConnectionId>
+  [449] extcall 796 ............................. <getConnection(pConnectionId)>
+  [452] pushcons 12 ............................. <"GAMEPARAMETERVALUES">
+  [454] getlocal 1 .............................. <tOutput>
+  [456] pusharglist 3 ........................... <getConnection(pConnectionId), "GAMEPARAMETERVALUES", tOutput>
+  [458] objcall 797 ............................. <getConnection(pConnectionId).send("GAMEPARAMETERVALUES", tOutput)>
+  [461] pusharglistnoret 1 ...................... <getConnection(pConnectionId).send("GAMEPARAMETERVALUES", tOutput)>
+  [463] extcall 28 .............................. return getConnection(pConnectionId).send("GAMEPARAMETERVALUES", tOutput)
+  [465] ret
+end
+
+on sendDeleteGame me
+  [  0] getprop 790 ............................. <pConnectionId>
+  [  3] pusharglist 1 ........................... <pConnectionId>
+  [  5] extcall 795 ............................. <connectionExists(pConnectionId)>
+  [  8] not ..................................... <not connectionExists(pConnectionId)>
+  [  9] jmpifz [ 32] ............................ if not connectionExists(pConnectionId) then
+  [ 12] getparam 0 .............................. <me>
+  [ 14] pushcons 2 .............................. <"Connection not found:">
+  [ 16] getprop 790 ............................. <pConnectionId>
+  [ 19] joinpadstr .............................. <"Connection not found:" && pConnectionId>
+  [ 20] pushsymb 798 ............................ <#sendNavigate>
+  [ 23] pusharglist 3 ........................... <me, "Connection not found:" && pConnectionId, #sendNavigate>
+  [ 25] extcall 504 ............................. <error(me, "Connection not found:" && pConnectionId, #sendNavigate)>
+  [ 28] pusharglistnoret 1 ...................... <error(me, "Connection not found:" && pConnectionId, #sendNavigate)>
+  [ 30] extcall 28 .............................. return error(me, "Connection not found:" && pConnectionId, #sendNavigate)
+  [ 32] getparam 0 .............................. <me>
+  [ 34] pusharglist 1 ........................... <me>
+  [ 36] objcall 716 ............................. <me.getVariableManager()>
+  [ 39] pushsymb 699 ............................ <#observed_instance_data>
+  [ 42] pusharglist 0 ........................... <[:]>
+  [ 44] pushproplist ............................ <[:]>
+  [ 45] pusharglistnoret 3 ...................... <me.getVariableManager(), #observed_instance_data, [:]>
+  [ 47] objcall 491 ............................. me.getVariableManager().set(#observed_instance_data, [:])
+  [ 50] getparam 0 .............................. <me>
+  [ 52] pusharglist 1 ........................... <me>
+  [ 54] objcall 716 ............................. <me.getVariableManager()>
+  [ 57] pushsymb 756 ............................ <#game_status>
+  [ 60] pushsymb 757 ............................ <#none>
+  [ 63] pusharglistnoret 3 ...................... <me.getVariableManager(), #game_status, #none>
+  [ 65] objcall 491 ............................. me.getVariableManager().set(#game_status, #none)
+  [ 68] getparam 0 .............................. <me>
+  [ 70] pushint8 1 .............................. <1>
+  [ 72] pusharglistnoret 2 ...................... <me, 1>
+  [ 74] objcall 684 ............................. me.setInstanceListUpdates(1)
+  [ 77] getprop 790 ............................. <pConnectionId>
+  [ 80] pusharglist 1 ........................... <pConnectionId>
+  [ 82] extcall 796 ............................. <getConnection(pConnectionId)>
+  [ 85] pushcons 13 ............................. <"DELETEGAME">
+  [ 87] pusharglist 2 ........................... <getConnection(pConnectionId), "DELETEGAME">
+  [ 89] objcall 797 ............................. <getConnection(pConnectionId).send("DELETEGAME")>
+  [ 92] pusharglistnoret 1 ...................... <getConnection(pConnectionId).send("DELETEGAME")>
+  [ 94] extcall 28 .............................. return getConnection(pConnectionId).send("DELETEGAME")
+  [ 96] ret
+end
+
+on sendInitiateJoinGame me, tInstanceId, tTeamId
+  [  0] getprop 790 ............................. <pConnectionId>
+  [  3] pusharglist 1 ........................... <pConnectionId>
+  [  5] extcall 795 ............................. <connectionExists(pConnectionId)>
+  [  8] not ..................................... <not connectionExists(pConnectionId)>
+  [  9] jmpifz [ 32] ............................ if not connectionExists(pConnectionId) then
+  [ 12] getparam 0 .............................. <me>
+  [ 14] pushcons 2 .............................. <"Connection not found:">
+  [ 16] getprop 790 ............................. <pConnectionId>
+  [ 19] joinpadstr .............................. <"Connection not found:" && pConnectionId>
+  [ 20] pushsymb 798 ............................ <#sendNavigate>
+  [ 23] pusharglist 3 ........................... <me, "Connection not found:" && pConnectionId, #sendNavigate>
+  [ 25] extcall 504 ............................. <error(me, "Connection not found:" && pConnectionId, #sendNavigate)>
+  [ 28] pusharglistnoret 1 ...................... <error(me, "Connection not found:" && pConnectionId, #sendNavigate)>
+  [ 30] extcall 28 .............................. return error(me, "Connection not found:" && pConnectionId, #sendNavigate)
+  [ 32] getparam 0 .............................. <me>
+  [ 34] pusharglist 1 ........................... <me>
+  [ 36] objcall 716 ............................. <me.getVariableManager()>
+  [ 39] pushsymb 699 ............................ <#observed_instance_data>
+  [ 42] pusharglist 2 ........................... <me.getVariableManager(), #observed_instance_data>
+  [ 44] objcall 294 ............................. <me.getVariableManager().get(#observed_instance_data)>
+  [ 47] setlocal 0 .............................. tdata = me.getVariableManager().get(#observed_instance_data)
+  [ 49] getlocal 0 .............................. <tdata>
+  [ 51] pushsymb 67 ............................. <#id>
+  [ 53] pusharglist 2 ........................... <tdata, #id>
+  [ 55] objcall 804 ............................. <tdata.findPos(#id)>
+  [ 58] pushzero ................................ <0>
+  [ 59] eq ...................................... <tdata.findPos(#id) = 0>
+  [ 60] jmpifz [ 68] ............................ if tdata.findPos(#id) = 0 then
+  [ 63] pushzero ................................ <0>
+  [ 64] pusharglistnoret 1 ...................... <0>
+  [ 66] extcall 28 .............................. return 0
+  [ 68] getparam 1 .............................. <tInstanceId>
+  [ 70] pusharglist 0 ........................... <>
+  [ 72] extcall 31 .............................. <VOID>
+  [ 74] eq ...................................... <tInstanceId = VOID>
+  [ 75] jmpifz [ 88] ............................ if tInstanceId = VOID then
+  [ 78] getlocal 0 .............................. <tdata>
+  [ 80] pushsymb 67 ............................. <#id>
+  [ 82] pusharglist 2 ........................... <tdata, #id>
+  [ 84] objcall 35 .............................. <tdata[#id]>
+  [ 86] setparam 1 .............................. tInstanceId = tdata[#id]
+  [ 88] getparam 2 .............................. <tTeamId>
+  [ 90] pusharglist 0 ........................... <>
+  [ 92] extcall 31 .............................. <VOID>
+  [ 94] eq ...................................... <tTeamId = VOID>
+  [ 95] jmpifz [103] ............................ if tTeamId = VOID then
+  [ 98] pushzero ................................ <0>
+  [ 99] pusharglistnoret 1 ...................... <0>
+  [101] extcall 28 .............................. return 0
+  [103] getparam 2 .............................. <tTeamId>
+  [105] pushint8 1 .............................. <1>
+  [107] sub ..................................... <tTeamId - 1>
+  [108] setparam 2 .............................. tTeamId = tTeamId - 1
+  [110] getparam 0 .............................. <me>
+  [112] pushzero ................................ <0>
+  [113] pusharglistnoret 2 ...................... <me, 0>
+  [115] objcall 684 ............................. me.setInstanceListUpdates(0)
+  [118] getparam 0 .............................. <me>
+  [120] pusharglist 1 ........................... <me>
+  [122] objcall 716 ............................. <me.getVariableManager()>
+  [125] pushsymb 756 ............................ <#game_status>
+  [128] pushsymb 757 ............................ <#none>
+  [131] pusharglistnoret 3 ...................... <me.getVariableManager(), #game_status, #none>
+  [133] objcall 491 ............................. me.getVariableManager().set(#game_status, #none)
+  [136] getprop 790 ............................. <pConnectionId>
+  [139] pusharglist 1 ........................... <pConnectionId>
+  [141] extcall 796 ............................. <getConnection(pConnectionId)>
+  [144] pushcons 14 ............................. <"INITIATEJOINGAME">
+  [146] pushsymb 217 ............................ <#integer>
+  [148] getparam 1 .............................. <tInstanceId>
+  [150] pushsymb 217 ............................ <#integer>
+  [152] getparam 2 .............................. <tTeamId>
+  [154] pusharglist 4 ........................... <[#integer: tInstanceId, #integer: tTeamId]>
+  [156] pushproplist ............................ <[#integer: tInstanceId, #integer: tTeamId]>
+  [157] pusharglist 3 ........................... <getConnection(pConnectionId), "INITIATEJOINGAME", [#integer: tInstanceId, #integer: tTeamId]>
+  [159] objcall 797 ............................. <getConnection(pConnectionId).send("INITIATEJOINGAME", [#integer: tInstanceId, #integer: tTeamId])>
+  [162] pusharglistnoret 1 ...................... <getConnection(pConnectionId).send("INITIATEJOINGAME", [#integer: tInstanceId, #integer: tTeamId])>
+  [164] extcall 28 .............................. return getConnection(pConnectionId).send("INITIATEJOINGAME", [#integer: tInstanceId, #integer: tTeamId])
+  [166] ret
+end
+
+on sendJoinParameterValues me, tInstanceId, tTeamId, tParamList
+  [  0] getparam 0 .............................. <me>
+  [  2] pusharglist 1 ........................... <me>
+  [  4] objcall 689 ............................. <me.getBaseLogic()>
+  [  7] pusharglist 1 ........................... <me.getBaseLogic()>
+  [  9] objcall 738 ............................. <me.getBaseLogic().getGameStatus()>
+  [ 12] pushsymb 773 ............................ <#join_requested>
+  [ 15] eq ...................................... <me.getBaseLogic().getGameStatus() = #join_requested>
+  [ 16] jmpifz [ 24] ............................ if me.getBaseLogic().getGameStatus() = #join_requested then
+  [ 19] pushzero ................................ <0>
+  [ 20] pusharglistnoret 1 ...................... <0>
+  [ 22] extcall 28 .............................. return 0
+  [ 24] getprop 790 ............................. <pConnectionId>
+  [ 27] pusharglist 1 ........................... <pConnectionId>
+  [ 29] extcall 795 ............................. <connectionExists(pConnectionId)>
+  [ 32] not ..................................... <not connectionExists(pConnectionId)>
+  [ 33] jmpifz [ 56] ............................ if not connectionExists(pConnectionId) then
+  [ 36] getparam 0 .............................. <me>
+  [ 38] pushcons 2 .............................. <"Connection not found:">
+  [ 40] getprop 790 ............................. <pConnectionId>
+  [ 43] joinpadstr .............................. <"Connection not found:" && pConnectionId>
+  [ 44] pushsymb 798 ............................ <#sendNavigate>
+  [ 47] pusharglist 3 ........................... <me, "Connection not found:" && pConnectionId, #sendNavigate>
+  [ 49] extcall 504 ............................. <error(me, "Connection not found:" && pConnectionId, #sendNavigate)>
+  [ 52] pusharglistnoret 1 ...................... <error(me, "Connection not found:" && pConnectionId, #sendNavigate)>
+  [ 54] extcall 28 .............................. return error(me, "Connection not found:" && pConnectionId, #sendNavigate)
+  [ 56] getparam 0 .............................. <me>
+  [ 58] pusharglist 1 ........................... <me>
+  [ 60] objcall 716 ............................. <me.getVariableManager()>
+  [ 63] pushsymb 699 ............................ <#observed_instance_data>
+  [ 66] pusharglist 2 ........................... <me.getVariableManager(), #observed_instance_data>
+  [ 68] objcall 294 ............................. <me.getVariableManager().get(#observed_instance_data)>
+  [ 71] setlocal 0 .............................. tdata = me.getVariableManager().get(#observed_instance_data)
+  [ 73] getparam 1 .............................. <tInstanceId>
+  [ 75] pusharglist 0 ........................... <>
+  [ 77] extcall 31 .............................. <VOID>
+  [ 79] eq ...................................... <tInstanceId = VOID>
+  [ 80] jmpifz [ 93] ............................ if tInstanceId = VOID then
+  [ 83] getlocal 0 .............................. <tdata>
+  [ 85] pushsymb 67 ............................. <#id>
+  [ 87] pusharglist 2 ........................... <tdata, #id>
+  [ 89] objcall 35 .............................. <tdata[#id]>
+  [ 91] setparam 1 .............................. tInstanceId = tdata[#id]
+  [ 93] getparam 1 .............................. <tInstanceId>
+  [ 95] pusharglist 0 ........................... <>
+  [ 97] extcall 31 .............................. <VOID>
+  [ 99] eq ...................................... <tInstanceId = VOID>
+  [100] jmpifz [108] ............................ if tInstanceId = VOID then
+  [103] pushzero ................................ <0>
+  [104] pusharglistnoret 1 ...................... <0>
+  [106] extcall 28 .............................. return 0
+  [108] getparam 2 .............................. <tTeamId>
+  [110] pusharglist 0 ........................... <>
+  [112] extcall 31 .............................. <VOID>
+  [114] eq ...................................... <tTeamId = VOID>
+  [115] jmpifz [123] ............................ if tTeamId = VOID then
+  [118] pushzero ................................ <0>
+  [119] pusharglistnoret 1 ...................... <0>
+  [121] extcall 28 .............................. return 0
+  [123] getparam 2 .............................. <tTeamId>
+  [125] pushint8 1 .............................. <1>
+  [127] sub ..................................... <tTeamId - 1>
+  [128] setparam 2 .............................. tTeamId = tTeamId - 1
+  [130] pushsymb 217 ............................ <#integer>
+  [132] getparam 1 .............................. <tInstanceId>
+  [134] pushsymb 217 ............................ <#integer>
+  [136] getparam 2 .............................. <tTeamId>
+  [138] pushsymb 217 ............................ <#integer>
+  [140] getparam 3 .............................. <tParamList>
+  [142] getobjprop 42 ........................... <tParamList.count>
+  [144] pusharglist 6 ........................... <[#integer: tInstanceId, #integer: tTeamId, #integer: tParamList.count]>
+  [146] pushproplist ............................ <[#integer: tInstanceId, #integer: tTeamId, #integer: tParamList.count]>
+  [147] setlocal 1 .............................. tOutput = [#integer: tInstanceId, #integer: tTeamId, #integer: tParamList.count]
+  [149] pushint8 1 .............................. <1>
+  [151] setlocal 2
+  [153] getlocal 2
+  [155] getparam 3 .............................. <tParamList>
+  [157] getobjprop 42 ........................... <tParamList.count>
+  [159] lteq
+  [160] jmpifz [260] ............................ repeat with i = 1 to tParamList.count
+  [163] getlocal 1 .............................. <tOutput>
+  [165] pushsymb 56 ............................. <#string>
+  [167] getparam 3 .............................. <tParamList>
+  [169] getlocal 2 .............................. <i>
+  [171] pusharglist 2 ........................... <tParamList, i>
+  [173] objcall 73 .............................. <tParamList.getPropAt(i)>
+  [175] pusharglistnoret 3 ...................... <tOutput, #string, tParamList.getPropAt(i)>
+  [177] objcall 165 ............................. tOutput.addProp(#string, tParamList.getPropAt(i))
+  [179] getparam 3 .............................. <tParamList>
+  [181] getlocal 2 .............................. <i>
+  [183] pusharglist 2 ........................... <tParamList, i>
+  [185] objcall 35 .............................. <tParamList[i]>
+  [187] pusharglist 1 ........................... <tParamList[i]>
+  [189] extcall 205 ............................. <ilk(tParamList[i])>
+  [191] pushsymb 217 ............................ <#integer>
+  [193] eq ...................................... <ilk(tParamList[i]) = #integer>
+  [194] jmpifz [225] ............................ if ilk(tParamList[i]) = #integer then
+  [197] getlocal 1 .............................. <tOutput>
+  [199] pushsymb 217 ............................ <#integer>
+  [201] pushzero ................................ <0>
+  [202] pusharglistnoret 3 ...................... <tOutput, #integer, 0>
+  [204] objcall 165 ............................. tOutput.addProp(#integer, 0)
+  [206] getlocal 1 .............................. <tOutput>
+  [208] pushsymb 217 ............................ <#integer>
+  [210] getparam 3 .............................. <tParamList>
+  [212] getlocal 2 .............................. <i>
+  [214] pusharglist 2 ........................... <tParamList, i>
+  [216] objcall 35 .............................. <tParamList[i]>
+  [218] pusharglistnoret 3 ...................... <tOutput, #integer, tParamList[i]>
+  [220] objcall 165 ............................. tOutput.addProp(#integer, tParamList[i])
+  [222] jmp [251] ............................... next repeat
+  [225] getlocal 1 .............................. <tOutput>
+  [227] pushsymb 217 ............................ <#integer>
+  [229] pushint8 1 .............................. <1>
+  [231] pusharglistnoret 3 ...................... <tOutput, #integer, 1>
+  [233] objcall 165 ............................. tOutput.addProp(#integer, 1)
+  [235] getlocal 1 .............................. <tOutput>
+  [237] pushsymb 56 ............................. <#string>
+  [239] getparam 3 .............................. <tParamList>
+  [241] getlocal 2 .............................. <i>
+  [243] pusharglist 2 ........................... <tParamList, i>
+  [245] objcall 35 .............................. <tParamList[i]>
+  [247] pusharglistnoret 3 ...................... <tOutput, #string, tParamList[i]>
+  [249] objcall 165 ............................. tOutput.addProp(#string, tParamList[i])
+  [251] pushint8 1
+  [253] getlocal 2
+  [255] add
+  [256] setlocal 2
+  [258] endrepeat [153]
+  [260] getparam 0 .............................. <me>
+  [262] pushzero ................................ <0>
+  [263] pusharglistnoret 2 ...................... <me, 0>
+  [265] objcall 684 ............................. me.setInstanceListUpdates(0)
+  [268] getparam 0 .............................. <me>
+  [270] pusharglist 1 ........................... <me>
+  [272] objcall 716 ............................. <me.getVariableManager()>
+  [275] pushsymb 756 ............................ <#game_status>
+  [278] pushsymb 773 ............................ <#join_requested>
+  [281] pusharglistnoret 3 ...................... <me.getVariableManager(), #game_status, #join_requested>
+  [283] objcall 491 ............................. me.getVariableManager().set(#game_status, #join_requested)
+  [286] getprop 790 ............................. <pConnectionId>
+  [289] pusharglist 1 ........................... <pConnectionId>
+  [291] extcall 796 ............................. <getConnection(pConnectionId)>
+  [294] pushcons 15 ............................. <"JOINPARAMETERVALUES">
+  [296] getlocal 1 .............................. <tOutput>
+  [298] pusharglist 3 ........................... <getConnection(pConnectionId), "JOINPARAMETERVALUES", tOutput>
+  [300] objcall 797 ............................. <getConnection(pConnectionId).send("JOINPARAMETERVALUES", tOutput)>
+  [303] pusharglistnoret 1 ...................... <getConnection(pConnectionId).send("JOINPARAMETERVALUES", tOutput)>
+  [305] extcall 28 .............................. return getConnection(pConnectionId).send("JOINPARAMETERVALUES", tOutput)
+  [307] ret
+end
+
+on sendLeaveGame me
+  [  0] getprop 790 ............................. <pConnectionId>
+  [  3] pusharglist 1 ........................... <pConnectionId>
+  [  5] extcall 795 ............................. <connectionExists(pConnectionId)>
+  [  8] not ..................................... <not connectionExists(pConnectionId)>
+  [  9] jmpifz [ 32] ............................ if not connectionExists(pConnectionId) then
+  [ 12] getparam 0 .............................. <me>
+  [ 14] pushcons 2 .............................. <"Connection not found:">
+  [ 16] getprop 790 ............................. <pConnectionId>
+  [ 19] joinpadstr .............................. <"Connection not found:" && pConnectionId>
+  [ 20] pushsymb 798 ............................ <#sendNavigate>
+  [ 23] pusharglist 3 ........................... <me, "Connection not found:" && pConnectionId, #sendNavigate>
+  [ 25] extcall 504 ............................. <error(me, "Connection not found:" && pConnectionId, #sendNavigate)>
+  [ 28] pusharglistnoret 1 ...................... <error(me, "Connection not found:" && pConnectionId, #sendNavigate)>
+  [ 30] extcall 28 .............................. return error(me, "Connection not found:" && pConnectionId, #sendNavigate)
+  [ 32] getparam 0 .............................. <me>
+  [ 34] pusharglist 1 ........................... <me>
+  [ 36] objcall 716 ............................. <me.getVariableManager()>
+  [ 39] pushsymb 756 ............................ <#game_status>
+  [ 42] pushsymb 757 ............................ <#none>
+  [ 45] pusharglistnoret 3 ...................... <me.getVariableManager(), #game_status, #none>
+  [ 47] objcall 491 ............................. me.getVariableManager().set(#game_status, #none)
+  [ 50] getprop 790 ............................. <pConnectionId>
+  [ 53] pusharglist 1 ........................... <pConnectionId>
+  [ 55] extcall 796 ............................. <getConnection(pConnectionId)>
+  [ 58] pushcons 16 ............................. <"LEAVEGAME">
+  [ 60] pusharglist 2 ........................... <getConnection(pConnectionId), "LEAVEGAME">
+  [ 62] objcall 797 ............................. <getConnection(pConnectionId).send("LEAVEGAME")>
+  [ 65] pusharglistnoret 1 ...................... <getConnection(pConnectionId).send("LEAVEGAME")>
+  [ 67] extcall 28 .............................. return getConnection(pConnectionId).send("LEAVEGAME")
+  [ 69] ret
+end
+
+on sendKickPlayer me, tPlayerId
+  [  0] getparam 1 .............................. <tPlayerId>
+  [  2] pusharglist 1 ........................... <tPlayerId>
+  [  4] extcall 217 ............................. <integer(tPlayerId)>
+  [  6] setparam 1 .............................. tPlayerId = integer(tPlayerId)
+  [  8] getparam 1 .............................. <tPlayerId>
+  [ 10] pusharglist 1 ........................... <tPlayerId>
+  [ 12] extcall 805 ............................. <integerp(tPlayerId)>
+  [ 15] not ..................................... <not integerp(tPlayerId)>
+  [ 16] jmpifz [ 35] ............................ if not integerp(tPlayerId) then
+  [ 19] getparam 0 .............................. <me>
+  [ 21] pushcons 17 ............................. <"Integer expected!">
+  [ 23] pushsymb 712 ............................ <#sendKickPlayer>
+  [ 26] pusharglist 3 ........................... <me, "Integer expected!", #sendKickPlayer>
+  [ 28] extcall 504 ............................. <error(me, "Integer expected!", #sendKickPlayer)>
+  [ 31] pusharglistnoret 1 ...................... <error(me, "Integer expected!", #sendKickPlayer)>
+  [ 33] extcall 28 .............................. return error(me, "Integer expected!", #sendKickPlayer)
+  [ 35] getprop 790 ............................. <pConnectionId>
+  [ 38] pusharglist 1 ........................... <pConnectionId>
+  [ 40] extcall 795 ............................. <connectionExists(pConnectionId)>
+  [ 43] not ..................................... <not connectionExists(pConnectionId)>
+  [ 44] jmpifz [ 67] ............................ if not connectionExists(pConnectionId) then
+  [ 47] getparam 0 .............................. <me>
+  [ 49] pushcons 2 .............................. <"Connection not found:">
+  [ 51] getprop 790 ............................. <pConnectionId>
+  [ 54] joinpadstr .............................. <"Connection not found:" && pConnectionId>
+  [ 55] pushsymb 798 ............................ <#sendNavigate>
+  [ 58] pusharglist 3 ........................... <me, "Connection not found:" && pConnectionId, #sendNavigate>
+  [ 60] extcall 504 ............................. <error(me, "Connection not found:" && pConnectionId, #sendNavigate)>
+  [ 63] pusharglistnoret 1 ...................... <error(me, "Connection not found:" && pConnectionId, #sendNavigate)>
+  [ 65] extcall 28 .............................. return error(me, "Connection not found:" && pConnectionId, #sendNavigate)
+  [ 67] getprop 790 ............................. <pConnectionId>
+  [ 70] pusharglist 1 ........................... <pConnectionId>
+  [ 72] extcall 796 ............................. <getConnection(pConnectionId)>
+  [ 75] pushcons 18 ............................. <"KICKPLAYER">
+  [ 77] pushsymb 217 ............................ <#integer>
+  [ 79] getparam 1 .............................. <tPlayerId>
+  [ 81] pusharglist 2 ........................... <[#integer: tPlayerId]>
+  [ 83] pushproplist ............................ <[#integer: tPlayerId]>
+  [ 84] pusharglist 3 ........................... <getConnection(pConnectionId), "KICKPLAYER", [#integer: tPlayerId]>
+  [ 86] objcall 797 ............................. <getConnection(pConnectionId).send("KICKPLAYER", [#integer: tPlayerId])>
+  [ 89] pusharglistnoret 1 ...................... <getConnection(pConnectionId).send("KICKPLAYER", [#integer: tPlayerId])>
+  [ 91] extcall 28 .............................. return getConnection(pConnectionId).send("KICKPLAYER", [#integer: tPlayerId])
+  [ 93] ret
+end
+
+on sendWatchGame me, tInstanceId
+  [  0] getprop 790 ............................. <pConnectionId>
+  [  3] pusharglist 1 ........................... <pConnectionId>
+  [  5] extcall 795 ............................. <connectionExists(pConnectionId)>
+  [  8] not ..................................... <not connectionExists(pConnectionId)>
+  [  9] jmpifz [ 32] ............................ if not connectionExists(pConnectionId) then
+  [ 12] getparam 0 .............................. <me>
+  [ 14] pushcons 2 .............................. <"Connection not found:">
+  [ 16] getprop 790 ............................. <pConnectionId>
+  [ 19] joinpadstr .............................. <"Connection not found:" && pConnectionId>
+  [ 20] pushsymb 798 ............................ <#sendNavigate>
+  [ 23] pusharglist 3 ........................... <me, "Connection not found:" && pConnectionId, #sendNavigate>
+  [ 25] extcall 504 ............................. <error(me, "Connection not found:" && pConnectionId, #sendNavigate)>
+  [ 28] pusharglistnoret 1 ...................... <error(me, "Connection not found:" && pConnectionId, #sendNavigate)>
+  [ 30] extcall 28 .............................. return error(me, "Connection not found:" && pConnectionId, #sendNavigate)
+  [ 32] getparam 0 .............................. <me>
+  [ 34] pushzero ................................ <0>
+  [ 35] pusharglistnoret 2 ...................... <me, 0>
+  [ 37] objcall 684 ............................. me.setInstanceListUpdates(0)
+  [ 40] getparam 0 .............................. <me>
+  [ 42] pusharglist 1 ........................... <me>
+  [ 44] objcall 716 ............................. <me.getVariableManager()>
+  [ 47] pushsymb 756 ............................ <#game_status>
+  [ 50] pushsymb 771 ............................ <#watch_requested>
+  [ 53] pusharglistnoret 3 ...................... <me.getVariableManager(), #game_status, #watch_requested>
+  [ 55] objcall 491 ............................. me.getVariableManager().set(#game_status, #watch_requested)
+  [ 58] getprop 790 ............................. <pConnectionId>
+  [ 61] pusharglist 1 ........................... <pConnectionId>
+  [ 63] extcall 796 ............................. <getConnection(pConnectionId)>
+  [ 66] pushcons 19 ............................. <"WATCHGAME">
+  [ 68] pushsymb 217 ............................ <#integer>
+  [ 70] getparam 1 .............................. <tInstanceId>
+  [ 72] pusharglist 2 ........................... <[#integer: tInstanceId]>
+  [ 74] pushproplist ............................ <[#integer: tInstanceId]>
+  [ 75] pusharglist 3 ........................... <getConnection(pConnectionId), "WATCHGAME", [#integer: tInstanceId]>
+  [ 77] objcall 797 ............................. <getConnection(pConnectionId).send("WATCHGAME", [#integer: tInstanceId])>
+  [ 80] pusharglistnoret 1 ...................... <getConnection(pConnectionId).send("WATCHGAME", [#integer: tInstanceId])>
+  [ 82] extcall 28 .............................. return getConnection(pConnectionId).send("WATCHGAME", [#integer: tInstanceId])
+  [ 84] ret
+end
+
+on sendStartGame me
+  [  0] getprop 790 ............................. <pConnectionId>
+  [  3] pusharglist 1 ........................... <pConnectionId>
+  [  5] extcall 795 ............................. <connectionExists(pConnectionId)>
+  [  8] not ..................................... <not connectionExists(pConnectionId)>
+  [  9] jmpifz [ 32] ............................ if not connectionExists(pConnectionId) then
+  [ 12] getparam 0 .............................. <me>
+  [ 14] pushcons 2 .............................. <"Connection not found:">
+  [ 16] getprop 790 ............................. <pConnectionId>
+  [ 19] joinpadstr .............................. <"Connection not found:" && pConnectionId>
+  [ 20] pushsymb 798 ............................ <#sendNavigate>
+  [ 23] pusharglist 3 ........................... <me, "Connection not found:" && pConnectionId, #sendNavigate>
+  [ 25] extcall 504 ............................. <error(me, "Connection not found:" && pConnectionId, #sendNavigate)>
+  [ 28] pusharglistnoret 1 ...................... <error(me, "Connection not found:" && pConnectionId, #sendNavigate)>
+  [ 30] extcall 28 .............................. return error(me, "Connection not found:" && pConnectionId, #sendNavigate)
+  [ 32] getprop 790 ............................. <pConnectionId>
+  [ 35] pusharglist 1 ........................... <pConnectionId>
+  [ 37] extcall 796 ............................. <getConnection(pConnectionId)>
+  [ 40] pushcons 20 ............................. <"STARTGAME">
+  [ 42] pusharglist 2 ........................... <getConnection(pConnectionId), "STARTGAME">
+  [ 44] objcall 797 ............................. <getConnection(pConnectionId).send("STARTGAME")>
+  [ 47] pusharglistnoret 1 ...................... <getConnection(pConnectionId).send("STARTGAME")>
+  [ 49] extcall 28 .............................. return getConnection(pConnectionId).send("STARTGAME")
+  [ 51] ret
+end
+
+on sendMoveGoal me, tLocX, tLocY
+  [  0] getprop 790 ............................. <pConnectionId>
+  [  3] pusharglist 1 ........................... <pConnectionId>
+  [  5] extcall 795 ............................. <connectionExists(pConnectionId)>
+  [  8] not ..................................... <not connectionExists(pConnectionId)>
+  [  9] jmpifz [ 32] ............................ if not connectionExists(pConnectionId) then
+  [ 12] getparam 0 .............................. <me>
+  [ 14] pushcons 2 .............................. <"Connection not found:">
+  [ 16] getprop 790 ............................. <pConnectionId>
+  [ 19] joinpadstr .............................. <"Connection not found:" && pConnectionId>
+  [ 20] pushsymb 798 ............................ <#sendNavigate>
+  [ 23] pusharglist 3 ........................... <me, "Connection not found:" && pConnectionId, #sendNavigate>
+  [ 25] extcall 504 ............................. <error(me, "Connection not found:" && pConnectionId, #sendNavigate)>
+  [ 28] pusharglistnoret 1 ...................... <error(me, "Connection not found:" && pConnectionId, #sendNavigate)>
+  [ 30] extcall 28 .............................. return error(me, "Connection not found:" && pConnectionId, #sendNavigate)
+  [ 32] getparam 0 .............................. <me>
+  [ 34] pusharglist 1 ........................... <me>
+  [ 36] objcall 689 ............................. <me.getBaseLogic()>
+  [ 39] pusharglist 1 ........................... <me.getBaseLogic()>
+  [ 41] objcall 738 ............................. <me.getBaseLogic().getGameStatus()>
+  [ 44] setlocal 0 .............................. tGameState = me.getBaseLogic().getGameStatus()
+  [ 46] getparam 0 .............................. <me>
+  [ 48] pusharglist 1 ........................... <me>
+  [ 50] objcall 716 ............................. <me.getVariableManager()>
+  [ 53] pushsymb 758 ............................ <#last_clicked_loc>
+  [ 56] pusharglist 2 ........................... <me.getVariableManager(), #last_clicked_loc>
+  [ 58] objcall 294 ............................. <me.getVariableManager().get(#last_clicked_loc)>
+  [ 61] setlocal 1 .............................. tLastClick = me.getVariableManager().get(#last_clicked_loc)
+  [ 63] getlocal 1 .............................. <tLastClick>
+  [ 65] getparam 1 .............................. <tLocX>
+  [ 67] getparam 2 .............................. <tLocY>
+  [ 69] getlocal 0 .............................. <tGameState>
+  [ 71] pusharglist 3 ........................... <[tLocX, tLocY, tGameState]>
+  [ 73] pushlist ................................ <[tLocX, tLocY, tGameState]>
+  [ 74] eq ...................................... <tLastClick = [tLocX, tLocY, tGameState]>
+  [ 75] jmpifz [ 84] ............................ if tLastClick = [tLocX, tLocY, tGameState] then
+  [ 78] pushint8 1 .............................. <1>
+  [ 80] pusharglistnoret 1 ...................... <1>
+  [ 82] extcall 28 .............................. return 1
+  [ 84] getparam 0 .............................. <me>
+  [ 86] pusharglist 1 ........................... <me>
+  [ 88] objcall 716 ............................. <me.getVariableManager()>
+  [ 91] pushsymb 758 ............................ <#last_clicked_loc>
+  [ 94] getparam 1 .............................. <tLocX>
+  [ 96] getparam 2 .............................. <tLocY>
+  [ 98] getlocal 0 .............................. <tGameState>
+  [100] pusharglist 3 ........................... <[tLocX, tLocY, tGameState]>
+  [102] pushlist ................................ <[tLocX, tLocY, tGameState]>
+  [103] pusharglistnoret 3 ...................... <me.getVariableManager(), #last_clicked_loc, [tLocX, tLocY, tGameState]>
+  [105] objcall 491 ............................. me.getVariableManager().set(#last_clicked_loc, [tLocX, tLocY, tGameState])
+  [108] getlocal 0 .............................. <tGameState>
+  [110] pushsymb 782 ............................ <#game_started>
+  [113] eq ...................................... <tGameState = #game_started>
+  [114] jmpifz [150] ............................ if tGameState = #game_started then / else
+  [117] getprop 790 ............................. <pConnectionId>
+  [120] pusharglist 1 ........................... <pConnectionId>
+  [122] extcall 796 ............................. <getConnection(pConnectionId)>
+  [125] pushcons 21 ............................. <"GAMEEVENT">
+  [127] pushsymb 217 ............................ <#integer>
+  [129] getparam 1 .............................. <tLocX>
+  [131] pushsymb 217 ............................ <#integer>
+  [133] getparam 2 .............................. <tLocY>
+  [135] pusharglist 4 ........................... <[#integer: tLocX, #integer: tLocY]>
+  [137] pushproplist ............................ <[#integer: tLocX, #integer: tLocY]>
+  [138] pusharglist 3 ........................... <getConnection(pConnectionId), "GAMEEVENT", [#integer: tLocX, #integer: tLocY]>
+  [140] objcall 797 ............................. <getConnection(pConnectionId).send("GAMEEVENT", [#integer: tLocX, #integer: tLocY])>
+  [143] pusharglistnoret 1 ...................... <getConnection(pConnectionId).send("GAMEEVENT", [#integer: tLocX, #integer: tLocY])>
+  [145] extcall 28 .............................. return getConnection(pConnectionId).send("GAMEEVENT", [#integer: tLocX, #integer: tLocY])
+  [147] jmp [182]
+  [150] getprop 790 ............................. <pConnectionId>
+  [153] pusharglist 1 ........................... <pConnectionId>
+  [155] extcall 796 ............................. <getConnection(pConnectionId)>
+  [158] pushcons 22 ............................. <"MOVE">
+  [160] pushsymb 806 ............................ <#short>
+  [163] getparam 1 .............................. <tLocX>
+  [165] pushsymb 806 ............................ <#short>
+  [168] getparam 2 .............................. <tLocY>
+  [170] pusharglist 4 ........................... <[#short: tLocX, #short: tLocY]>
+  [172] pushproplist ............................ <[#short: tLocX, #short: tLocY]>
+  [173] pusharglist 3 ........................... <getConnection(pConnectionId), "MOVE", [#short: tLocX, #short: tLocY]>
+  [175] objcall 797 ............................. <getConnection(pConnectionId).send("MOVE", [#short: tLocX, #short: tLocY])>
+  [178] pusharglistnoret 1 ...................... <getConnection(pConnectionId).send("MOVE", [#short: tLocX, #short: tLocY])>
+  [180] extcall 28 .............................. return getConnection(pConnectionId).send("MOVE", [#short: tLocX, #short: tLocY])
+  [182] ret
+end
+
+on sendRejoinGame me
+  [  0] getprop 790 ............................. <pConnectionId>
+  [  3] pusharglist 1 ........................... <pConnectionId>
+  [  5] extcall 795 ............................. <connectionExists(pConnectionId)>
+  [  8] not ..................................... <not connectionExists(pConnectionId)>
+  [  9] jmpifz [ 32] ............................ if not connectionExists(pConnectionId) then
+  [ 12] getparam 0 .............................. <me>
+  [ 14] pushcons 2 .............................. <"Connection not found:">
+  [ 16] getprop 790 ............................. <pConnectionId>
+  [ 19] joinpadstr .............................. <"Connection not found:" && pConnectionId>
+  [ 20] pushsymb 798 ............................ <#sendNavigate>
+  [ 23] pusharglist 3 ........................... <me, "Connection not found:" && pConnectionId, #sendNavigate>
+  [ 25] extcall 504 ............................. <error(me, "Connection not found:" && pConnectionId, #sendNavigate)>
+  [ 28] pusharglistnoret 1 ...................... <error(me, "Connection not found:" && pConnectionId, #sendNavigate)>
+  [ 30] extcall 28 .............................. return error(me, "Connection not found:" && pConnectionId, #sendNavigate)
+  [ 32] getprop 790 ............................. <pConnectionId>
+  [ 35] pusharglist 1 ........................... <pConnectionId>
+  [ 37] extcall 796 ............................. <getConnection(pConnectionId)>
+  [ 40] pushcons 23 ............................. <"REJOINGAME">
+  [ 42] pusharglist 2 ........................... <getConnection(pConnectionId), "REJOINGAME">
+  [ 44] objcall 797 ............................. <getConnection(pConnectionId).send("REJOINGAME")>
+  [ 47] pusharglistnoret 1 ...................... <getConnection(pConnectionId).send("REJOINGAME")>
+  [ 49] extcall 28 .............................. return getConnection(pConnectionId).send("REJOINGAME")
+  [ 51] ret
+end

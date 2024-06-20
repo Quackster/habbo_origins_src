@@ -1,0 +1,138 @@
+property pOfferList, pSmallPreview, pState
+
+on construct me
+  [  0] pusharglist 0 ........................... <[]>
+  [  2] pushlist ................................ <[]>
+  [  3] setprop 704 ............................. pOfferList = []
+  [  6] pusharglist 0 ........................... <>
+  [  8] extcall 55 .............................. <VOID>
+  [ 10] setprop 705 ............................. pSmallPreview = VOID
+  [ 13] pusharglist 0 ........................... <>
+  [ 15] extcall 55 .............................. <VOID>
+  [ 17] setprop 706 ............................. pState = VOID
+  [ 20] ret
+end
+
+on deconstruct me
+  [  0] getprop 704 ............................. <pOfferList>
+  [  3] peek 0
+  [  5] pusharglist 1
+  [  7] extcall 48
+  [  9] pushint8 1
+  [ 11] peek 0
+  [ 13] peek 2
+  [ 15] lteq
+  [ 16] jmpifz [ 44] ............................ repeat with tObj in pOfferList
+  [ 19] peek 2
+  [ 21] peek 1
+  [ 23] pusharglist 2
+  [ 25] extcall 41
+  [ 27] setlocal 0
+  [ 29] getlocal 0 .............................. <tObj>
+  [ 31] pusharglist 1 ........................... <tObj>
+  [ 33] objcall 54 .............................. <tObj.getID()>
+  [ 35] pusharglistnoret 1 ...................... <tObj.getID()>
+  [ 37] extcall 168 ............................. removeObject(tObj.getID())
+  [ 39] pushint8 1
+  [ 41] add
+  [ 42] endrepeat [ 11]
+  [ 44] pop 3
+  [ 46] pusharglist 0 ........................... <[]>
+  [ 48] pushlist ................................ <[]>
+  [ 49] setprop 704 ............................. pOfferList = []
+  [ 52] ret
+end
+
+on add me, tOfferData
+  [  0] getparam 1 .............................. <tOfferData>
+  [  2] pusharglist 1 ........................... <tOfferData>
+  [  4] extcall 43 .............................. <ilk(tOfferData)>
+  [  6] pushsymb 45 ............................. <#propList>
+  [  8] nteq .................................... <ilk(tOfferData) <> #propList>
+  [  9] jmpifz [ 29] ............................ if ilk(tOfferData) <> #propList then
+  [ 12] getparam 0 .............................. <me>
+  [ 14] pushcons 0 .............................. <"Invalid input format">
+  [ 16] pushsymb 707 ............................ <#Initialize>
+  [ 19] pushsymb 47 ............................. <#major>
+  [ 21] pusharglist 4 ........................... <me, "Invalid input format", #Initialize, #major>
+  [ 23] extcall 46 .............................. <error(me, "Invalid input format", #Initialize, #major)>
+  [ 25] pusharglistnoret 1 ...................... <error(me, "Invalid input format", #Initialize, #major)>
+  [ 27] extcall 37 .............................. return error(me, "Invalid input format", #Initialize, #major)
+  [ 29] pushsymb 338 ............................ <#random>
+  [ 32] pushcons 1 .............................. <"Offer Class">
+  [ 34] pusharglist 1 ........................... <["Offer Class"]>
+  [ 36] pushlist ................................ <["Offer Class"]>
+  [ 37] pusharglist 2 ........................... <#random, ["Offer Class"]>
+  [ 39] extcall 155 ............................. <createObject(#random, ["Offer Class"])>
+  [ 41] setlocal 0 .............................. tOffer = createObject(#random, ["Offer Class"])
+  [ 43] getlocal 0 .............................. <tOffer>
+  [ 45] getparam 1 .............................. <tOfferData>
+  [ 47] pusharglistnoret 2 ...................... <tOffer, tOfferData>
+  [ 49] objcall 707 ............................. tOffer.Initialize(tOfferData)
+  [ 52] getprop 704 ............................. <pOfferList>
+  [ 55] getlocal 0 .............................. <tOffer>
+  [ 57] pusharglistnoret 2 ...................... <pOfferList, tOffer>
+  [ 59] objcall 339 ............................. pOfferList.add(tOffer)
+  [ 62] ret
+end
+
+on setSmallPreview me, tPrev
+  [  0] getparam 1 .............................. <tPrev>
+  [  2] setprop 705 ............................. pSmallPreview = tPrev
+  [  5] ret
+end
+
+on setState me, tstate
+  [  0] getparam 1 .............................. <tstate>
+  [  2] setprop 706 ............................. pState = tstate
+  [  5] ret
+end
+
+on getCount me
+  [  0] getprop 704 ............................. <pOfferList>
+  [  3] getobjprop 48 ........................... <pOfferList.count>
+  [  5] pusharglistnoret 1 ...................... <pOfferList.count>
+  [  7] extcall 37 .............................. return pOfferList.count
+  [  9] ret
+end
+
+on getOffer me, tIndex
+  [  0] getparam 1 .............................. <tIndex>
+  [  2] pushint8 1 .............................. <1>
+  [  4] lt ...................................... <tIndex < 1>
+  [  5] getparam 1 .............................. <tIndex>
+  [  7] getprop 704 ............................. <pOfferList>
+  [ 10] getobjprop 48 ........................... <pOfferList.count>
+  [ 12] gt ...................................... <tIndex > pOfferList.count>
+  [ 13] or ...................................... <(tIndex < 1) or (tIndex > pOfferList.count)>
+  [ 14] jmpifz [ 34] ............................ if (tIndex < 1) or (tIndex > pOfferList.count) then
+  [ 17] getparam 0 .............................. <me>
+  [ 19] pushcons 2 .............................. <"Index out of range">
+  [ 21] pushsymb 344 ............................ <#getOffer>
+  [ 24] pushsymb 47 ............................. <#major>
+  [ 26] pusharglist 4 ........................... <me, "Index out of range", #getOffer, #major>
+  [ 28] extcall 46 .............................. <error(me, "Index out of range", #getOffer, #major)>
+  [ 30] pusharglistnoret 1 ...................... <error(me, "Index out of range", #getOffer, #major)>
+  [ 32] extcall 37 .............................. return error(me, "Index out of range", #getOffer, #major)
+  [ 34] getprop 704 ............................. <pOfferList>
+  [ 37] getparam 1 .............................. <tIndex>
+  [ 39] pusharglist 2 ........................... <pOfferList, tIndex>
+  [ 41] objcall 41 .............................. <pOfferList[tIndex]>
+  [ 43] pusharglistnoret 1 ...................... <pOfferList[tIndex]>
+  [ 45] extcall 37 .............................. return pOfferList[tIndex]
+  [ 47] ret
+end
+
+on getSmallPreview me
+  [  0] getprop 705 ............................. <pSmallPreview>
+  [  3] pusharglistnoret 1 ...................... <pSmallPreview>
+  [  5] extcall 37 .............................. return pSmallPreview
+  [  7] ret
+end
+
+on getState me
+  [  0] getprop 706 ............................. <pState>
+  [  3] pusharglistnoret 1 ...................... <pState>
+  [  5] extcall 37 .............................. return pState
+  [  7] ret
+end

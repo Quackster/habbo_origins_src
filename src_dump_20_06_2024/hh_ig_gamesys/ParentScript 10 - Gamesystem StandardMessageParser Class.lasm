@@ -1,0 +1,1059 @@
+on construct me
+  [  0] pushint8 1 .............................. <1>
+  [  2] pusharglistnoret 1 ...................... <1>
+  [  4] extcall 53 .............................. return 1
+  [  6] ret
+end
+
+on deconstruct me
+  [  0] pushint8 1 .............................. <1>
+  [  2] pusharglistnoret 1 ...................... <1>
+  [  4] extcall 53 .............................. return 1
+  [  6] ret
+end
+
+on Refresh me, tTopic, tdata
+  [  0] pushcons 0 .............................. <"handle_">
+  [  2] getparam 1 .............................. <tTopic>
+  [  4] joinstr ................................. <"handle_" & tTopic>
+  [  5] pusharglist 1 ........................... <"handle_" & tTopic>
+  [  7] extcall 144 ............................. <symbol("handle_" & tTopic)>
+  [  9] getparam 0 .............................. <me>
+  [ 11] getparam 2 .............................. <tdata>
+  [ 13] pusharglistnoret 3 ...................... <symbol("handle_" & tTopic), me, tdata>
+  [ 15] extcall 291 ............................. call(symbol("handle_" & tTopic), me, tdata)
+  [ 18] pushint8 1 .............................. <1>
+  [ 20] pusharglistnoret 1 ...................... <1>
+  [ 22] extcall 53 .............................. return 1
+  [ 24] ret
+end
+
+on handle_msgstruct_numtickets me, tMsg
+  [  0] getparam 1 .............................. <tMsg>
+  [  2] getchainedprop 368 ...................... <tMsg.content>
+  [  5] pushsymb 369 ............................ <#line>
+  [  8] pushint8 1 .............................. <1>
+  [ 10] pusharglist 3 ........................... <tMsg.content, #line, 1>
+  [ 12] objcall 370 ............................. <tMsg.content.line[1]>
+  [ 15] pushsymb 371 ............................ <#word>
+  [ 18] pushint8 1 .............................. <1>
+  [ 20] pusharglist 3 ........................... <tMsg.content.line[1], #word, 1>
+  [ 22] objcall 290 ............................. <tMsg.content.line[1].word[1]>
+  [ 25] pusharglist 1 ........................... <tMsg.content.line[1].word[1]>
+  [ 27] extcall 277 ............................. <integer(tMsg.content.line[1].word[1])>
+  [ 30] setlocal 0 .............................. tNum = integer(tMsg.content.line[1].word[1])
+  [ 32] getlocal 0 .............................. <tNum>
+  [ 34] pusharglist 1 ........................... <tNum>
+  [ 36] extcall 283 ............................. <integerp(tNum)>
+  [ 39] not ..................................... <not integerp(tNum)>
+  [ 40] jmpifz [ 48] ............................ if not integerp(tNum) then
+  [ 43] pushzero ................................ <0>
+  [ 44] pusharglistnoret 1 ...................... <0>
+  [ 46] extcall 53 .............................. return 0
+  [ 48] getparam 0 .............................. <me>
+  [ 50] pusharglist 1 ........................... <me>
+  [ 52] objcall 372 ............................. <me.getGameSystem()>
+  [ 55] pushsymb 297 ............................ <#numtickets>
+  [ 58] getlocal 0 .............................. <tNum>
+  [ 60] pusharglist 3 ........................... <me.getGameSystem(), #numtickets, tNum>
+  [ 62] objcall 28 .............................. <me.getGameSystem().sendGameSystemEvent(#numtickets, tNum)>
+  [ 64] pusharglistnoret 1 ...................... <me.getGameSystem().sendGameSystemEvent(#numtickets, tNum)>
+  [ 66] extcall 53 .............................. return me.getGameSystem().sendGameSystemEvent(#numtickets, tNum)
+  [ 68] ret
+end
+
+on handle_msgstruct_notickets me, tMsg
+  [  0] getparam 0 .............................. <me>
+  [  2] pusharglist 1 ........................... <me>
+  [  4] objcall 372 ............................. <me.getGameSystem()>
+  [  7] pushsymb 298 ............................ <#notickets>
+  [ 10] pusharglist 0 ........................... <>
+  [ 12] extcall 61 .............................. <VOID>
+  [ 14] pusharglist 3 ........................... <me.getGameSystem(), #notickets, VOID>
+  [ 16] objcall 28 .............................. <me.getGameSystem().sendGameSystemEvent(#notickets, VOID)>
+  [ 18] pusharglistnoret 1 ...................... <me.getGameSystem().sendGameSystemEvent(#notickets, VOID)>
+  [ 20] extcall 53 .............................. return me.getGameSystem().sendGameSystemEvent(#notickets, VOID)
+  [ 22] ret
+end
+
+on handle_msgstruct_users me, tMsg
+  [  0] getparam 0 .............................. <me>
+  [  2] pusharglist 1 ........................... <me>
+  [  4] objcall 372 ............................. <me.getGameSystem()>
+  [  7] pushsymb 294 ............................ <#users>
+  [ 10] getparam 1 .............................. <tMsg>
+  [ 12] pusharglist 3 ........................... <me.getGameSystem(), #users, tMsg>
+  [ 14] objcall 28 .............................. <me.getGameSystem().sendGameSystemEvent(#users, tMsg)>
+  [ 16] pusharglistnoret 1 ...................... <me.getGameSystem().sendGameSystemEvent(#users, tMsg)>
+  [ 18] extcall 53 .............................. return me.getGameSystem().sendGameSystemEvent(#users, tMsg)
+  [ 20] ret
+end
+
+on handle_msgstruct_loungeinfo me, tMsg
+  [  0] getparam 1 .............................. <tMsg>
+  [  2] getobjprop 374 .......................... <tMsg.connection>
+  [  5] setlocal 0 .............................. tConn = tMsg.connection
+  [  7] pusharglist 0 ........................... <[:]>
+  [  9] pushproplist ............................ <[:]>
+  [ 10] setlocal 1 .............................. tdata = [:]
+  [ 12] getlocal 1 .............................. <tdata>
+  [ 14] pushsymb 75 ............................. <#tournament_flag>
+  [ 16] getlocal 0 .............................. <tConn>
+  [ 18] pusharglist 1 ........................... <tConn>
+  [ 20] objcall 375 ............................. <tConn.GetIntFrom()>
+  [ 23] pusharglistnoret 3 ...................... <tdata, #tournament_flag, tConn.GetIntFrom()>
+  [ 25] objcall 240 ............................. tdata.addProp(#tournament_flag, tConn.GetIntFrom())
+  [ 27] getlocal 1 .............................. <tdata>
+  [ 29] pushsymb 75 ............................. <#tournament_flag>
+  [ 31] pusharglist 2 ........................... <tdata, #tournament_flag>
+  [ 33] objcall 99 .............................. <tdata[#tournament_flag]>
+  [ 35] pushzero ................................ <0>
+  [ 36] gt ...................................... <tdata[#tournament_flag] > 0>
+  [ 37] jmpifz [ 70] ............................ if tdata[#tournament_flag] > 0 then
+  [ 40] getlocal 1 .............................. <tdata>
+  [ 42] pushsymb 210 ............................ <#tournament_logo_url>
+  [ 44] getlocal 0 .............................. <tConn>
+  [ 46] pusharglist 1 ........................... <tConn>
+  [ 48] objcall 376 ............................. <tConn.GetStrFrom()>
+  [ 51] pusharglistnoret 3 ...................... <tdata, #tournament_logo_url, tConn.GetStrFrom()>
+  [ 53] objcall 240 ............................. tdata.addProp(#tournament_logo_url, tConn.GetStrFrom())
+  [ 55] getlocal 1 .............................. <tdata>
+  [ 57] pushsymb 216 ............................ <#tournament_logo_click_url>
+  [ 59] getlocal 0 .............................. <tConn>
+  [ 61] pusharglist 1 ........................... <tConn>
+  [ 63] objcall 376 ............................. <tConn.GetStrFrom()>
+  [ 66] pusharglistnoret 3 ...................... <tdata, #tournament_logo_click_url, tConn.GetStrFrom()>
+  [ 68] objcall 240 ............................. tdata.addProp(#tournament_logo_click_url, tConn.GetStrFrom())
+  [ 70] getlocal 1 .............................. <tdata>
+  [ 72] pushsymb 377 ............................ <#lounge_skill_name>
+  [ 75] getlocal 0 .............................. <tConn>
+  [ 77] pusharglist 1 ........................... <tConn>
+  [ 79] objcall 376 ............................. <tConn.GetStrFrom()>
+  [ 82] pusharglistnoret 3 ...................... <tdata, #lounge_skill_name, tConn.GetStrFrom()>
+  [ 84] objcall 240 ............................. tdata.addProp(#lounge_skill_name, tConn.GetStrFrom())
+  [ 86] getlocal 1 .............................. <tdata>
+  [ 88] pushsymb 378 ............................ <#lounge_skill_score_min>
+  [ 91] getlocal 0 .............................. <tConn>
+  [ 93] pusharglist 1 ........................... <tConn>
+  [ 95] objcall 375 ............................. <tConn.GetIntFrom()>
+  [ 98] pusharglistnoret 3 ...................... <tdata, #lounge_skill_score_min, tConn.GetIntFrom()>
+  [100] objcall 240 ............................. tdata.addProp(#lounge_skill_score_min, tConn.GetIntFrom())
+  [102] getlocal 1 .............................. <tdata>
+  [104] pushsymb 379 ............................ <#lounge_skill_score_max>
+  [107] getlocal 0 .............................. <tConn>
+  [109] pusharglist 1 ........................... <tConn>
+  [111] objcall 375 ............................. <tConn.GetIntFrom()>
+  [114] pusharglistnoret 3 ...................... <tdata, #lounge_skill_score_max, tConn.GetIntFrom()>
+  [116] objcall 240 ............................. tdata.addProp(#lounge_skill_score_max, tConn.GetIntFrom())
+  [118] getparam 0 .............................. <me>
+  [120] pusharglist 1 ........................... <me>
+  [122] objcall 372 ............................. <me.getGameSystem()>
+  [125] pushsymb 299 ............................ <#loungeinfo>
+  [128] getlocal 1 .............................. <tdata>
+  [130] pusharglist 3 ........................... <me.getGameSystem(), #loungeinfo, tdata>
+  [132] objcall 28 .............................. <me.getGameSystem().sendGameSystemEvent(#loungeinfo, tdata)>
+  [134] pusharglistnoret 1 ...................... <me.getGameSystem().sendGameSystemEvent(#loungeinfo, tdata)>
+  [136] extcall 53 .............................. return me.getGameSystem().sendGameSystemEvent(#loungeinfo, tdata)
+  [138] ret
+end
+
+on handle_msgstruct_instancenotavailable me, tMsg
+  [  0] getparam 1 .............................. <tMsg>
+  [  2] getobjprop 374 .......................... <tMsg.connection>
+  [  5] setlocal 0 .............................. tConn = tMsg.connection
+  [  7] getlocal 0 .............................. <tConn>
+  [  9] pusharglist 1 ........................... <tConn>
+  [ 11] objcall 375 ............................. <tConn.GetIntFrom()>
+  [ 14] setlocal 1 .............................. tID = tConn.GetIntFrom()
+  [ 16] getparam 0 .............................. <me>
+  [ 18] pusharglist 1 ........................... <me>
+  [ 20] objcall 372 ............................. <me.getGameSystem()>
+  [ 23] pushsymb 301 ............................ <#instancenotavailable>
+  [ 26] getlocal 1 .............................. <tID>
+  [ 28] pusharglist 3 ........................... <me.getGameSystem(), #instancenotavailable, tID>
+  [ 30] objcall 28 .............................. <me.getGameSystem().sendGameSystemEvent(#instancenotavailable, tID)>
+  [ 32] pusharglistnoret 1 ...................... <me.getGameSystem().sendGameSystemEvent(#instancenotavailable, tID)>
+  [ 34] extcall 53 .............................. return me.getGameSystem().sendGameSystemEvent(#instancenotavailable, tID)
+  [ 36] ret
+end
+
+on handle_msgstruct_gameparameters me, tMsg
+  [  0] getparam 1 .............................. <tMsg>
+  [  2] getobjprop 374 .......................... <tMsg.connection>
+  [  5] setlocal 0 .............................. tConn = tMsg.connection
+  [  7] getlocal 0 .............................. <tConn>
+  [  9] pusharglist 1 ........................... <tConn>
+  [ 11] objcall 375 ............................. <tConn.GetIntFrom()>
+  [ 14] setlocal 1 .............................. tParamCount = tConn.GetIntFrom()
+  [ 16] pusharglist 0 ........................... <[]>
+  [ 18] pushlist ................................ <[]>
+  [ 19] setlocal 2 .............................. tParamList = []
+  [ 21] pushint8 1 .............................. <1>
+  [ 23] setlocal 3
+  [ 25] getlocal 3
+  [ 27] getlocal 1 .............................. <tParamCount>
+  [ 29] lteq
+  [ 30] jmpifz [286] ............................ repeat with i = 1 to tParamCount
+  [ 33] pusharglist 0 ........................... <[:]>
+  [ 35] pushproplist ............................ <[:]>
+  [ 36] setlocal 4 .............................. tItem = [:]
+  [ 38] getlocal 4 .............................. <tItem>
+  [ 40] pushsymb 254 ............................ <#name>
+  [ 42] getlocal 0 .............................. <tConn>
+  [ 44] pusharglist 1 ........................... <tConn>
+  [ 46] objcall 376 ............................. <tConn.GetStrFrom()>
+  [ 49] pusharglistnoret 3 ...................... <tItem, #name, tConn.GetStrFrom()>
+  [ 51] objcall 240 ............................. tItem.addProp(#name, tConn.GetStrFrom())
+  [ 53] getlocal 0 .............................. <tConn>
+  [ 55] pusharglist 1 ........................... <tConn>
+  [ 57] objcall 375 ............................. <tConn.GetIntFrom()>
+  [ 60] setlocal 5 .............................. ttype = tConn.GetIntFrom()
+  [ 62] getlocal 4 .............................. <tItem>
+  [ 64] pushsymb 789 ............................ <#editable>
+  [ 67] getlocal 0 .............................. <tConn>
+  [ 69] pusharglist 1 ........................... <tConn>
+  [ 71] objcall 375 ............................. <tConn.GetIntFrom()>
+  [ 74] pusharglistnoret 3 ...................... <tItem, #editable, tConn.GetIntFrom()>
+  [ 76] objcall 240 ............................. tItem.addProp(#editable, tConn.GetIntFrom())
+  [ 78] getlocal 5 .............................. <ttype>
+  [ 80] pushzero ................................ <0>
+  [ 81] eq ...................................... <ttype = 0>
+  [ 82] jmpifz [173] ............................ if ttype = 0 then / else
+  [ 85] getlocal 4 .............................. <tItem>
+  [ 87] pushsymb 203 ............................ <#type>
+  [ 89] pushsymb 277 ............................ <#integer>
+  [ 92] pusharglistnoret 3 ...................... <tItem, #type, #integer>
+  [ 94] objcall 240 ............................. tItem.addProp(#type, #integer)
+  [ 96] getlocal 4 .............................. <tItem>
+  [ 98] pushsymb 381 ............................ <#default>
+  [101] getlocal 0 .............................. <tConn>
+  [103] pusharglist 1 ........................... <tConn>
+  [105] objcall 375 ............................. <tConn.GetIntFrom()>
+  [108] pusharglistnoret 3 ...................... <tItem, #default, tConn.GetIntFrom()>
+  [110] objcall 240 ............................. tItem.addProp(#default, tConn.GetIntFrom())
+  [112] getlocal 0 .............................. <tConn>
+  [114] pusharglist 1 ........................... <tConn>
+  [116] objcall 375 ............................. <tConn.GetIntFrom()>
+  [119] pushint8 1 .............................. <1>
+  [121] eq ...................................... <tConn.GetIntFrom() = 1>
+  [122] jmpifz [141] ............................ if tConn.GetIntFrom() = 1 then
+  [125] getlocal 4 .............................. <tItem>
+  [127] pushsymb 382 ............................ <#min>
+  [130] getlocal 0 .............................. <tConn>
+  [132] pusharglist 1 ........................... <tConn>
+  [134] objcall 375 ............................. <tConn.GetIntFrom()>
+  [137] pusharglistnoret 3 ...................... <tItem, #min, tConn.GetIntFrom()>
+  [139] objcall 240 ............................. tItem.addProp(#min, tConn.GetIntFrom())
+  [141] getlocal 0 .............................. <tConn>
+  [143] pusharglist 1 ........................... <tConn>
+  [145] objcall 375 ............................. <tConn.GetIntFrom()>
+  [148] pushint8 1 .............................. <1>
+  [150] eq ...................................... <tConn.GetIntFrom() = 1>
+  [151] jmpifz [170] ............................ if tConn.GetIntFrom() = 1 then
+  [154] getlocal 4 .............................. <tItem>
+  [156] pushsymb 383 ............................ <#max>
+  [159] getlocal 0 .............................. <tConn>
+  [161] pusharglist 1 ........................... <tConn>
+  [163] objcall 375 ............................. <tConn.GetIntFrom()>
+  [166] pusharglistnoret 3 ...................... <tItem, #max, tConn.GetIntFrom()>
+  [168] objcall 240 ............................. tItem.addProp(#max, tConn.GetIntFrom())
+  [170] jmp [267]
+  [173] getlocal 4 .............................. <tItem>
+  [175] pushsymb 203 ............................ <#type>
+  [177] pushsymb 224 ............................ <#string>
+  [179] pusharglistnoret 3 ...................... <tItem, #type, #string>
+  [181] objcall 240 ............................. tItem.addProp(#type, #string)
+  [183] getlocal 4 .............................. <tItem>
+  [185] pushsymb 381 ............................ <#default>
+  [188] getlocal 0 .............................. <tConn>
+  [190] pusharglist 1 ........................... <tConn>
+  [192] objcall 376 ............................. <tConn.GetStrFrom()>
+  [195] pusharglistnoret 3 ...................... <tItem, #default, tConn.GetStrFrom()>
+  [197] objcall 240 ............................. tItem.addProp(#default, tConn.GetStrFrom())
+  [199] getlocal 4 .............................. <tItem>
+  [201] pushsymb 384 ............................ <#choices>
+  [204] pusharglist 0 ........................... <[]>
+  [206] pushlist ................................ <[]>
+  [207] pusharglistnoret 3 ...................... <tItem, #choices, []>
+  [209] objcall 240 ............................. tItem.addProp(#choices, [])
+  [211] getlocal 0 .............................. <tConn>
+  [213] pusharglist 1 ........................... <tConn>
+  [215] objcall 375 ............................. <tConn.GetIntFrom()>
+  [218] setlocal 6 .............................. tNumChoices = tConn.GetIntFrom()
+  [220] getlocal 6 .............................. <tNumChoices>
+  [222] pushzero ................................ <0>
+  [223] gt ...................................... <tNumChoices > 0>
+  [224] jmpifz [267] ............................ if tNumChoices > 0 then
+  [227] pushint8 1 .............................. <1>
+  [229] setlocal 3
+  [231] getlocal 3
+  [233] getlocal 6 .............................. <tNumChoices>
+  [235] lteq
+  [236] jmpifz [267] ............................ repeat with i = 1 to tNumChoices
+  [239] getlocal 4 .............................. <tItem>
+  [241] pushsymb 384 ............................ <#choices>
+  [244] pusharglist 2 ........................... <tItem, #choices>
+  [246] objcall 99 .............................. <tItem[#choices]>
+  [248] getlocal 0 .............................. <tConn>
+  [250] getobjprop 376 .......................... <tConn.GetStrFrom>
+  [253] pusharglistnoret 2 ...................... <tItem[#choices], tConn.GetStrFrom>
+  [255] objcall 385 ............................. tItem[#choices].append(tConn.GetStrFrom)
+  [258] pushint8 1
+  [260] getlocal 3
+  [262] add
+  [263] setlocal 3
+  [265] endrepeat [231]
+  [267] getlocal 2 .............................. <tParamList>
+  [269] getlocal 4 .............................. <tItem>
+  [271] pusharglistnoret 2 ...................... <tParamList, tItem>
+  [273] objcall 385 ............................. tParamList.append(tItem)
+  [276] pushint8 1
+  [278] getlocal 3
+  [280] add
+  [281] setlocal 3
+  [283] endrepeat [ 25]
+  [286] getparam 0 .............................. <me>
+  [288] pusharglist 1 ........................... <me>
+  [290] objcall 372 ............................. <me.getGameSystem()>
+  [293] pushsymb 302 ............................ <#gameparameters>
+  [296] getlocal 2 .............................. <tParamList>
+  [298] pusharglist 3 ........................... <me.getGameSystem(), #gameparameters, tParamList>
+  [300] objcall 28 .............................. <me.getGameSystem().sendGameSystemEvent(#gameparameters, tParamList)>
+  [302] pusharglistnoret 1 ...................... <me.getGameSystem().sendGameSystemEvent(#gameparameters, tParamList)>
+  [304] extcall 53 .............................. return me.getGameSystem().sendGameSystemEvent(#gameparameters, tParamList)
+  [306] ret
+end
+
+on handle_msgstruct_createfailed me, tMsg
+  [  0] getparam 1 .............................. <tMsg>
+  [  2] getobjprop 374 .......................... <tMsg.connection>
+  [  5] setlocal 0 .............................. tConn = tMsg.connection
+  [  7] getlocal 0 .............................. <tConn>
+  [  9] pusharglist 1 ........................... <tConn>
+  [ 11] objcall 375 ............................. <tConn.GetIntFrom()>
+  [ 14] setlocal 1 .............................. tReason = tConn.GetIntFrom()
+  [ 16] getlocal 1 .............................. <tReason>
+  [ 18] pushint8 1 .............................. <1>
+  [ 20] eq ...................................... <tReason = 1>
+  [ 21] jmpifz [ 52] ............................ if tReason = 1 then / else
+  [ 24] pushsymb 388 ............................ <#reason>
+  [ 27] getlocal 1 .............................. <tReason>
+  [ 29] pushsymb 389 ............................ <#request>
+  [ 32] pushcons 1 .............................. <"create">
+  [ 34] pushsymb 390 ............................ <#key>
+  [ 37] getlocal 0 .............................. <tConn>
+  [ 39] pusharglist 1 ........................... <tConn>
+  [ 41] objcall 376 ............................. <tConn.GetStrFrom()>
+  [ 44] pusharglist 6 ........................... <[#reason: tReason, #request: "create", #key: tConn.GetStrFrom()]>
+  [ 46] pushproplist ............................ <[#reason: tReason, #request: "create", #key: tConn.GetStrFrom()]>
+  [ 47] setlocal 2 .............................. tdata = [#reason: tReason, #request: "create", #key: tConn.GetStrFrom()]
+  [ 49] jmp [ 67]
+  [ 52] pushsymb 388 ............................ <#reason>
+  [ 55] getlocal 1 .............................. <tReason>
+  [ 57] pushsymb 389 ............................ <#request>
+  [ 60] pushcons 1 .............................. <"create">
+  [ 62] pusharglist 4 ........................... <[#reason: tReason, #request: "create"]>
+  [ 64] pushproplist ............................ <[#reason: tReason, #request: "create"]>
+  [ 65] setlocal 2 .............................. tdata = [#reason: tReason, #request: "create"]
+  [ 67] getparam 0 .............................. <me>
+  [ 69] pusharglist 1 ........................... <me>
+  [ 71] objcall 372 ............................. <me.getGameSystem()>
+  [ 74] pushsymb 303 ............................ <#createfailed>
+  [ 77] getlocal 2 .............................. <tdata>
+  [ 79] pusharglist 3 ........................... <me.getGameSystem(), #createfailed, tdata>
+  [ 81] objcall 28 .............................. <me.getGameSystem().sendGameSystemEvent(#createfailed, tdata)>
+  [ 83] pusharglistnoret 1 ...................... <me.getGameSystem().sendGameSystemEvent(#createfailed, tdata)>
+  [ 85] extcall 53 .............................. return me.getGameSystem().sendGameSystemEvent(#createfailed, tdata)
+  [ 87] ret
+end
+
+on handle_msgstruct_gamedeleted me, tMsg
+  [  0] getparam 1 .............................. <tMsg>
+  [  2] getobjprop 374 .......................... <tMsg.connection>
+  [  5] setlocal 0 .............................. tConn = tMsg.connection
+  [  7] getlocal 0 .............................. <tConn>
+  [  9] pusharglist 1 ........................... <tConn>
+  [ 11] objcall 375 ............................. <tConn.GetIntFrom()>
+  [ 14] setlocal 1 .............................. tID = tConn.GetIntFrom()
+  [ 16] getparam 0 .............................. <me>
+  [ 18] pusharglist 1 ........................... <me>
+  [ 20] objcall 372 ............................. <me.getGameSystem()>
+  [ 23] pushsymb 304 ............................ <#gamedeleted>
+  [ 26] getlocal 1 .............................. <tID>
+  [ 28] pusharglist 3 ........................... <me.getGameSystem(), #gamedeleted, tID>
+  [ 30] objcall 28 .............................. <me.getGameSystem().sendGameSystemEvent(#gamedeleted, tID)>
+  [ 32] pusharglistnoret 1 ...................... <me.getGameSystem().sendGameSystemEvent(#gamedeleted, tID)>
+  [ 34] extcall 53 .............................. return me.getGameSystem().sendGameSystemEvent(#gamedeleted, tID)
+  [ 36] ret
+end
+
+on handle_msgstruct_joinparameters me, tMsg
+  [  0] getparam 1 .............................. <tMsg>
+  [  2] getobjprop 374 .......................... <tMsg.connection>
+  [  5] setlocal 0 .............................. tConn = tMsg.connection
+  [  7] getlocal 0 .............................. <tConn>
+  [  9] pusharglist 1 ........................... <tConn>
+  [ 11] objcall 375 ............................. <tConn.GetIntFrom()>
+  [ 14] setlocal 1 .............................. tInstanceId = tConn.GetIntFrom()
+  [ 16] getlocal 0 .............................. <tConn>
+  [ 18] pusharglist 1 ........................... <tConn>
+  [ 20] objcall 375 ............................. <tConn.GetIntFrom()>
+  [ 23] setlocal 2 .............................. tParamCount = tConn.GetIntFrom()
+  [ 25] pusharglist 0 ........................... <[]>
+  [ 27] pushlist ................................ <[]>
+  [ 28] setlocal 3 .............................. tParamList = []
+  [ 30] pushint8 1 .............................. <1>
+  [ 32] setlocal 4
+  [ 34] getlocal 4
+  [ 36] getlocal 2 .............................. <tParamCount>
+  [ 38] lteq
+  [ 39] jmpifz [278] ............................ repeat with i = 1 to tParamCount
+  [ 42] pusharglist 0 ........................... <[:]>
+  [ 44] pushproplist ............................ <[:]>
+  [ 45] setlocal 5 .............................. tItem = [:]
+  [ 47] getlocal 5 .............................. <tItem>
+  [ 49] pushsymb 254 ............................ <#name>
+  [ 51] getlocal 0 .............................. <tConn>
+  [ 53] pusharglist 1 ........................... <tConn>
+  [ 55] objcall 376 ............................. <tConn.GetStrFrom()>
+  [ 58] pusharglistnoret 3 ...................... <tItem, #name, tConn.GetStrFrom()>
+  [ 60] objcall 240 ............................. tItem.addProp(#name, tConn.GetStrFrom())
+  [ 62] getlocal 0 .............................. <tConn>
+  [ 64] pusharglist 1 ........................... <tConn>
+  [ 66] objcall 375 ............................. <tConn.GetIntFrom()>
+  [ 69] setlocal 6 .............................. ttype = tConn.GetIntFrom()
+  [ 71] getlocal 6 .............................. <ttype>
+  [ 73] pushzero ................................ <0>
+  [ 74] eq ...................................... <ttype = 0>
+  [ 75] jmpifz [166] ............................ if ttype = 0 then / else
+  [ 78] getlocal 5 .............................. <tItem>
+  [ 80] pushsymb 203 ............................ <#type>
+  [ 82] pushsymb 277 ............................ <#integer>
+  [ 85] pusharglistnoret 3 ...................... <tItem, #type, #integer>
+  [ 87] objcall 240 ............................. tItem.addProp(#type, #integer)
+  [ 89] getlocal 5 .............................. <tItem>
+  [ 91] pushsymb 381 ............................ <#default>
+  [ 94] getlocal 0 .............................. <tConn>
+  [ 96] pusharglist 1 ........................... <tConn>
+  [ 98] objcall 375 ............................. <tConn.GetIntFrom()>
+  [101] pusharglistnoret 3 ...................... <tItem, #default, tConn.GetIntFrom()>
+  [103] objcall 240 ............................. tItem.addProp(#default, tConn.GetIntFrom())
+  [105] getlocal 0 .............................. <tConn>
+  [107] pusharglist 1 ........................... <tConn>
+  [109] objcall 375 ............................. <tConn.GetIntFrom()>
+  [112] pushint8 1 .............................. <1>
+  [114] eq ...................................... <tConn.GetIntFrom() = 1>
+  [115] jmpifz [134] ............................ if tConn.GetIntFrom() = 1 then
+  [118] getlocal 5 .............................. <tItem>
+  [120] pushsymb 382 ............................ <#min>
+  [123] getlocal 0 .............................. <tConn>
+  [125] pusharglist 1 ........................... <tConn>
+  [127] objcall 375 ............................. <tConn.GetIntFrom()>
+  [130] pusharglistnoret 3 ...................... <tItem, #min, tConn.GetIntFrom()>
+  [132] objcall 240 ............................. tItem.addProp(#min, tConn.GetIntFrom())
+  [134] getlocal 0 .............................. <tConn>
+  [136] pusharglist 1 ........................... <tConn>
+  [138] objcall 375 ............................. <tConn.GetIntFrom()>
+  [141] pushint8 1 .............................. <1>
+  [143] eq ...................................... <tConn.GetIntFrom() = 1>
+  [144] jmpifz [163] ............................ if tConn.GetIntFrom() = 1 then
+  [147] getlocal 5 .............................. <tItem>
+  [149] pushsymb 383 ............................ <#max>
+  [152] getlocal 0 .............................. <tConn>
+  [154] pusharglist 1 ........................... <tConn>
+  [156] objcall 375 ............................. <tConn.GetIntFrom()>
+  [159] pusharglistnoret 3 ...................... <tItem, #max, tConn.GetIntFrom()>
+  [161] objcall 240 ............................. tItem.addProp(#max, tConn.GetIntFrom())
+  [163] jmp [260]
+  [166] getlocal 5 .............................. <tItem>
+  [168] pushsymb 203 ............................ <#type>
+  [170] pushsymb 224 ............................ <#string>
+  [172] pusharglistnoret 3 ...................... <tItem, #type, #string>
+  [174] objcall 240 ............................. tItem.addProp(#type, #string)
+  [176] getlocal 5 .............................. <tItem>
+  [178] pushsymb 381 ............................ <#default>
+  [181] getlocal 0 .............................. <tConn>
+  [183] pusharglist 1 ........................... <tConn>
+  [185] objcall 376 ............................. <tConn.GetStrFrom()>
+  [188] pusharglistnoret 3 ...................... <tItem, #default, tConn.GetStrFrom()>
+  [190] objcall 240 ............................. tItem.addProp(#default, tConn.GetStrFrom())
+  [192] getlocal 5 .............................. <tItem>
+  [194] pushsymb 384 ............................ <#choices>
+  [197] pusharglist 0 ........................... <[]>
+  [199] pushlist ................................ <[]>
+  [200] pusharglistnoret 3 ...................... <tItem, #choices, []>
+  [202] objcall 240 ............................. tItem.addProp(#choices, [])
+  [204] getlocal 0 .............................. <tConn>
+  [206] pusharglist 1 ........................... <tConn>
+  [208] objcall 375 ............................. <tConn.GetIntFrom()>
+  [211] setlocal 7 .............................. tNumChoices = tConn.GetIntFrom()
+  [213] getlocal 7 .............................. <tNumChoices>
+  [215] pushzero ................................ <0>
+  [216] gt ...................................... <tNumChoices > 0>
+  [217] jmpifz [260] ............................ if tNumChoices > 0 then
+  [220] pushint8 1 .............................. <1>
+  [222] setlocal 4
+  [224] getlocal 4
+  [226] getlocal 7 .............................. <tNumChoices>
+  [228] lteq
+  [229] jmpifz [260] ............................ repeat with i = 1 to tNumChoices
+  [232] getlocal 5 .............................. <tItem>
+  [234] pushsymb 384 ............................ <#choices>
+  [237] pusharglist 2 ........................... <tItem, #choices>
+  [239] objcall 99 .............................. <tItem[#choices]>
+  [241] getlocal 0 .............................. <tConn>
+  [243] getobjprop 376 .......................... <tConn.GetStrFrom>
+  [246] pusharglistnoret 2 ...................... <tItem[#choices], tConn.GetStrFrom>
+  [248] objcall 385 ............................. tItem[#choices].append(tConn.GetStrFrom)
+  [251] pushint8 1
+  [253] getlocal 4
+  [255] add
+  [256] setlocal 4
+  [258] endrepeat [224]
+  [260] getlocal 3 .............................. <tParamList>
+  [262] getlocal 5 .............................. <tItem>
+  [264] pusharglistnoret 2 ...................... <tParamList, tItem>
+  [266] objcall 385 ............................. tParamList.append(tItem)
+  [269] pushint8 1
+  [271] getlocal 4
+  [273] add
+  [274] setlocal 4
+  [276] endrepeat [ 34]
+  [278] getparam 0 .............................. <me>
+  [280] pusharglist 1 ........................... <me>
+  [282] objcall 372 ............................. <me.getGameSystem()>
+  [285] pushsymb 305 ............................ <#joinparameters>
+  [288] getlocal 3 .............................. <tParamList>
+  [290] pusharglist 3 ........................... <me.getGameSystem(), #joinparameters, tParamList>
+  [292] objcall 28 .............................. <me.getGameSystem().sendGameSystemEvent(#joinparameters, tParamList)>
+  [294] pusharglistnoret 1 ...................... <me.getGameSystem().sendGameSystemEvent(#joinparameters, tParamList)>
+  [296] extcall 53 .............................. return me.getGameSystem().sendGameSystemEvent(#joinparameters, tParamList)
+  [298] ret
+end
+
+on handle_msgstruct_joinfailed me, tMsg
+  [  0] getparam 1 .............................. <tMsg>
+  [  2] getobjprop 374 .......................... <tMsg.connection>
+  [  5] setlocal 0 .............................. tConn = tMsg.connection
+  [  7] getlocal 0 .............................. <tConn>
+  [  9] pusharglist 1 ........................... <tConn>
+  [ 11] objcall 375 ............................. <tConn.GetIntFrom()>
+  [ 14] setlocal 1 .............................. tReason = tConn.GetIntFrom()
+  [ 16] getlocal 1 .............................. <tReason>
+  [ 18] pushint8 1 .............................. <1>
+  [ 20] eq ...................................... <tReason = 1>
+  [ 21] jmpifz [ 52] ............................ if tReason = 1 then / else
+  [ 24] pushsymb 389 ............................ <#request>
+  [ 27] pushcons 2 .............................. <"join">
+  [ 29] pushsymb 388 ............................ <#reason>
+  [ 32] getlocal 1 .............................. <tReason>
+  [ 34] pushsymb 390 ............................ <#key>
+  [ 37] getlocal 0 .............................. <tConn>
+  [ 39] pusharglist 1 ........................... <tConn>
+  [ 41] objcall 376 ............................. <tConn.GetStrFrom()>
+  [ 44] pusharglist 6 ........................... <[#request: "join", #reason: tReason, #key: tConn.GetStrFrom()]>
+  [ 46] pushproplist ............................ <[#request: "join", #reason: tReason, #key: tConn.GetStrFrom()]>
+  [ 47] setlocal 2 .............................. tdata = [#request: "join", #reason: tReason, #key: tConn.GetStrFrom()]
+  [ 49] jmp [ 67]
+  [ 52] pushsymb 389 ............................ <#request>
+  [ 55] pushcons 2 .............................. <"join">
+  [ 57] pushsymb 388 ............................ <#reason>
+  [ 60] getlocal 1 .............................. <tReason>
+  [ 62] pusharglist 4 ........................... <[#request: "join", #reason: tReason]>
+  [ 64] pushproplist ............................ <[#request: "join", #reason: tReason]>
+  [ 65] setlocal 2 .............................. tdata = [#request: "join", #reason: tReason]
+  [ 67] getparam 0 .............................. <me>
+  [ 69] pusharglist 1 ........................... <me>
+  [ 71] objcall 372 ............................. <me.getGameSystem()>
+  [ 74] pushsymb 306 ............................ <#joinfailed>
+  [ 77] getlocal 2 .............................. <tdata>
+  [ 79] pusharglist 3 ........................... <me.getGameSystem(), #joinfailed, tdata>
+  [ 81] objcall 28 .............................. <me.getGameSystem().sendGameSystemEvent(#joinfailed, tdata)>
+  [ 83] pusharglistnoret 1 ...................... <me.getGameSystem().sendGameSystemEvent(#joinfailed, tdata)>
+  [ 85] extcall 53 .............................. return me.getGameSystem().sendGameSystemEvent(#joinfailed, tdata)
+  [ 87] ret
+end
+
+on handle_msgstruct_watchfailed me, tMsg
+  [  0] getparam 1 .............................. <tMsg>
+  [  2] getobjprop 374 .......................... <tMsg.connection>
+  [  5] setlocal 0 .............................. tConn = tMsg.connection
+  [  7] getlocal 0 .............................. <tConn>
+  [  9] pusharglist 1 ........................... <tConn>
+  [ 11] objcall 375 ............................. <tConn.GetIntFrom()>
+  [ 14] setlocal 1 .............................. tInstanceId = tConn.GetIntFrom()
+  [ 16] getlocal 0 .............................. <tConn>
+  [ 18] pusharglist 1 ........................... <tConn>
+  [ 20] objcall 375 ............................. <tConn.GetIntFrom()>
+  [ 23] setlocal 2 .............................. tReason = tConn.GetIntFrom()
+  [ 25] getparam 0 .............................. <me>
+  [ 27] pusharglist 1 ........................... <me>
+  [ 29] objcall 372 ............................. <me.getGameSystem()>
+  [ 32] pushsymb 307 ............................ <#watchfailed>
+  [ 35] pushsymb 98 ............................. <#id>
+  [ 37] getlocal 1 .............................. <tInstanceId>
+  [ 39] pushsymb 389 ............................ <#request>
+  [ 42] pushcons 3 .............................. <"watch">
+  [ 44] pushsymb 388 ............................ <#reason>
+  [ 47] getlocal 2 .............................. <tReason>
+  [ 49] pusharglist 6 ........................... <[#id: tInstanceId, #request: "watch", #reason: tReason]>
+  [ 51] pushproplist ............................ <[#id: tInstanceId, #request: "watch", #reason: tReason]>
+  [ 52] pusharglist 3 ........................... <me.getGameSystem(), #watchfailed, [#id: tInstanceId, #request: "watch", #reason: tReason]>
+  [ 54] objcall 28 .............................. <me.getGameSystem().sendGameSystemEvent(#watchfailed, [#id: tInstanceId, #request: "watch", #reason: tReason])>
+  [ 56] pusharglistnoret 1 ...................... <me.getGameSystem().sendGameSystemEvent(#watchfailed, [#id: tInstanceId, #request: "watch", #reason: tReason])>
+  [ 58] extcall 53 .............................. return me.getGameSystem().sendGameSystemEvent(#watchfailed, [#id: tInstanceId, #request: "watch", #reason: tReason])
+  [ 60] ret
+end
+
+on handle_msgstruct_startfailed me, tMsg
+  [  0] getparam 1 .............................. <tMsg>
+  [  2] getobjprop 374 .......................... <tMsg.connection>
+  [  5] setlocal 0 .............................. tConn = tMsg.connection
+  [  7] getlocal 0 .............................. <tConn>
+  [  9] pusharglist 1 ........................... <tConn>
+  [ 11] objcall 375 ............................. <tConn.GetIntFrom()>
+  [ 14] setlocal 1 .............................. tReason = tConn.GetIntFrom()
+  [ 16] getparam 0 .............................. <me>
+  [ 18] pusharglist 1 ........................... <me>
+  [ 20] objcall 372 ............................. <me.getGameSystem()>
+  [ 23] pushsymb 309 ............................ <#startfailed>
+  [ 26] pushsymb 388 ............................ <#reason>
+  [ 29] getlocal 1 .............................. <tReason>
+  [ 31] pushsymb 389 ............................ <#request>
+  [ 34] pushcons 4 .............................. <"start">
+  [ 36] pusharglist 4 ........................... <[#reason: tReason, #request: "start"]>
+  [ 38] pushproplist ............................ <[#reason: tReason, #request: "start"]>
+  [ 39] pusharglist 3 ........................... <me.getGameSystem(), #startfailed, [#reason: tReason, #request: "start"]>
+  [ 41] objcall 28 .............................. <me.getGameSystem().sendGameSystemEvent(#startfailed, [#reason: tReason, #request: "start"])>
+  [ 43] pusharglistnoret 1 ...................... <me.getGameSystem().sendGameSystemEvent(#startfailed, [#reason: tReason, #request: "start"])>
+  [ 45] extcall 53 .............................. return me.getGameSystem().sendGameSystemEvent(#startfailed, [#reason: tReason, #request: "start"])
+  [ 47] ret
+end
+
+on handle_msgstruct_gamelocation me, tMsg
+  [  0] getparam 1 .............................. <tMsg>
+  [  2] getobjprop 374 .......................... <tMsg.connection>
+  [  5] setlocal 0 .............................. tConn = tMsg.connection
+  [  7] getlocal 0 .............................. <tConn>
+  [  9] pusharglist 1 ........................... <tConn>
+  [ 11] objcall 375 ............................. <tConn.GetIntFrom()>
+  [ 14] setlocal 1 .............................. tUnitId = tConn.GetIntFrom()
+  [ 16] getlocal 0 .............................. <tConn>
+  [ 18] pusharglist 1 ........................... <tConn>
+  [ 20] objcall 375 ............................. <tConn.GetIntFrom()>
+  [ 23] setlocal 2 .............................. tWorldId = tConn.GetIntFrom()
+  [ 25] getparam 0 .............................. <me>
+  [ 27] pusharglist 1 ........................... <me>
+  [ 29] objcall 372 ............................. <me.getGameSystem()>
+  [ 32] pushsymb 308 ............................ <#gamelocation>
+  [ 35] pushsymb 201 ............................ <#unitId>
+  [ 37] getlocal 1 .............................. <tUnitId>
+  [ 39] pushsymb 202 ............................ <#worldId>
+  [ 41] getlocal 2 .............................. <tWorldId>
+  [ 43] pusharglist 4 ........................... <[#unitId: tUnitId, #worldId: tWorldId]>
+  [ 45] pushproplist ............................ <[#unitId: tUnitId, #worldId: tWorldId]>
+  [ 46] pusharglist 3 ........................... <me.getGameSystem(), #gamelocation, [#unitId: tUnitId, #worldId: tWorldId]>
+  [ 48] objcall 28 .............................. <me.getGameSystem().sendGameSystemEvent(#gamelocation, [#unitId: tUnitId, #worldId: tWorldId])>
+  [ 50] pusharglistnoret 1 ...................... <me.getGameSystem().sendGameSystemEvent(#gamelocation, [#unitId: tUnitId, #worldId: tWorldId])>
+  [ 52] extcall 53 .............................. return me.getGameSystem().sendGameSystemEvent(#gamelocation, [#unitId: tUnitId, #worldId: tWorldId])
+  [ 54] ret
+end
+
+on handle_msgstruct_playerrejoined me, tMsg
+  [  0] getparam 1 .............................. <tMsg>
+  [  2] getobjprop 374 .......................... <tMsg.connection>
+  [  5] setlocal 0 .............................. tConn = tMsg.connection
+  [  7] getlocal 0 .............................. <tConn>
+  [  9] pusharglist 1 ........................... <tConn>
+  [ 11] objcall 375 ............................. <tConn.GetIntFrom()>
+  [ 14] setlocal 1 .............................. tID = tConn.GetIntFrom()
+  [ 16] getparam 0 .............................. <me>
+  [ 18] pusharglist 1 ........................... <me>
+  [ 20] objcall 372 ............................. <me.getGameSystem()>
+  [ 23] pushsymb 312 ............................ <#playerrejoined>
+  [ 26] pushsymb 98 ............................. <#id>
+  [ 28] getlocal 1 .............................. <tID>
+  [ 30] pusharglist 2 ........................... <[#id: tID]>
+  [ 32] pushproplist ............................ <[#id: tID]>
+  [ 33] pusharglist 3 ........................... <me.getGameSystem(), #playerrejoined, [#id: tID]>
+  [ 35] objcall 28 .............................. <me.getGameSystem().sendGameSystemEvent(#playerrejoined, [#id: tID])>
+  [ 37] pusharglistnoret 1 ...................... <me.getGameSystem().sendGameSystemEvent(#playerrejoined, [#id: tID])>
+  [ 39] extcall 53 .............................. return me.getGameSystem().sendGameSystemEvent(#playerrejoined, [#id: tID])
+  [ 41] ret
+end
+
+on handle_msgstruct_idlewarning me, tMsg
+  [  0] getparam 0 .............................. <me>
+  [  2] pusharglist 1 ........................... <me>
+  [  4] objcall 372 ............................. <me.getGameSystem()>
+  [  7] pushsymb 317 ............................ <#idlewarning>
+  [ 10] pusharglist 0 ........................... <>
+  [ 12] extcall 61 .............................. <VOID>
+  [ 14] pusharglist 3 ........................... <me.getGameSystem(), #idlewarning, VOID>
+  [ 16] objcall 28 .............................. <me.getGameSystem().sendGameSystemEvent(#idlewarning, VOID)>
+  [ 18] pusharglistnoret 1 ...................... <me.getGameSystem().sendGameSystemEvent(#idlewarning, VOID)>
+  [ 20] extcall 53 .............................. return me.getGameSystem().sendGameSystemEvent(#idlewarning, VOID)
+  [ 22] ret
+end
+
+on handle_msgstruct_skilllevelchanged me, tMsg
+  [  0] getparam 1 .............................. <tMsg>
+  [  2] getobjprop 374 .......................... <tMsg.connection>
+  [  5] setlocal 0 .............................. tConn = tMsg.connection
+  [  7] getlocal 0 .............................. <tConn>
+  [  9] pusharglist 1 ........................... <tConn>
+  [ 11] objcall 376 ............................. <tConn.GetStrFrom()>
+  [ 14] setlocal 1 .............................. tLevel = tConn.GetStrFrom()
+  [ 16] getparam 0 .............................. <me>
+  [ 18] pusharglist 1 ........................... <me>
+  [ 20] objcall 372 ............................. <me.getGameSystem()>
+  [ 23] pushsymb 745 ............................ <#skilllevelchanged>
+  [ 26] pushsymb 747 ............................ <#level>
+  [ 29] getlocal 1 .............................. <tLevel>
+  [ 31] pusharglist 2 ........................... <[#level: tLevel]>
+  [ 33] pushproplist ............................ <[#level: tLevel]>
+  [ 34] pusharglist 3 ........................... <me.getGameSystem(), #skilllevelchanged, [#level: tLevel]>
+  [ 36] objcall 28 .............................. <me.getGameSystem().sendGameSystemEvent(#skilllevelchanged, [#level: tLevel])>
+  [ 38] pusharglistnoret 1 ...................... <me.getGameSystem().sendGameSystemEvent(#skilllevelchanged, [#level: tLevel])>
+  [ 40] extcall 53 .............................. return me.getGameSystem().sendGameSystemEvent(#skilllevelchanged, [#level: tLevel])
+  [ 42] ret
+end
+
+on handle_msgstruct_heightmap me, tdata
+  [  0] getparam 1 .............................. <tdata>
+  [  2] pushsymb 368 ............................ <#content>
+  [  5] pusharglist 2 ........................... <tdata, #content>
+  [  7] objcall 99 .............................. <tdata[#content]>
+  [  9] setlocal 0 .............................. tContent = tdata[#content]
+  [ 11] getlocal 0 .............................. <tContent>
+  [ 13] pusharglist 1 ........................... <tContent>
+  [ 15] extcall 282 ............................. <ilk(tContent)>
+  [ 18] pushsymb 224 ............................ <#string>
+  [ 20] nteq .................................... <ilk(tContent) <> #string>
+  [ 21] jmpifz [ 29] ............................ if ilk(tContent) <> #string then
+  [ 24] pushzero ................................ <0>
+  [ 25] pusharglistnoret 1 ...................... <0>
+  [ 27] extcall 53 .............................. return 0
+  [ 29] getlocal 0 .............................. <tContent>
+  [ 31] pushsymb 369 ............................ <#line>
+  [ 34] getlocal 0 .............................. <tContent>
+  [ 36] pushsymb 369 ............................ <#line>
+  [ 39] pusharglist 2 ........................... <tContent, #line>
+  [ 41] objcall 143 ............................. <tContent.line.count>
+  [ 43] pusharglist 3 ........................... <tContent, #line, tContent.line.count>
+  [ 45] objcall 290 ............................. <tContent.line[tContent.line.count]>
+  [ 48] pushcons 5 .............................. <EMPTY>
+  [ 50] eq ...................................... <tContent.line[tContent.line.count] = EMPTY>
+  [ 51] jmpifz [ 67] ............................ if tContent.line[tContent.line.count] = EMPTY then
+  [ 54] pushint16 -30003 ........................ <-30003>
+  [ 57] pushzero ................................ <0>
+  [ 58] pushzero ................................ <0>
+  [ 59] pushzero ................................ <0>
+  [ 60] pushzero ................................ <0>
+  [ 61] pushzero ................................ <0>
+  [ 62] pushzero ................................ <0>
+  [ 63] pushzero ................................ <0>
+  [ 64] pushzero ................................ <0>
+  [ 65] deletechunk 5 ........................... delete char -30003 of tContent
+  [ 67] getlocal 0 .............................. <tContent>
+  [ 69] pushsymb 369 ............................ <#line>
+  [ 72] pusharglist 2 ........................... <tContent, #line>
+  [ 74] objcall 143 ............................. <tContent.line.count>
+  [ 76] setlocal 1 .............................. tWorldMaxY = tContent.line.count
+  [ 78] getlocal 1 .............................. <tWorldMaxY>
+  [ 80] pushint8 1 .............................. <1>
+  [ 82] lt ...................................... <tWorldMaxY < 1>
+  [ 83] jmpifz [101] ............................ if tWorldMaxY < 1 then
+  [ 86] getparam 0 .............................. <me>
+  [ 88] pushcons 6 .............................. <"World is under 1 lines long!">
+  [ 90] pushsymb 366 ............................ <#handle_msgstruct_heightmap>
+  [ 93] pusharglist 3 ........................... <me, "World is under 1 lines long!", #handle_msgstruct_heightmap>
+  [ 95] extcall 62 .............................. <error(me, "World is under 1 lines long!", #handle_msgstruct_heightmap)>
+  [ 97] pusharglistnoret 1 ...................... <error(me, "World is under 1 lines long!", #handle_msgstruct_heightmap)>
+  [ 99] extcall 53 .............................. return error(me, "World is under 1 lines long!", #handle_msgstruct_heightmap)
+  [101] getlocal 0 .............................. <tContent>
+  [103] pushsymb 369 ............................ <#line>
+  [106] pushint8 1 .............................. <1>
+  [108] pusharglist 3 ........................... <tContent, #line, 1>
+  [110] objcall 370 ............................. <tContent.line[1]>
+  [113] getobjprop 393 .......................... <tContent.line[1].length>
+  [116] setlocal 2 .............................. tWorldMaxX = tContent.line[1].length
+  [118] pusharglist 0 ........................... <[]>
+  [120] pushlist ................................ <[]>
+  [121] setlocal 3 .............................. tArray = []
+  [123] pushint8 1 .............................. <1>
+  [125] setlocal 4
+  [127] getlocal 4
+  [129] getlocal 1 .............................. <tWorldMaxY>
+  [131] lteq
+  [132] jmpifz [194] ............................ repeat with tLocY = 1 to tWorldMaxY
+  [135] pushint8 1 .............................. <1>
+  [137] setlocal 5
+  [139] getlocal 5
+  [141] getlocal 2 .............................. <tWorldMaxX>
+  [143] lteq
+  [144] jmpifz [185] ............................ repeat with tLocX = 1 to tWorldMaxX
+  [147] getlocal 3 .............................. <tArray>
+  [149] getlocal 0 .............................. <tContent>
+  [151] pushsymb 369 ............................ <#line>
+  [154] getlocal 4 .............................. <tLocY>
+  [156] pusharglist 3 ........................... <tContent, #line, tLocY>
+  [158] objcall 370 ............................. <tContent.line[tLocY]>
+  [161] pushsymb 431 ............................ <#char>
+  [164] getlocal 5 .............................. <tLocX>
+  [166] pusharglist 3 ........................... <tContent.line[tLocY], #char, tLocX>
+  [168] objcall 290 ............................. <tContent.line[tLocY].char[tLocX]>
+  [171] pusharglistnoret 2 ...................... <tArray, tContent.line[tLocY].char[tLocX]>
+  [173] objcall 341 ............................. tArray.add(tContent.line[tLocY].char[tLocX])
+  [176] pushint8 1
+  [178] getlocal 5
+  [180] add
+  [181] setlocal 5
+  [183] endrepeat [139]
+  [185] pushint8 1
+  [187] getlocal 4
+  [189] add
+  [190] setlocal 4
+  [192] endrepeat [127]
+  [194] getparam 0 .............................. <me>
+  [196] pusharglist 1 ........................... <me>
+  [198] objcall 372 ............................. <me.getGameSystem()>
+  [201] pusharglist 1 ........................... <me.getGameSystem()>
+  [203] objcall 47 .............................. <me.getGameSystem().getWorld()>
+  [205] getlocal 3 .............................. <tArray>
+  [207] getlocal 2 .............................. <tWorldMaxX>
+  [209] getlocal 1 .............................. <tWorldMaxY>
+  [211] pusharglist 4 ........................... <me.getGameSystem().getWorld(), tArray, tWorldMaxX, tWorldMaxY>
+  [213] objcall 391 ............................. <me.getGameSystem().getWorld().storeHeightmap(tArray, tWorldMaxX, tWorldMaxY)>
+  [216] pusharglistnoret 1 ...................... <me.getGameSystem().getWorld().storeHeightmap(tArray, tWorldMaxX, tWorldMaxY)>
+  [218] extcall 53 .............................. return me.getGameSystem().getWorld().storeHeightmap(tArray, tWorldMaxX, tWorldMaxY)
+  [220] ret
+end
+
+on handle_msgstruct_objects me, tdata
+  [  0] pusharglist 0 ........................... <[]>
+  [  2] pushlist ................................ <[]>
+  [  3] setlocal 0 .............................. tList = []
+  [  5] getparam 1 .............................. <tdata>
+  [  7] getchainedprop 368 ...................... <tdata.content>
+  [ 10] pushsymb 369 ............................ <#line>
+  [ 13] pusharglist 2 ........................... <tdata.content, #line>
+  [ 15] objcall 143 ............................. <tdata.content.line.count>
+  [ 17] setlocal 1 .............................. tCount = tdata.content.line.count
+  [ 19] pushint8 1 .............................. <1>
+  [ 21] setlocal 2
+  [ 23] getlocal 2
+  [ 25] getlocal 1 .............................. <tCount>
+  [ 27] lteq
+  [ 28] jmpifz [402] ............................ repeat with i = 1 to tCount
+  [ 31] getparam 1 .............................. <tdata>
+  [ 33] getchainedprop 368 ...................... <tdata.content>
+  [ 36] pushsymb 369 ............................ <#line>
+  [ 39] getlocal 2 .............................. <i>
+  [ 41] pusharglist 3 ........................... <tdata.content, #line, i>
+  [ 43] objcall 290 ............................. <tdata.content.line[i]>
+  [ 46] setlocal 3 .............................. tLine = tdata.content.line[i]
+  [ 48] getlocal 3 .............................. <tLine>
+  [ 50] pusharglist 1 ........................... <tLine>
+  [ 52] extcall 393 ............................. <length(tLine)>
+  [ 55] pushint8 5 .............................. <5>
+  [ 57] gt ...................................... <length(tLine) > 5>
+  [ 58] jmpifz [392] ............................ if length(tLine) > 5 then
+  [ 61] pusharglist 0 ........................... <[:]>
+  [ 63] pushproplist ............................ <[:]>
+  [ 64] setlocal 4 .............................. tObj = [:]
+  [ 66] getlocal 4 .............................. <tObj>
+  [ 68] pushsymb 98 ............................. <#id>
+  [ 70] getlocal 3 .............................. <tLine>
+  [ 72] pushsymb 371 ............................ <#word>
+  [ 75] pushint8 1 .............................. <1>
+  [ 77] pusharglist 3 ........................... <tLine, #word, 1>
+  [ 79] objcall 290 ............................. <tLine.word[1]>
+  [ 82] pusharglistnoret 3 ...................... <tObj, #id, tLine.word[1]>
+  [ 84] objcall 146 ............................. tObj[#id] = tLine.word[1]
+  [ 86] getlocal 4 .............................. <tObj>
+  [ 88] pushsymb 394 ............................ <#class>
+  [ 91] getlocal 3 .............................. <tLine>
+  [ 93] pushsymb 371 ............................ <#word>
+  [ 96] pushint8 2 .............................. <2>
+  [ 98] pusharglist 3 ........................... <tLine, #word, 2>
+  [100] objcall 290 ............................. <tLine.word[2]>
+  [103] pusharglistnoret 3 ...................... <tObj, #class, tLine.word[2]>
+  [105] objcall 146 ............................. tObj[#class] = tLine.word[2]
+  [107] getlocal 4 .............................. <tObj>
+  [109] pushsymb 395 ............................ <#x>
+  [112] getlocal 3 .............................. <tLine>
+  [114] pushsymb 371 ............................ <#word>
+  [117] pushint8 3 .............................. <3>
+  [119] pusharglist 3 ........................... <tLine, #word, 3>
+  [121] objcall 290 ............................. <tLine.word[3]>
+  [124] pusharglist 1 ........................... <tLine.word[3]>
+  [126] extcall 277 ............................. <integer(tLine.word[3])>
+  [129] pusharglistnoret 3 ...................... <tObj, #x, integer(tLine.word[3])>
+  [131] objcall 146 ............................. tObj[#x] = integer(tLine.word[3])
+  [133] getlocal 4 .............................. <tObj>
+  [135] pushsymb 396 ............................ <#y>
+  [138] getlocal 3 .............................. <tLine>
+  [140] pushsymb 371 ............................ <#word>
+  [143] pushint8 4 .............................. <4>
+  [145] pusharglist 3 ........................... <tLine, #word, 4>
+  [147] objcall 290 ............................. <tLine.word[4]>
+  [150] pusharglist 1 ........................... <tLine.word[4]>
+  [152] extcall 277 ............................. <integer(tLine.word[4])>
+  [155] pusharglistnoret 3 ...................... <tObj, #y, integer(tLine.word[4])>
+  [157] objcall 146 ............................. tObj[#y] = integer(tLine.word[4])
+  [159] getlocal 4 .............................. <tObj>
+  [161] pushsymb 397 ............................ <#h>
+  [164] getlocal 3 .............................. <tLine>
+  [166] pushsymb 371 ............................ <#word>
+  [169] pushint8 5 .............................. <5>
+  [171] pusharglist 3 ........................... <tLine, #word, 5>
+  [173] objcall 290 ............................. <tLine.word[5]>
+  [176] pusharglist 1 ........................... <tLine.word[5]>
+  [178] extcall 277 ............................. <integer(tLine.word[5])>
+  [181] pusharglistnoret 3 ...................... <tObj, #h, integer(tLine.word[5])>
+  [183] objcall 146 ............................. tObj[#h] = integer(tLine.word[5])
+  [185] getlocal 3 .............................. <tLine>
+  [187] pushsymb 371 ............................ <#word>
+  [190] pusharglist 2 ........................... <tLine, #word>
+  [192] objcall 143 ............................. <tLine.word.count>
+  [194] pushint8 6 .............................. <6>
+  [196] eq ...................................... <tLine.word.count = 6>
+  [197] jmpifz [253] ............................ if tLine.word.count = 6 then / else
+  [200] getlocal 3 .............................. <tLine>
+  [202] pushsymb 371 ............................ <#word>
+  [205] pushint8 6 .............................. <6>
+  [207] pusharglist 3 ........................... <tLine, #word, 6>
+  [209] objcall 290 ............................. <tLine.word[6]>
+  [212] pusharglist 1 ........................... <tLine.word[6]>
+  [214] extcall 277 ............................. <integer(tLine.word[6])>
+  [217] pushint8 8 .............................. <8>
+  [219] mod ..................................... <integer(tLine.word[6]) mod 8>
+  [220] setlocal 5 .............................. tdir = integer(tLine.word[6]) mod 8
+  [222] getlocal 4 .............................. <tObj>
+  [224] pushsymb 398 ............................ <#direction>
+  [227] getlocal 5 .............................. <tdir>
+  [229] getlocal 5 .............................. <tdir>
+  [231] getlocal 5 .............................. <tdir>
+  [233] pusharglist 3 ........................... <[tdir, tdir, tdir]>
+  [235] pushlist ................................ <[tdir, tdir, tdir]>
+  [236] pusharglistnoret 3 ...................... <tObj, #direction, [tdir, tdir, tdir]>
+  [238] objcall 146 ............................. tObj[#direction] = [tdir, tdir, tdir]
+  [240] getlocal 4 .............................. <tObj>
+  [242] pushsymb 399 ............................ <#dimensions>
+  [245] pushzero ................................ <0>
+  [246] pusharglistnoret 3 ...................... <tObj, #dimensions, 0>
+  [248] objcall 146 ............................. tObj[#dimensions] = 0
+  [250] jmp [369]
+  [253] getlocal 3 .............................. <tLine>
+  [255] pushsymb 371 ............................ <#word>
+  [258] pushint8 6 .............................. <6>
+  [260] pusharglist 3 ........................... <tLine, #word, 6>
+  [262] objcall 290 ............................. <tLine.word[6]>
+  [265] pusharglist 1 ........................... <tLine.word[6]>
+  [267] extcall 277 ............................. <integer(tLine.word[6])>
+  [270] setlocal 6 .............................. tWidth = integer(tLine.word[6])
+  [272] getlocal 3 .............................. <tLine>
+  [274] pushsymb 371 ............................ <#word>
+  [277] pushint8 7 .............................. <7>
+  [279] pusharglist 3 ........................... <tLine, #word, 7>
+  [281] objcall 290 ............................. <tLine.word[7]>
+  [284] pusharglist 1 ........................... <tLine.word[7]>
+  [286] extcall 277 ............................. <integer(tLine.word[7])>
+  [289] setlocal 7 .............................. tHeight = integer(tLine.word[7])
+  [291] getlocal 4 .............................. <tObj>
+  [293] pushsymb 399 ............................ <#dimensions>
+  [296] getlocal 6 .............................. <tWidth>
+  [298] getlocal 7 .............................. <tHeight>
+  [300] pusharglist 2 ........................... <[tWidth, tHeight]>
+  [302] pushlist ................................ <[tWidth, tHeight]>
+  [303] pusharglistnoret 3 ...................... <tObj, #dimensions, [tWidth, tHeight]>
+  [305] objcall 146 ............................. tObj[#dimensions] = [tWidth, tHeight]
+  [307] getlocal 4 .............................. <tObj>
+  [309] pushsymb 395 ............................ <#x>
+  [312] getlocal 4 .............................. <tObj>
+  [314] pushsymb 395 ............................ <#x>
+  [317] pusharglist 2 ........................... <tObj, #x>
+  [319] objcall 99 .............................. <tObj[#x]>
+  [321] getlocal 4 .............................. <tObj>
+  [323] pushsymb 400 ............................ <#width>
+  [326] pusharglist 2 ........................... <tObj, #width>
+  [328] objcall 99 .............................. <tObj[#width]>
+  [330] add ..................................... <tObj[#x] + tObj[#width]>
+  [331] pushint8 1 .............................. <1>
+  [333] sub ..................................... <tObj[#x] + tObj[#width] - 1>
+  [334] pusharglistnoret 3 ...................... <tObj, #x, tObj[#x] + tObj[#width] - 1>
+  [336] objcall 146 ............................. tObj[#x] = tObj[#x] + tObj[#width] - 1
+  [338] getlocal 4 .............................. <tObj>
+  [340] pushsymb 396 ............................ <#y>
+  [343] getlocal 4 .............................. <tObj>
+  [345] pushsymb 396 ............................ <#y>
+  [348] pusharglist 2 ........................... <tObj, #y>
+  [350] objcall 99 .............................. <tObj[#y]>
+  [352] getlocal 4 .............................. <tObj>
+  [354] pushsymb 401 ............................ <#height>
+  [357] pusharglist 2 ........................... <tObj, #height>
+  [359] objcall 99 .............................. <tObj[#height]>
+  [361] add ..................................... <tObj[#y] + tObj[#height]>
+  [362] pushint8 1 .............................. <1>
+  [364] sub ..................................... <tObj[#y] + tObj[#height] - 1>
+  [365] pusharglistnoret 3 ...................... <tObj, #y, tObj[#y] + tObj[#height] - 1>
+  [367] objcall 146 ............................. tObj[#y] = tObj[#y] + tObj[#height] - 1
+  [369] getlocal 4 .............................. <tObj>
+  [371] pushsymb 98 ............................. <#id>
+  [373] pusharglist 2 ........................... <tObj, #id>
+  [375] objcall 99 .............................. <tObj[#id]>
+  [377] pushcons 5 .............................. <EMPTY>
+  [379] nteq .................................... <tObj[#id] <> EMPTY>
+  [380] jmpifz [392] ............................ if tObj[#id] <> EMPTY then
+  [383] getlocal 0 .............................. <tList>
+  [385] getlocal 4 .............................. <tObj>
+  [387] pusharglistnoret 2 ...................... <tList, tObj>
+  [389] objcall 341 ............................. tList.add(tObj)
+  [392] pushint8 1
+  [394] getlocal 2
+  [396] add
+  [397] setlocal 2
+  [399] endrepeat [ 23]
+  [402] getparam 0 .............................. <me>
+  [404] pusharglist 1 ........................... <me>
+  [406] objcall 372 ............................. <me.getGameSystem()>
+  [409] pusharglist 1 ........................... <me.getGameSystem()>
+  [411] objcall 47 .............................. <me.getGameSystem().getWorld()>
+  [413] getlocal 0 .............................. <tList>
+  [415] pusharglist 2 ........................... <me.getGameSystem().getWorld(), tList>
+  [417] objcall 402 ............................. <me.getGameSystem().getWorld().storeObjects(tList)>
+  [420] pusharglistnoret 1 ...................... <me.getGameSystem().getWorld().storeObjects(tList)>
+  [422] extcall 53 .............................. return me.getGameSystem().getWorld().storeObjects(tList)
+  [424] ret
+end
+
+on handle_msgstruct_game_chat me, tMsg
+  [  0] getparam 1 .............................. <tMsg>
+  [  2] getobjprop 374 .......................... <tMsg.connection>
+  [  5] setlocal 0 .............................. tConn = tMsg.connection
+  [  7] getlocal 0 .............................. <tConn>
+  [  9] pusharglist 1 ........................... <tConn>
+  [ 11] objcall 375 ............................. <tConn.GetIntFrom()>
+  [ 14] pusharglist 1 ........................... <tConn.GetIntFrom()>
+  [ 16] extcall 224 ............................. <string(tConn.GetIntFrom())>
+  [ 18] setlocal 1 .............................. tUserID = string(tConn.GetIntFrom())
+  [ 20] getlocal 0 .............................. <tConn>
+  [ 22] pusharglist 1 ........................... <tConn>
+  [ 24] objcall 376 ............................. <tConn.GetStrFrom()>
+  [ 27] setlocal 2 .............................. tChat = tConn.GetStrFrom()
+  [ 29] pushcons 7 .............................. <"CHAT">
+  [ 31] setlocal 3 .............................. tMode = "CHAT"
+  [ 33] pushsymb 902 ............................ <#show_balloon>
+  [ 36] pushsymb 903 ............................ <#command>
+  [ 39] getlocal 3 .............................. <tMode>
+  [ 41] pushsymb 98 ............................. <#id>
+  [ 43] getlocal 1 .............................. <tUserID>
+  [ 45] pushsymb 904 ............................ <#message>
+  [ 48] getlocal 2 .............................. <tChat>
+  [ 50] pusharglist 6 ........................... <[#command: tMode, #id: tUserID, #message: tChat]>
+  [ 52] pushproplist ............................ <[#command: tMode, #id: tUserID, #message: tChat]>
+  [ 53] pusharglistnoret 2 ...................... <#show_balloon, [#command: tMode, #id: tUserID, #message: tChat]>
+  [ 55] extcall 200 ............................. executeMessage(#show_balloon, [#command: tMode, #id: tUserID, #message: tChat])
+  [ 57] ret
+end

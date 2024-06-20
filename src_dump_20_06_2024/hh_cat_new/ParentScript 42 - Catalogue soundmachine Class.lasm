@@ -1,0 +1,406 @@
+property pSoundPackagePreviewPrefix, pPlayTimeoutMillis, pLastPlayTime
+
+on construct me
+  [  0] pushcons 0 .............................. <"sound_set_preview_">
+  [  2] setprop 1039 ............................ pSoundPackagePreviewPrefix = "sound_set_preview_"
+  [  5] pushint16 1000 .......................... <1000>
+  [  8] setprop 1040 ............................ pPlayTimeoutMillis = 1000
+  [ 11] pushzero ................................ <0>
+  [ 12] setprop 1041 ............................ pLastPlayTime = 0
+  [ 15] pushint8 1 .............................. <1>
+  [ 17] pusharglistnoret 1 ...................... <1>
+  [ 19] extcall 37 .............................. return 1
+  [ 21] ret
+end
+
+on deconstruct me
+  [  0] pushint8 1 .............................. <1>
+  [  2] pusharglistnoret 1 ...................... <1>
+  [  4] extcall 37 .............................. return 1
+  [  6] ret
+end
+
+on define me, tPageProps
+  [  0] getparam 0 .............................. <me>
+  [  2] pushsymb 1042 ........................... <#hidden>
+  [  5] pusharglistnoret 2 ...................... <me, #hidden>
+  [  7] objcall 1035 ............................ me.setPreviewState(#hidden)
+  [ 10] ret
+end
+
+on setPreviewState me, tstate
+  [  0] pushsymb 559 ............................ <#catalogue>
+  [  3] pusharglist 1 ........................... <#catalogue>
+  [  5] extcall 471 ............................. <getThread(#catalogue)>
+  [  8] pusharglist 1 ........................... <getThread(#catalogue)>
+  [ 10] objcall 176 ............................. <getThread(#catalogue).getInterface()>
+  [ 12] pusharglist 1 ........................... <getThread(#catalogue).getInterface()>
+  [ 14] objcall 142 ............................. <getThread(#catalogue).getInterface().getCatalogWindow()>
+  [ 16] setlocal 0 .............................. tWindowObj = getThread(#catalogue).getInterface().getCatalogWindow()
+  [ 18] getlocal 0 .............................. <tWindowObj>
+  [ 20] not ..................................... <not tWindowObj>
+  [ 21] jmpifz [ 47] ............................ if not tWindowObj then
+  [ 24] pusharglist 0 ........................... <>
+  [ 26] extcall 55 .............................. <VOID>
+  [ 28] setlocal 0 .............................. tWindowObj = VOID
+  [ 30] getparam 0 .............................. <me>
+  [ 32] pushcons 1 .............................. <"Couldn't access catalogue window!">
+  [ 34] pushsymb 1035 ........................... <#setPreviewState>
+  [ 37] pushsymb 47 ............................. <#major>
+  [ 39] pusharglist 4 ........................... <me, "Couldn't access catalogue window!", #setPreviewState, #major>
+  [ 41] extcall 46 .............................. <error(me, "Couldn't access catalogue window!", #setPreviewState, #major)>
+  [ 43] pusharglistnoret 1 ...................... <error(me, "Couldn't access catalogue window!", #setPreviewState, #major)>
+  [ 45] extcall 37 .............................. return error(me, "Couldn't access catalogue window!", #setPreviewState, #major)
+  [ 47] pushcons 2 .............................. <"play_preview_text">
+  [ 49] setlocal 1 .............................. tPreviewTextElem = "play_preview_text"
+  [ 51] pushcons 3 .............................. <"play_preview_icon">
+  [ 53] setlocal 2 .............................. tPreviewIconElem = "play_preview_icon"
+  [ 55] getlocal 0 .............................. <tWindowObj>
+  [ 57] getlocal 1 .............................. <tPreviewTextElem>
+  [ 59] pusharglist 2 ........................... <tWindowObj, tPreviewTextElem>
+  [ 61] objcall 253 ............................. <tWindowObj.elementExists(tPreviewTextElem)>
+  [ 63] not ..................................... <not tWindowObj.elementExists(tPreviewTextElem)>
+  [ 64] jmpifz [ 72] ............................ if not tWindowObj.elementExists(tPreviewTextElem) then
+  [ 67] pushzero ................................ <0>
+  [ 68] pusharglistnoret 1 ...................... <0>
+  [ 70] extcall 37 .............................. return 0
+  [ 72] getlocal 0 .............................. <tWindowObj>
+  [ 74] getlocal 2 .............................. <tPreviewIconElem>
+  [ 76] pusharglist 2 ........................... <tWindowObj, tPreviewIconElem>
+  [ 78] objcall 253 ............................. <tWindowObj.elementExists(tPreviewIconElem)>
+  [ 80] not ..................................... <not tWindowObj.elementExists(tPreviewIconElem)>
+  [ 81] jmpifz [ 89] ............................ if not tWindowObj.elementExists(tPreviewIconElem) then
+  [ 84] pushzero ................................ <0>
+  [ 85] pusharglistnoret 1 ...................... <0>
+  [ 87] extcall 37 .............................. return 0
+  [ 89] getparam 1 .............................. <tstate>
+  [ 91] pusharglist 1 ........................... <tstate>
+  [ 93] extcall 78 .............................. <voidp(tstate)>
+  [ 95] jmpifz [109] ............................ if voidp(tstate) then
+  [ 98] getparam 1 .............................. <tstate>
+  [100] pushsymb 1042 ........................... <#hidden>
+  [103] eq ...................................... <tstate = #hidden>
+  [104] pusharglistnoret 1 ...................... <tstate = #hidden>
+  [106] extcall 1043 ............................ then(tstate = #hidden)
+  [109] getlocal 0 .............................. <tWindowObj>
+  [111] getlocal 1 .............................. <tPreviewTextElem>
+  [113] pusharglist 2 ........................... <tWindowObj, tPreviewTextElem>
+  [115] objcall 178 ............................. <tWindowObj.getElement(tPreviewTextElem)>
+  [117] setlocal 3 .............................. tTextElem = tWindowObj.getElement(tPreviewTextElem)
+  [119] getlocal 0 .............................. <tWindowObj>
+  [121] getlocal 2 .............................. <tPreviewIconElem>
+  [123] pusharglist 2 ........................... <tWindowObj, tPreviewIconElem>
+  [125] objcall 178 ............................. <tWindowObj.getElement(tPreviewIconElem)>
+  [127] setlocal 4 .............................. tIconElem = tWindowObj.getElement(tPreviewIconElem)
+  [129] getparam 1 .............................. <tstate>
+  [131] peek 0 .................................. case tstate of
+  [133] pushsymb 1042 ........................... <#hidden>
+  [136] eq
+  [137] jmpifz [163] ............................ (case) #hidden:
+  [140] getlocal 3 .............................. <tTextElem>
+  [142] pushsymb 624 ............................ <#visible>
+  [145] pushzero ................................ <0>
+  [146] pusharglistnoret 3 ...................... <tTextElem, #visible, 0>
+  [148] objcall 201 ............................. tTextElem.setProperty(#visible, 0)
+  [150] getlocal 4 .............................. <tIconElem>
+  [152] pushsymb 624 ............................ <#visible>
+  [155] pushzero ................................ <0>
+  [156] pusharglistnoret 3 ...................... <tIconElem, #visible, 0>
+  [158] objcall 201 ............................. tIconElem.setProperty(#visible, 0)
+  [160] jmp [274]
+  [163] peek 0
+  [165] pushsymb 1044 ........................... <#download>
+  [168] eq
+  [169] jmpifz [220] ............................ (case) #download:
+  [172] getlocal 3 .............................. <tTextElem>
+  [174] pushsymb 624 ............................ <#visible>
+  [177] pushint8 1 .............................. <1>
+  [179] pusharglistnoret 3 ...................... <tTextElem, #visible, 1>
+  [181] objcall 201 ............................. tTextElem.setProperty(#visible, 1)
+  [183] getlocal 3 .............................. <tTextElem>
+  [185] pushcons 4 .............................. <"preview_downloading">
+  [187] pusharglist 1 ........................... <"preview_downloading">
+  [189] extcall 158 ............................. <getText("preview_downloading")>
+  [191] pusharglistnoret 2 ...................... <tTextElem, getText("preview_downloading")>
+  [193] objcall 188 ............................. tTextElem.setText(getText("preview_downloading"))
+  [195] getlocal 4 .............................. <tIconElem>
+  [197] pushsymb 624 ............................ <#visible>
+  [200] pushint8 1 .............................. <1>
+  [202] pusharglistnoret 3 ...................... <tIconElem, #visible, 1>
+  [204] objcall 201 ............................. tIconElem.setProperty(#visible, 1)
+  [206] getlocal 4 .............................. <tIconElem>
+  [208] pushsymb 850 ............................ <#blend>
+  [211] pushint8 50 ............................. <50>
+  [213] pusharglistnoret 3 ...................... <tIconElem, #blend, 50>
+  [215] objcall 201 ............................. tIconElem.setProperty(#blend, 50)
+  [217] jmp [274]
+  [220] peek 0
+  [222] pushsymb 1045 ........................... <#playable>
+  [225] eq
+  [226] jmpifz [274] ............................ (case) #playable:
+  [229] getlocal 3 .............................. <tTextElem>
+  [231] pushsymb 624 ............................ <#visible>
+  [234] pushint8 1 .............................. <1>
+  [236] pusharglistnoret 3 ...................... <tTextElem, #visible, 1>
+  [238] objcall 201 ............................. tTextElem.setProperty(#visible, 1)
+  [240] getlocal 3 .............................. <tTextElem>
+  [242] pushcons 5 .............................. <"play_preview">
+  [244] pusharglist 1 ........................... <"play_preview">
+  [246] extcall 158 ............................. <getText("play_preview")>
+  [248] pusharglistnoret 2 ...................... <tTextElem, getText("play_preview")>
+  [250] objcall 188 ............................. tTextElem.setText(getText("play_preview"))
+  [252] getlocal 4 .............................. <tIconElem>
+  [254] pushsymb 624 ............................ <#visible>
+  [257] pushint8 1 .............................. <1>
+  [259] pusharglistnoret 3 ...................... <tIconElem, #visible, 1>
+  [261] objcall 201 ............................. tIconElem.setProperty(#visible, 1)
+  [263] getlocal 4 .............................. <tIconElem>
+  [265] pushsymb 850 ............................ <#blend>
+  [268] pushint8 100 ............................ <100>
+  [270] pusharglistnoret 3 ...................... <tIconElem, #blend, 100>
+  [272] objcall 201 ............................. tIconElem.setProperty(#blend, 100)
+  [274] pop 1 ................................... end case
+  [276] ret
+end
+
+on prepareItemPreview me, tItem
+  [  0] getparam 1 .............................. <tItem>
+  [  2] pushsymb 268 ............................ <#class>
+  [  5] pusharglist 2 ........................... <tItem, #class>
+  [  7] objcall 41 .............................. <tItem[#class]>
+  [  9] setlocal 0 .............................. tSoundSetClass = tItem[#class]
+  [ 11] getmovieprop 641 ........................ <the itemDelimiter>
+  [ 14] setlocal 1 .............................. tDelim = the itemDelimiter
+  [ 16] pushcons 6 .............................. <"_">
+  [ 18] setmovieprop 641 ........................ the itemDelimiter = "_"
+  [ 21] getlocal 0 .............................. <tSoundSetClass>
+  [ 23] pushsymb 352 ............................ <#item>
+  [ 26] pushint8 3 .............................. <3>
+  [ 28] pusharglist 3 ........................... <tSoundSetClass, #item, 3>
+  [ 30] objcall 123 ............................. <tSoundSetClass.item[3]>
+  [ 32] setlocal 2 .............................. tSoundSetNo = tSoundSetClass.item[3]
+  [ 34] getlocal 1 .............................. <tDelim>
+  [ 36] setmovieprop 641 ........................ the itemDelimiter = tDelim
+  [ 39] getprop 1039 ............................ <pSoundPackagePreviewPrefix>
+  [ 42] getlocal 2 .............................. <tSoundSetNo>
+  [ 44] joinstr ................................. <pSoundPackagePreviewPrefix & tSoundSetNo>
+  [ 45] setlocal 3 .............................. tPreviewPackage = pSoundPackagePreviewPrefix & tSoundSetNo
+  [ 47] getlocal 3 .............................. <tPreviewPackage>
+  [ 49] pusharglist 1 ........................... <tPreviewPackage>
+  [ 51] extcall 63 .............................. <memberExists(tPreviewPackage)>
+  [ 53] not ..................................... <not memberExists(tPreviewPackage)>
+  [ 54] jmpifz [149] ............................ if not memberExists(tPreviewPackage) then / else
+  [ 57] pushsymb 472 ............................ <#dynamicdownloader>
+  [ 60] pusharglist 1 ........................... <#dynamicdownloader>
+  [ 62] extcall 1050 ............................ <threadExists(#dynamicdownloader)>
+  [ 65] jmpifz [119] ............................ if threadExists(#dynamicdownloader) then / else
+  [ 68] pushcons 7 .............................. <"sound_set_">
+  [ 70] getlocal 2 .............................. <tSoundSetNo>
+  [ 72] joinstr ................................. <"sound_set_" & tSoundSetNo>
+  [ 73] setlocal 4 .............................. tParentId = "sound_set_" & tSoundSetNo
+  [ 75] pushsymb 472 ............................ <#dynamicdownloader>
+  [ 78] pusharglist 1 ........................... <#dynamicdownloader>
+  [ 80] extcall 471 ............................. <getThread(#dynamicdownloader)>
+  [ 83] pusharglist 1 ........................... <getThread(#dynamicdownloader)>
+  [ 85] objcall 170 ............................. <getThread(#dynamicdownloader).getComponent()>
+  [ 87] getlocal 3 .............................. <tPreviewPackage>
+  [ 89] pushsymb 1051 ........................... <#sound>
+  [ 92] getparam 0 .............................. <me>
+  [ 94] pusharglist 1 ........................... <me>
+  [ 96] objcall 54 .............................. <me.getID()>
+  [ 98] pushsymb 1037 ........................... <#soundDownloadCompleted>
+  [101] pusharglist 0 ........................... <>
+  [103] extcall 55 .............................. <VOID>
+  [105] pusharglist 0 ........................... <>
+  [107] extcall 55 .............................. <VOID>
+  [109] getlocal 4 .............................. <tParentId>
+  [111] pusharglistnoret 8 ...................... <getThread(#dynamicdownloader).getComponent(), tPreviewPackage, #sound, me.getID(), #soundDownloadCompleted, VOID, VOID, tParentId>
+  [113] objcall 480 ............................. getThread(#dynamicdownloader).getComponent().downloadCastDynamically(tPreviewPackage, #sound, me.getID(), #soundDownloadCompleted, VOID, VOID, tParentId)
+  [116] jmp [136]
+  [119] getparam 0 .............................. <me>
+  [121] pushcons 8 .............................. <"Dynamic downloader does not exist, cannot download sound.">
+  [123] pushsymb 1052 ........................... <#startSampleDownload>
+  [126] pushsymb 47 ............................. <#major>
+  [128] pusharglist 4 ........................... <me, "Dynamic downloader does not exist, cannot download sound.", #startSampleDownload, #major>
+  [130] extcall 46 .............................. <error(me, "Dynamic downloader does not exist, cannot download sound.", #startSampleDownload, #major)>
+  [132] pusharglistnoret 1 ...................... <error(me, "Dynamic downloader does not exist, cannot download sound.", #startSampleDownload, #major)>
+  [134] extcall 37 .............................. return error(me, "Dynamic downloader does not exist, cannot download sound.", #startSampleDownload, #major)
+  [136] getparam 0 .............................. <me>
+  [138] pushsymb 1044 ........................... <#download>
+  [141] pusharglistnoret 2 ...................... <me, #download>
+  [143] objcall 1035 ............................ me.setPreviewState(#download)
+  [146] jmp [159]
+  [149] getparam 0 .............................. <me>
+  [151] pushsymb 1045 ........................... <#playable>
+  [154] pusharglistnoret 2 ...................... <me, #playable>
+  [156] objcall 1035 ............................ me.setPreviewState(#playable)
+  [159] ret
+end
+
+on soundDownloadCompleted me, tPreviewPackage
+  [  0] pushsymb 559 ............................ <#catalogue>
+  [  3] pusharglist 1 ........................... <#catalogue>
+  [  5] extcall 471 ............................. <getThread(#catalogue)>
+  [  8] setlocal 0 .............................. tThread = getThread(#catalogue)
+  [ 10] getlocal 0 .............................. <tThread>
+  [ 12] pusharglist 1 ........................... <tThread>
+  [ 14] objcall 176 ............................. <tThread.getInterface()>
+  [ 16] setlocal 1 .............................. tCatInterface = tThread.getInterface()
+  [ 18] getlocal 1 .............................. <tCatInterface>
+  [ 20] pusharglist 1 ........................... <tCatInterface>
+  [ 22] objcall 143 ............................. <tCatInterface.getSelectedProduct()>
+  [ 24] setlocal 2 .............................. tSelectedProduct = tCatInterface.getSelectedProduct()
+  [ 26] getmovieprop 641 ........................ <the itemDelimiter>
+  [ 29] setlocal 3 .............................. tDelim = the itemDelimiter
+  [ 31] pushcons 6 .............................. <"_">
+  [ 33] setmovieprop 641 ........................ the itemDelimiter = "_"
+  [ 36] getlocal 2 .............................. <tSelectedProduct>
+  [ 38] pushsymb 268 ............................ <#class>
+  [ 41] pusharglist 2 ........................... <tSelectedProduct, #class>
+  [ 43] objcall 41 .............................. <tSelectedProduct[#class]>
+  [ 45] pushsymb 352 ............................ <#item>
+  [ 48] pushint8 3 .............................. <3>
+  [ 50] pusharglist 3 ........................... <tSelectedProduct[#class], #item, 3>
+  [ 52] objcall 123 ............................. <tSelectedProduct[#class].item[3]>
+  [ 54] setlocal 4 .............................. tSelectedProductPreviewNo = tSelectedProduct[#class].item[3]
+  [ 56] getparam 1 .............................. <tPreviewPackage>
+  [ 58] pushsymb 352 ............................ <#item>
+  [ 61] pushint8 4 .............................. <4>
+  [ 63] pusharglist 3 ........................... <tPreviewPackage, #item, 4>
+  [ 65] objcall 123 ............................. <tPreviewPackage.item[4]>
+  [ 67] setlocal 5 .............................. tPreviewPackageNo = tPreviewPackage.item[4]
+  [ 69] getlocal 3 .............................. <tDelim>
+  [ 71] setmovieprop 641 ........................ the itemDelimiter = tDelim
+  [ 74] getlocal 4 .............................. <tSelectedProductPreviewNo>
+  [ 76] getlocal 5 .............................. <tPreviewPackageNo>
+  [ 78] eq ...................................... <tSelectedProductPreviewNo = tPreviewPackageNo>
+  [ 79] jmpifz [ 92] ............................ if tSelectedProductPreviewNo = tPreviewPackageNo then
+  [ 82] getparam 0 .............................. <me>
+  [ 84] pushsymb 1045 ........................... <#playable>
+  [ 87] pusharglistnoret 2 ...................... <me, #playable>
+  [ 89] objcall 1035 ............................ me.setPreviewState(#playable)
+  [ 92] ret
+end
+
+on playPreviewOfSelected me
+  [  0] getmovieprop 983 ........................ <the milliSeconds>
+  [  3] getprop 1041 ............................ <pLastPlayTime>
+  [  6] sub ..................................... <the milliSeconds - pLastPlayTime>
+  [  7] getprop 1040 ............................ <pPlayTimeoutMillis>
+  [ 10] lt ...................................... <(the milliSeconds - pLastPlayTime) < pPlayTimeoutMillis>
+  [ 11] jmpifz [ 19] ............................ if (the milliSeconds - pLastPlayTime) < pPlayTimeoutMillis then
+  [ 14] pushzero ................................ <0>
+  [ 15] pusharglistnoret 1 ...................... <0>
+  [ 17] extcall 37 .............................. return 0
+  [ 19] getmovieprop 983 ........................ <the milliSeconds>
+  [ 22] setprop 1041 ............................ pLastPlayTime = the milliSeconds
+  [ 25] pushsymb 559 ............................ <#catalogue>
+  [ 28] pusharglist 1 ........................... <#catalogue>
+  [ 30] extcall 471 ............................. <getThread(#catalogue)>
+  [ 33] setlocal 0 .............................. tThread = getThread(#catalogue)
+  [ 35] getlocal 0 .............................. <tThread>
+  [ 37] pusharglist 1 ........................... <tThread>
+  [ 39] objcall 176 ............................. <tThread.getInterface()>
+  [ 41] setlocal 1 .............................. tCatInterface = tThread.getInterface()
+  [ 43] getlocal 1 .............................. <tCatInterface>
+  [ 45] pusharglist 1 ........................... <tCatInterface>
+  [ 47] objcall 143 ............................. <tCatInterface.getSelectedProduct()>
+  [ 49] setlocal 2 .............................. tSelectedProduct = tCatInterface.getSelectedProduct()
+  [ 51] getmovieprop 641 ........................ <the itemDelimiter>
+  [ 54] setlocal 3 .............................. tDelim = the itemDelimiter
+  [ 56] pushcons 6 .............................. <"_">
+  [ 58] setmovieprop 641 ........................ the itemDelimiter = "_"
+  [ 61] getlocal 2 .............................. <tSelectedProduct>
+  [ 63] pushsymb 268 ............................ <#class>
+  [ 66] pusharglist 2 ........................... <tSelectedProduct, #class>
+  [ 68] objcall 41 .............................. <tSelectedProduct[#class]>
+  [ 70] pushsymb 352 ............................ <#item>
+  [ 73] pushint8 3 .............................. <3>
+  [ 75] pusharglist 3 ........................... <tSelectedProduct[#class], #item, 3>
+  [ 77] objcall 123 ............................. <tSelectedProduct[#class].item[3]>
+  [ 79] setlocal 4 .............................. tSelectedProductPreviewNo = tSelectedProduct[#class].item[3]
+  [ 81] getlocal 3 .............................. <tDelim>
+  [ 83] setmovieprop 641 ........................ the itemDelimiter = tDelim
+  [ 86] getprop 1039 ............................ <pSoundPackagePreviewPrefix>
+  [ 89] getlocal 4 .............................. <tSelectedProductPreviewNo>
+  [ 91] joinstr ................................. <pSoundPackagePreviewPrefix & tSelectedProductPreviewNo>
+  [ 92] setlocal 5 .............................. tPreviewPackage = pSoundPackagePreviewPrefix & tSelectedProductPreviewNo
+  [ 94] getlocal 5 .............................. <tPreviewPackage>
+  [ 96] pusharglist 1 ........................... <tPreviewPackage>
+  [ 98] extcall 63 .............................. <memberExists(tPreviewPackage)>
+  [100] jmpifz [127] ............................ if memberExists(tPreviewPackage) then
+  [103] getlocal 5 .............................. <tPreviewPackage>
+  [105] pushsymb 426 ............................ <#cut>
+  [108] pushsymb 217 ............................ <#loopCount>
+  [110] pushint8 1 .............................. <1>
+  [112] pushsymb 218 ............................ <#infiniteloop>
+  [114] pushzero ................................ <0>
+  [115] pushsymb 219 ............................ <#volume>
+  [117] pushint16 255 ........................... <255>
+  [120] pusharglist 6 ........................... <[#loopCount: 1, #infiniteloop: 0, #volume: 255]>
+  [122] pushproplist ............................ <[#loopCount: 1, #infiniteloop: 0, #volume: 255]>
+  [123] pusharglistnoret 3 ...................... <tPreviewPackage, #cut, [#loopCount: 1, #infiniteloop: 0, #volume: 255]>
+  [125] extcall 215 ............................. playSound(tPreviewPackage, #cut, [#loopCount: 1, #infiniteloop: 0, #volume: 255])
+  [127] ret
+end
+
+on eventProc me, tEvent, tSprID, tProp
+  [  0] pushsymb 559 ............................ <#catalogue>
+  [  3] pusharglist 1 ........................... <#catalogue>
+  [  5] extcall 471 ............................. <getThread(#catalogue)>
+  [  8] setlocal 0 .............................. tThread = getThread(#catalogue)
+  [ 10] getlocal 0 .............................. <tThread>
+  [ 12] pusharglist 1 ........................... <tThread>
+  [ 14] objcall 176 ............................. <tThread.getInterface()>
+  [ 16] setlocal 1 .............................. tCatInterface = tThread.getInterface()
+  [ 18] getlocal 1 .............................. <tCatInterface>
+  [ 20] pusharglist 1 ........................... <tCatInterface>
+  [ 22] objcall 143 ............................. <tCatInterface.getSelectedProduct()>
+  [ 24] setlocal 2 .............................. tSelectedProduct = tCatInterface.getSelectedProduct()
+  [ 26] getparam 1 .............................. <tEvent>
+  [ 28] pushsymb 198 ............................ <#mouseUp>
+  [ 30] eq ...................................... <tEvent = #mouseUp>
+  [ 31] jmpifz [126] ............................ if tEvent = #mouseUp then
+  [ 34] getparam 2 .............................. <tSprID>
+  [ 36] pushcons 9 .............................. <"ctlg_small_img">
+  [ 38] containsstr ............................. <tSprID contains "ctlg_small_img">
+  [ 39] jmpifz [107] ............................ if tSprID contains "ctlg_small_img" then / else
+  [ 42] getlocal 2 .............................. <tSelectedProduct>
+  [ 44] pusharglist 1 ........................... <tSelectedProduct>
+  [ 46] extcall 43 .............................. <ilk(tSelectedProduct)>
+  [ 48] pushsymb 45 ............................. <#propList>
+  [ 50] eq ...................................... <ilk(tSelectedProduct) = #propList>
+  [ 51] jmpifz [ 94] ............................ if ilk(tSelectedProduct) = #propList then / else
+  [ 54] getlocal 2 .............................. <tSelectedProduct>
+  [ 56] pushsymb 268 ............................ <#class>
+  [ 59] pusharglist 2 ........................... <tSelectedProduct, #class>
+  [ 61] objcall 41 .............................. <tSelectedProduct[#class]>
+  [ 63] pushcons 10 ............................. <"sound_set">
+  [ 65] containsstr ............................. <tSelectedProduct[#class] contains "sound_set">
+  [ 66] jmpifz [ 81] ............................ if tSelectedProduct[#class] contains "sound_set" then / else
+  [ 69] getparam 0 .............................. <me>
+  [ 71] getlocal 2 .............................. <tSelectedProduct>
+  [ 73] pusharglistnoret 2 ...................... <me, tSelectedProduct>
+  [ 75] objcall 1036 ............................ me.prepareItemPreview(tSelectedProduct)
+  [ 78] jmp [ 91]
+  [ 81] getparam 0 .............................. <me>
+  [ 83] pushsymb 1042 ........................... <#hidden>
+  [ 86] pusharglistnoret 2 ...................... <me, #hidden>
+  [ 88] objcall 1035 ............................ me.setPreviewState(#hidden)
+  [ 91] jmp [104]
+  [ 94] getparam 0 .............................. <me>
+  [ 96] pushsymb 1042 ........................... <#hidden>
+  [ 99] pusharglistnoret 2 ...................... <me, #hidden>
+  [101] objcall 1035 ............................ me.setPreviewState(#hidden)
+  [104] jmp [126]
+  [107] getparam 2 .............................. <tSprID>
+  [109] peek 0 .................................. case tSprID of
+  [111] pushcons 3 .............................. <"play_preview_icon">
+  [113] eq
+  [114] jmpifz [124] ............................ (case) "play_preview_icon":
+  [117] getparam 0 .............................. <me>
+  [119] pusharglistnoret 1 ...................... <me>
+  [121] objcall 1038 ............................ me.playPreviewOfSelected()
+  [124] pop 1
+  [126] ret
+end

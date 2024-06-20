@@ -1,0 +1,1145 @@
+property pCatalogProps, pProductOrderData
+
+on construct me
+  [  0] pusharglist 0 ........................... <[]>
+  [  2] pushlist ................................ <[]>
+  [  3] setlocal 0 .............................. pOrderInfoList = []
+  [  5] pusharglist 0 ........................... <[:]>
+  [  7] pushproplist ............................ <[:]>
+  [  8] setprop 322 ............................. pCatalogProps = [:]
+  [ 11] pusharglist 0 ........................... <[:]>
+  [ 13] pushproplist ............................ <[:]>
+  [ 14] setprop 323 ............................. pProductOrderData = [:]
+  [ 17] pushcons 0 .............................. <"ctlg.editmode">
+  [ 19] pusharglist 1 ........................... <"ctlg.editmode">
+  [ 21] extcall 251 ............................. <variableExists("ctlg.editmode")>
+  [ 23] jmpifz [ 44] ............................ if variableExists("ctlg.editmode") then / else
+  [ 26] getprop 322 ............................. <pCatalogProps>
+  [ 29] pushcons 1 .............................. <"editmode">
+  [ 31] pushcons 0 .............................. <"ctlg.editmode">
+  [ 33] pusharglist 1 ........................... <"ctlg.editmode">
+  [ 35] extcall 252 ............................. <getVariable("ctlg.editmode")>
+  [ 37] pusharglistnoret 3 ...................... <pCatalogProps, "editmode", getVariable("ctlg.editmode")>
+  [ 39] objcall 236 ............................. pCatalogProps["editmode"] = getVariable("ctlg.editmode")
+  [ 41] jmp [ 55]
+  [ 44] getprop 322 ............................. <pCatalogProps>
+  [ 47] pushcons 1 .............................. <"editmode">
+  [ 49] pushcons 2 .............................. <"production">
+  [ 51] pusharglistnoret 3 ...................... <pCatalogProps, "editmode", "production">
+  [ 53] objcall 236 ............................. pCatalogProps["editmode"] = "production"
+  [ 55] pushsymb 324 ............................ <#edit_catalogue>
+  [ 58] getparam 0 .............................. <me>
+  [ 60] pusharglist 1 ........................... <me>
+  [ 62] objcall 57 .............................. <me.getID()>
+  [ 64] pushsymb 317 ............................ <#editModeOn>
+  [ 67] pusharglistnoret 3 ...................... <#edit_catalogue, me.getID(), #editModeOn>
+  [ 69] extcall 55 .............................. registerMessage(#edit_catalogue, me.getID(), #editModeOn)
+  [ 71] pushint8 1 .............................. <1>
+  [ 73] pusharglistnoret 1 ...................... <1>
+  [ 75] extcall 43 .............................. return 1
+  [ 77] ret
+end
+
+on deconstruct me
+  [  0] pusharglist 0 ........................... <[]>
+  [  2] pushlist ................................ <[]>
+  [  3] setlocal 0 .............................. pOrderInfoList = []
+  [  5] pusharglist 0 ........................... <[:]>
+  [  7] pushproplist ............................ <[:]>
+  [  8] setprop 322 ............................. pCatalogProps = [:]
+  [ 11] pushsymb 324 ............................ <#edit_catalogue>
+  [ 14] getparam 0 .............................. <me>
+  [ 16] pusharglist 1 ........................... <me>
+  [ 18] objcall 57 .............................. <me.getID()>
+  [ 20] pusharglistnoret 2 ...................... <#edit_catalogue, me.getID()>
+  [ 22] extcall 73 .............................. unregisterMessage(#edit_catalogue, me.getID())
+  [ 24] pushint8 1 .............................. <1>
+  [ 26] pusharglistnoret 1 ...................... <1>
+  [ 28] extcall 43 .............................. return 1
+  [ 30] ret
+end
+
+on editModeOn me
+  [  0] pushcons 0 .............................. <"ctlg.editmode">
+  [  2] pushcons 3 .............................. <"develop">
+  [  4] pusharglistnoret 2 ...................... <"ctlg.editmode", "develop">
+  [  6] extcall 326 ............................. setVariable("ctlg.editmode", "develop")
+  [  9] getprop 322 ............................. <pCatalogProps>
+  [ 12] pushcons 1 .............................. <"editmode">
+  [ 14] pushcons 0 .............................. <"ctlg.editmode">
+  [ 16] pusharglist 1 ........................... <"ctlg.editmode">
+  [ 18] extcall 252 ............................. <getVariable("ctlg.editmode")>
+  [ 20] pusharglistnoret 3 ...................... <pCatalogProps, "editmode", getVariable("ctlg.editmode")>
+  [ 22] objcall 236 ............................. pCatalogProps["editmode"] = getVariable("ctlg.editmode")
+  [ 24] ret
+end
+
+on getLanguage me
+  [  0] pushcons 4 .............................. <"language">
+  [  2] pusharglist 1 ........................... <"language">
+  [  4] extcall 251 ............................. <variableExists("language")>
+  [  6] jmpifz [ 20] ............................ if variableExists("language") then / else
+  [  9] pushcons 4 .............................. <"language">
+  [ 11] pusharglist 1 ........................... <"language">
+  [ 13] extcall 252 ............................. <getVariable("language")>
+  [ 15] setlocal 0 .............................. tLanguage = getVariable("language")
+  [ 17] jmp [ 24]
+  [ 20] pushcons 5 .............................. <"en">
+  [ 22] setlocal 0 .............................. tLanguage = "en"
+  [ 24] getlocal 0 .............................. <tLanguage>
+  [ 26] pusharglistnoret 1 ...................... <tLanguage>
+  [ 28] extcall 43 .............................. return tLanguage
+  [ 30] ret
+end
+
+on checkProductOrder me, tProductProps
+  [  0] getparam 1 .............................. <tProductProps>
+  [  2] getobjprop 135 .......................... <tProductProps.ilk>
+  [  4] pushsymb 136 ............................ <#propList>
+  [  6] nteq .................................... <tProductProps.ilk <> #propList>
+  [  7] jmpifz [ 25] ............................ if tProductProps.ilk <> #propList then
+  [ 10] getparam 0 .............................. <me>
+  [ 12] pushcons 6 .............................. <"Incorrect SelectedProduct proplist">
+  [ 14] pushsymb 328 ............................ <#buySelectedProduct>
+  [ 17] pusharglist 3 ........................... <me, "Incorrect SelectedProduct proplist", #buySelectedProduct>
+  [ 19] extcall 44 .............................. <error(me, "Incorrect SelectedProduct proplist", #buySelectedProduct)>
+  [ 21] pusharglistnoret 1 ...................... <error(me, "Incorrect SelectedProduct proplist", #buySelectedProduct)>
+  [ 23] extcall 43 .............................. return error(me, "Incorrect SelectedProduct proplist", #buySelectedProduct)
+  [ 25] getparam 1 .............................. <tProductProps>
+  [ 27] pushcons 7 .............................. <"purchaseCode">
+  [ 29] pusharglist 2 ........................... <tProductProps, "purchaseCode">
+  [ 31] objcall 82 .............................. <tProductProps["purchaseCode"]>
+  [ 33] pusharglist 1 ........................... <tProductProps["purchaseCode"]>
+  [ 35] extcall 139 ............................. <voidp(tProductProps["purchaseCode"])>
+  [ 37] not ..................................... <not voidp(tProductProps["purchaseCode"])>
+  [ 38] jmpifz [229] ............................ if not voidp(tProductProps["purchaseCode"]) then / else
+  [ 41] pusharglist 0 ........................... <[:]>
+  [ 43] pushproplist ............................ <[:]>
+  [ 44] setlocal 0 .............................. tProps = [:]
+  [ 46] pushcons 8 .............................. <"OK">
+  [ 48] setlocal 1 .............................. tstate = "OK"
+  [ 50] getparam 1 .............................. <tProductProps>
+  [ 52] pushcons 9 .............................. <"name">
+  [ 54] pusharglist 2 ........................... <tProductProps, "name">
+  [ 56] objcall 82 .............................. <tProductProps["name"]>
+  [ 58] pusharglist 1 ........................... <tProductProps["name"]>
+  [ 60] extcall 139 ............................. <voidp(tProductProps["name"])>
+  [ 62] not ..................................... <not voidp(tProductProps["name"])>
+  [ 63] jmpifz [ 85] ............................ if not voidp(tProductProps["name"]) then / else
+  [ 66] getlocal 0 .............................. <tProps>
+  [ 68] pushsymb 86 ............................. <#name>
+  [ 70] getparam 1 .............................. <tProductProps>
+  [ 72] pushcons 9 .............................. <"name">
+  [ 74] pusharglist 2 ........................... <tProductProps, "name">
+  [ 76] objcall 82 .............................. <tProductProps["name"]>
+  [ 78] pusharglistnoret 3 ...................... <tProps, #name, tProductProps["name"]>
+  [ 80] objcall 236 ............................. tProps[#name] = tProductProps["name"]
+  [ 82] jmp [ 99]
+  [ 85] getlocal 0 .............................. <tProps>
+  [ 87] pushsymb 86 ............................. <#name>
+  [ 89] pushcons 10 ............................. <"ERROR">
+  [ 91] pusharglistnoret 3 ...................... <tProps, #name, "ERROR">
+  [ 93] objcall 236 ............................. tProps[#name] = "ERROR"
+  [ 95] pushcons 10 ............................. <"ERROR">
+  [ 97] setlocal 1 .............................. tstate = "ERROR"
+  [ 99] getparam 1 .............................. <tProductProps>
+  [101] pushcons 7 .............................. <"purchaseCode">
+  [103] pusharglist 2 ........................... <tProductProps, "purchaseCode">
+  [105] objcall 82 .............................. <tProductProps["purchaseCode"]>
+  [107] pusharglist 1 ........................... <tProductProps["purchaseCode"]>
+  [109] extcall 139 ............................. <voidp(tProductProps["purchaseCode"])>
+  [111] not ..................................... <not voidp(tProductProps["purchaseCode"])>
+  [112] jmpifz [134] ............................ if not voidp(tProductProps["purchaseCode"]) then / else
+  [115] getlocal 0 .............................. <tProps>
+  [117] pushsymb 88 ............................. <#code>
+  [119] getparam 1 .............................. <tProductProps>
+  [121] pushcons 7 .............................. <"purchaseCode">
+  [123] pusharglist 2 ........................... <tProductProps, "purchaseCode">
+  [125] objcall 82 .............................. <tProductProps["purchaseCode"]>
+  [127] pusharglistnoret 3 ...................... <tProps, #code, tProductProps["purchaseCode"]>
+  [129] objcall 236 ............................. tProps[#code] = tProductProps["purchaseCode"]
+  [131] jmp [148]
+  [134] getlocal 0 .............................. <tProps>
+  [136] pushsymb 88 ............................. <#code>
+  [138] pushcons 10 ............................. <"ERROR">
+  [140] pusharglistnoret 3 ...................... <tProps, #code, "ERROR">
+  [142] objcall 236 ............................. tProps[#code] = "ERROR"
+  [144] pushcons 10 ............................. <"ERROR">
+  [146] setlocal 1 .............................. tstate = "ERROR"
+  [148] getparam 1 .............................. <tProductProps>
+  [150] pushcons 11 ............................. <"price">
+  [152] pusharglist 2 ........................... <tProductProps, "price">
+  [154] objcall 82 .............................. <tProductProps["price"]>
+  [156] pusharglist 1 ........................... <tProductProps["price"]>
+  [158] extcall 139 ............................. <voidp(tProductProps["price"])>
+  [160] not ..................................... <not voidp(tProductProps["price"])>
+  [161] jmpifz [183] ............................ if not voidp(tProductProps["price"]) then / else
+  [164] getlocal 0 .............................. <tProps>
+  [166] pushsymb 81 ............................. <#price>
+  [168] getparam 1 .............................. <tProductProps>
+  [170] pushcons 11 ............................. <"price">
+  [172] pusharglist 2 ........................... <tProductProps, "price">
+  [174] objcall 82 .............................. <tProductProps["price"]>
+  [176] pusharglistnoret 3 ...................... <tProps, #price, tProductProps["price"]>
+  [178] objcall 236 ............................. tProps[#price] = tProductProps["price"]
+  [180] jmp [197]
+  [183] getlocal 0 .............................. <tProps>
+  [185] pushsymb 81 ............................. <#price>
+  [187] pushcons 10 ............................. <"ERROR">
+  [189] pusharglistnoret 3 ...................... <tProps, #price, "ERROR">
+  [191] objcall 236 ............................. tProps[#price] = "ERROR"
+  [193] pushcons 10 ............................. <"ERROR">
+  [195] setlocal 1 .............................. tstate = "ERROR"
+  [197] getparam 1 .............................. <tProductProps>
+  [199] pusharglist 1 ........................... <tProductProps>
+  [201] objcall 138 ............................. <tProductProps.duplicate()>
+  [203] setprop 323 ............................. pProductOrderData = tProductProps.duplicate()
+  [206] getparam 0 .............................. <me>
+  [208] pusharglist 1 ........................... <me>
+  [210] objcall 123 ............................. <me.getInterface()>
+  [212] getlocal 1 .............................. <tstate>
+  [214] getlocal 0 .............................. <tProps>
+  [216] pusharglistnoret 3 ...................... <me.getInterface(), tstate, tProps>
+  [218] objcall 6 ............................... me.getInterface().showOrderInfo(tstate, tProps)
+  [220] pushint8 1 .............................. <1>
+  [222] pusharglistnoret 1 ...................... <1>
+  [224] extcall 43 .............................. return 1
+  [226] jmp [240]
+  [229] pusharglist 0 ........................... <[:]>
+  [231] pushproplist ............................ <[:]>
+  [232] setprop 323 ............................. pProductOrderData = [:]
+  [235] pushzero ................................ <0>
+  [236] pusharglistnoret 1 ...................... <0>
+  [238] extcall 43 .............................. return 0
+  [240] ret
+end
+
+on purchaseProduct me, tGiftProps
+  [  0] getprop 323 ............................. <pProductOrderData>
+  [  3] getobjprop 135 .......................... <pProductOrderData.ilk>
+  [  5] pushsymb 136 ............................ <#propList>
+  [  7] nteq .................................... <pProductOrderData.ilk <> #propList>
+  [  8] jmpifz [ 26] ............................ if pProductOrderData.ilk <> #propList then
+  [ 11] getparam 0 .............................. <me>
+  [ 13] pushcons 12 ............................. <"Incorrect Product data">
+  [ 15] pushsymb 304 ............................ <#purchaseProduct>
+  [ 18] pusharglist 3 ........................... <me, "Incorrect Product data", #purchaseProduct>
+  [ 20] extcall 44 .............................. <error(me, "Incorrect Product data", #purchaseProduct)>
+  [ 22] pusharglistnoret 1 ...................... <error(me, "Incorrect Product data", #purchaseProduct)>
+  [ 24] extcall 43 .............................. return error(me, "Incorrect Product data", #purchaseProduct)
+  [ 26] getparam 1 .............................. <tGiftProps>
+  [ 28] getobjprop 135 .......................... <tGiftProps.ilk>
+  [ 30] pushsymb 136 ............................ <#propList>
+  [ 32] nteq .................................... <tGiftProps.ilk <> #propList>
+  [ 33] jmpifz [ 51] ............................ if tGiftProps.ilk <> #propList then
+  [ 36] getparam 0 .............................. <me>
+  [ 38] pushcons 13 ............................. <"Incorrect Gift Props">
+  [ 40] pushsymb 304 ............................ <#purchaseProduct>
+  [ 43] pusharglist 3 ........................... <me, "Incorrect Gift Props", #purchaseProduct>
+  [ 45] extcall 44 .............................. <error(me, "Incorrect Gift Props", #purchaseProduct)>
+  [ 47] pusharglistnoret 1 ...................... <error(me, "Incorrect Gift Props", #purchaseProduct)>
+  [ 49] extcall 43 .............................. return error(me, "Incorrect Gift Props", #purchaseProduct)
+  [ 51] getprop 323 ............................. <pProductOrderData>
+  [ 54] pushcons 9 .............................. <"name">
+  [ 56] pusharglist 2 ........................... <pProductOrderData, "name">
+  [ 58] objcall 82 .............................. <pProductOrderData["name"]>
+  [ 60] pusharglist 1 ........................... <pProductOrderData["name"]>
+  [ 62] extcall 139 ............................. <voidp(pProductOrderData["name"])>
+  [ 64] jmpifz [ 82] ............................ if voidp(pProductOrderData["name"]) then
+  [ 67] getparam 0 .............................. <me>
+  [ 69] pushcons 14 ............................. <"Product name not found">
+  [ 71] pushsymb 304 ............................ <#purchaseProduct>
+  [ 74] pusharglist 3 ........................... <me, "Product name not found", #purchaseProduct>
+  [ 76] extcall 44 .............................. <error(me, "Product name not found", #purchaseProduct)>
+  [ 78] pusharglistnoret 1 ...................... <error(me, "Product name not found", #purchaseProduct)>
+  [ 80] extcall 43 .............................. return error(me, "Product name not found", #purchaseProduct)
+  [ 82] getprop 323 ............................. <pProductOrderData>
+  [ 85] pushcons 7 .............................. <"purchaseCode">
+  [ 87] pusharglist 2 ........................... <pProductOrderData, "purchaseCode">
+  [ 89] objcall 82 .............................. <pProductOrderData["purchaseCode"]>
+  [ 91] pusharglist 1 ........................... <pProductOrderData["purchaseCode"]>
+  [ 93] extcall 139 ............................. <voidp(pProductOrderData["purchaseCode"])>
+  [ 95] jmpifz [113] ............................ if voidp(pProductOrderData["purchaseCode"]) then
+  [ 98] getparam 0 .............................. <me>
+  [100] pushcons 15 ............................. <"PurchaseCode name not found">
+  [102] pushsymb 304 ............................ <#purchaseProduct>
+  [105] pusharglist 3 ........................... <me, "PurchaseCode name not found", #purchaseProduct>
+  [107] extcall 44 .............................. <error(me, "PurchaseCode name not found", #purchaseProduct)>
+  [109] pusharglistnoret 1 ...................... <error(me, "PurchaseCode name not found", #purchaseProduct)>
+  [111] extcall 43 .............................. return error(me, "PurchaseCode name not found", #purchaseProduct)
+  [113] getprop 323 ............................. <pProductOrderData>
+  [116] pushcons 16 ............................. <"extra_parm">
+  [118] pusharglist 2 ........................... <pProductOrderData, "extra_parm">
+  [120] objcall 82 .............................. <pProductOrderData["extra_parm"]>
+  [122] pusharglist 1 ........................... <pProductOrderData["extra_parm"]>
+  [124] extcall 139 ............................. <voidp(pProductOrderData["extra_parm"])>
+  [126] jmpifz [140] ............................ if voidp(pProductOrderData["extra_parm"]) then
+  [129] getprop 323 ............................. <pProductOrderData>
+  [132] pushcons 16 ............................. <"extra_parm">
+  [134] pushcons 17 ............................. <"-">
+  [136] pusharglistnoret 3 ...................... <pProductOrderData, "extra_parm", "-">
+  [138] objcall 236 ............................. pProductOrderData["extra_parm"] = "-"
+  [140] getprop 322 ............................. <pCatalogProps>
+  [143] pushcons 1 .............................. <"editmode">
+  [145] pusharglist 2 ........................... <pCatalogProps, "editmode">
+  [147] objcall 82 .............................. <pCatalogProps["editmode"]>
+  [149] pusharglist 1 ........................... <pCatalogProps["editmode"]>
+  [151] extcall 139 ............................. <voidp(pCatalogProps["editmode"])>
+  [153] jmpifz [171] ............................ if voidp(pCatalogProps["editmode"]) then
+  [156] getparam 0 .............................. <me>
+  [158] pushcons 18 ............................. <"Catalogue mode not found">
+  [160] pushsymb 304 ............................ <#purchaseProduct>
+  [163] pusharglist 3 ........................... <me, "Catalogue mode not found", #purchaseProduct>
+  [165] extcall 44 .............................. <error(me, "Catalogue mode not found", #purchaseProduct)>
+  [167] pusharglistnoret 1 ...................... <error(me, "Catalogue mode not found", #purchaseProduct)>
+  [169] extcall 43 .............................. return error(me, "Catalogue mode not found", #purchaseProduct)
+  [171] getprop 322 ............................. <pCatalogProps>
+  [174] pushcons 19 ............................. <"lastPageID">
+  [176] pusharglist 2 ........................... <pCatalogProps, "lastPageID">
+  [178] objcall 82 .............................. <pCatalogProps["lastPageID"]>
+  [180] pusharglist 1 ........................... <pCatalogProps["lastPageID"]>
+  [182] extcall 139 ............................. <voidp(pCatalogProps["lastPageID"])>
+  [184] jmpifz [202] ............................ if voidp(pCatalogProps["lastPageID"]) then
+  [187] getparam 0 .............................. <me>
+  [189] pushcons 20 ............................. <"Catalogue page id missing">
+  [191] pushsymb 304 ............................ <#purchaseProduct>
+  [194] pusharglist 3 ........................... <me, "Catalogue page id missing", #purchaseProduct>
+  [196] extcall 44 .............................. <error(me, "Catalogue page id missing", #purchaseProduct)>
+  [198] pusharglistnoret 1 ...................... <error(me, "Catalogue page id missing", #purchaseProduct)>
+  [200] extcall 43 .............................. return error(me, "Catalogue page id missing", #purchaseProduct)
+  [202] getparam 1 .............................. <tGiftProps>
+  [204] pushcons 21 ............................. <"gift">
+  [206] pusharglist 2 ........................... <tGiftProps, "gift">
+  [208] objcall 82 .............................. <tGiftProps["gift"]>
+  [210] pusharglist 1 ........................... <tGiftProps["gift"]>
+  [212] extcall 139 ............................. <voidp(tGiftProps["gift"])>
+  [214] not ..................................... <not voidp(tGiftProps["gift"])>
+  [215] jmpifz [327] ............................ if not voidp(tGiftProps["gift"]) then / else
+  [218] getparam 1 .............................. <tGiftProps>
+  [220] pushcons 21 ............................. <"gift">
+  [222] pusharglist 2 ........................... <tGiftProps, "gift">
+  [224] objcall 82 .............................. <tGiftProps["gift"]>
+  [226] pushcons 22 ............................. <RETURN>
+  [228] joinstr ................................. <tGiftProps["gift"] & RETURN>
+  [229] setlocal 0 .............................. tGift = tGiftProps["gift"] & RETURN
+  [231] getparam 1 .............................. <tGiftProps>
+  [233] pushcons 23 ............................. <"gift_receiver">
+  [235] pusharglist 2 ........................... <tGiftProps, "gift_receiver">
+  [237] objcall 82 .............................. <tGiftProps["gift_receiver"]>
+  [239] pusharglist 1 ........................... <tGiftProps["gift_receiver"]>
+  [241] extcall 139 ............................. <voidp(tGiftProps["gift_receiver"])>
+  [243] not ..................................... <not voidp(tGiftProps["gift_receiver"])>
+  [244] jmpifz [266] ............................ if not voidp(tGiftProps["gift_receiver"]) then / else
+  [247] getlocal 0 .............................. <tGift>
+  [249] getparam 1 .............................. <tGiftProps>
+  [251] pushcons 23 ............................. <"gift_receiver">
+  [253] pusharglist 2 ........................... <tGiftProps, "gift_receiver">
+  [255] objcall 82 .............................. <tGiftProps["gift_receiver"]>
+  [257] joinstr ................................. <tGift & tGiftProps["gift_receiver"]>
+  [258] pushcons 22 ............................. <RETURN>
+  [260] joinstr ................................. <tGift & tGiftProps["gift_receiver"] & RETURN>
+  [261] setlocal 0 .............................. tGift = tGift & tGiftProps["gift_receiver"] & RETURN
+  [263] jmp [270]
+  [266] pushcons 24 ............................. <EMPTY>
+  [268] setlocal 0 .............................. tGift = EMPTY
+  [270] getparam 1 .............................. <tGiftProps>
+  [272] pushcons 25 ............................. <"gift_msg">
+  [274] pusharglist 2 ........................... <tGiftProps, "gift_msg">
+  [276] objcall 82 .............................. <tGiftProps["gift_msg"]>
+  [278] pusharglist 1 ........................... <tGiftProps["gift_msg"]>
+  [280] extcall 139 ............................. <voidp(tGiftProps["gift_msg"])>
+  [282] not ..................................... <not voidp(tGiftProps["gift_msg"])>
+  [283] jmpifz [320] ............................ if not voidp(tGiftProps["gift_msg"]) then / else
+  [286] getparam 1 .............................. <tGiftProps>
+  [288] pushcons 25 ............................. <"gift_msg">
+  [290] pusharglist 2 ........................... <tGiftProps, "gift_msg">
+  [292] objcall 82 .............................. <tGiftProps["gift_msg"]>
+  [294] setlocal 1 .............................. tGiftMsg = tGiftProps["gift_msg"]
+  [296] getlocal 1 .............................. <tGiftMsg>
+  [298] pushint8 1 .............................. <1>
+  [300] pusharglist 2 ........................... <tGiftMsg, 1>
+  [302] extcall 330 ............................. <convertSpecialChars(tGiftMsg, 1)>
+  [305] setlocal 1 .............................. tGiftMsg = convertSpecialChars(tGiftMsg, 1)
+  [307] getlocal 0 .............................. <tGift>
+  [309] getlocal 1 .............................. <tGiftMsg>
+  [311] joinstr ................................. <tGift & tGiftMsg>
+  [312] pushcons 22 ............................. <RETURN>
+  [314] joinstr ................................. <tGift & tGiftMsg & RETURN>
+  [315] setlocal 0 .............................. tGift = tGift & tGiftMsg & RETURN
+  [317] jmp [324]
+  [320] pushcons 24 ............................. <EMPTY>
+  [322] setlocal 0 .............................. tGift = EMPTY
+  [324] jmp [331]
+  [327] pushcons 26 ............................. <"0">
+  [329] setlocal 0 .............................. tGift = "0"
+  [331] pushcons 24 ............................. <EMPTY>
+  [333] setlocal 2 .............................. tOrderStr = EMPTY
+  [335] getlocal 2 .............................. <tOrderStr>
+  [337] getprop 322 ............................. <pCatalogProps>
+  [340] pushcons 1 .............................. <"editmode">
+  [342] pusharglist 2 ........................... <pCatalogProps, "editmode">
+  [344] objcall 82 .............................. <pCatalogProps["editmode"]>
+  [346] joinstr ................................. <tOrderStr & pCatalogProps["editmode"]>
+  [347] pushcons 22 ............................. <RETURN>
+  [349] joinstr ................................. <tOrderStr & pCatalogProps["editmode"] & RETURN>
+  [350] setlocal 2 .............................. tOrderStr = tOrderStr & pCatalogProps["editmode"] & RETURN
+  [352] getlocal 2 .............................. <tOrderStr>
+  [354] getprop 322 ............................. <pCatalogProps>
+  [357] pushcons 19 ............................. <"lastPageID">
+  [359] pusharglist 2 ........................... <pCatalogProps, "lastPageID">
+  [361] objcall 82 .............................. <pCatalogProps["lastPageID"]>
+  [363] joinstr ................................. <tOrderStr & pCatalogProps["lastPageID"]>
+  [364] pushcons 22 ............................. <RETURN>
+  [366] joinstr ................................. <tOrderStr & pCatalogProps["lastPageID"] & RETURN>
+  [367] setlocal 2 .............................. tOrderStr = tOrderStr & pCatalogProps["lastPageID"] & RETURN
+  [369] getlocal 2 .............................. <tOrderStr>
+  [371] getparam 0 .............................. <me>
+  [373] pusharglist 1 ........................... <me>
+  [375] objcall 318 ............................. <me.getLanguage()>
+  [378] joinstr ................................. <tOrderStr & me.getLanguage()>
+  [379] pushcons 22 ............................. <RETURN>
+  [381] joinstr ................................. <tOrderStr & me.getLanguage() & RETURN>
+  [382] setlocal 2 .............................. tOrderStr = tOrderStr & me.getLanguage() & RETURN
+  [384] getlocal 2 .............................. <tOrderStr>
+  [386] getprop 323 ............................. <pProductOrderData>
+  [389] pushcons 7 .............................. <"purchaseCode">
+  [391] pusharglist 2 ........................... <pProductOrderData, "purchaseCode">
+  [393] objcall 82 .............................. <pProductOrderData["purchaseCode"]>
+  [395] joinstr ................................. <tOrderStr & pProductOrderData["purchaseCode"]>
+  [396] pushcons 22 ............................. <RETURN>
+  [398] joinstr ................................. <tOrderStr & pProductOrderData["purchaseCode"] & RETURN>
+  [399] setlocal 2 .............................. tOrderStr = tOrderStr & pProductOrderData["purchaseCode"] & RETURN
+  [401] getprop 323 ............................. <pProductOrderData>
+  [404] pushcons 16 ............................. <"extra_parm">
+  [406] pusharglist 2 ........................... <pProductOrderData, "extra_parm">
+  [408] objcall 82 .............................. <pProductOrderData["extra_parm"]>
+  [410] setlocal 3 .............................. tExtra = pProductOrderData["extra_parm"]
+  [412] getlocal 3 .............................. <tExtra>
+  [414] pushint8 1 .............................. <1>
+  [416] pusharglist 2 ........................... <tExtra, 1>
+  [418] extcall 330 ............................. <convertSpecialChars(tExtra, 1)>
+  [421] setlocal 3 .............................. tExtra = convertSpecialChars(tExtra, 1)
+  [423] getlocal 2 .............................. <tOrderStr>
+  [425] getlocal 3 .............................. <tExtra>
+  [427] joinstr ................................. <tOrderStr & tExtra>
+  [428] pushcons 22 ............................. <RETURN>
+  [430] joinstr ................................. <tOrderStr & tExtra & RETURN>
+  [431] setlocal 2 .............................. tOrderStr = tOrderStr & tExtra & RETURN
+  [433] getlocal 2 .............................. <tOrderStr>
+  [435] getlocal 0 .............................. <tGift>
+  [437] joinstr ................................. <tOrderStr & tGift>
+  [438] setlocal 2 .............................. tOrderStr = tOrderStr & tGift
+  [440] pushcons 27 ............................. <"connection.info.id">
+  [442] pusharglist 1 ........................... <"connection.info.id">
+  [444] extcall 252 ............................. <getVariable("connection.info.id")>
+  [446] pusharglist 1 ........................... <getVariable("connection.info.id")>
+  [448] extcall 331 ............................. <connectionExists(getVariable("connection.info.id"))>
+  [451] not ..................................... <not connectionExists(getVariable("connection.info.id"))>
+  [452] jmpifz [460] ............................ if not connectionExists(getVariable("connection.info.id")) then
+  [455] pushzero ................................ <0>
+  [456] pusharglistnoret 1 ...................... <0>
+  [458] extcall 43 .............................. return 0
+  [460] pushcons 27 ............................. <"connection.info.id">
+  [462] pusharglist 1 ........................... <"connection.info.id">
+  [464] extcall 252 ............................. <getVariable("connection.info.id")>
+  [466] pusharglist 1 ........................... <getVariable("connection.info.id")>
+  [468] extcall 332 ............................. <getConnection(getVariable("connection.info.id"))>
+  [471] pushcons 28 ............................. <"GPRC">
+  [473] getlocal 2 .............................. <tOrderStr>
+  [475] pusharglist 3 ........................... <getConnection(getVariable("connection.info.id")), "GPRC", tOrderStr>
+  [477] objcall 333 ............................. <getConnection(getVariable("connection.info.id")).send("GPRC", tOrderStr)>
+  [480] pusharglistnoret 1 ...................... <getConnection(getVariable("connection.info.id")).send("GPRC", tOrderStr)>
+  [482] extcall 43 .............................. return getConnection(getVariable("connection.info.id")).send("GPRC", tOrderStr)
+  [484] ret
+end
+
+on retrieveCatalogueIndex me
+  [  0] getprop 322 ............................. <pCatalogProps>
+  [  3] pushcons 1 .............................. <"editmode">
+  [  5] pusharglist 2 ........................... <pCatalogProps, "editmode">
+  [  7] objcall 82 .............................. <pCatalogProps["editmode"]>
+  [  9] pusharglist 1 ........................... <pCatalogProps["editmode"]>
+  [ 11] extcall 139 ............................. <voidp(pCatalogProps["editmode"])>
+  [ 13] not ..................................... <not voidp(pCatalogProps["editmode"])>
+  [ 14] jmpifz [ 31] ............................ if not voidp(pCatalogProps["editmode"]) then / else
+  [ 17] getprop 322 ............................. <pCatalogProps>
+  [ 20] pushcons 1 .............................. <"editmode">
+  [ 22] pusharglist 2 ........................... <pCatalogProps, "editmode">
+  [ 24] objcall 82 .............................. <pCatalogProps["editmode"]>
+  [ 26] setlocal 0 .............................. tEditmode = pCatalogProps["editmode"]
+  [ 28] jmp [ 35]
+  [ 31] pushcons 2 .............................. <"production">
+  [ 33] setlocal 0 .............................. tEditmode = "production"
+  [ 35] getparam 0 .............................. <me>
+  [ 37] pusharglist 1 ........................... <me>
+  [ 39] objcall 318 ............................. <me.getLanguage()>
+  [ 42] setlocal 1 .............................. tLanguage = me.getLanguage()
+  [ 44] getprop 322 ............................. <pCatalogProps>
+  [ 47] pushcons 29 ............................. <"catalogueIndex">
+  [ 49] pusharglist 2 ........................... <pCatalogProps, "catalogueIndex">
+  [ 51] objcall 82 .............................. <pCatalogProps["catalogueIndex"]>
+  [ 53] pusharglist 1 ........................... <pCatalogProps["catalogueIndex"]>
+  [ 55] extcall 139 ............................. <voidp(pCatalogProps["catalogueIndex"])>
+  [ 57] not ..................................... <not voidp(pCatalogProps["catalogueIndex"])>
+  [ 58] getlocal 0 .............................. <tEditmode>
+  [ 60] pushcons 3 .............................. <"develop">
+  [ 62] nteq .................................... <tEditmode <> "develop">
+  [ 63] and ..................................... <not voidp(pCatalogProps["catalogueIndex"]) and (tEditmode <> "develop")>
+  [ 64] jmpifz [ 89] ............................ if not voidp(pCatalogProps["catalogueIndex"]) and (tEditmode <> "develop") then / else
+  [ 67] getparam 0 .............................. <me>
+  [ 69] pusharglist 1 ........................... <me>
+  [ 71] objcall 123 ............................. <me.getInterface()>
+  [ 73] getprop 322 ............................. <pCatalogProps>
+  [ 76] pushcons 29 ............................. <"catalogueIndex">
+  [ 78] pusharglist 2 ........................... <pCatalogProps, "catalogueIndex">
+  [ 80] objcall 82 .............................. <pCatalogProps["catalogueIndex"]>
+  [ 82] pusharglistnoret 2 ...................... <me.getInterface(), pCatalogProps["catalogueIndex"]>
+  [ 84] objcall 12 .............................. me.getInterface().saveCatalogueIndex(pCatalogProps["catalogueIndex"])
+  [ 86] jmp [144]
+  [ 89] pushcons 27 ............................. <"connection.info.id">
+  [ 91] pusharglist 1 ........................... <"connection.info.id">
+  [ 93] extcall 252 ............................. <getVariable("connection.info.id")>
+  [ 95] pusharglist 1 ........................... <getVariable("connection.info.id")>
+  [ 97] extcall 331 ............................. <connectionExists(getVariable("connection.info.id"))>
+  [100] jmpifz [139] ............................ if connectionExists(getVariable("connection.info.id")) then / else
+  [103] pushcons 27 ............................. <"connection.info.id">
+  [105] pusharglist 1 ........................... <"connection.info.id">
+  [107] extcall 252 ............................. <getVariable("connection.info.id")>
+  [109] pusharglist 1 ........................... <getVariable("connection.info.id")>
+  [111] extcall 332 ............................. <getConnection(getVariable("connection.info.id"))>
+  [114] pushcons 30 ............................. <"GCIX">
+  [116] pushsymb 89 ............................. <#string>
+  [118] getlocal 0 .............................. <tEditmode>
+  [120] pushsymb 89 ............................. <#string>
+  [122] getlocal 1 .............................. <tLanguage>
+  [124] pusharglist 4 ........................... <[#string: tEditmode, #string: tLanguage]>
+  [126] pushproplist ............................ <[#string: tEditmode, #string: tLanguage]>
+  [127] pusharglist 3 ........................... <getConnection(getVariable("connection.info.id")), "GCIX", [#string: tEditmode, #string: tLanguage]>
+  [129] objcall 333 ............................. <getConnection(getVariable("connection.info.id")).send("GCIX", [#string: tEditmode, #string: tLanguage])>
+  [132] pusharglistnoret 1 ...................... <getConnection(getVariable("connection.info.id")).send("GCIX", [#string: tEditmode, #string: tLanguage])>
+  [134] extcall 43 .............................. return getConnection(getVariable("connection.info.id")).send("GCIX", [#string: tEditmode, #string: tLanguage])
+  [136] jmp [144]
+  [139] pushzero ................................ <0>
+  [140] pusharglistnoret 1 ...................... <0>
+  [142] extcall 43 .............................. return 0
+  [144] ret
+end
+
+on retrieveCataloguePage me, tPageID
+  [  0] getprop 322 ............................. <pCatalogProps>
+  [  3] pushcons 1 .............................. <"editmode">
+  [  5] pusharglist 2 ........................... <pCatalogProps, "editmode">
+  [  7] objcall 82 .............................. <pCatalogProps["editmode"]>
+  [  9] pusharglist 1 ........................... <pCatalogProps["editmode"]>
+  [ 11] extcall 139 ............................. <voidp(pCatalogProps["editmode"])>
+  [ 13] not ..................................... <not voidp(pCatalogProps["editmode"])>
+  [ 14] jmpifz [ 31] ............................ if not voidp(pCatalogProps["editmode"]) then / else
+  [ 17] getprop 322 ............................. <pCatalogProps>
+  [ 20] pushcons 1 .............................. <"editmode">
+  [ 22] pusharglist 2 ........................... <pCatalogProps, "editmode">
+  [ 24] objcall 82 .............................. <pCatalogProps["editmode"]>
+  [ 26] setlocal 0 .............................. tEditmode = pCatalogProps["editmode"]
+  [ 28] jmp [ 35]
+  [ 31] pushcons 2 .............................. <"production">
+  [ 33] setlocal 0 .............................. tEditmode = "production"
+  [ 35] getparam 0 .............................. <me>
+  [ 37] pusharglist 1 ........................... <me>
+  [ 39] objcall 318 ............................. <me.getLanguage()>
+  [ 42] setlocal 1 .............................. tLanguage = me.getLanguage()
+  [ 44] pusharglist 0 ........................... <>
+  [ 46] extcall 92 .............................. <VOID>
+  [ 48] setprop 323 ............................. pProductOrderData = VOID
+  [ 51] getprop 322 ............................. <pCatalogProps>
+  [ 54] getparam 1 .............................. <tPageID>
+  [ 56] pusharglist 2 ........................... <pCatalogProps, tPageID>
+  [ 58] objcall 82 .............................. <pCatalogProps[tPageID]>
+  [ 60] pusharglist 1 ........................... <pCatalogProps[tPageID]>
+  [ 62] extcall 139 ............................. <voidp(pCatalogProps[tPageID])>
+  [ 64] not ..................................... <not voidp(pCatalogProps[tPageID])>
+  [ 65] getlocal 0 .............................. <tEditmode>
+  [ 67] pushcons 3 .............................. <"develop">
+  [ 69] nteq .................................... <tEditmode <> "develop">
+  [ 70] and ..................................... <not voidp(pCatalogProps[tPageID]) and (tEditmode <> "develop")>
+  [ 71] jmpifz [107] ............................ if not voidp(pCatalogProps[tPageID]) and (tEditmode <> "develop") then / else
+  [ 74] getprop 322 ............................. <pCatalogProps>
+  [ 77] pushcons 19 ............................. <"lastPageID">
+  [ 79] getparam 1 .............................. <tPageID>
+  [ 81] pusharglistnoret 3 ...................... <pCatalogProps, "lastPageID", tPageID>
+  [ 83] objcall 236 ............................. pCatalogProps["lastPageID"] = tPageID
+  [ 85] getparam 0 .............................. <me>
+  [ 87] pusharglist 1 ........................... <me>
+  [ 89] objcall 123 ............................. <me.getInterface()>
+  [ 91] getprop 322 ............................. <pCatalogProps>
+  [ 94] getparam 1 .............................. <tPageID>
+  [ 96] pusharglist 2 ........................... <pCatalogProps, tPageID>
+  [ 98] objcall 82 .............................. <pCatalogProps[tPageID]>
+  [100] pusharglistnoret 2 ...................... <me.getInterface(), pCatalogProps[tPageID]>
+  [102] objcall 13 .............................. me.getInterface().cataloguePageData(pCatalogProps[tPageID])
+  [104] jmp [166]
+  [107] pushcons 27 ............................. <"connection.info.id">
+  [109] pusharglist 1 ........................... <"connection.info.id">
+  [111] extcall 252 ............................. <getVariable("connection.info.id")>
+  [113] pusharglist 1 ........................... <getVariable("connection.info.id")>
+  [115] extcall 331 ............................. <connectionExists(getVariable("connection.info.id"))>
+  [118] jmpifz [161] ............................ if connectionExists(getVariable("connection.info.id")) then / else
+  [121] pushcons 27 ............................. <"connection.info.id">
+  [123] pusharglist 1 ........................... <"connection.info.id">
+  [125] extcall 252 ............................. <getVariable("connection.info.id")>
+  [127] pusharglist 1 ........................... <getVariable("connection.info.id")>
+  [129] extcall 332 ............................. <getConnection(getVariable("connection.info.id"))>
+  [132] pushcons 31 ............................. <"GCAP">
+  [134] pushsymb 89 ............................. <#string>
+  [136] getlocal 0 .............................. <tEditmode>
+  [138] pushsymb 89 ............................. <#string>
+  [140] getparam 1 .............................. <tPageID>
+  [142] pushsymb 89 ............................. <#string>
+  [144] getlocal 1 .............................. <tLanguage>
+  [146] pusharglist 6 ........................... <[#string: tEditmode, #string: tPageID, #string: tLanguage]>
+  [148] pushproplist ............................ <[#string: tEditmode, #string: tPageID, #string: tLanguage]>
+  [149] pusharglist 3 ........................... <getConnection(getVariable("connection.info.id")), "GCAP", [#string: tEditmode, #string: tPageID, #string: tLanguage]>
+  [151] objcall 333 ............................. <getConnection(getVariable("connection.info.id")).send("GCAP", [#string: tEditmode, #string: tPageID, #string: tLanguage])>
+  [154] pusharglistnoret 1 ...................... <getConnection(getVariable("connection.info.id")).send("GCAP", [#string: tEditmode, #string: tPageID, #string: tLanguage])>
+  [156] extcall 43 .............................. return getConnection(getVariable("connection.info.id")).send("GCAP", [#string: tEditmode, #string: tPageID, #string: tLanguage])
+  [158] jmp [166]
+  [161] pushzero ................................ <0>
+  [162] pusharglistnoret 1 ...................... <0>
+  [164] extcall 43 .............................. return 0
+  [166] pushzero ................................ <0>
+  [167] pusharglistnoret 1 ...................... <0>
+  [169] extcall 43 .............................. return 0
+  [171] ret
+end
+
+on purchaseReady me, tStatus, tMsg
+  [  0] getparam 1 .............................. <tStatus>
+  [  2] peek 0 .................................. case tStatus of
+  [  4] pushcons 8 .............................. <"OK">
+  [  6] eq
+  [  7] jmpifz [ 23] ............................ (case) "OK":
+  [ 10] getparam 0 .............................. <me>
+  [ 12] pusharglist 1 ........................... <me>
+  [ 14] objcall 123 ............................. <me.getInterface()>
+  [ 16] pusharglistnoret 1 ...................... <me.getInterface()>
+  [ 18] objcall 9 ............................... me.getInterface().showPurchaseOk()
+  [ 20] jmp [ 92]
+  [ 23] peek 0
+  [ 25] pushcons 32 ............................. <"NOBALANCE">
+  [ 27] eq
+  [ 28] jmpifz [ 50] ............................ (case) "NOBALANCE":
+  [ 31] getparam 0 .............................. <me>
+  [ 33] pusharglist 1 ........................... <me>
+  [ 35] objcall 123 ............................. <me.getInterface()>
+  [ 37] pusharglist 0 ........................... <>
+  [ 39] extcall 92 .............................. <VOID>
+  [ 41] pushint8 1 .............................. <1>
+  [ 43] pusharglistnoret 3 ...................... <me.getInterface(), VOID, 1>
+  [ 45] objcall 8 ............................... me.getInterface().showNoBalance(VOID, 1)
+  [ 47] jmp [ 92]
+  [ 50] peek 0
+  [ 52] pushcons 10 ............................. <"ERROR">
+  [ 54] eq
+  [ 55] jmpifz [ 75] ............................ (case) "ERROR":
+  [ 58] getparam 0 .............................. <me>
+  [ 60] pushcons 33 ............................. <"Purchase error:">
+  [ 62] getparam 2 .............................. <tMsg>
+  [ 64] joinpadstr .............................. <"Purchase error:" && tMsg>
+  [ 65] pushsymb 319 ............................ <#purchaseReady>
+  [ 68] pusharglistnoret 3 ...................... <me, "Purchase error:" && tMsg, #purchaseReady>
+  [ 70] extcall 44 .............................. error(me, "Purchase error:" && tMsg, #purchaseReady)
+  [ 72] jmp [ 92] ............................... (case) otherwise:
+  [ 75] getparam 0 .............................. <me>
+  [ 77] pushcons 34 ............................. <"Unsupported purchase result:">
+  [ 79] getparam 1 .............................. <tStatus>
+  [ 81] joinpadstr .............................. <"Unsupported purchase result:" && tStatus>
+  [ 82] getparam 2 .............................. <tMsg>
+  [ 84] joinpadstr .............................. <"Unsupported purchase result:" && tStatus && tMsg>
+  [ 85] pushsymb 319 ............................ <#purchaseReady>
+  [ 88] pusharglistnoret 3 ...................... <me, "Unsupported purchase result:" && tStatus && tMsg, #purchaseReady>
+  [ 90] extcall 44 .............................. error(me, "Unsupported purchase result:" && tStatus && tMsg, #purchaseReady)
+  [ 92] pop 1 ................................... end case
+  [ 94] pushint8 1 .............................. <1>
+  [ 96] pusharglistnoret 1 ...................... <1>
+  [ 98] extcall 43 .............................. return 1
+  [100] ret
+end
+
+on saveCatalogueIndex me, tdata
+  [  0] getparam 1 .............................. <tdata>
+  [  2] getobjprop 135 .......................... <tdata.ilk>
+  [  4] pushsymb 136 ............................ <#propList>
+  [  6] nteq .................................... <tdata.ilk <> #propList>
+  [  7] jmpifz [ 24] ............................ if tdata.ilk <> #propList then
+  [ 10] getparam 0 .............................. <me>
+  [ 12] pushcons 35 ............................. <"Incorrect Catalogue Format">
+  [ 14] pushsymb 12 ............................. <#saveCatalogueIndex>
+  [ 16] pusharglist 3 ........................... <me, "Incorrect Catalogue Format", #saveCatalogueIndex>
+  [ 18] extcall 44 .............................. <error(me, "Incorrect Catalogue Format", #saveCatalogueIndex)>
+  [ 20] pusharglistnoret 1 ...................... <error(me, "Incorrect Catalogue Format", #saveCatalogueIndex)>
+  [ 22] extcall 43 .............................. return error(me, "Incorrect Catalogue Format", #saveCatalogueIndex)
+  [ 24] getparam 1 .............................. <tdata>
+  [ 26] getobjprop 156 .......................... <tdata.count>
+  [ 28] pushzero ................................ <0>
+  [ 29] eq ...................................... <tdata.count = 0>
+  [ 30] jmpifz [ 38] ............................ if tdata.count = 0 then
+  [ 33] pushzero ................................ <0>
+  [ 34] pusharglistnoret 1 ...................... <0>
+  [ 36] extcall 43 .............................. return 0
+  [ 38] getprop 322 ............................. <pCatalogProps>
+  [ 41] pushcons 29 ............................. <"catalogueIndex">
+  [ 43] getparam 1 .............................. <tdata>
+  [ 45] pusharglistnoret 3 ...................... <pCatalogProps, "catalogueIndex", tdata>
+  [ 47] objcall 236 ............................. pCatalogProps["catalogueIndex"] = tdata
+  [ 49] getparam 0 .............................. <me>
+  [ 51] pusharglist 1 ........................... <me>
+  [ 53] objcall 123 ............................. <me.getInterface()>
+  [ 55] getparam 1 .............................. <tdata>
+  [ 57] pusharglistnoret 2 ...................... <me.getInterface(), tdata>
+  [ 59] objcall 12 .............................. me.getInterface().saveCatalogueIndex(tdata)
+  [ 61] ret
+end
+
+on refreshCatalogue me
+  [  0] getparam 0 .............................. <me>
+  [  2] pusharglist 1 ........................... <me>
+  [  4] objcall 123 ............................. <me.getInterface()>
+  [  6] pusharglist 1 ........................... <me.getInterface()>
+  [  8] objcall 557 ............................. <me.getInterface().isVisible()>
+  [ 11] jmpifz [ 35] ............................ if me.getInterface().isVisible() then
+  [ 14] getparam 0 .............................. <me>
+  [ 16] pusharglist 1 ........................... <me>
+  [ 18] objcall 123 ............................. <me.getInterface()>
+  [ 20] pusharglistnoret 1 ...................... <me.getInterface()>
+  [ 22] objcall 4 ............................... me.getInterface().hideCatalogue()
+  [ 24] getparam 0 .............................. <me>
+  [ 26] pusharglist 1 ........................... <me>
+  [ 28] objcall 123 ............................. <me.getInterface()>
+  [ 30] pusharglistnoret 1 ...................... <me.getInterface()>
+  [ 32] objcall 558 ............................. me.getInterface().showCatalogWasPublishedDialog()
+  [ 35] pusharglist 0 ........................... <[:]>
+  [ 37] pushproplist ............................ <[:]>
+  [ 38] setprop 322 ............................. pCatalogProps = [:]
+  [ 41] pushcons 27 ............................. <"connection.info.id">
+  [ 43] pusharglist 1 ........................... <"connection.info.id">
+  [ 45] extcall 252 ............................. <getVariable("connection.info.id")>
+  [ 47] pusharglist 1 ........................... <getVariable("connection.info.id")>
+  [ 49] extcall 331 ............................. <connectionExists(getVariable("connection.info.id"))>
+  [ 52] jmpifz [ 97] ............................ if connectionExists(getVariable("connection.info.id")) then
+  [ 55] getparam 0 .............................. <me>
+  [ 57] pusharglist 1 ........................... <me>
+  [ 59] objcall 318 ............................. <me.getLanguage()>
+  [ 62] setlocal 0 .............................. tLanguage = me.getLanguage()
+  [ 64] pushcons 27 ............................. <"connection.info.id">
+  [ 66] pusharglist 1 ........................... <"connection.info.id">
+  [ 68] extcall 252 ............................. <getVariable("connection.info.id")>
+  [ 70] pusharglist 1 ........................... <getVariable("connection.info.id")>
+  [ 72] extcall 332 ............................. <getConnection(getVariable("connection.info.id"))>
+  [ 75] pushcons 30 ............................. <"GCIX">
+  [ 77] pushsymb 89 ............................. <#string>
+  [ 79] pushcons 2 .............................. <"production">
+  [ 81] pushsymb 89 ............................. <#string>
+  [ 83] getlocal 0 .............................. <tLanguage>
+  [ 85] pusharglist 4 ........................... <[#string: "production", #string: tLanguage]>
+  [ 87] pushproplist ............................ <[#string: "production", #string: tLanguage]>
+  [ 88] pusharglist 3 ........................... <getConnection(getVariable("connection.info.id")), "GCIX", [#string: "production", #string: tLanguage]>
+  [ 90] objcall 333 ............................. <getConnection(getVariable("connection.info.id")).send("GCIX", [#string: "production", #string: tLanguage])>
+  [ 93] pusharglistnoret 1 ...................... <getConnection(getVariable("connection.info.id")).send("GCIX", [#string: "production", #string: tLanguage])>
+  [ 95] extcall 43 .............................. return getConnection(getVariable("connection.info.id")).send("GCIX", [#string: "production", #string: tLanguage])
+  [ 97] ret
+end
+
+on saveCataloguePage me, tdata
+  [  0] getparam 1 .............................. <tdata>
+  [  2] getobjprop 135 .......................... <tdata.ilk>
+  [  4] pushsymb 136 ............................ <#propList>
+  [  6] nteq .................................... <tdata.ilk <> #propList>
+  [  7] jmpifz [ 25] ............................ if tdata.ilk <> #propList then
+  [ 10] getparam 0 .............................. <me>
+  [ 12] pushcons 36 ............................. <"Incorrect Catalogue Page Format">
+  [ 14] pushsymb 320 ............................ <#saveCataloguePage>
+  [ 17] pusharglist 3 ........................... <me, "Incorrect Catalogue Page Format", #saveCataloguePage>
+  [ 19] extcall 44 .............................. <error(me, "Incorrect Catalogue Page Format", #saveCataloguePage)>
+  [ 21] pusharglistnoret 1 ...................... <error(me, "Incorrect Catalogue Page Format", #saveCataloguePage)>
+  [ 23] extcall 43 .............................. return error(me, "Incorrect Catalogue Page Format", #saveCataloguePage)
+  [ 25] getparam 1 .............................. <tdata>
+  [ 27] getobjprop 156 .......................... <tdata.count>
+  [ 29] pushzero ................................ <0>
+  [ 30] eq ...................................... <tdata.count = 0>
+  [ 31] jmpifz [ 39] ............................ if tdata.count = 0 then
+  [ 34] pushzero ................................ <0>
+  [ 35] pusharglistnoret 1 ...................... <0>
+  [ 37] extcall 43 .............................. return 0
+  [ 39] getparam 1 .............................. <tdata>
+  [ 41] pushcons 37 ............................. <"id">
+  [ 43] pusharglist 2 ........................... <tdata, "id">
+  [ 45] objcall 82 .............................. <tdata["id"]>
+  [ 47] pusharglist 1 ........................... <tdata["id"]>
+  [ 49] extcall 139 ............................. <voidp(tdata["id"])>
+  [ 51] not ..................................... <not voidp(tdata["id"])>
+  [ 52] jmpifz [113] ............................ if not voidp(tdata["id"]) then / else
+  [ 55] getparam 0 .............................. <me>
+  [ 57] getparam 1 .............................. <tdata>
+  [ 59] pusharglist 2 ........................... <me, tdata>
+  [ 61] objcall 321 ............................. <me.solveCatalogueMembers(tdata)>
+  [ 64] setparam 1 .............................. tdata = me.solveCatalogueMembers(tdata)
+  [ 66] getparam 1 .............................. <tdata>
+  [ 68] pushcons 37 ............................. <"id">
+  [ 70] pusharglist 2 ........................... <tdata, "id">
+  [ 72] objcall 82 .............................. <tdata["id"]>
+  [ 74] setlocal 0 .............................. tPageID = tdata["id"]
+  [ 76] getprop 322 ............................. <pCatalogProps>
+  [ 79] getlocal 0 .............................. <tPageID>
+  [ 81] getparam 1 .............................. <tdata>
+  [ 83] pusharglistnoret 3 ...................... <pCatalogProps, tPageID, tdata>
+  [ 85] objcall 236 ............................. pCatalogProps[tPageID] = tdata
+  [ 87] getprop 322 ............................. <pCatalogProps>
+  [ 90] pushcons 19 ............................. <"lastPageID">
+  [ 92] getlocal 0 .............................. <tPageID>
+  [ 94] pusharglistnoret 3 ...................... <pCatalogProps, "lastPageID", tPageID>
+  [ 96] objcall 236 ............................. pCatalogProps["lastPageID"] = tPageID
+  [ 98] getparam 0 .............................. <me>
+  [100] pusharglist 1 ........................... <me>
+  [102] objcall 123 ............................. <me.getInterface()>
+  [104] getparam 1 .............................. <tdata>
+  [106] pusharglistnoret 2 ...................... <me.getInterface(), tdata>
+  [108] objcall 13 .............................. me.getInterface().cataloguePageData(tdata)
+  [110] jmp [128]
+  [113] getparam 0 .............................. <me>
+  [115] pushcons 38 ............................. <"Catalogue Page ID missing">
+  [117] pushsymb 320 ............................ <#saveCataloguePage>
+  [120] pusharglist 3 ........................... <me, "Catalogue Page ID missing", #saveCataloguePage>
+  [122] extcall 44 .............................. <error(me, "Catalogue Page ID missing", #saveCataloguePage)>
+  [124] pusharglistnoret 1 ...................... <error(me, "Catalogue Page ID missing", #saveCataloguePage)>
+  [126] extcall 43 .............................. return error(me, "Catalogue Page ID missing", #saveCataloguePage)
+  [128] ret
+end
+
+on solveCatalogueMembers me, tdata
+  [  0] getparam 0 .............................. <me>
+  [  2] pusharglist 1 ........................... <me>
+  [  4] objcall 318 ............................. <me.getLanguage()>
+  [  7] setlocal 0 .............................. tLanguage = me.getLanguage()
+  [  9] getparam 1 .............................. <tdata>
+  [ 11] pushcons 39 ............................. <"headerImage">
+  [ 13] pusharglist 2 ........................... <tdata, "headerImage">
+  [ 15] objcall 82 .............................. <tdata["headerImage"]>
+  [ 17] pusharglist 1 ........................... <tdata["headerImage"]>
+  [ 19] extcall 139 ............................. <voidp(tdata["headerImage"])>
+  [ 21] not ..................................... <not voidp(tdata["headerImage"])>
+  [ 22] jmpifz [ 72] ............................ if not voidp(tdata["headerImage"]) then
+  [ 25] getparam 1 .............................. <tdata>
+  [ 27] pushcons 39 ............................. <"headerImage">
+  [ 29] pusharglist 2 ........................... <tdata, "headerImage">
+  [ 31] objcall 82 .............................. <tdata["headerImage"]>
+  [ 33] pusharglist 1 ........................... <tdata["headerImage"]>
+  [ 35] extcall 90 .............................. <memberExists(tdata["headerImage"])>
+  [ 37] jmpifz [ 63] ............................ if memberExists(tdata["headerImage"]) then / else
+  [ 40] getparam 1 .............................. <tdata>
+  [ 42] pushcons 39 ............................. <"headerImage">
+  [ 44] getparam 1 .............................. <tdata>
+  [ 46] pushcons 39 ............................. <"headerImage">
+  [ 48] pusharglist 2 ........................... <tdata, "headerImage">
+  [ 50] objcall 82 .............................. <tdata["headerImage"]>
+  [ 52] pusharglist 1 ........................... <tdata["headerImage"]>
+  [ 54] extcall 194 ............................. <getmemnum(tdata["headerImage"])>
+  [ 56] pusharglistnoret 3 ...................... <tdata, "headerImage", getmemnum(tdata["headerImage"])>
+  [ 58] objcall 236 ............................. tdata["headerImage"] = getmemnum(tdata["headerImage"])
+  [ 60] jmp [ 72]
+  [ 63] getparam 1 .............................. <tdata>
+  [ 65] pushcons 39 ............................. <"headerImage">
+  [ 67] pushzero ................................ <0>
+  [ 68] pusharglistnoret 3 ...................... <tdata, "headerImage", 0>
+  [ 70] objcall 236 ............................. tdata["headerImage"] = 0
+  [ 72] getparam 1 .............................. <tdata>
+  [ 74] pushcons 40 ............................. <"teaserImgList">
+  [ 76] pusharglist 2 ........................... <tdata, "teaserImgList">
+  [ 78] objcall 82 .............................. <tdata["teaserImgList"]>
+  [ 80] pusharglist 1 ........................... <tdata["teaserImgList"]>
+  [ 82] extcall 139 ............................. <voidp(tdata["teaserImgList"])>
+  [ 84] not ..................................... <not voidp(tdata["teaserImgList"])>
+  [ 85] jmpifz [190] ............................ if not voidp(tdata["teaserImgList"]) then
+  [ 88] getparam 1 .............................. <tdata>
+  [ 90] pushcons 40 ............................. <"teaserImgList">
+  [ 92] pusharglist 2 ........................... <tdata, "teaserImgList">
+  [ 94] objcall 82 .............................. <tdata["teaserImgList"]>
+  [ 96] setlocal 1 .............................. tImageNameList = tdata["teaserImgList"]
+  [ 98] pusharglist 0 ........................... <[]>
+  [100] pushlist ................................ <[]>
+  [101] setlocal 2 .............................. tMemList = []
+  [103] getlocal 1 .............................. <tImageNameList>
+  [105] getobjprop 156 .......................... <tImageNameList.count>
+  [107] pushzero ................................ <0>
+  [108] gt ...................................... <tImageNameList.count > 0>
+  [109] jmpifz [180] ............................ if tImageNameList.count > 0 then
+  [112] getlocal 1 .............................. <tImageNameList>
+  [114] peek 0
+  [116] pusharglist 1
+  [118] extcall 156
+  [120] pushint8 1
+  [122] peek 0
+  [124] peek 2
+  [126] lteq
+  [127] jmpifz [178] ............................ repeat with tImg in tImageNameList
+  [130] peek 2
+  [132] peek 1
+  [134] pusharglist 2
+  [136] extcall 82
+  [138] setlocal 3
+  [140] getlocal 3 .............................. <tImg>
+  [142] pusharglist 1 ........................... <tImg>
+  [144] extcall 90 .............................. <memberExists(tImg)>
+  [146] jmpifz [165] ............................ if memberExists(tImg) then
+  [149] getlocal 2 .............................. <tMemList>
+  [151] getlocal 3 .............................. <tImg>
+  [153] pusharglist 1 ........................... <tImg>
+  [155] extcall 194 ............................. <getmemnum(tImg)>
+  [157] pusharglistnoret 2 ...................... <tMemList, getmemnum(tImg)>
+  [159] objcall 340 ............................. tMemList.add(getmemnum(tImg))
+  [162] jmp [173] ............................... next repeat
+  [165] getlocal 2 .............................. <tMemList>
+  [167] pushzero ................................ <0>
+  [168] pusharglistnoret 2 ...................... <tMemList, 0>
+  [170] objcall 340 ............................. tMemList.add(0)
+  [173] pushint8 1
+  [175] add
+  [176] endrepeat [122]
+  [178] pop 3
+  [180] getparam 1 .............................. <tdata>
+  [182] pushcons 40 ............................. <"teaserImgList">
+  [184] getlocal 2 .............................. <tMemList>
+  [186] pusharglistnoret 3 ...................... <tdata, "teaserImgList", tMemList>
+  [188] objcall 236 ............................. tdata["teaserImgList"] = tMemList
+  [190] getparam 1 .............................. <tdata>
+  [192] pushcons 41 ............................. <"productList">
+  [194] pusharglist 2 ........................... <tdata, "productList">
+  [196] objcall 82 .............................. <tdata["productList"]>
+  [198] pusharglist 1 ........................... <tdata["productList"]>
+  [200] extcall 139 ............................. <voidp(tdata["productList"])>
+  [202] not ..................................... <not voidp(tdata["productList"])>
+  [203] jmpifz [646] ............................ if not voidp(tdata["productList"]) then
+  [206] pushint8 1 .............................. <1>
+  [208] setlocal 4
+  [210] getlocal 4
+  [212] getparam 1 .............................. <tdata>
+  [214] pushcons 41 ............................. <"productList">
+  [216] pusharglist 2 ........................... <tdata, "productList">
+  [218] objcall 82 .............................. <tdata["productList"]>
+  [220] getobjprop 156 .......................... <tdata["productList"].count>
+  [222] lteq
+  [223] jmpifz [646] ............................ repeat with f = 1 to tdata["productList"].count
+  [226] getparam 1 .............................. <tdata>
+  [228] pushcons 41 ............................. <"productList">
+  [230] pusharglist 2 ........................... <tdata, "productList">
+  [232] objcall 82 .............................. <tdata["productList"]>
+  [234] getlocal 4 .............................. <f>
+  [236] pusharglist 2 ........................... <tdata["productList"], f>
+  [238] objcall 82 .............................. <tdata["productList"][f]>
+  [240] setlocal 5 .............................. tProductData = tdata["productList"][f]
+  [242] getlocal 5 .............................. <tProductData>
+  [244] pushcons 7 .............................. <"purchaseCode">
+  [246] pusharglist 2 ........................... <tProductData, "purchaseCode">
+  [248] objcall 82 .............................. <tProductData["purchaseCode"]>
+  [250] pusharglist 1 ........................... <tProductData["purchaseCode"]>
+  [252] extcall 139 ............................. <voidp(tProductData["purchaseCode"])>
+  [254] not ..................................... <not voidp(tProductData["purchaseCode"])>
+  [255] jmpifz [430] ............................ if not voidp(tProductData["purchaseCode"]) then
+  [258] pushcons 42 ............................. <"ctlg_pic_">
+  [260] setlocal 6 .............................. tPrewMember = "ctlg_pic_"
+  [262] getlocal 5 .............................. <tProductData>
+  [264] pushcons 7 .............................. <"purchaseCode">
+  [266] pusharglist 2 ........................... <tProductData, "purchaseCode">
+  [268] objcall 82 .............................. <tProductData["purchaseCode"]>
+  [270] setlocal 7 .............................. tPurchaseCode = tProductData["purchaseCode"]
+  [272] getlocal 6 .............................. <tPrewMember>
+  [274] getlocal 7 .............................. <tPurchaseCode>
+  [276] joinstr ................................. <tPrewMember & tPurchaseCode>
+  [277] pusharglist 1 ........................... <tPrewMember & tPurchaseCode>
+  [279] extcall 90 .............................. <memberExists(tPrewMember & tPurchaseCode)>
+  [281] jmpifz [316] ............................ if memberExists(tPrewMember & tPurchaseCode) then / else
+  [284] getparam 1 .............................. <tdata>
+  [286] pushcons 41 ............................. <"productList">
+  [288] pusharglist 2 ........................... <tdata, "productList">
+  [290] objcall 82 .............................. <tdata["productList"]>
+  [292] getlocal 4 .............................. <f>
+  [294] pusharglist 2 ........................... <tdata["productList"], f>
+  [296] objcall 82 .............................. <tdata["productList"][f]>
+  [298] pushcons 43 ............................. <"prewImage">
+  [300] getlocal 6 .............................. <tPrewMember>
+  [302] getlocal 7 .............................. <tPurchaseCode>
+  [304] joinstr ................................. <tPrewMember & tPurchaseCode>
+  [305] pusharglist 1 ........................... <tPrewMember & tPurchaseCode>
+  [307] extcall 194 ............................. <getmemnum(tPrewMember & tPurchaseCode)>
+  [309] pusharglistnoret 3 ...................... <tdata["productList"][f], "prewImage", getmemnum(tPrewMember & tPurchaseCode)>
+  [311] objcall 236 ............................. tdata["productList"][f]["prewImage"] = getmemnum(tPrewMember & tPurchaseCode)
+  [313] jmp [337]
+  [316] getparam 1 .............................. <tdata>
+  [318] pushcons 41 ............................. <"productList">
+  [320] pusharglist 2 ........................... <tdata, "productList">
+  [322] objcall 82 .............................. <tdata["productList"]>
+  [324] getlocal 4 .............................. <f>
+  [326] pusharglist 2 ........................... <tdata["productList"], f>
+  [328] objcall 82 .............................. <tdata["productList"][f]>
+  [330] pushcons 43 ............................. <"prewImage">
+  [332] pushzero ................................ <0>
+  [333] pusharglistnoret 3 ...................... <tdata["productList"][f], "prewImage", 0>
+  [335] objcall 236 ............................. tdata["productList"][f]["prewImage"] = 0
+  [337] getparam 1 .............................. <tdata>
+  [339] pushcons 41 ............................. <"productList">
+  [341] pusharglist 2 ........................... <tdata, "productList">
+  [343] objcall 82 .............................. <tdata["productList"]>
+  [345] getlocal 4 .............................. <f>
+  [347] pusharglist 2 ........................... <tdata["productList"], f>
+  [349] objcall 82 .............................. <tdata["productList"][f]>
+  [351] pushcons 44 ............................. <"smallColorFlag">
+  [353] pushint8 1 .............................. <1>
+  [355] pusharglistnoret 3 ...................... <tdata["productList"][f], "smallColorFlag", 1>
+  [357] objcall 236 ............................. tdata["productList"][f]["smallColorFlag"] = 1
+  [359] getlocal 6 .............................. <tPrewMember>
+  [361] pushcons 45 ............................. <"small_">
+  [363] joinstr ................................. <tPrewMember & "small_">
+  [364] getlocal 7 .............................. <tPurchaseCode>
+  [366] joinstr ................................. <tPrewMember & "small_" & tPurchaseCode>
+  [367] pusharglist 1 ........................... <tPrewMember & "small_" & tPurchaseCode>
+  [369] extcall 90 .............................. <memberExists(tPrewMember & "small_" & tPurchaseCode)>
+  [371] jmpifz [409] ............................ if memberExists(tPrewMember & "small_" & tPurchaseCode) then / else
+  [374] getparam 1 .............................. <tdata>
+  [376] pushcons 41 ............................. <"productList">
+  [378] pusharglist 2 ........................... <tdata, "productList">
+  [380] objcall 82 .............................. <tdata["productList"]>
+  [382] getlocal 4 .............................. <f>
+  [384] pusharglist 2 ........................... <tdata["productList"], f>
+  [386] objcall 82 .............................. <tdata["productList"][f]>
+  [388] pushcons 46 ............................. <"smallPrewImg">
+  [390] getlocal 6 .............................. <tPrewMember>
+  [392] pushcons 45 ............................. <"small_">
+  [394] joinstr ................................. <tPrewMember & "small_">
+  [395] getlocal 7 .............................. <tPurchaseCode>
+  [397] joinstr ................................. <tPrewMember & "small_" & tPurchaseCode>
+  [398] pusharglist 1 ........................... <tPrewMember & "small_" & tPurchaseCode>
+  [400] extcall 194 ............................. <getmemnum(tPrewMember & "small_" & tPurchaseCode)>
+  [402] pusharglistnoret 3 ...................... <tdata["productList"][f], "smallPrewImg", getmemnum(tPrewMember & "small_" & tPurchaseCode)>
+  [404] objcall 236 ............................. tdata["productList"][f]["smallPrewImg"] = getmemnum(tPrewMember & "small_" & tPurchaseCode)
+  [406] jmp [430]
+  [409] getparam 1 .............................. <tdata>
+  [411] pushcons 41 ............................. <"productList">
+  [413] pusharglist 2 ........................... <tdata, "productList">
+  [415] objcall 82 .............................. <tdata["productList"]>
+  [417] getlocal 4 .............................. <f>
+  [419] pusharglist 2 ........................... <tdata["productList"], f>
+  [421] objcall 82 .............................. <tdata["productList"][f]>
+  [423] pushcons 46 ............................. <"smallPrewImg">
+  [425] pushzero ................................ <0>
+  [426] pusharglistnoret 3 ...................... <tdata["productList"][f], "smallPrewImg", 0>
+  [428] objcall 236 ............................. tdata["productList"][f]["smallPrewImg"] = 0
+  [430] getlocal 5 .............................. <tProductData>
+  [432] pushcons 47 ............................. <"class">
+  [434] pusharglist 2 ........................... <tProductData, "class">
+  [436] objcall 82 .............................. <tProductData["class"]>
+  [438] pusharglist 1 ........................... <tProductData["class"]>
+  [440] extcall 139 ............................. <voidp(tProductData["class"])>
+  [442] not ..................................... <not voidp(tProductData["class"])>
+  [443] jmpifz [636] ............................ if not voidp(tProductData["class"]) then
+  [446] getlocal 5 .............................. <tProductData>
+  [448] pushcons 47 ............................. <"class">
+  [450] pusharglist 2 ........................... <tProductData, "class">
+  [452] objcall 82 .............................. <tProductData["class"]>
+  [454] setlocal 8 .............................. tClass = tProductData["class"]
+  [456] getlocal 8 .............................. <tClass>
+  [458] pushcons 48 ............................. <"*">
+  [460] containsstr ............................. <tClass contains "*">
+  [461] jmpifz [540] ............................ if tClass contains "*" then / else
+  [464] getlocal 8 .............................. <tClass>
+  [466] pushcons 49 ............................. <"_small">
+  [468] joinstr ................................. <tClass & "_small">
+  [469] setlocal 9 .............................. tSmallMem = tClass & "_small"
+  [471] getlocal 8 .............................. <tClass>
+  [473] pushsymb 341 ............................ <#char>
+  [476] pushint8 1 .............................. <1>
+  [478] pushcons 48 ............................. <"*">
+  [480] getlocal 8 .............................. <tClass>
+  [482] pusharglist 2 ........................... <"*", tClass>
+  [484] extcall 342 ............................. <offset("*", tClass)>
+  [487] pushint8 1 .............................. <1>
+  [489] sub ..................................... <offset("*", tClass) - 1>
+  [490] pusharglist 4 ........................... <tClass, #char, 1, offset("*", tClass) - 1>
+  [492] objcall 159 ............................. <tClass.char[1..offset("*", tClass) - 1]>
+  [494] setlocal 8 .............................. tClass = tClass.char[1..offset("*", tClass) - 1]
+  [496] getlocal 9 .............................. <tSmallMem>
+  [498] pusharglist 1 ........................... <tSmallMem>
+  [500] extcall 90 .............................. <memberExists(tSmallMem)>
+  [502] not ..................................... <not memberExists(tSmallMem)>
+  [503] jmpifz [516] ............................ if not memberExists(tSmallMem) then / else
+  [506] getlocal 8 .............................. <tClass>
+  [508] pushcons 49 ............................. <"_small">
+  [510] joinstr ................................. <tClass & "_small">
+  [511] setlocal 9 .............................. tSmallMem = tClass & "_small"
+  [513] jmp [537]
+  [516] getparam 1 .............................. <tdata>
+  [518] pushcons 41 ............................. <"productList">
+  [520] pusharglist 2 ........................... <tdata, "productList">
+  [522] objcall 82 .............................. <tdata["productList"]>
+  [524] getlocal 4 .............................. <f>
+  [526] pusharglist 2 ........................... <tdata["productList"], f>
+  [528] objcall 82 .............................. <tdata["productList"][f]>
+  [530] pushcons 44 ............................. <"smallColorFlag">
+  [532] pushzero ................................ <0>
+  [533] pusharglistnoret 3 ...................... <tdata["productList"][f], "smallColorFlag", 0>
+  [535] objcall 236 ............................. tdata["productList"][f]["smallColorFlag"] = 0
+  [537] jmp [547]
+  [540] getlocal 8 .............................. <tClass>
+  [542] pushcons 49 ............................. <"_small">
+  [544] joinstr ................................. <tClass & "_small">
+  [545] setlocal 9 .............................. tSmallMem = tClass & "_small"
+  [547] getparam 1 .............................. <tdata>
+  [549] pushcons 41 ............................. <"productList">
+  [551] pusharglist 2 ........................... <tdata, "productList">
+  [553] objcall 82 .............................. <tdata["productList"]>
+  [555] getlocal 4 .............................. <f>
+  [557] pusharglist 2 ........................... <tdata["productList"], f>
+  [559] objcall 82 .............................. <tdata["productList"][f]>
+  [561] pushcons 46 ............................. <"smallPrewImg">
+  [563] pusharglist 2 ........................... <tdata["productList"][f], "smallPrewImg">
+  [565] objcall 82 .............................. <tdata["productList"][f]["smallPrewImg"]>
+  [567] pushzero ................................ <0>
+  [568] eq ...................................... <tdata["productList"][f]["smallPrewImg"] = 0>
+  [569] jmpifz [636] ............................ if tdata["productList"][f]["smallPrewImg"] = 0 then
+  [572] getlocal 9 .............................. <tSmallMem>
+  [574] pusharglist 1 ........................... <tSmallMem>
+  [576] extcall 90 .............................. <memberExists(tSmallMem)>
+  [578] jmpifz [610] ............................ if memberExists(tSmallMem) then
+  [581] getparam 1 .............................. <tdata>
+  [583] pushcons 41 ............................. <"productList">
+  [585] pusharglist 2 ........................... <tdata, "productList">
+  [587] objcall 82 .............................. <tdata["productList"]>
+  [589] getlocal 4 .............................. <f>
+  [591] pusharglist 2 ........................... <tdata["productList"], f>
+  [593] objcall 82 .............................. <tdata["productList"][f]>
+  [595] pushcons 46 ............................. <"smallPrewImg">
+  [597] getlocal 9 .............................. <tSmallMem>
+  [599] pusharglist 1 ........................... <tSmallMem>
+  [601] extcall 194 ............................. <getmemnum(tSmallMem)>
+  [603] pusharglistnoret 3 ...................... <tdata["productList"][f], "smallPrewImg", getmemnum(tSmallMem)>
+  [605] objcall 236 ............................. tdata["productList"][f]["smallPrewImg"] = getmemnum(tSmallMem)
+  [607] jmp [636] ............................... next repeat
+  [610] getparam 1 .............................. <tdata>
+  [612] pushcons 41 ............................. <"productList">
+  [614] pusharglist 2 ........................... <tdata, "productList">
+  [616] objcall 82 .............................. <tdata["productList"]>
+  [618] getlocal 4 .............................. <f>
+  [620] pusharglist 2 ........................... <tdata["productList"], f>
+  [622] objcall 82 .............................. <tdata["productList"][f]>
+  [624] pushcons 46 ............................. <"smallPrewImg">
+  [626] pushcons 50 ............................. <"no_icon_small">
+  [628] pusharglist 1 ........................... <"no_icon_small">
+  [630] extcall 194 ............................. <getmemnum("no_icon_small")>
+  [632] pusharglistnoret 3 ...................... <tdata["productList"][f], "smallPrewImg", getmemnum("no_icon_small")>
+  [634] objcall 236 ............................. tdata["productList"][f]["smallPrewImg"] = getmemnum("no_icon_small")
+  [636] pushint8 1
+  [638] getlocal 4
+  [640] add
+  [641] setlocal 4
+  [643] endrepeat [210]
+  [646] getparam 1 .............................. <tdata>
+  [648] pusharglistnoret 1 ...................... <tdata>
+  [650] extcall 43 .............................. return tdata
+  [652] ret
+end

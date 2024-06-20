@@ -1,0 +1,438 @@
+property pInviteIndex, pInviteList, pUpdateCounter
+
+on construct me
+  [  0] pusharglist 0 ........................... <[]>
+  [  2] pushlist ................................ <[]>
+  [  3] setprop 1223 ............................ pInviteIndex = []
+  [  6] pusharglist 0 ........................... <[:]>
+  [  8] pushproplist ............................ <[:]>
+  [  9] setprop 1224 ............................ pInviteList = [:]
+  [ 12] pushint8 1 .............................. <1>
+  [ 14] pusharglistnoret 1 ...................... <1>
+  [ 16] extcall 38 .............................. return 1
+  [ 18] ret
+end
+
+on deconstruct me
+  [  0] pusharglist 0 ........................... <[]>
+  [  2] pushlist ................................ <[]>
+  [  3] setprop 1223 ............................ pInviteIndex = []
+  [  6] pusharglist 0 ........................... <[:]>
+  [  8] pushproplist ............................ <[:]>
+  [  9] setprop 1224 ............................ pInviteList = [:]
+  [ 12] getparam 0 .............................. <me>
+  [ 14] getchainedprop 470 ...................... <me.ancestor>
+  [ 17] pusharglist 1 ........................... <me.ancestor>
+  [ 19] objcall 1 ............................... <me.ancestor.deconstruct()>
+  [ 21] pusharglistnoret 1 ...................... <me.ancestor.deconstruct()>
+  [ 23] extcall 38 .............................. return me.ancestor.deconstruct()
+  [ 25] ret
+end
+
+on update me
+  [  0] getmovieprop 457 ........................ <the milliSeconds>
+  [  3] getprop 679 ............................. <pUpdateCounter>
+  [  6] sub ..................................... <the milliSeconds - pUpdateCounter>
+  [  7] pushint16 1000 .......................... <1000>
+  [ 10] lt ...................................... <(the milliSeconds - pUpdateCounter) < 1000>
+  [ 11] jmpifz [ 20] ............................ if (the milliSeconds - pUpdateCounter) < 1000 then
+  [ 14] pushint8 1 .............................. <1>
+  [ 16] pusharglistnoret 1 ...................... <1>
+  [ 18] extcall 38 .............................. return 1
+  [ 20] getmovieprop 457 ........................ <the milliSeconds>
+  [ 23] setprop 679 ............................. pUpdateCounter = the milliSeconds
+  [ 26] getparam 0 .............................. <me>
+  [ 28] pusharglistnoret 1 ...................... <me>
+  [ 30] objcall 1212 ............................ me.updateExpirationTimers()
+  [ 33] pushint8 1 .............................. <1>
+  [ 35] pusharglistnoret 1 ...................... <1>
+  [ 37] extcall 38 .............................. return 1
+  [ 39] ret
+end
+
+on updateExpirationTimers me
+  [  0] getprop 1224 ............................ <pInviteList>
+  [  3] getobjprop 180 .......................... <pInviteList.count>
+  [  5] pushzero ................................ <0>
+  [  6] eq ...................................... <pInviteList.count = 0>
+  [  7] jmpifz [ 16] ............................ if pInviteList.count = 0 then
+  [ 10] pushint8 1 .............................. <1>
+  [ 12] pusharglistnoret 1 ...................... <1>
+  [ 14] extcall 38 .............................. return 1
+  [ 16] pusharglist 0 ........................... <[]>
+  [ 18] pushlist ................................ <[]>
+  [ 19] setlocal 0 .............................. tPurgeList = []
+  [ 21] pushint8 1 .............................. <1>
+  [ 23] setlocal 1
+  [ 25] getlocal 1
+  [ 27] getprop 1224 ............................ <pInviteList>
+  [ 30] getobjprop 180 .......................... <pInviteList.count>
+  [ 32] lteq
+  [ 33] jmpifz [114] ............................ repeat with i = 1 to pInviteList.count
+  [ 36] getprop 1224 ............................ <pInviteList>
+  [ 39] getlocal 1 .............................. <i>
+  [ 41] pusharglist 2 ........................... <pInviteList, i>
+  [ 43] objcall 181 ............................. <pInviteList[i]>
+  [ 45] setlocal 2 .............................. tItem = pInviteList[i]
+  [ 47] getlocal 2 .............................. <tItem>
+  [ 49] pushsymb 1225 ........................... <#expires_msec>
+  [ 52] pusharglist 2 ........................... <tItem, #expires_msec>
+  [ 54] objcall 256 ............................. <tItem.getaProp(#expires_msec)>
+  [ 57] setlocal 3 .............................. tExpires = tItem.getaProp(#expires_msec)
+  [ 59] getlocal 3 .............................. <tExpires>
+  [ 61] getmovieprop 457 ........................ <the milliSeconds>
+  [ 64] sub ..................................... <tExpires - the milliSeconds>
+  [ 65] pushint16 1000 .......................... <1000>
+  [ 68] div ..................................... <(tExpires - the milliSeconds) / 1000>
+  [ 69] setlocal 4 .............................. tSeconds = (tExpires - the milliSeconds) / 1000
+  [ 71] getlocal 2 .............................. <tItem>
+  [ 73] pushsymb 1226 ........................... <#seconds_valid>
+  [ 76] getlocal 4 .............................. <tSeconds>
+  [ 78] pusharglistnoret 3 ...................... <tItem, #seconds_valid, tSeconds>
+  [ 80] objcall 220 ............................. tItem.setaProp(#seconds_valid, tSeconds)
+  [ 82] getlocal 4 .............................. <tSeconds>
+  [ 84] pushint8 1 .............................. <1>
+  [ 86] lt ...................................... <tSeconds < 1>
+  [ 87] jmpifz [105] ............................ if tSeconds < 1 then
+  [ 90] getlocal 0 .............................. <tPurgeList>
+  [ 92] getlocal 2 .............................. <tItem>
+  [ 94] pushsymb 214 ............................ <#id>
+  [ 96] pusharglist 2 ........................... <tItem, #id>
+  [ 98] objcall 256 ............................. <tItem.getaProp(#id)>
+  [101] pusharglistnoret 2 ...................... <tPurgeList, tItem.getaProp(#id)>
+  [103] objcall 224 ............................. tPurgeList.append(tItem.getaProp(#id))
+  [105] pushint8 1
+  [107] getlocal 1
+  [109] add
+  [110] setlocal 1
+  [112] endrepeat [ 25]
+  [114] getlocal 0 .............................. <tPurgeList>
+  [116] peek 0
+  [118] pusharglist 1
+  [120] extcall 180
+  [122] pushint8 1
+  [124] peek 0
+  [126] peek 2
+  [128] lteq
+  [129] jmpifz [157] ............................ repeat with tID in tPurgeList
+  [132] peek 2
+  [134] peek 1
+  [136] pusharglist 2
+  [138] extcall 181
+  [140] setlocal 5
+  [142] getparam 0 .............................. <me>
+  [144] getlocal 5 .............................. <tID>
+  [146] pushzero ................................ <0>
+  [147] pusharglistnoret 3 ...................... <me, tID, 0>
+  [149] objcall 1215 ............................ me.removeInvitation(tID, 0)
+  [152] pushint8 1
+  [154] add
+  [155] endrepeat [124]
+  [157] pop 3
+  [159] getlocal 0 .............................. <tPurgeList>
+  [161] getobjprop 180 .......................... <tPurgeList.count>
+  [163] pushzero ................................ <0>
+  [164] eq ...................................... <tPurgeList.count = 0>
+  [165] getprop 1224 ............................ <pInviteList>
+  [168] getobjprop 180 .......................... <pInviteList.count>
+  [170] pushzero ................................ <0>
+  [171] eq ...................................... <pInviteList.count = 0>
+  [172] and ..................................... <(tPurgeList.count = 0) and (pInviteList.count = 0)>
+  [173] jmpifz [182] ............................ if (tPurgeList.count = 0) and (pInviteList.count = 0) then
+  [176] pushint8 1 .............................. <1>
+  [178] pusharglistnoret 1 ...................... <1>
+  [180] extcall 38 .............................. return 1
+  [182] getparam 0 .............................. <me>
+  [184] pusharglist 1 ........................... <me>
+  [186] objcall 64 .............................. <me.getRenderer()>
+  [188] setlocal 6 .............................. tRenderObj = me.getRenderer()
+  [190] getlocal 6 .............................. <tRenderObj>
+  [192] pushzero ................................ <0>
+  [193] eq ...................................... <tRenderObj = 0>
+  [194] jmpifz [202] ............................ if tRenderObj = 0 then
+  [197] pushzero ................................ <0>
+  [198] pusharglistnoret 1 ...................... <0>
+  [200] extcall 38 .............................. return 0
+  [202] getlocal 0 .............................. <tPurgeList>
+  [204] getobjprop 180 .......................... <tPurgeList.count>
+  [206] pushzero ................................ <0>
+  [207] eq ...................................... <tPurgeList.count = 0>
+  [208] jmpifz [238] ............................ if tPurgeList.count = 0 then / else
+  [211] getlocal 6 .............................. <tRenderObj>
+  [213] getprop 1224 ............................ <pInviteList>
+  [216] pushint8 1 .............................. <1>
+  [218] pusharglist 2 ........................... <pInviteList, 1>
+  [220] objcall 181 ............................. <pInviteList[1]>
+  [222] pushsymb 1226 ........................... <#seconds_valid>
+  [225] pusharglist 2 ........................... <pInviteList[1], #seconds_valid>
+  [227] objcall 256 ............................. <pInviteList[1].getaProp(#seconds_valid)>
+  [230] pusharglistnoret 2 ...................... <tRenderObj, pInviteList[1].getaProp(#seconds_valid)>
+  [232] objcall 1227 ............................ tRenderObj.refreshFirstTimer(pInviteList[1].getaProp(#seconds_valid))
+  [235] jmp [244]
+  [238] getlocal 6 .............................. <tRenderObj>
+  [240] pusharglistnoret 1 ...................... <tRenderObj>
+  [242] objcall 76 .............................. tRenderObj.renderSubComponents()
+  [244] pushint8 1 .............................. <1>
+  [246] pusharglistnoret 1 ...................... <1>
+  [248] extcall 38 .............................. return 1
+  [250] ret
+end
+
+on setAsFirstEntry me, tGameId
+  [  0] getparam 1 .............................. <tGameId>
+  [  2] pusharglist 0 ........................... <>
+  [  4] extcall 47 .............................. <VOID>
+  [  6] eq ...................................... <tGameId = VOID>
+  [  7] jmpifz [ 15] ............................ if tGameId = VOID then
+  [ 10] pushzero ................................ <0>
+  [ 11] pusharglistnoret 1 ...................... <0>
+  [ 13] extcall 38 .............................. return 0
+  [ 15] getprop 1223 ............................ <pInviteIndex>
+  [ 18] getparam 1 .............................. <tGameId>
+  [ 20] pusharglist 2 ........................... <pInviteIndex, tGameId>
+  [ 22] objcall 255 ............................. <pInviteIndex.findPos(tGameId)>
+  [ 24] pushzero ................................ <0>
+  [ 25] eq ...................................... <pInviteIndex.findPos(tGameId) = 0>
+  [ 26] jmpifz [ 34] ............................ if pInviteIndex.findPos(tGameId) = 0 then
+  [ 29] pushzero ................................ <0>
+  [ 30] pusharglistnoret 1 ...................... <0>
+  [ 32] extcall 38 .............................. return 0
+  [ 34] getprop 1223 ............................ <pInviteIndex>
+  [ 37] getparam 1 .............................. <tGameId>
+  [ 39] pusharglistnoret 2 ...................... <pInviteIndex, tGameId>
+  [ 41] objcall 447 ............................. pInviteIndex.deleteOne(tGameId)
+  [ 44] getprop 1223 ............................ <pInviteIndex>
+  [ 47] pushint8 1 .............................. <1>
+  [ 49] getparam 1 .............................. <tGameId>
+  [ 51] pusharglistnoret 3 ...................... <pInviteIndex, 1, tGameId>
+  [ 53] objcall 510 ............................. pInviteIndex.addAt(1, tGameId)
+  [ 56] getparam 0 .............................. <me>
+  [ 58] pusharglist 1 ........................... <me>
+  [ 60] objcall 64 .............................. <me.getRenderer()>
+  [ 62] setlocal 0 .............................. tRenderObj = me.getRenderer()
+  [ 64] getlocal 0 .............................. <tRenderObj>
+  [ 66] pushzero ................................ <0>
+  [ 67] eq ...................................... <tRenderObj = 0>
+  [ 68] jmpifz [ 76] ............................ if tRenderObj = 0 then
+  [ 71] pushzero ................................ <0>
+  [ 72] pusharglistnoret 1 ...................... <0>
+  [ 74] extcall 38 .............................. return 0
+  [ 76] getlocal 0 .............................. <tRenderObj>
+  [ 78] pusharglistnoret 1 ...................... <tRenderObj>
+  [ 80] objcall 76 .............................. tRenderObj.renderSubComponents()
+  [ 82] pushint8 1 .............................. <1>
+  [ 84] pusharglistnoret 1 ...................... <1>
+  [ 86] extcall 38 .............................. return 1
+  [ 88] ret
+end
+
+on storeGameInvitation me, tdata
+  [  0] pushint8 1 .............................. <1>
+  [  2] pusharglistnoret 1 ...................... <1>
+  [  4] extcall 38 .............................. return 1
+  [  6] ret
+end
+
+on removeInvitation me, tGameId, tRenderFlag
+  [  0] pushcons 0 .............................. <"* removeInvitation">
+  [  2] getparam 1 .............................. <tGameId>
+  [  4] joinpadstr .............................. <"* removeInvitation" && tGameId>
+  [  5] getparam 2 .............................. <tRenderFlag>
+  [  7] joinpadstr .............................. <"* removeInvitation" && tGameId && tRenderFlag>
+  [  8] pusharglistnoret 1 ...................... <"* removeInvitation" && tGameId && tRenderFlag>
+  [ 10] extcall 174 ............................. put "* removeInvitation" && tGameId && tRenderFlag
+  [ 12] pushint8 1 .............................. <1>
+  [ 14] pusharglistnoret 1 ...................... <1>
+  [ 16] extcall 38 .............................. return 1
+  [ 18] ret
+end
+
+on declineAllInvitations me
+  [  0] pushcons 1 .............................. <"* declineAllInvitations">
+  [  2] pusharglistnoret 1 ...................... <"* declineAllInvitations">
+  [  4] extcall 174 ............................. put "* declineAllInvitations"
+  [  6] getparam 0 .............................. <me>
+  [  8] pusharglist 1 ........................... <me>
+  [ 10] objcall 419 ............................. <me.getMainThread()>
+  [ 13] setlocal 0 .............................. tMainThread = me.getMainThread()
+  [ 15] getlocal 0 .............................. <tMainThread>
+  [ 17] pushzero ................................ <0>
+  [ 18] eq ...................................... <tMainThread = 0>
+  [ 19] jmpifz [ 27] ............................ if tMainThread = 0 then
+  [ 22] pushzero ................................ <0>
+  [ 23] pusharglistnoret 1 ...................... <0>
+  [ 25] extcall 38 .............................. return 0
+  [ 27] getlocal 0 .............................. <tMainThread>
+  [ 29] pusharglist 1 ........................... <tMainThread>
+  [ 31] objcall 100 ............................. <tMainThread.getHandler()>
+  [ 33] setlocal 1 .............................. tHandler = tMainThread.getHandler()
+  [ 35] getprop 1223 ............................ <pInviteIndex>
+  [ 38] peek 0
+  [ 40] pusharglist 1
+  [ 42] extcall 180
+  [ 44] pushint8 1
+  [ 46] peek 0
+  [ 48] peek 2
+  [ 50] lteq
+  [ 51] jmpifz [ 77] ............................ repeat with tGameId in pInviteIndex
+  [ 54] peek 2
+  [ 56] peek 1
+  [ 58] pusharglist 2
+  [ 60] extcall 181
+  [ 62] setlocal 2
+  [ 64] getlocal 1 .............................. <tHandler>
+  [ 66] getlocal 2 .............................. <tGameId>
+  [ 68] pusharglistnoret 2 ...................... <tHandler, tGameId>
+  [ 70] objcall 138 ............................. tHandler.send_DECLINE_INVITE_REQUEST(tGameId)
+  [ 72] pushint8 1
+  [ 74] add
+  [ 75] endrepeat [ 46]
+  [ 77] pop 3
+  [ 79] pusharglist 0 ........................... <[:]>
+  [ 81] pushproplist ............................ <[:]>
+  [ 82] setprop 1224 ............................ pInviteList = [:]
+  [ 85] pusharglist 0 ........................... <[]>
+  [ 87] pushlist ................................ <[]>
+  [ 88] setprop 1223 ............................ pInviteIndex = []
+  [ 91] pushint8 1 .............................. <1>
+  [ 93] pusharglistnoret 1 ...................... <1>
+  [ 95] extcall 38 .............................. return 1
+  [ 97] ret
+end
+
+on invitationDeclined me, tGameId
+  [  0] getparam 0 .............................. <me>
+  [  2] getparam 1 .............................. <tGameId>
+  [  4] pushint8 1 .............................. <1>
+  [  6] pusharglistnoret 3 ...................... <me, tGameId, 1>
+  [  8] objcall 1215 ............................ me.removeInvitation(tGameId, 1)
+  [ 11] getparam 0 .............................. <me>
+  [ 13] pusharglist 1 ........................... <me>
+  [ 15] objcall 419 ............................. <me.getMainThread()>
+  [ 18] setlocal 0 .............................. tMainThread = me.getMainThread()
+  [ 20] getlocal 0 .............................. <tMainThread>
+  [ 22] pushzero ................................ <0>
+  [ 23] eq ...................................... <tMainThread = 0>
+  [ 24] jmpifz [ 32] ............................ if tMainThread = 0 then
+  [ 27] pushzero ................................ <0>
+  [ 28] pusharglistnoret 1 ...................... <0>
+  [ 30] extcall 38 .............................. return 0
+  [ 32] getlocal 0 .............................. <tMainThread>
+  [ 34] pusharglist 1 ........................... <tMainThread>
+  [ 36] objcall 100 ............................. <tMainThread.getHandler()>
+  [ 38] getparam 1 .............................. <tGameId>
+  [ 40] pusharglist 2 ........................... <tMainThread.getHandler(), tGameId>
+  [ 42] objcall 138 ............................. <tMainThread.getHandler().send_DECLINE_INVITE_REQUEST(tGameId)>
+  [ 44] pusharglistnoret 1 ...................... <tMainThread.getHandler().send_DECLINE_INVITE_REQUEST(tGameId)>
+  [ 46] extcall 38 .............................. return tMainThread.getHandler().send_DECLINE_INVITE_REQUEST(tGameId)
+  [ 48] ret
+end
+
+on invitationAccepted me, tGameId, tTeamIndex
+  [  0] pushcons 2 .............................. <"* invitationAccepted, join team">
+  [  2] getparam 2 .............................. <tTeamIndex>
+  [  4] joinpadstr .............................. <"* invitationAccepted, join team" && tTeamIndex>
+  [  5] pusharglistnoret 1 ...................... <"* invitationAccepted, join team" && tTeamIndex>
+  [  7] extcall 174 ............................. put "* invitationAccepted, join team" && tTeamIndex
+  [  9] getparam 0 .............................. <me>
+  [ 11] getparam 1 .............................. <tGameId>
+  [ 13] pushzero ................................ <0>
+  [ 14] pusharglistnoret 3 ...................... <me, tGameId, 0>
+  [ 16] objcall 1215 ............................ me.removeInvitation(tGameId, 0)
+  [ 19] getparam 0 .............................. <me>
+  [ 21] pushcons 3 .............................. <"GameList">
+  [ 23] pusharglistnoret 2 ...................... <me, "GameList">
+  [ 25] objcall 11 .............................. me.ChangeWindowView("GameList")
+  [ 27] getparam 0 .............................. <me>
+  [ 29] pushcons 3 .............................. <"GameList">
+  [ 31] pusharglist 2 ........................... <me, "GameList">
+  [ 33] objcall 52 .............................. <me.getIGComponent("GameList")>
+  [ 35] setlocal 0 .............................. tListService = me.getIGComponent("GameList")
+  [ 37] getlocal 0 .............................. <tListService>
+  [ 39] getparam 1 .............................. <tGameId>
+  [ 41] getparam 2 .............................. <tTeamIndex>
+  [ 43] pusharglistnoret 3 ...................... <tListService, tGameId, tTeamIndex>
+  [ 45] objcall 748 ............................. tListService.setJoinedGameId(tGameId, tTeamIndex)
+  [ 48] getparam 0 .............................. <me>
+  [ 50] pusharglist 1 ........................... <me>
+  [ 52] objcall 1216 ............................ <me.declineAllInvitations()>
+  [ 55] pusharglistnoret 1 ...................... <me.declineAllInvitations()>
+  [ 57] extcall 38 .............................. return me.declineAllInvitations()
+  [ 59] ret
+end
+
+on getInvitationCount me
+  [  0] getprop 1223 ............................ <pInviteIndex>
+  [  3] getobjprop 180 .......................... <pInviteIndex.count>
+  [  5] pusharglistnoret 1 ...................... <pInviteIndex.count>
+  [  7] extcall 38 .............................. return pInviteIndex.count
+  [  9] ret
+end
+
+on getEntry me, tGameId
+  [  0] getparam 1 .............................. <tGameId>
+  [  2] pusharglist 1 ........................... <tGameId>
+  [  4] extcall 103 ............................. <voidp(tGameId)>
+  [  6] jmpifz [ 14] ............................ if voidp(tGameId) then
+  [  9] pushzero ................................ <0>
+  [ 10] pusharglistnoret 1 ...................... <0>
+  [ 12] extcall 38 .............................. return 0
+  [ 14] getprop 1224 ............................ <pInviteList>
+  [ 17] getparam 1 .............................. <tGameId>
+  [ 19] pusharglist 2 ........................... <pInviteList, tGameId>
+  [ 21] objcall 256 ............................. <pInviteList.getaProp(tGameId)>
+  [ 24] pusharglistnoret 1 ...................... <pInviteList.getaProp(tGameId)>
+  [ 26] extcall 38 .............................. return pInviteList.getaProp(tGameId)
+  [ 28] ret
+end
+
+on getEntryByIndex me, tIndex
+  [  0] getparam 1 .............................. <tIndex>
+  [  2] pusharglist 0 ........................... <>
+  [  4] extcall 47 .............................. <VOID>
+  [  6] eq ...................................... <tIndex = VOID>
+  [  7] jmpifz [ 15] ............................ if tIndex = VOID then
+  [ 10] pushzero ................................ <0>
+  [ 11] pusharglistnoret 1 ...................... <0>
+  [ 13] extcall 38 .............................. return 0
+  [ 15] getparam 1 .............................. <tIndex>
+  [ 17] getprop 1223 ............................ <pInviteIndex>
+  [ 20] getobjprop 180 .......................... <pInviteIndex.count>
+  [ 22] gt ...................................... <tIndex > pInviteIndex.count>
+  [ 23] jmpifz [ 31] ............................ if tIndex > pInviteIndex.count then
+  [ 26] pushzero ................................ <0>
+  [ 27] pusharglistnoret 1 ...................... <0>
+  [ 29] extcall 38 .............................. return 0
+  [ 31] getprop 1224 ............................ <pInviteList>
+  [ 34] getprop 1223 ............................ <pInviteIndex>
+  [ 37] getparam 1 .............................. <tIndex>
+  [ 39] pusharglist 2 ........................... <pInviteIndex, tIndex>
+  [ 41] objcall 181 ............................. <pInviteIndex[tIndex]>
+  [ 43] pusharglist 2 ........................... <pInviteList, pInviteIndex[tIndex]>
+  [ 45] objcall 256 ............................. <pInviteList.getaProp(pInviteIndex[tIndex])>
+  [ 48] pusharglistnoret 1 ...................... <pInviteList.getaProp(pInviteIndex[tIndex])>
+  [ 50] extcall 38 .............................. return pInviteList.getaProp(pInviteIndex[tIndex])
+  [ 52] ret
+end
+
+on getGameByIndex me, tIndex
+  [  0] getparam 0 .............................. <me>
+  [  2] getparam 1 .............................. <tIndex>
+  [  4] pusharglist 2 ........................... <me, tIndex>
+  [  6] objcall 1221 ............................ <me.getEntryByIndex(tIndex)>
+  [  9] setlocal 0 .............................. tInfo = me.getEntryByIndex(tIndex)
+  [ 11] getlocal 0 .............................. <tInfo>
+  [ 13] pushzero ................................ <0>
+  [ 14] eq ...................................... <tInfo = 0>
+  [ 15] jmpifz [ 23] ............................ if tInfo = 0 then
+  [ 18] pushzero ................................ <0>
+  [ 19] pusharglistnoret 1 ...................... <0>
+  [ 21] extcall 38 .............................. return 0
+  [ 23] getlocal 0 .............................. <tInfo>
+  [ 25] pushsymb 1229 ........................... <#game_object>
+  [ 28] pusharglist 2 ........................... <tInfo, #game_object>
+  [ 30] objcall 256 ............................. <tInfo.getaProp(#game_object)>
+  [ 33] pusharglistnoret 1 ...................... <tInfo.getaProp(#game_object)>
+  [ 35] extcall 38 .............................. return tInfo.getaProp(#game_object)
+  [ 37] ret
+end

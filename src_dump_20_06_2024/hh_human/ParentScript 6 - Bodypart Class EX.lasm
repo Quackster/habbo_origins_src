@@ -1,0 +1,2386 @@
+property pBody, pPart, pDirection, pAction, pXFix, pYFix, pLastLocFix, pLayerPropList, pAnimation, pAnimFrame, pTotalFrame, pFrameSkipCounter, pFrameSkipTotal, pAnimList, pFlipPart, pMemNumCache
+
+on construct me
+  [  0] pusharglist 0 ........................... <[:]>
+  [  2] pushproplist ............................ <[:]>
+  [  3] setprop 540 ............................. pMemNumCache = [:]
+  [  6] pusharglist 0 ........................... <[]>
+  [  8] pushlist ................................ <[]>
+  [  9] setprop 541 ............................. pLayerPropList = []
+  [ 12] ret
+end
+
+on clearGraphics me
+  [  0] pushint8 1 .............................. <1>
+  [  2] setlocal 0
+  [  4] getlocal 0
+  [  6] getprop 541 ............................. <pLayerPropList>
+  [  9] getobjprop 172 .......................... <pLayerPropList.count>
+  [ 11] lteq
+  [ 12] jmpifz [ 58] ............................ repeat with i = 1 to pLayerPropList.count
+  [ 15] getprop 541 ............................. <pLayerPropList>
+  [ 18] getlocal 0 .............................. <i>
+  [ 20] pusharglist 2 ........................... <pLayerPropList, i>
+  [ 22] objcall 173 ............................. <pLayerPropList[i]>
+  [ 24] setlocal 1 .............................. tdata = pLayerPropList[i]
+  [ 26] getprop 542 ............................. <pBody>
+  [ 29] getprop 542 ............................. <pBody>
+  [ 32] getobjprop 108 .......................... <pBody.pUpdateRect>
+  [ 34] getlocal 1 .............................. <tdata>
+  [ 36] pushcons 0 .............................. <"cacheRect">
+  [ 38] pusharglist 2 ........................... <tdata, "cacheRect">
+  [ 40] objcall 173 ............................. <tdata["cacheRect"]>
+  [ 42] pusharglist 2 ........................... <pBody.pUpdateRect, tdata["cacheRect"]>
+  [ 44] extcall 543 ............................. <union(pBody.pUpdateRect, tdata["cacheRect"])>
+  [ 47] setobjprop 108 .......................... pBody.pUpdateRect = union(pBody.pUpdateRect, tdata["cacheRect"])
+  [ 49] pushint8 1
+  [ 51] getlocal 0
+  [ 53] add
+  [ 54] setlocal 0
+  [ 56] endrepeat [  4]
+  [ 58] ret
+end
+
+on resetMemberCache me
+  [  0] pushint8 1 .............................. <1>
+  [  2] setlocal 0
+  [  4] getlocal 0
+  [  6] getprop 541 ............................. <pLayerPropList>
+  [  9] getobjprop 172 .......................... <pLayerPropList.count>
+  [ 11] lteq
+  [ 12] jmpifz [ 45] ............................ repeat with i = 1 to pLayerPropList.count
+  [ 15] getprop 541 ............................. <pLayerPropList>
+  [ 18] getlocal 0 .............................. <i>
+  [ 20] pusharglist 2 ........................... <pLayerPropList, i>
+  [ 22] objcall 173 ............................. <pLayerPropList[i]>
+  [ 24] setlocal 1 .............................. tdata = pLayerPropList[i]
+  [ 26] getlocal 1 .............................. <tdata>
+  [ 28] pushcons 1 .............................. <"memString">
+  [ 30] pushcons 2 .............................. <EMPTY>
+  [ 32] pusharglistnoret 3 ...................... <tdata, "memString", EMPTY>
+  [ 34] objcall 175 ............................. tdata["memString"] = EMPTY
+  [ 36] pushint8 1
+  [ 38] getlocal 0
+  [ 40] add
+  [ 41] setlocal 0
+  [ 43] endrepeat [  4]
+  [ 45] ret
+end
+
+on define me, tPart, tmodel, tColor, tDirection, tAction, tBody, tFlipPart, tInk
+  [  0] getparam 6 .............................. <tBody>
+  [  2] setprop 542 ............................. pBody = tBody
+  [  5] getparam 1 .............................. <tPart>
+  [  7] setprop 380 ............................. pPart = tPart
+  [ 10] getparam 0 .............................. <me>
+  [ 12] getparam 2 .............................. <tmodel>
+  [ 14] pusharglistnoret 2 ...................... <me, tmodel>
+  [ 16] objcall 433 ............................. me.setModel(tmodel)
+  [ 19] getparam 0 .............................. <me>
+  [ 21] getparam 8 .............................. <tInk>
+  [ 23] pusharglistnoret 2 ...................... <me, tInk>
+  [ 25] objcall 408 ............................. me.defineInk(tInk)
+  [ 28] getparam 0 .............................. <me>
+  [ 30] getparam 3 .............................. <tColor>
+  [ 32] pusharglistnoret 2 ...................... <me, tColor>
+  [ 34] objcall 528 ............................. me.setColor(tColor)
+  [ 37] getparam 4 .............................. <tDirection>
+  [ 39] setprop 260 ............................. pDirection = tDirection
+  [ 42] getparam 5 .............................. <tAction>
+  [ 44] setprop 544 ............................. pAction = tAction
+  [ 47] pushzero ................................ <0>
+  [ 48] setprop 545 ............................. pXFix = 0
+  [ 51] pushzero ................................ <0>
+  [ 52] setprop 546 ............................. pYFix = 0
+  [ 55] pushint16 1000 .......................... <1000>
+  [ 58] pushint16 1000 .......................... <1000>
+  [ 61] pusharglist 2 ........................... <1000, 1000>
+  [ 63] extcall 107 ............................. <point(1000, 1000)>
+  [ 65] setprop 547 ............................. pLastLocFix = point(1000, 1000)
+  [ 68] pushzero ................................ <0>
+  [ 69] setprop 548 ............................. pAnimation = 0
+  [ 72] pushint8 1 .............................. <1>
+  [ 74] setprop 549 ............................. pAnimFrame = 1
+  [ 77] pushint8 1 .............................. <1>
+  [ 79] setprop 550 ............................. pTotalFrame = 1
+  [ 82] pusharglist 0 ........................... <[:]>
+  [ 84] pushproplist ............................ <[:]>
+  [ 85] setprop 551 ............................. pAnimList = [:]
+  [ 88] pushcons 2 .............................. <EMPTY>
+  [ 90] setprop 552 ............................. pFlipPart = EMPTY
+  [ 93] getparam 7 .............................. <tFlipPart>
+  [ 95] pusharglist 1 ........................... <tFlipPart>
+  [ 97] extcall 194 ............................. <voidp(tFlipPart)>
+  [ 99] not ..................................... <not voidp(tFlipPart)>
+  [100] jmpifz [108] ............................ if not voidp(tFlipPart) then
+  [103] getparam 7 .............................. <tFlipPart>
+  [105] setprop 552 ............................. pFlipPart = tFlipPart
+  [108] pushint8 1 .............................. <1>
+  [110] pusharglistnoret 1 ...................... <1>
+  [112] extcall 189 ............................. return 1
+  [114] ret
+end
+
+on setAnimations me, tAnimData
+  [  0] getparam 1 .............................. <tAnimData>
+  [  2] pusharglist 1 ........................... <tAnimData>
+  [  4] extcall 180 ............................. <ilk(tAnimData)>
+  [  6] pushsymb 183 ............................ <#propList>
+  [  8] eq ...................................... <ilk(tAnimData) = #propList>
+  [  9] jmpifz [ 17] ............................ if ilk(tAnimData) = #propList then
+  [ 12] getparam 1 .............................. <tAnimData>
+  [ 14] setprop 551 ............................. pAnimList = tAnimData
+  [ 17] ret
+end
+
+on update me, tForcedUpdate, tRectMod
+  [  0] getprop 544 ............................. <pAction>
+  [  3] setlocal 0 .............................. tAction = pAction
+  [  5] getprop 380 ............................. <pPart>
+  [  8] setlocal 1 .............................. tPart = pPart
+  [ 10] getprop 542 ............................. <pBody>
+  [ 13] pushsymb 105 ............................ <#pFlipList>
+  [ 15] getprop 260 ............................. <pDirection>
+  [ 18] pushint8 1 .............................. <1>
+  [ 20] add ..................................... <pDirection + 1>
+  [ 21] pusharglist 3 ........................... <pBody, #pFlipList, pDirection + 1>
+  [ 23] objcall 311 ............................. <pBody.pFlipList[pDirection + 1]>
+  [ 26] setlocal 2 .............................. tdir = pBody.pFlipList[pDirection + 1]
+  [ 28] pushzero ................................ <0>
+  [ 29] setprop 545 ............................. pXFix = 0
+  [ 32] pushzero ................................ <0>
+  [ 33] setprop 546 ............................. pYFix = 0
+  [ 36] getparam 2 .............................. <tRectMod>
+  [ 38] pusharglist 1 ........................... <tRectMod>
+  [ 40] extcall 194 ............................. <voidp(tRectMod)>
+  [ 42] jmpifz [ 58] ............................ if voidp(tRectMod) then / else
+  [ 45] pushzero ................................ <0>
+  [ 46] pushzero ................................ <0>
+  [ 47] pushzero ................................ <0>
+  [ 48] pushzero ................................ <0>
+  [ 49] pusharglist 4 ........................... <0, 0, 0, 0>
+  [ 51] extcall 109 ............................. <rect(0, 0, 0, 0)>
+  [ 53] setparam 2 .............................. tRectMod = rect(0, 0, 0, 0)
+  [ 55] jmp [ 66]
+  [ 58] getparam 2 .............................. <tRectMod>
+  [ 60] pusharglist 1 ........................... <tRectMod>
+  [ 62] objcall 220 ............................. <tRectMod.duplicate()>
+  [ 64] setparam 2 .............................. tRectMod = tRectMod.duplicate()
+  [ 66] getparam 2 .............................. <tRectMod>
+  [ 68] pusharglist 1 ........................... <tRectMod>
+  [ 70] objcall 220 ............................. <tRectMod.duplicate()>
+  [ 72] setlocal 3 .............................. tRectModOrig = tRectMod.duplicate()
+  [ 74] getprop 542 ............................. <pBody>
+  [ 77] getobjprop 131 .......................... <pBody.pAnimating>
+  [ 79] jmpifz [ 89] ............................ if pBody.pAnimating then
+  [ 82] getparam 0 .............................. <me>
+  [ 84] pusharglistnoret 1 ...................... <me>
+  [ 86] objcall 534 ............................. me.animateUpdate()
+  [ 89] getprop 547 ............................. <pLastLocFix>
+  [ 92] getprop 545 ............................. <pXFix>
+  [ 95] getparam 2 .............................. <tRectMod>
+  [ 97] pushint8 1 .............................. <1>
+  [ 99] pusharglist 2 ........................... <tRectMod, 1>
+  [101] objcall 173 ............................. <tRectMod[1]>
+  [103] add ..................................... <pXFix + tRectMod[1]>
+  [104] getprop 546 ............................. <pYFix>
+  [107] getparam 2 .............................. <tRectMod>
+  [109] pushint8 2 .............................. <2>
+  [111] pusharglist 2 ........................... <tRectMod, 2>
+  [113] objcall 173 ............................. <tRectMod[2]>
+  [115] add ..................................... <pYFix + tRectMod[2]>
+  [116] pusharglist 2 ........................... <pXFix + tRectMod[1], pYFix + tRectMod[2]>
+  [118] extcall 107 ............................. <point(pXFix + tRectMod[1], pYFix + tRectMod[2])>
+  [120] nteq .................................... <pLastLocFix <> point(pXFix + tRectMod[1], pYFix + tRectMod[2])>
+  [121] setlocal 4 .............................. tLocFixChanged = pLastLocFix <> point(pXFix + tRectMod[1], pYFix + tRectMod[2])
+  [123] getprop 545 ............................. <pXFix>
+  [126] getparam 2 .............................. <tRectMod>
+  [128] pushint8 1 .............................. <1>
+  [130] pusharglist 2 ........................... <tRectMod, 1>
+  [132] objcall 173 ............................. <tRectMod[1]>
+  [134] add ..................................... <pXFix + tRectMod[1]>
+  [135] getprop 546 ............................. <pYFix>
+  [138] getparam 2 .............................. <tRectMod>
+  [140] pushint8 2 .............................. <2>
+  [142] pusharglist 2 ........................... <tRectMod, 2>
+  [144] objcall 173 ............................. <tRectMod[2]>
+  [146] add ..................................... <pYFix + tRectMod[2]>
+  [147] pusharglist 2 ........................... <pXFix + tRectMod[1], pYFix + tRectMod[2]>
+  [149] extcall 107 ............................. <point(pXFix + tRectMod[1], pYFix + tRectMod[2])>
+  [151] setprop 547 ............................. pLastLocFix = point(pXFix + tRectMod[1], pYFix + tRectMod[2])
+  [154] pushint8 1 .............................. <1>
+  [156] setlocal 5
+  [158] getlocal 5
+  [160] getprop 541 ............................. <pLayerPropList>
+  [163] getobjprop 172 .......................... <pLayerPropList.count>
+  [165] lteq
+  [166] jmpifz [1007] ........................... repeat with i = 1 to pLayerPropList.count
+  [169] getlocal 3 .............................. <tRectModOrig>
+  [171] pusharglist 1 ........................... <tRectModOrig>
+  [173] objcall 220 ............................. <tRectModOrig.duplicate()>
+  [175] setparam 2 .............................. tRectMod = tRectModOrig.duplicate()
+  [177] getprop 541 ............................. <pLayerPropList>
+  [180] getlocal 5 .............................. <i>
+  [182] pusharglist 2 ........................... <pLayerPropList, i>
+  [184] objcall 173 ............................. <pLayerPropList[i]>
+  [186] setlocal 6 .............................. tdata = pLayerPropList[i]
+  [188] getlocal 6 .............................. <tdata>
+  [190] pushcons 3 .............................. <"model">
+  [192] pusharglist 2 ........................... <tdata, "model">
+  [194] objcall 173 ............................. <tdata["model"]>
+  [196] setlocal 7 .............................. tmodel = tdata["model"]
+  [198] getlocal 6 .............................. <tdata>
+  [200] pushcons 4 .............................. <"drawProps">
+  [202] pusharglist 2 ........................... <tdata, "drawProps">
+  [204] objcall 173 ............................. <tdata["drawProps"]>
+  [206] setlocal 8 .............................. tDrawProps = tdata["drawProps"]
+  [208] getlocal 6 .............................. <tdata>
+  [210] pushcons 5 .............................. <"flipH">
+  [212] pusharglist 2 ........................... <tdata, "flipH">
+  [214] objcall 173 ............................. <tdata["flipH"]>
+  [216] setlocal 9 .............................. tFlipHOld = tdata["flipH"]
+  [218] getprop 542 ............................. <pBody>
+  [221] getobjprop 131 .......................... <pBody.pAnimating>
+  [223] jmpifz [237] ............................ if pBody.pAnimating then
+  [226] getparam 0 .............................. <me>
+  [228] getlocal 5 .............................. <i>
+  [230] pusharglist 2 ........................... <me, i>
+  [232] objcall 535 ............................. <me.animate(i)>
+  [235] setlocal 10 ............................. tMemString = me.animate(i)
+  [237] getlocal 10 ............................. <tMemString>
+  [239] pusharglist 0 ........................... <>
+  [241] extcall 101 ............................. <VOID>
+  [243] eq ...................................... <tMemString = VOID>
+  [244] getlocal 10 ............................. <tMemString>
+  [246] pushcons 2 .............................. <EMPTY>
+  [248] eq ...................................... <tMemString = EMPTY>
+  [249] or ...................................... <(tMemString = VOID) or (tMemString = EMPTY)>
+  [250] jmpifz [496] ............................ if (tMemString = VOID) or (tMemString = EMPTY) then
+  [253] getprop 260 ............................. <pDirection>
+  [256] getlocal 2 .............................. <tdir>
+  [258] eq ...................................... <pDirection = tdir>
+  [259] jmpifz [274] ............................ if pDirection = tdir then / else
+  [262] getlocal 6 .............................. <tdata>
+  [264] pushcons 5 .............................. <"flipH">
+  [266] pushzero ................................ <0>
+  [267] pusharglistnoret 3 ...................... <tdata, "flipH", 0>
+  [269] objcall 175 ............................. tdata["flipH"] = 0
+  [271] jmp [284]
+  [274] getlocal 6 .............................. <tdata>
+  [276] pushcons 5 .............................. <"flipH">
+  [278] pushint8 1 .............................. <1>
+  [280] pusharglistnoret 3 ...................... <tdata, "flipH", 1>
+  [282] objcall 175 ............................. tdata["flipH"] = 1
+  [284] pushzero ................................ <0>
+  [285] setlocal 11 ............................. tAnimCntr = 0
+  [287] getprop 551 ............................. <pAnimList>
+  [290] getprop 544 ............................. <pAction>
+  [293] pusharglist 2 ........................... <pAnimList, pAction>
+  [295] objcall 173 ............................. <pAnimList[pAction]>
+  [297] pusharglist 1 ........................... <pAnimList[pAction]>
+  [299] extcall 194 ............................. <voidp(pAnimList[pAction])>
+  [301] not ..................................... <not voidp(pAnimList[pAction])>
+  [302] jmpifz [363] ............................ if not voidp(pAnimList[pAction]) then
+  [305] getprop 551 ............................. <pAnimList>
+  [308] getprop 544 ............................. <pAction>
+  [311] pusharglist 2 ........................... <pAnimList, pAction>
+  [313] objcall 173 ............................. <pAnimList[pAction]>
+  [315] getobjprop 172 .......................... <pAnimList[pAction].count>
+  [317] pushzero ................................ <0>
+  [318] gt ...................................... <pAnimList[pAction].count > 0>
+  [319] jmpifz [363] ............................ if pAnimList[pAction].count > 0 then
+  [322] getprop 542 ............................. <pBody>
+  [325] getobjprop 115 .......................... <pBody.pAnimCounter>
+  [327] getprop 551 ............................. <pAnimList>
+  [330] getprop 544 ............................. <pAction>
+  [333] pusharglist 2 ........................... <pAnimList, pAction>
+  [335] objcall 173 ............................. <pAnimList[pAction]>
+  [337] getobjprop 172 .......................... <pAnimList[pAction].count>
+  [339] mod ..................................... <pBody.pAnimCounter mod pAnimList[pAction].count>
+  [340] setlocal 12 ............................. tIndex = pBody.pAnimCounter mod pAnimList[pAction].count
+  [342] getprop 551 ............................. <pAnimList>
+  [345] getprop 544 ............................. <pAction>
+  [348] pusharglist 2 ........................... <pAnimList, pAction>
+  [350] objcall 173 ............................. <pAnimList[pAction]>
+  [352] getlocal 12 ............................. <tIndex>
+  [354] pushint8 1 .............................. <1>
+  [356] add ..................................... <tIndex + 1>
+  [357] pusharglist 2 ........................... <pAnimList[pAction], tIndex + 1>
+  [359] objcall 173 ............................. <pAnimList[pAction][tIndex + 1]>
+  [361] setlocal 11 ............................. tAnimCntr = pAnimList[pAction][tIndex + 1]
+  [363] getprop 552 ............................. <pFlipPart>
+  [366] pushcons 2 .............................. <EMPTY>
+  [368] nteq .................................... <pFlipPart <> EMPTY>
+  [369] jmpifz [459] ............................ if pFlipPart <> EMPTY then
+  [372] getprop 542 ............................. <pBody>
+  [375] getobjprop 163 .......................... <pBody.pPeopleSize>
+  [377] pushcons 6 .............................. <"_">
+  [379] joinstr ................................. <pBody.pPeopleSize & "_">
+  [380] getlocal 0 .............................. <tAction>
+  [382] joinstr ................................. <pBody.pPeopleSize & "_" & tAction>
+  [383] pushcons 6 .............................. <"_">
+  [385] joinstr ................................. <pBody.pPeopleSize & "_" & tAction & "_">
+  [386] getlocal 1 .............................. <tPart>
+  [388] joinstr ................................. <pBody.pPeopleSize & "_" & tAction & "_" & tPart>
+  [389] pushcons 6 .............................. <"_">
+  [391] joinstr ................................. <pBody.pPeopleSize & "_" & tAction & "_" & tPart & "_">
+  [392] getlocal 7 .............................. <tmodel>
+  [394] joinstr ................................. <pBody.pPeopleSize & "_" & tAction & "_" & tPart & "_" & tmodel>
+  [395] pushcons 6 .............................. <"_">
+  [397] joinstr ................................. <pBody.pPeopleSize & "_" & tAction & "_" & tPart & "_" & tmodel & "_">
+  [398] getprop 260 ............................. <pDirection>
+  [401] joinstr ................................. <pBody.pPeopleSize & "_" & tAction & "_" & tPart & "_" & tmodel & "_" & pDirection>
+  [402] pushcons 6 .............................. <"_">
+  [404] joinstr ................................. <pBody.pPeopleSize & "_" & tAction & "_" & tPart & "_" & tmodel & "_" & pDirection & "_">
+  [405] getlocal 11 ............................. <tAnimCntr>
+  [407] joinstr ................................. <pBody.pPeopleSize & "_" & tAction & "_" & tPart & "_" & tmodel & "_" & pDirection & "_" & tAnimCntr>
+  [408] setlocal 10 ............................. tMemString = pBody.pPeopleSize & "_" & tAction & "_" & tPart & "_" & tmodel & "_" & pDirection & "_" & tAnimCntr
+  [410] getparam 0 .............................. <me>
+  [412] getlocal 10 ............................. <tMemString>
+  [414] pusharglist 2 ........................... <me, tMemString>
+  [416] objcall 539 ............................. <me.getMemNumFast(tMemString)>
+  [419] setlocal 13 ............................. tMemNum = me.getMemNumFast(tMemString)
+  [421] getlocal 13 ............................. <tMemNum>
+  [423] pushzero ................................ <0>
+  [424] gt ...................................... <tMemNum > 0>
+  [425] jmpifz [445] ............................ if tMemNum > 0 then / else
+  [428] getprop 260 ............................. <pDirection>
+  [431] setlocal 2 .............................. tdir = pDirection
+  [433] getlocal 6 .............................. <tdata>
+  [435] pushcons 5 .............................. <"flipH">
+  [437] pushzero ................................ <0>
+  [438] pusharglistnoret 3 ...................... <tdata, "flipH", 0>
+  [440] objcall 175 ............................. tdata["flipH"] = 0
+  [442] jmp [459]
+  [445] getprop 260 ............................. <pDirection>
+  [448] getlocal 2 .............................. <tdir>
+  [450] nteq .................................... <pDirection <> tdir>
+  [451] jmpifz [459] ............................ if pDirection <> tdir then
+  [454] getprop 552 ............................. <pFlipPart>
+  [457] setlocal 1 .............................. tPart = pFlipPart
+  [459] getprop 542 ............................. <pBody>
+  [462] getobjprop 163 .......................... <pBody.pPeopleSize>
+  [464] pushcons 6 .............................. <"_">
+  [466] joinstr ................................. <pBody.pPeopleSize & "_">
+  [467] getlocal 0 .............................. <tAction>
+  [469] joinstr ................................. <pBody.pPeopleSize & "_" & tAction>
+  [470] pushcons 6 .............................. <"_">
+  [472] joinstr ................................. <pBody.pPeopleSize & "_" & tAction & "_">
+  [473] getlocal 1 .............................. <tPart>
+  [475] joinstr ................................. <pBody.pPeopleSize & "_" & tAction & "_" & tPart>
+  [476] pushcons 6 .............................. <"_">
+  [478] joinstr ................................. <pBody.pPeopleSize & "_" & tAction & "_" & tPart & "_">
+  [479] getlocal 7 .............................. <tmodel>
+  [481] joinstr ................................. <pBody.pPeopleSize & "_" & tAction & "_" & tPart & "_" & tmodel>
+  [482] pushcons 6 .............................. <"_">
+  [484] joinstr ................................. <pBody.pPeopleSize & "_" & tAction & "_" & tPart & "_" & tmodel & "_">
+  [485] getlocal 2 .............................. <tdir>
+  [487] joinstr ................................. <pBody.pPeopleSize & "_" & tAction & "_" & tPart & "_" & tmodel & "_" & tdir>
+  [488] pushcons 6 .............................. <"_">
+  [490] joinstr ................................. <pBody.pPeopleSize & "_" & tAction & "_" & tPart & "_" & tmodel & "_" & tdir & "_">
+  [491] getlocal 11 ............................. <tAnimCntr>
+  [493] joinstr ................................. <pBody.pPeopleSize & "_" & tAction & "_" & tPart & "_" & tmodel & "_" & tdir & "_" & tAnimCntr>
+  [494] setlocal 10 ............................. tMemString = pBody.pPeopleSize & "_" & tAction & "_" & tPart & "_" & tmodel & "_" & tdir & "_" & tAnimCntr
+  [496] getlocal 9 .............................. <tFlipHOld>
+  [498] getlocal 6 .............................. <tdata>
+  [500] pushcons 5 .............................. <"flipH">
+  [502] pusharglist 2 ........................... <tdata, "flipH">
+  [504] objcall 173 ............................. <tdata["flipH"]>
+  [506] nteq .................................... <tFlipHOld <> tdata["flipH"]>
+  [507] jmpifz [514] ............................ if tFlipHOld <> tdata["flipH"] then
+  [510] pushint8 1 .............................. <1>
+  [512] setparam 1 .............................. tForcedUpdate = 1
+  [514] getlocal 6 .............................. <tdata>
+  [516] pushcons 1 .............................. <"memString">
+  [518] pusharglist 2 ........................... <tdata, "memString">
+  [520] objcall 173 ............................. <tdata["memString"]>
+  [522] getlocal 10 ............................. <tMemString>
+  [524] nteq .................................... <tdata["memString"] <> tMemString>
+  [525] getlocal 4 .............................. <tLocFixChanged>
+  [527] or ...................................... <(tdata["memString"] <> tMemString) or tLocFixChanged>
+  [528] getparam 1 .............................. <tForcedUpdate>
+  [530] or ...................................... <(tdata["memString"] <> tMemString) or tLocFixChanged or tForcedUpdate>
+  [531] jmpifz [935] ............................ if (tdata["memString"] <> tMemString) or tLocFixChanged or tForcedUpdate then
+  [534] getlocal 6 .............................. <tdata>
+  [536] pushcons 1 .............................. <"memString">
+  [538] getlocal 10 ............................. <tMemString>
+  [540] pusharglistnoret 3 ...................... <tdata, "memString", tMemString>
+  [542] objcall 175 ............................. tdata["memString"] = tMemString
+  [544] getparam 0 .............................. <me>
+  [546] getlocal 10 ............................. <tMemString>
+  [548] pusharglist 2 ........................... <me, tMemString>
+  [550] objcall 539 ............................. <me.getMemNumFast(tMemString)>
+  [553] setlocal 13 ............................. tMemNum = me.getMemNumFast(tMemString)
+  [555] getlocal 13 ............................. <tMemNum>
+  [557] pushzero ................................ <0>
+  [558] gt ...................................... <tMemNum > 0>
+  [559] jmpifz [887] ............................ if tMemNum > 0 then / else
+  [562] getlocal 13 ............................. <tMemNum>
+  [564] pusharglist 1 ........................... <tMemNum>
+  [566] extcall 142 ............................. <member(tMemNum)>
+  [568] setlocal 14 ............................. tmember = member(tMemNum)
+  [570] getlocal 14 ............................. <tmember>
+  [572] getobjprop 218 .......................... <tmember.regPoint>
+  [574] setlocal 15 ............................. tRegPnt = tmember.regPoint
+  [576] getlocal 15 ............................. <tRegPnt>
+  [578] pushint8 1 .............................. <1>
+  [580] pusharglist 2 ........................... <tRegPnt, 1>
+  [582] objcall 173 ............................. <tRegPnt[1]>
+  [584] inv ..................................... <-tRegPnt[1]>
+  [585] setlocal 16 ............................. tX = -tRegPnt[1]
+  [587] getprop 542 ............................. <pBody>
+  [590] getchainedprop 219 ...................... <pBody.pBuffer>
+  [592] getchainedprop 109 ...................... <pBody.pBuffer.rect>
+  [594] getobjprop 217 .......................... <pBody.pBuffer.rect.height>
+  [596] getlocal 15 ............................. <tRegPnt>
+  [598] pushint8 2 .............................. <2>
+  [600] pusharglist 2 ........................... <tRegPnt, 2>
+  [602] objcall 173 ............................. <tRegPnt[2]>
+  [604] sub ..................................... <pBody.pBuffer.rect.height - tRegPnt[2]>
+  [605] pushint8 20 ............................. <20>
+  [607] sub ..................................... <pBody.pBuffer.rect.height - tRegPnt[2] - 20>
+  [608] setlocal 17 ............................. tY = pBody.pBuffer.rect.height - tRegPnt[2] - 20
+  [610] getprop 542 ............................. <pBody>
+  [613] getprop 542 ............................. <pBody>
+  [616] getobjprop 108 .......................... <pBody.pUpdateRect>
+  [618] getlocal 6 .............................. <tdata>
+  [620] pushcons 0 .............................. <"cacheRect">
+  [622] pusharglist 2 ........................... <tdata, "cacheRect">
+  [624] objcall 173 ............................. <tdata["cacheRect"]>
+  [626] pusharglist 2 ........................... <pBody.pUpdateRect, tdata["cacheRect"]>
+  [628] extcall 543 ............................. <union(pBody.pUpdateRect, tdata["cacheRect"])>
+  [631] setobjprop 108 .......................... pBody.pUpdateRect = union(pBody.pUpdateRect, tdata["cacheRect"])
+  [633] getlocal 6 .............................. <tdata>
+  [635] pushcons 7 .............................. <"cacheImage">
+  [637] getlocal 14 ............................. <tmember>
+  [639] getobjprop 216 .......................... <tmember.image>
+  [641] pusharglistnoret 3 ...................... <tdata, "cacheImage", tmember.image>
+  [643] objcall 175 ............................. tdata["cacheImage"] = tmember.image
+  [645] getprop 542 ............................. <pBody>
+  [648] getchainedprop 106 ...................... <pBody.pLocFix>
+  [650] pusharglist 1 ........................... <pBody.pLocFix>
+  [652] objcall 220 ............................. <pBody.pLocFix.duplicate()>
+  [654] setlocal 18 ............................. tLocFix = pBody.pLocFix.duplicate()
+  [656] getlocal 6 .............................. <tdata>
+  [658] pushcons 5 .............................. <"flipH">
+  [660] pusharglist 2 ........................... <tdata, "flipH">
+  [662] objcall 173 ............................. <tdata["flipH"]>
+  [664] jmpifz [753] ............................ if tdata["flipH"] then
+  [667] getprop 542 ............................. <pBody>
+  [670] getchainedprop 219 ...................... <pBody.pBuffer>
+  [672] getobjprop 225 .......................... <pBody.pBuffer.width>
+  [674] getlocal 16 ............................. <tX>
+  [676] getlocal 14 ............................. <tmember>
+  [678] getobjprop 225 .......................... <tmember.width>
+  [680] add ..................................... <tX + tmember.width>
+  [681] sub ..................................... <pBody.pBuffer.width - (tX + tmember.width)>
+  [682] setlocal 16 ............................. tX = pBody.pBuffer.width - (tX + tmember.width)
+  [684] getlocal 18 ............................. <tLocFix>
+  [686] pushint8 1 .............................. <1>
+  [688] getlocal 18 ............................. <tLocFix>
+  [690] pushint8 1 .............................. <1>
+  [692] pusharglist 2 ........................... <tLocFix, 1>
+  [694] objcall 173 ............................. <tLocFix[1]>
+  [696] inv ..................................... <-tLocFix[1]>
+  [697] pusharglistnoret 3 ...................... <tLocFix, 1, -tLocFix[1]>
+  [699] objcall 175 ............................. tLocFix[1] = -tLocFix[1]
+  [701] getprop 542 ............................. <pBody>
+  [704] getobjprop 163 .......................... <pBody.pPeopleSize>
+  [706] pushcons 8 .............................. <"sh">
+  [708] eq ...................................... <pBody.pPeopleSize = "sh">
+  [709] jmpifz [719] ............................ if pBody.pPeopleSize = "sh" then
+  [712] getlocal 16 ............................. <tX>
+  [714] pushint8 2 .............................. <2>
+  [716] sub ..................................... <tX - 2>
+  [717] setlocal 16 ............................. tX = tX - 2
+  [719] getparam 2 .............................. <tRectMod>
+  [721] pushint8 1 .............................. <1>
+  [723] getparam 2 .............................. <tRectMod>
+  [725] pushint8 1 .............................. <1>
+  [727] pusharglist 2 ........................... <tRectMod, 1>
+  [729] objcall 173 ............................. <tRectMod[1]>
+  [731] inv ..................................... <-tRectMod[1]>
+  [732] pusharglistnoret 3 ...................... <tRectMod, 1, -tRectMod[1]>
+  [734] objcall 175 ............................. tRectMod[1] = -tRectMod[1]
+  [736] getparam 2 .............................. <tRectMod>
+  [738] pushint8 3 .............................. <3>
+  [740] getparam 2 .............................. <tRectMod>
+  [742] pushint8 3 .............................. <3>
+  [744] pusharglist 2 ........................... <tRectMod, 3>
+  [746] objcall 173 ............................. <tRectMod[3]>
+  [748] inv ..................................... <-tRectMod[3]>
+  [749] pusharglistnoret 3 ...................... <tRectMod, 3, -tRectMod[3]>
+  [751] objcall 175 ............................. tRectMod[3] = -tRectMod[3]
+  [753] getlocal 6 .............................. <tdata>
+  [755] pushcons 0 .............................. <"cacheRect">
+  [757] getlocal 16 ............................. <tX>
+  [759] getlocal 17 ............................. <tY>
+  [761] getlocal 16 ............................. <tX>
+  [763] getlocal 6 .............................. <tdata>
+  [765] pushcons 7 .............................. <"cacheImage">
+  [767] pusharglist 2 ........................... <tdata, "cacheImage">
+  [769] objcall 173 ............................. <tdata["cacheImage"]>
+  [771] getobjprop 225 .......................... <tdata["cacheImage"].width>
+  [773] add ..................................... <tX + tdata["cacheImage"].width>
+  [774] getlocal 17 ............................. <tY>
+  [776] getlocal 6 .............................. <tdata>
+  [778] pushcons 7 .............................. <"cacheImage">
+  [780] pusharglist 2 ........................... <tdata, "cacheImage">
+  [782] objcall 173 ............................. <tdata["cacheImage"]>
+  [784] getobjprop 217 .......................... <tdata["cacheImage"].height>
+  [786] add ..................................... <tY + tdata["cacheImage"].height>
+  [787] pusharglist 4 ........................... <tX, tY, tX + tdata["cacheImage"].width, tY + tdata["cacheImage"].height>
+  [789] extcall 109 ............................. <rect(tX, tY, tX + tdata["cacheImage"].width, tY + tdata["cacheImage"].height)>
+  [791] pusharglistnoret 3 ...................... <tdata, "cacheRect", rect(tX, tY, tX + tdata["cacheImage"].width, tY + tdata["cacheImage"].height)>
+  [793] objcall 175 ............................. tdata["cacheRect"] = rect(tX, tY, tX + tdata["cacheImage"].width, tY + tdata["cacheImage"].height)
+  [795] getlocal 6 .............................. <tdata>
+  [797] pushcons 0 .............................. <"cacheRect">
+  [799] getlocal 6 .............................. <tdata>
+  [801] pushcons 0 .............................. <"cacheRect">
+  [803] pusharglist 2 ........................... <tdata, "cacheRect">
+  [805] objcall 173 ............................. <tdata["cacheRect"]>
+  [807] getprop 545 ............................. <pXFix>
+  [810] getprop 546 ............................. <pYFix>
+  [813] getprop 545 ............................. <pXFix>
+  [816] getprop 546 ............................. <pYFix>
+  [819] pusharglist 4 ........................... <[pXFix, pYFix, pXFix, pYFix]>
+  [821] pushlist ................................ <[pXFix, pYFix, pXFix, pYFix]>
+  [822] add ..................................... <tdata["cacheRect"] + [pXFix, pYFix, pXFix, pYFix]>
+  [823] getlocal 18 ............................. <tLocFix>
+  [825] getlocal 18 ............................. <tLocFix>
+  [827] pusharglist 2 ........................... <tLocFix, tLocFix>
+  [829] extcall 109 ............................. <rect(tLocFix, tLocFix)>
+  [831] add ..................................... <tdata["cacheRect"] + [pXFix, pYFix, pXFix, pYFix] + rect(tLocFix, tLocFix)>
+  [832] getparam 2 .............................. <tRectMod>
+  [834] add ..................................... <tdata["cacheRect"] + [pXFix, pYFix, pXFix, pYFix] + rect(tLocFix, tLocFix) + tRectMod>
+  [835] pusharglistnoret 3 ...................... <tdata, "cacheRect", tdata["cacheRect"] + [pXFix, pYFix, pXFix, pYFix] + rect(tLocFix, tLocFix) + tRectMod>
+  [837] objcall 175 ............................. tdata["cacheRect"] = tdata["cacheRect"] + [pXFix, pYFix, pXFix, pYFix] + rect(tLocFix, tLocFix) + tRectMod
+  [839] getlocal 8 .............................. <tDrawProps>
+  [841] pushsymb 556 ............................ <#maskImage>
+  [844] getlocal 6 .............................. <tdata>
+  [846] pushcons 7 .............................. <"cacheImage">
+  [848] pusharglist 2 ........................... <tdata, "cacheImage">
+  [850] objcall 173 ............................. <tdata["cacheImage"]>
+  [852] pusharglist 1 ........................... <tdata["cacheImage"]>
+  [854] objcall 557 ............................. <tdata["cacheImage"].createMatte()>
+  [857] pusharglistnoret 3 ...................... <tDrawProps, #maskImage, tdata["cacheImage"].createMatte()>
+  [859] objcall 175 ............................. tDrawProps[#maskImage] = tdata["cacheImage"].createMatte()
+  [861] getprop 542 ............................. <pBody>
+  [864] getprop 542 ............................. <pBody>
+  [867] getobjprop 108 .......................... <pBody.pUpdateRect>
+  [869] getlocal 6 .............................. <tdata>
+  [871] pushcons 0 .............................. <"cacheRect">
+  [873] pusharglist 2 ........................... <tdata, "cacheRect">
+  [875] objcall 173 ............................. <tdata["cacheRect"]>
+  [877] pusharglist 2 ........................... <pBody.pUpdateRect, tdata["cacheRect"]>
+  [879] extcall 543 ............................. <union(pBody.pUpdateRect, tdata["cacheRect"])>
+  [882] setobjprop 108 .......................... pBody.pUpdateRect = union(pBody.pUpdateRect, tdata["cacheRect"])
+  [884] jmp [935]
+  [887] getprop 542 ............................. <pBody>
+  [890] getprop 542 ............................. <pBody>
+  [893] getobjprop 108 .......................... <pBody.pUpdateRect>
+  [895] getlocal 6 .............................. <tdata>
+  [897] pushcons 0 .............................. <"cacheRect">
+  [899] pusharglist 2 ........................... <tdata, "cacheRect">
+  [901] objcall 173 ............................. <tdata["cacheRect"]>
+  [903] pusharglist 2 ........................... <pBody.pUpdateRect, tdata["cacheRect"]>
+  [905] extcall 543 ............................. <union(pBody.pUpdateRect, tdata["cacheRect"])>
+  [908] setobjprop 108 .......................... pBody.pUpdateRect = union(pBody.pUpdateRect, tdata["cacheRect"])
+  [910] getlocal 6 .............................. <tdata>
+  [912] pushcons 0 .............................. <"cacheRect">
+  [914] pushzero ................................ <0>
+  [915] pushzero ................................ <0>
+  [916] pushzero ................................ <0>
+  [917] pushzero ................................ <0>
+  [918] pusharglist 4 ........................... <0, 0, 0, 0>
+  [920] extcall 109 ............................. <rect(0, 0, 0, 0)>
+  [922] pusharglistnoret 3 ...................... <tdata, "cacheRect", rect(0, 0, 0, 0)>
+  [924] objcall 175 ............................. tdata["cacheRect"] = rect(0, 0, 0, 0)
+  [926] getlocal 6 .............................. <tdata>
+  [928] pushcons 7 .............................. <"cacheImage">
+  [930] pushzero ................................ <0>
+  [931] pusharglistnoret 3 ...................... <tdata, "cacheImage", 0>
+  [933] objcall 175 ............................. tdata["cacheImage"] = 0
+  [935] getparam 0 .............................. <me>
+  [937] getlocal 5 .............................. <i>
+  [939] pusharglist 2 ........................... <me, i>
+  [941] objcall 538 ............................. <me.getDrawArea(i)>
+  [944] setlocal 19 ............................. tDrawArea = me.getDrawArea(i)
+  [946] getlocal 6 .............................. <tdata>
+  [948] pushcons 7 .............................. <"cacheImage">
+  [950] pusharglist 2 ........................... <tdata, "cacheImage">
+  [952] objcall 173 ............................. <tdata["cacheImage"]>
+  [954] pushzero ................................ <0>
+  [955] nteq .................................... <tdata["cacheImage"] <> 0>
+  [956] jmpifz [991] ............................ if tdata["cacheImage"] <> 0 then
+  [959] getprop 542 ............................. <pBody>
+  [962] getchainedprop 219 ...................... <pBody.pBuffer>
+  [964] getlocal 6 .............................. <tdata>
+  [966] pushcons 7 .............................. <"cacheImage">
+  [968] pusharglist 2 ........................... <tdata, "cacheImage">
+  [970] objcall 173 ............................. <tdata["cacheImage"]>
+  [972] getlocal 19 ............................. <tDrawArea>
+  [974] getlocal 6 .............................. <tdata>
+  [976] pushcons 7 .............................. <"cacheImage">
+  [978] pusharglist 2 ........................... <tdata, "cacheImage">
+  [980] objcall 173 ............................. <tdata["cacheImage"]>
+  [982] getobjprop 109 .......................... <tdata["cacheImage"].rect>
+  [984] getlocal 8 .............................. <tDrawProps>
+  [986] pusharglistnoret 5 ...................... <pBody.pBuffer, tdata["cacheImage"], tDrawArea, tdata["cacheImage"].rect, tDrawProps>
+  [988] objcall 381 ............................. pBody.pBuffer.copyPixels(tdata["cacheImage"], tDrawArea, tdata["cacheImage"].rect, tDrawProps)
+  [991] pusharglist 0 ........................... <>
+  [993] extcall 101 ............................. <VOID>
+  [995] setlocal 10 ............................. tMemString = VOID
+  [997] pushint8 1
+  [999] getlocal 5
+  [1001] add
+  [1002] setlocal 5
+  [1004] endrepeat [158]
+  [1007] getprop 559 ............................ <pFrameSkipTotal>
+  [1010] pusharglist 1 .......................... <pFrameSkipTotal>
+  [1012] extcall 558 ............................ <integerp(pFrameSkipTotal)>
+  [1015] jmpifz [1048] .......................... if integerp(pFrameSkipTotal) then
+  [1018] getprop 560 ............................ <pFrameSkipCounter>
+  [1021] getprop 559 ............................ <pFrameSkipTotal>
+  [1024] pushint8 1 ............................. <1>
+  [1026] sub .................................... <pFrameSkipTotal - 1>
+  [1027] lt ..................................... <pFrameSkipCounter < (pFrameSkipTotal - 1)>
+  [1028] jmpifz [1044] .......................... if pFrameSkipCounter < (pFrameSkipTotal - 1) then
+  [1031] getprop 560 ............................ <pFrameSkipCounter>
+  [1034] pushint8 1 ............................. <1>
+  [1036] add .................................... <pFrameSkipCounter + 1>
+  [1037] setprop 560 ............................ pFrameSkipCounter = pFrameSkipCounter + 1
+  [1040] pusharglistnoret 0 ..................... <>
+  [1042] extcall 189 ............................ return 
+  [1044] pushzero ............................... <0>
+  [1045] setprop 560 ............................ pFrameSkipCounter = 0
+  [1048] getprop 542 ............................ <pBody>
+  [1051] getobjprop 131 ......................... <pBody.pAnimating>
+  [1053] jmpifz [1080] .......................... if pBody.pAnimating then
+  [1056] getprop 549 ............................ <pAnimFrame>
+  [1059] pushint8 1 ............................. <1>
+  [1061] add .................................... <pAnimFrame + 1>
+  [1062] setprop 549 ............................ pAnimFrame = pAnimFrame + 1
+  [1065] getprop 549 ............................ <pAnimFrame>
+  [1068] getprop 550 ............................ <pTotalFrame>
+  [1071] gt ..................................... <pAnimFrame > pTotalFrame>
+  [1072] jmpifz [1080] .......................... if pAnimFrame > pTotalFrame then
+  [1075] pushint8 1 ............................. <1>
+  [1077] setprop 549 ............................ pAnimFrame = 1
+  [1080] ret
+end
+
+on render me
+  [  0] pushint8 1 .............................. <1>
+  [  2] setlocal 0
+  [  4] getlocal 0
+  [  6] getparam 0 .............................. <me>
+  [  8] pushsymb 541 ............................ <#pLayerPropList>
+  [ 11] pusharglist 2 ........................... <me, #pLayerPropList>
+  [ 13] objcall 172 ............................. <me.pLayerPropList.count>
+  [ 15] lteq
+  [ 16] jmpifz [119] ............................ repeat with i = 1 to me.pLayerPropList.count
+  [ 19] getparam 0 .............................. <me>
+  [ 21] pushsymb 541 ............................ <#pLayerPropList>
+  [ 24] getlocal 0 .............................. <i>
+  [ 26] pusharglist 3 ........................... <me, #pLayerPropList, i>
+  [ 28] objcall 311 ............................. <me.pLayerPropList[i]>
+  [ 31] setlocal 1 .............................. tdata = me.pLayerPropList[i]
+  [ 33] getlocal 1 .............................. <tdata>
+  [ 35] pushcons 1 .............................. <"memString">
+  [ 37] pusharglist 2 ........................... <tdata, "memString">
+  [ 39] objcall 173 ............................. <tdata["memString"]>
+  [ 41] pusharglist 1 ........................... <tdata["memString"]>
+  [ 43] extcall 201 ............................. <memberExists(tdata["memString"])>
+  [ 45] jmpifz [110] ............................ if memberExists(tdata["memString"]) then
+  [ 48] getparam 0 .............................. <me>
+  [ 50] getlocal 0 .............................. <i>
+  [ 52] pusharglist 2 ........................... <me, i>
+  [ 54] objcall 538 ............................. <me.getDrawArea(i)>
+  [ 57] setlocal 2 .............................. tDrawArea = me.getDrawArea(i)
+  [ 59] getlocal 1 .............................. <tdata>
+  [ 61] pushcons 7 .............................. <"cacheImage">
+  [ 63] pusharglist 2 ........................... <tdata, "cacheImage">
+  [ 65] objcall 173 ............................. <tdata["cacheImage"]>
+  [ 67] pushzero ................................ <0>
+  [ 68] nteq .................................... <tdata["cacheImage"] <> 0>
+  [ 69] jmpifz [110] ............................ if tdata["cacheImage"] <> 0 then
+  [ 72] getprop 542 ............................. <pBody>
+  [ 75] getchainedprop 219 ...................... <pBody.pBuffer>
+  [ 77] getlocal 1 .............................. <tdata>
+  [ 79] pushcons 7 .............................. <"cacheImage">
+  [ 81] pusharglist 2 ........................... <tdata, "cacheImage">
+  [ 83] objcall 173 ............................. <tdata["cacheImage"]>
+  [ 85] getlocal 2 .............................. <tDrawArea>
+  [ 87] getlocal 1 .............................. <tdata>
+  [ 89] pushcons 7 .............................. <"cacheImage">
+  [ 91] pusharglist 2 ........................... <tdata, "cacheImage">
+  [ 93] objcall 173 ............................. <tdata["cacheImage"]>
+  [ 95] getobjprop 109 .......................... <tdata["cacheImage"].rect>
+  [ 97] getlocal 1 .............................. <tdata>
+  [ 99] pushcons 4 .............................. <"drawProps">
+  [101] pusharglist 2 ........................... <tdata, "drawProps">
+  [103] objcall 173 ............................. <tdata["drawProps"]>
+  [105] pusharglistnoret 5 ...................... <pBody.pBuffer, tdata["cacheImage"], tDrawArea, tdata["cacheImage"].rect, tdata["drawProps"]>
+  [107] objcall 381 ............................. pBody.pBuffer.copyPixels(tdata["cacheImage"], tDrawArea, tdata["cacheImage"].rect, tdata["drawProps"])
+  [110] pushint8 1
+  [112] getlocal 0
+  [114] add
+  [115] setlocal 0
+  [117] endrepeat [  4]
+  [119] ret
+end
+
+on defineDir me, tdir, tPart
+  [  0] getparam 2 .............................. <tPart>
+  [  2] pusharglist 1 ........................... <tPart>
+  [  4] extcall 194 ............................. <voidp(tPart)>
+  [  6] getparam 2 .............................. <tPart>
+  [  8] getprop 380 ............................. <pPart>
+  [ 11] eq ...................................... <tPart = pPart>
+  [ 12] or ...................................... <voidp(tPart) or (tPart = pPart)>
+  [ 13] jmpifz [ 21] ............................ if voidp(tPart) or (tPart = pPart) then
+  [ 16] getparam 1 .............................. <tdir>
+  [ 18] setprop 260 ............................. pDirection = tdir
+  [ 21] ret
+end
+
+on defineDirMultiple me, tdir, tTargetPartList
+  [  0] getparam 2 .............................. <tTargetPartList>
+  [  2] getprop 380 ............................. <pPart>
+  [  5] pusharglist 2 ........................... <tTargetPartList, pPart>
+  [  7] objcall 481 ............................. <tTargetPartList.getOne(pPart)>
+  [ 10] jmpifz [ 18] ............................ if tTargetPartList.getOne(pPart) then
+  [ 13] getparam 1 .............................. <tdir>
+  [ 15] setprop 260 ............................. pDirection = tdir
+  [ 18] ret
+end
+
+on defineAct me, tAct, tTargetPartList
+  [  0] getparam 1 .............................. <tAct>
+  [  2] setprop 544 ............................. pAction = tAct
+  [  5] ret
+end
+
+on defineBlend me, tBlend
+  [  0] pushint8 1 .............................. <1>
+  [  2] setlocal 0
+  [  4] getlocal 0
+  [  6] getprop 541 ............................. <pLayerPropList>
+  [  9] getobjprop 172 .......................... <pLayerPropList.count>
+  [ 11] lteq
+  [ 12] jmpifz [ 52] ............................ repeat with i = 1 to pLayerPropList.count
+  [ 15] getprop 541 ............................. <pLayerPropList>
+  [ 18] getlocal 0 .............................. <i>
+  [ 20] pusharglist 2 ........................... <pLayerPropList, i>
+  [ 22] objcall 173 ............................. <pLayerPropList[i]>
+  [ 24] pushcons 4 .............................. <"drawProps">
+  [ 26] pusharglist 2 ........................... <pLayerPropList[i], "drawProps">
+  [ 28] objcall 173 ............................. <pLayerPropList[i]["drawProps"]>
+  [ 30] setlocal 1 .............................. tDrawProps = pLayerPropList[i]["drawProps"]
+  [ 32] getlocal 1 .............................. <tDrawProps>
+  [ 34] pushsymb 286 ............................ <#blend>
+  [ 37] getparam 1 .............................. <tBlend>
+  [ 39] pusharglistnoret 3 ...................... <tDrawProps, #blend, tBlend>
+  [ 41] objcall 175 ............................. tDrawProps[#blend] = tBlend
+  [ 43] pushint8 1
+  [ 45] getlocal 0
+  [ 47] add
+  [ 48] setlocal 0
+  [ 50] endrepeat [  4]
+  [ 52] ret
+end
+
+on defineInk me, tInk
+  [  0] getparam 1 .............................. <tInk>
+  [  2] pusharglist 1 ........................... <tInk>
+  [  4] extcall 194 ............................. <voidp(tInk)>
+  [  6] jmpifz [ 63] ............................ if voidp(tInk) then
+  [  9] getprop 380 ............................. <pPart>
+  [ 12] peek 0 .................................. case pPart of
+  [ 14] pushcons 9 .............................. <"ey">
+  [ 16] eq
+  [ 17] jmpifz [ 27] ............................ (case) "ey":
+  [ 20] pushint8 36 ............................. <36>
+  [ 22] setparam 1 .............................. tInk = 36
+  [ 24] jmp [ 61]
+  [ 27] peek 0
+  [ 29] pushcons 10 ............................. <"ri">
+  [ 31] eq
+  [ 32] jmpifz [ 42] ............................ (case) "ri":
+  [ 35] pushint8 8 .............................. <8>
+  [ 37] setparam 1 .............................. tInk = 8
+  [ 39] jmp [ 61]
+  [ 42] peek 0
+  [ 44] pushcons 11 ............................. <"li">
+  [ 46] eq
+  [ 47] jmpifz [ 57] ............................ (case) "li":
+  [ 50] pushint8 8 .............................. <8>
+  [ 52] setparam 1 .............................. tInk = 8
+  [ 54] jmp [ 61] ............................... (case) otherwise:
+  [ 57] pushint8 41 ............................. <41>
+  [ 59] setparam 1 .............................. tInk = 41
+  [ 61] pop 1 ................................... end case
+  [ 63] pushint8 1 .............................. <1>
+  [ 65] setlocal 0
+  [ 67] getlocal 0
+  [ 69] getprop 541 ............................. <pLayerPropList>
+  [ 72] getobjprop 172 .......................... <pLayerPropList.count>
+  [ 74] lteq
+  [ 75] jmpifz [115] ............................ repeat with i = 1 to pLayerPropList.count
+  [ 78] getprop 541 ............................. <pLayerPropList>
+  [ 81] getlocal 0 .............................. <i>
+  [ 83] pusharglist 2 ........................... <pLayerPropList, i>
+  [ 85] objcall 173 ............................. <pLayerPropList[i]>
+  [ 87] pushcons 4 .............................. <"drawProps">
+  [ 89] pusharglist 2 ........................... <pLayerPropList[i], "drawProps">
+  [ 91] objcall 173 ............................. <pLayerPropList[i]["drawProps"]>
+  [ 93] setlocal 1 .............................. tDrawProps = pLayerPropList[i]["drawProps"]
+  [ 95] getlocal 1 .............................. <tDrawProps>
+  [ 97] pushsymb 285 ............................ <#ink>
+  [100] getparam 1 .............................. <tInk>
+  [102] pusharglistnoret 3 ...................... <tDrawProps, #ink, tInk>
+  [104] objcall 175 ............................. tDrawProps[#ink] = tInk
+  [106] pushint8 1
+  [108] getlocal 0
+  [110] add
+  [111] setlocal 0
+  [113] endrepeat [ 67]
+  [115] pushint8 1 .............................. <1>
+  [117] pusharglistnoret 1 ...................... <1>
+  [119] extcall 189 ............................. return 1
+  [121] ret
+end
+
+on setModel me, tmodel
+  [  0] getparam 1 .............................. <tmodel>
+  [  2] pusharglist 1 ........................... <tmodel>
+  [  4] extcall 180 ............................. <ilk(tmodel)>
+  [  6] pushsymb 181 ............................ <#list>
+  [  8] nteq .................................... <ilk(tmodel) <> #list>
+  [  9] jmpifz [ 19] ............................ if ilk(tmodel) <> #list then
+  [ 12] getparam 1 .............................. <tmodel>
+  [ 14] pusharglist 1 ........................... <[tmodel]>
+  [ 16] pushlist ................................ <[tmodel]>
+  [ 17] setparam 1 .............................. tmodel = [tmodel]
+  [ 19] getparam 0 .............................. <me>
+  [ 21] pusharglistnoret 1 ...................... <me>
+  [ 23] objcall 397 ............................. me.clearGraphics()
+  [ 26] pusharglist 0 ........................... <[]>
+  [ 28] pushlist ................................ <[]>
+  [ 29] setprop 541 ............................. pLayerPropList = []
+  [ 32] pushint8 1 .............................. <1>
+  [ 34] setlocal 0
+  [ 36] getlocal 0
+  [ 38] getparam 1 .............................. <tmodel>
+  [ 40] getobjprop 172 .......................... <tmodel.count>
+  [ 42] lteq
+  [ 43] jmpifz [153] ............................ repeat with i = 1 to tmodel.count
+  [ 46] pusharglist 0 ........................... <[:]>
+  [ 48] pushproplist ............................ <[:]>
+  [ 49] setlocal 1 .............................. tdata = [:]
+  [ 51] getlocal 1 .............................. <tdata>
+  [ 53] pushcons 3 .............................. <"model">
+  [ 55] getparam 1 .............................. <tmodel>
+  [ 57] getlocal 0 .............................. <i>
+  [ 59] pusharglist 2 ........................... <tmodel, i>
+  [ 61] objcall 173 ............................. <tmodel[i]>
+  [ 63] pusharglistnoret 3 ...................... <tdata, "model", tmodel[i]>
+  [ 65] objcall 175 ............................. tdata["model"] = tmodel[i]
+  [ 67] getlocal 1 .............................. <tdata>
+  [ 69] pushcons 5 .............................. <"flipH">
+  [ 71] pushzero ................................ <0>
+  [ 72] pusharglistnoret 3 ...................... <tdata, "flipH", 0>
+  [ 74] objcall 175 ............................. tdata["flipH"] = 0
+  [ 76] getlocal 1 .............................. <tdata>
+  [ 78] pushcons 7 .............................. <"cacheImage">
+  [ 80] pushzero ................................ <0>
+  [ 81] pusharglistnoret 3 ...................... <tdata, "cacheImage", 0>
+  [ 83] objcall 175 ............................. tdata["cacheImage"] = 0
+  [ 85] getlocal 1 .............................. <tdata>
+  [ 87] pushcons 0 .............................. <"cacheRect">
+  [ 89] pushzero ................................ <0>
+  [ 90] pushzero ................................ <0>
+  [ 91] pushzero ................................ <0>
+  [ 92] pushzero ................................ <0>
+  [ 93] pusharglist 4 ........................... <0, 0, 0, 0>
+  [ 95] extcall 109 ............................. <rect(0, 0, 0, 0)>
+  [ 97] pusharglistnoret 3 ...................... <tdata, "cacheRect", rect(0, 0, 0, 0)>
+  [ 99] objcall 175 ............................. tdata["cacheRect"] = rect(0, 0, 0, 0)
+  [101] getlocal 1 .............................. <tdata>
+  [103] pushcons 4 .............................. <"drawProps">
+  [105] pushsymb 556 ............................ <#maskImage>
+  [108] pushzero ................................ <0>
+  [109] pushsymb 285 ............................ <#ink>
+  [112] pushzero ................................ <0>
+  [113] pushsymb 288 ............................ <#bgColor>
+  [116] pushzero ................................ <0>
+  [117] pusharglist 6 ........................... <[#maskImage: 0, #ink: 0, #bgColor: 0]>
+  [119] pushproplist ............................ <[#maskImage: 0, #ink: 0, #bgColor: 0]>
+  [120] pusharglistnoret 3 ...................... <tdata, "drawProps", [#maskImage: 0, #ink: 0, #bgColor: 0]>
+  [122] objcall 175 ............................. tdata["drawProps"] = [#maskImage: 0, #ink: 0, #bgColor: 0]
+  [124] getlocal 1 .............................. <tdata>
+  [126] pushcons 1 .............................. <"memString">
+  [128] pushcons 2 .............................. <EMPTY>
+  [130] pusharglistnoret 3 ...................... <tdata, "memString", EMPTY>
+  [132] objcall 175 ............................. tdata["memString"] = EMPTY
+  [134] getprop 541 ............................. <pLayerPropList>
+  [137] getlocal 1 .............................. <tdata>
+  [139] pusharglistnoret 2 ...................... <pLayerPropList, tdata>
+  [141] objcall 389 ............................. pLayerPropList.add(tdata)
+  [144] pushint8 1
+  [146] getlocal 0
+  [148] add
+  [149] setlocal 0
+  [151] endrepeat [ 36]
+  [153] getparam 0 .............................. <me>
+  [155] pusharglistnoret 1 ...................... <me>
+  [157] objcall 408 ............................. me.defineInk()
+  [160] ret
+end
+
+on setColor me, tColorList
+  [  0] getparam 1 .............................. <tColorList>
+  [  2] pusharglist 1 ........................... <tColorList>
+  [  4] extcall 194 ............................. <voidp(tColorList)>
+  [  6] jmpifz [ 14] ............................ if voidp(tColorList) then
+  [  9] pushzero ................................ <0>
+  [ 10] pusharglistnoret 1 ...................... <0>
+  [ 12] extcall 189 ............................. return 0
+  [ 14] getparam 1 .............................. <tColorList>
+  [ 16] pushcons 2 .............................. <EMPTY>
+  [ 18] eq ...................................... <tColorList = EMPTY>
+  [ 19] jmpifz [ 27] ............................ if tColorList = EMPTY then
+  [ 22] pushzero ................................ <0>
+  [ 23] pusharglistnoret 1 ...................... <0>
+  [ 25] extcall 189 ............................. return 0
+  [ 27] getparam 1 .............................. <tColorList>
+  [ 29] pusharglist 1 ........................... <tColorList>
+  [ 31] extcall 180 ............................. <ilk(tColorList)>
+  [ 33] pushsymb 181 ............................ <#list>
+  [ 35] nteq .................................... <ilk(tColorList) <> #list>
+  [ 36] jmpifz [ 46] ............................ if ilk(tColorList) <> #list then
+  [ 39] getparam 1 .............................. <tColorList>
+  [ 41] pusharglist 1 ........................... <[tColorList]>
+  [ 43] pushlist ................................ <[tColorList]>
+  [ 44] setparam 1 .............................. tColorList = [tColorList]
+  [ 46] pushint8 1 .............................. <1>
+  [ 48] setlocal 0
+  [ 50] getlocal 0
+  [ 52] getprop 541 ............................. <pLayerPropList>
+  [ 55] getobjprop 172 .......................... <pLayerPropList.count>
+  [ 57] lteq
+  [ 58] jmpifz [180] ............................ repeat with i = 1 to pLayerPropList.count
+  [ 61] getparam 1 .............................. <tColorList>
+  [ 63] getobjprop 172 .......................... <tColorList.count>
+  [ 65] getlocal 0 .............................. <i>
+  [ 67] lt ...................................... <tColorList.count < i>
+  [ 68] jmpifz [ 84] ............................ if tColorList.count < i then / else
+  [ 71] getparam 1 .............................. <tColorList>
+  [ 73] pushint8 1 .............................. <1>
+  [ 75] pusharglist 2 ........................... <tColorList, 1>
+  [ 77] objcall 173 ............................. <tColorList[1]>
+  [ 79] setlocal 1 .............................. tColor = tColorList[1]
+  [ 81] jmp [ 94]
+  [ 84] getparam 1 .............................. <tColorList>
+  [ 86] getlocal 0 .............................. <i>
+  [ 88] pusharglist 2 ........................... <tColorList, i>
+  [ 90] objcall 173 ............................. <tColorList[i]>
+  [ 92] setlocal 1 .............................. tColor = tColorList[i]
+  [ 94] getprop 541 ............................. <pLayerPropList>
+  [ 97] getlocal 0 .............................. <i>
+  [ 99] pusharglist 2 ........................... <pLayerPropList, i>
+  [101] objcall 173 ............................. <pLayerPropList[i]>
+  [103] pushcons 4 .............................. <"drawProps">
+  [105] pusharglist 2 ........................... <pLayerPropList[i], "drawProps">
+  [107] objcall 173 ............................. <pLayerPropList[i]["drawProps"]>
+  [109] setlocal 2 .............................. tDrawProps = pLayerPropList[i]["drawProps"]
+  [111] getlocal 1 .............................. <tColor>
+  [113] getobjprop 180 .......................... <tColor.ilk>
+  [115] pushsymb 366 ............................ <#color>
+  [118] eq ...................................... <tColor.ilk = #color>
+  [119] getlocal 2 .............................. <tDrawProps>
+  [121] pushsymb 285 ............................ <#ink>
+  [124] pusharglist 2 ........................... <tDrawProps, #ink>
+  [126] objcall 173 ............................. <tDrawProps[#ink]>
+  [128] pushint8 36 ............................. <36>
+  [130] nteq .................................... <tDrawProps[#ink] <> 36>
+  [131] and ..................................... <(tColor.ilk = #color) and (tDrawProps[#ink] <> 36)>
+  [132] jmpifz [149] ............................ if (tColor.ilk = #color) and (tDrawProps[#ink] <> 36) then
+  [135] getlocal 2 .............................. <tDrawProps>
+  [137] pushsymb 288 ............................ <#bgColor>
+  [140] getlocal 1 .............................. <tColor>
+  [142] pusharglistnoret 3 ...................... <tDrawProps, #bgColor, tColor>
+  [144] objcall 175 ............................. tDrawProps[#bgColor] = tColor
+  [146] jmp [171] ............................... next repeat
+  [149] getlocal 2 .............................. <tDrawProps>
+  [151] pushsymb 288 ............................ <#bgColor>
+  [154] pushint16 255 ........................... <255>
+  [157] pushint16 255 ........................... <255>
+  [160] pushint16 255 ........................... <255>
+  [163] pusharglist 3 ........................... <255, 255, 255>
+  [165] extcall 136 ............................. <rgb(255, 255, 255)>
+  [167] pusharglistnoret 3 ...................... <tDrawProps, #bgColor, rgb(255, 255, 255)>
+  [169] objcall 175 ............................. tDrawProps[#bgColor] = rgb(255, 255, 255)
+  [171] pushint8 1
+  [173] getlocal 0
+  [175] add
+  [176] setlocal 0
+  [178] endrepeat [ 50]
+  [180] pushint8 1 .............................. <1>
+  [182] pusharglistnoret 1 ...................... <1>
+  [184] extcall 189 ............................. return 1
+  [186] ret
+end
+
+on checkPartNotCarrying me
+  [  0] getprop 542 ............................. <pBody>
+  [  3] getprop 380 ............................. <pPart>
+  [  6] pusharglist 2 ........................... <pBody, pPart>
+  [  8] objcall 28 .............................. <pBody.getPartCarrying(pPart)>
+  [ 10] not ..................................... <not pBody.getPartCarrying(pPart)>
+  [ 11] pusharglistnoret 1 ...................... <not pBody.getPartCarrying(pPart)>
+  [ 13] extcall 189 ............................. return not pBody.getPartCarrying(pPart)
+  [ 15] ret
+end
+
+on doHandWorkLeft me, tAct
+  [  0] getparam 1 .............................. <tAct>
+  [  2] setprop 544 ............................. pAction = tAct
+  [  5] ret
+end
+
+on doHandWorkRight me, tAct
+  [  0] getparam 1 .............................. <tAct>
+  [  2] setprop 544 ............................. pAction = tAct
+  [  5] ret
+end
+
+on layDown me
+  [  0] pushcons 12 ............................. <"lay">
+  [  2] setprop 544 ............................. pAction = "lay"
+  [  5] ret
+end
+
+on getColor me
+  [  0] pushint8 1 .............................. <1>
+  [  2] setlocal 0
+  [  4] getlocal 0
+  [  6] getprop 541 ............................. <pLayerPropList>
+  [  9] getobjprop 172 .......................... <pLayerPropList.count>
+  [ 11] lteq
+  [ 12] jmpifz [ 80] ............................ repeat with i = 1 to pLayerPropList.count
+  [ 15] getprop 541 ............................. <pLayerPropList>
+  [ 18] pushint8 1 .............................. <1>
+  [ 20] pusharglist 2 ........................... <pLayerPropList, 1>
+  [ 22] objcall 173 ............................. <pLayerPropList[1]>
+  [ 24] pushcons 4 .............................. <"drawProps">
+  [ 26] pusharglist 2 ........................... <pLayerPropList[1], "drawProps">
+  [ 28] objcall 173 ............................. <pLayerPropList[1]["drawProps"]>
+  [ 30] setlocal 1 .............................. tDrawProps = pLayerPropList[1]["drawProps"]
+  [ 32] getlocal 1 .............................. <tDrawProps>
+  [ 34] pushsymb 288 ............................ <#bgColor>
+  [ 37] pusharglist 2 ........................... <tDrawProps, #bgColor>
+  [ 39] objcall 173 ............................. <tDrawProps[#bgColor]>
+  [ 41] pushint16 255 ........................... <255>
+  [ 44] pushint16 255 ........................... <255>
+  [ 47] pushint16 255 ........................... <255>
+  [ 50] pusharglist 3 ........................... <255, 255, 255>
+  [ 52] extcall 136 ............................. <rgb(255, 255, 255)>
+  [ 54] nteq .................................... <tDrawProps[#bgColor] <> rgb(255, 255, 255)>
+  [ 55] jmpifz [ 71] ............................ if tDrawProps[#bgColor] <> rgb(255, 255, 255) then
+  [ 58] getlocal 1 .............................. <tDrawProps>
+  [ 60] pushsymb 288 ............................ <#bgColor>
+  [ 63] pusharglist 2 ........................... <tDrawProps, #bgColor>
+  [ 65] objcall 173 ............................. <tDrawProps[#bgColor]>
+  [ 67] pusharglistnoret 1 ...................... <tDrawProps[#bgColor]>
+  [ 69] extcall 189 ............................. return tDrawProps[#bgColor]
+  [ 71] pushint8 1
+  [ 73] getlocal 0
+  [ 75] add
+  [ 76] setlocal 0
+  [ 78] endrepeat [  4]
+  [ 80] pushint16 255 ........................... <255>
+  [ 83] pushint16 255 ........................... <255>
+  [ 86] pushint16 255 ........................... <255>
+  [ 89] pusharglist 3 ........................... <255, 255, 255>
+  [ 91] extcall 136 ............................. <rgb(255, 255, 255)>
+  [ 93] pusharglistnoret 1 ...................... <rgb(255, 255, 255)>
+  [ 95] extcall 189 ............................. return rgb(255, 255, 255)
+  [ 97] ret
+end
+
+on getDirection me
+  [  0] getprop 260 ............................. <pDirection>
+  [  3] pusharglistnoret 1 ...................... <pDirection>
+  [  5] extcall 189 ............................. return pDirection
+  [  7] ret
+end
+
+on getModel me
+  [  0] pusharglist 0 ........................... <[]>
+  [  2] pushlist ................................ <[]>
+  [  3] setlocal 0 .............................. tmodel = []
+  [  5] pushint8 1 .............................. <1>
+  [  7] setlocal 1
+  [  9] getlocal 1
+  [ 11] getprop 541 ............................. <pLayerPropList>
+  [ 14] getobjprop 172 .......................... <pLayerPropList.count>
+  [ 16] lteq
+  [ 17] jmpifz [ 51] ............................ repeat with i = 1 to pLayerPropList.count
+  [ 20] getlocal 0 .............................. <tmodel>
+  [ 22] getprop 541 ............................. <pLayerPropList>
+  [ 25] getlocal 1 .............................. <i>
+  [ 27] pusharglist 2 ........................... <pLayerPropList, i>
+  [ 29] objcall 173 ............................. <pLayerPropList[i]>
+  [ 31] pushcons 3 .............................. <"model">
+  [ 33] pusharglist 2 ........................... <pLayerPropList[i], "model">
+  [ 35] objcall 173 ............................. <pLayerPropList[i]["model"]>
+  [ 37] pusharglistnoret 2 ...................... <tmodel, pLayerPropList[i]["model"]>
+  [ 39] objcall 389 ............................. tmodel.add(pLayerPropList[i]["model"])
+  [ 42] pushint8 1
+  [ 44] getlocal 1
+  [ 46] add
+  [ 47] setlocal 1
+  [ 49] endrepeat [  9]
+  [ 51] getlocal 0 .............................. <tmodel>
+  [ 53] pusharglistnoret 1 ...................... <tmodel>
+  [ 55] extcall 189 ............................. return tmodel
+  [ 57] ret
+end
+
+on getLocation me
+  [  0] getprop 541 ............................. <pLayerPropList>
+  [  3] getobjprop 172 .......................... <pLayerPropList.count>
+  [  5] pushint8 1 .............................. <1>
+  [  7] lt ...................................... <pLayerPropList.count < 1>
+  [  8] jmpifz [ 16] ............................ if pLayerPropList.count < 1 then
+  [ 11] pushzero ................................ <0>
+  [ 12] pusharglistnoret 1 ...................... <0>
+  [ 14] extcall 189 ............................. return 0
+  [ 16] getprop 541 ............................. <pLayerPropList>
+  [ 19] pushint8 1 .............................. <1>
+  [ 21] pusharglist 2 ........................... <pLayerPropList, 1>
+  [ 23] objcall 173 ............................. <pLayerPropList[1]>
+  [ 25] pushcons 1 .............................. <"memString">
+  [ 27] pusharglist 2 ........................... <pLayerPropList[1], "memString">
+  [ 29] objcall 173 ............................. <pLayerPropList[1]["memString"]>
+  [ 31] setlocal 0 .............................. tMemString = pLayerPropList[1]["memString"]
+  [ 33] getlocal 0 .............................. <tMemString>
+  [ 35] pusharglist 1 ........................... <tMemString>
+  [ 37] extcall 194 ............................. <voidp(tMemString)>
+  [ 39] jmpifz [ 47] ............................ if voidp(tMemString) then
+  [ 42] pushzero ................................ <0>
+  [ 43] pusharglistnoret 1 ...................... <0>
+  [ 45] extcall 189 ............................. return 0
+  [ 47] getlocal 0 .............................. <tMemString>
+  [ 49] pusharglist 1 ........................... <tMemString>
+  [ 51] extcall 201 ............................. <memberExists(tMemString)>
+  [ 53] not ..................................... <not memberExists(tMemString)>
+  [ 54] jmpifz [ 62] ............................ if not memberExists(tMemString) then
+  [ 57] pushzero ................................ <0>
+  [ 58] pusharglistnoret 1 ...................... <0>
+  [ 60] extcall 189 ............................. return 0
+  [ 62] getlocal 0 .............................. <tMemString>
+  [ 64] pusharglist 1 ........................... <tMemString>
+  [ 66] extcall 215 ............................. <getmemnum(tMemString)>
+  [ 68] pusharglist 1 ........................... <getmemnum(tMemString)>
+  [ 70] extcall 142 ............................. <member(getmemnum(tMemString))>
+  [ 72] setlocal 1 .............................. tmember = member(getmemnum(tMemString))
+  [ 74] getlocal 1 .............................. <tmember>
+  [ 76] getobjprop 109 .......................... <tmember.rect>
+  [ 78] setlocal 2 .............................. tImgRect = tmember.rect
+  [ 80] getlocal 2 .............................. <tImgRect>
+  [ 82] getobjprop 225 .......................... <tImgRect.width>
+  [ 84] pushint8 2 .............................. <2>
+  [ 86] div ..................................... <tImgRect.width / 2>
+  [ 87] getlocal 2 .............................. <tImgRect>
+  [ 89] getobjprop 217 .......................... <tImgRect.height>
+  [ 91] pushint8 2 .............................. <2>
+  [ 93] div ..................................... <tImgRect.height / 2>
+  [ 94] pusharglist 2 ........................... <tImgRect.width / 2, tImgRect.height / 2>
+  [ 96] extcall 107 ............................. <point(tImgRect.width / 2, tImgRect.height / 2)>
+  [ 98] setlocal 3 .............................. tCntrPoint = point(tImgRect.width / 2, tImgRect.height / 2)
+  [100] getlocal 1 .............................. <tmember>
+  [102] getobjprop 218 .......................... <tmember.regPoint>
+  [104] setlocal 4 .............................. tRegPoint = tmember.regPoint
+  [106] getlocal 4 .............................. <tRegPoint>
+  [108] inv ..................................... <-tRegPoint>
+  [109] getlocal 3 .............................. <tCntrPoint>
+  [111] add ..................................... <-tRegPoint + tCntrPoint>
+  [112] pusharglistnoret 1 ...................... <-tRegPoint + tCntrPoint>
+  [114] extcall 189 ............................. return -tRegPoint + tCntrPoint
+  [116] ret
+end
+
+on getPartID me
+  [  0] getprop 380 ............................. <pPart>
+  [  3] pusharglistnoret 1 ...................... <pPart>
+  [  5] extcall 189 ............................. return pPart
+  [  7] ret
+end
+
+on copyPicture me, tImg, tdir, tHumanSize, tAction, tAnimFrame
+  [  0] pushint8 1 .............................. <1>
+  [  2] setlocal 0
+  [  4] getlocal 0
+  [  6] getprop 541 ............................. <pLayerPropList>
+  [  9] getobjprop 172 .......................... <pLayerPropList.count>
+  [ 11] lteq
+  [ 12] jmpifz [366] ............................ repeat with i = 1 to pLayerPropList.count
+  [ 15] getparam 0 .............................. <me>
+  [ 17] getparam 2 .............................. <tdir>
+  [ 19] getparam 3 .............................. <tHumanSize>
+  [ 21] getparam 4 .............................. <tAction>
+  [ 23] getparam 5 .............................. <tAnimFrame>
+  [ 25] getlocal 0 .............................. <i>
+  [ 27] pusharglist 6 ........................... <me, tdir, tHumanSize, tAction, tAnimFrame, i>
+  [ 29] objcall 537 ............................. <me.getMemberNumber(tdir, tHumanSize, tAction, tAnimFrame, i)>
+  [ 32] setlocal 1 .............................. tArray = me.getMemberNumber(tdir, tHumanSize, tAction, tAnimFrame, i)
+  [ 34] getlocal 1 .............................. <tArray>
+  [ 36] pushsymb 580 ............................ <#memberNumber>
+  [ 39] pusharglist 2 ........................... <tArray, #memberNumber>
+  [ 41] objcall 173 ............................. <tArray[#memberNumber]>
+  [ 43] setlocal 2 .............................. tMemNum = tArray[#memberNumber]
+  [ 45] getlocal 1 .............................. <tArray>
+  [ 47] pushsymb 581 ............................ <#flip>
+  [ 50] pusharglist 2 ........................... <tArray, #flip>
+  [ 52] objcall 173 ............................. <tArray[#flip]>
+  [ 54] setlocal 3 .............................. tFlip = tArray[#flip]
+  [ 56] getprop 541 ............................. <pLayerPropList>
+  [ 59] getlocal 0 .............................. <i>
+  [ 61] pusharglist 2 ........................... <pLayerPropList, i>
+  [ 63] objcall 173 ............................. <pLayerPropList[i]>
+  [ 65] pushcons 4 .............................. <"drawProps">
+  [ 67] pusharglist 2 ........................... <pLayerPropList[i], "drawProps">
+  [ 69] objcall 173 ............................. <pLayerPropList[i]["drawProps"]>
+  [ 71] pushsymb 285 ............................ <#ink>
+  [ 74] pusharglist 2 ........................... <pLayerPropList[i]["drawProps"], #ink>
+  [ 76] objcall 173 ............................. <pLayerPropList[i]["drawProps"][#ink]>
+  [ 78] setlocal 4 .............................. tInk = pLayerPropList[i]["drawProps"][#ink]
+  [ 80] getprop 541 ............................. <pLayerPropList>
+  [ 83] getlocal 0 .............................. <i>
+  [ 85] pusharglist 2 ........................... <pLayerPropList, i>
+  [ 87] objcall 173 ............................. <pLayerPropList[i]>
+  [ 89] pushcons 4 .............................. <"drawProps">
+  [ 91] pusharglist 2 ........................... <pLayerPropList[i], "drawProps">
+  [ 93] objcall 173 ............................. <pLayerPropList[i]["drawProps"]>
+  [ 95] pushsymb 288 ............................ <#bgColor>
+  [ 98] pusharglist 2 ........................... <pLayerPropList[i]["drawProps"], #bgColor>
+  [100] objcall 173 ............................. <pLayerPropList[i]["drawProps"][#bgColor]>
+  [102] setlocal 5 .............................. tColor = pLayerPropList[i]["drawProps"][#bgColor]
+  [104] getlocal 2 .............................. <tMemNum>
+  [106] pushzero ................................ <0>
+  [107] nteq .................................... <tMemNum <> 0>
+  [108] jmpifz [356] ............................ if tMemNum <> 0 then
+  [111] getlocal 2 .............................. <tMemNum>
+  [113] pusharglist 1 ........................... <tMemNum>
+  [115] extcall 142 ............................. <member(tMemNum)>
+  [117] setlocal 6 .............................. tmember = member(tMemNum)
+  [119] getlocal 6 .............................. <tmember>
+  [121] getobjprop 216 .......................... <tmember.image>
+  [123] setlocal 7 .............................. tImage = tmember.image
+  [125] getlocal 6 .............................. <tmember>
+  [127] getobjprop 218 .......................... <tmember.regPoint>
+  [129] setlocal 8 .............................. tRegPnt = tmember.regPoint
+  [131] getparam 1 .............................. <tImg>
+  [133] getchainedprop 109 ...................... <tImg.rect>
+  [135] getobjprop 217 .......................... <tImg.rect.height>
+  [137] getlocal 8 .............................. <tRegPnt>
+  [139] pushint8 2 .............................. <2>
+  [141] pusharglist 2 ........................... <tRegPnt, 2>
+  [143] objcall 173 ............................. <tRegPnt[2]>
+  [145] sub ..................................... <tImg.rect.height - tRegPnt[2]>
+  [146] pushint8 10 ............................. <10>
+  [148] sub ..................................... <tImg.rect.height - tRegPnt[2] - 10>
+  [149] setlocal 9 .............................. tY = tImg.rect.height - tRegPnt[2] - 10
+  [151] getlocal 8 .............................. <tRegPnt>
+  [153] pushint8 1 .............................. <1>
+  [155] pusharglist 2 ........................... <tRegPnt, 1>
+  [157] objcall 173 ............................. <tRegPnt[1]>
+  [159] inv ..................................... <-tRegPnt[1]>
+  [160] setlocal 10 ............................. tX = -tRegPnt[1]
+  [162] getlocal 10 ............................. <tX>
+  [164] getlocal 9 .............................. <tY>
+  [166] getlocal 10 ............................. <tX>
+  [168] getlocal 7 .............................. <tImage>
+  [170] getobjprop 225 .......................... <tImage.width>
+  [172] add ..................................... <tX + tImage.width>
+  [173] getlocal 9 .............................. <tY>
+  [175] getlocal 7 .............................. <tImage>
+  [177] getobjprop 217 .......................... <tImage.height>
+  [179] add ..................................... <tY + tImage.height>
+  [180] pusharglist 4 ........................... <tX, tY, tX + tImage.width, tY + tImage.height>
+  [182] extcall 109 ............................. <rect(tX, tY, tX + tImage.width, tY + tImage.height)>
+  [184] setlocal 11 ............................. tRect = rect(tX, tY, tX + tImage.width, tY + tImage.height)
+  [186] getlocal 3 .............................. <tFlip>
+  [188] jmpifz [314] ............................ if tFlip then
+  [191] getparam 1 .............................. <tImg>
+  [193] getobjprop 225 .......................... <tImg.width>
+  [195] getlocal 10 ............................. <tX>
+  [197] getlocal 7 .............................. <tImage>
+  [199] getobjprop 225 .......................... <tImage.width>
+  [201] add ..................................... <tX + tImage.width>
+  [202] sub ..................................... <tImg.width - (tX + tImage.width)>
+  [203] getlocal 9 .............................. <tY>
+  [205] getparam 1 .............................. <tImg>
+  [207] getobjprop 225 .......................... <tImg.width>
+  [209] getlocal 10 ............................. <tX>
+  [211] sub ..................................... <tImg.width - tX>
+  [212] getlocal 9 .............................. <tY>
+  [214] getlocal 7 .............................. <tImage>
+  [216] getobjprop 217 .......................... <tImage.height>
+  [218] add ..................................... <tY + tImage.height>
+  [219] pusharglist 4 ........................... <tImg.width - (tX + tImage.width), tY, tImg.width - tX, tY + tImage.height>
+  [221] extcall 109 ............................. <rect(tImg.width - (tX + tImage.width), tY, tImg.width - tX, tY + tImage.height)>
+  [223] setlocal 11 ............................. tRect = rect(tImg.width - (tX + tImage.width), tY, tImg.width - tX, tY + tImage.height)
+  [225] getlocal 11 ............................. <tRect>
+  [227] pushint8 3 .............................. <3>
+  [229] pusharglist 2 ........................... <tRect, 3>
+  [231] objcall 173 ............................. <tRect[3]>
+  [233] getlocal 11 ............................. <tRect>
+  [235] pushint8 2 .............................. <2>
+  [237] pusharglist 2 ........................... <tRect, 2>
+  [239] objcall 173 ............................. <tRect[2]>
+  [241] pusharglist 2 ........................... <tRect[3], tRect[2]>
+  [243] extcall 107 ............................. <point(tRect[3], tRect[2])>
+  [245] getlocal 11 ............................. <tRect>
+  [247] pushint8 1 .............................. <1>
+  [249] pusharglist 2 ........................... <tRect, 1>
+  [251] objcall 173 ............................. <tRect[1]>
+  [253] getlocal 11 ............................. <tRect>
+  [255] pushint8 2 .............................. <2>
+  [257] pusharglist 2 ........................... <tRect, 2>
+  [259] objcall 173 ............................. <tRect[2]>
+  [261] pusharglist 2 ........................... <tRect[1], tRect[2]>
+  [263] extcall 107 ............................. <point(tRect[1], tRect[2])>
+  [265] getlocal 11 ............................. <tRect>
+  [267] pushint8 1 .............................. <1>
+  [269] pusharglist 2 ........................... <tRect, 1>
+  [271] objcall 173 ............................. <tRect[1]>
+  [273] getlocal 11 ............................. <tRect>
+  [275] pushint8 4 .............................. <4>
+  [277] pusharglist 2 ........................... <tRect, 4>
+  [279] objcall 173 ............................. <tRect[4]>
+  [281] pusharglist 2 ........................... <tRect[1], tRect[4]>
+  [283] extcall 107 ............................. <point(tRect[1], tRect[4])>
+  [285] getlocal 11 ............................. <tRect>
+  [287] pushint8 3 .............................. <3>
+  [289] pusharglist 2 ........................... <tRect, 3>
+  [291] objcall 173 ............................. <tRect[3]>
+  [293] getlocal 11 ............................. <tRect>
+  [295] pushint8 4 .............................. <4>
+  [297] pusharglist 2 ........................... <tRect, 4>
+  [299] objcall 173 ............................. <tRect[4]>
+  [301] pusharglist 2 ........................... <tRect[3], tRect[4]>
+  [303] extcall 107 ............................. <point(tRect[3], tRect[4])>
+  [305] pusharglist 4 ........................... <[point(tRect[3], tRect[2]), point(tRect[1], tRect[2]), point(tRect[1], tRect[4]), point(tRect[3], tRect[4])]>
+  [307] pushlist ................................ <[point(tRect[3], tRect[2]), point(tRect[1], tRect[2]), point(tRect[1], tRect[4]), point(tRect[3], tRect[4])]>
+  [308] setlocal 12 ............................. tQuad = [point(tRect[3], tRect[2]), point(tRect[1], tRect[2]), point(tRect[1], tRect[4]), point(tRect[3], tRect[4])]
+  [310] getlocal 12 ............................. <tQuad>
+  [312] setlocal 11 ............................. tRect = tQuad
+  [314] getlocal 7 .............................. <tImage>
+  [316] pusharglist 1 ........................... <tImage>
+  [318] objcall 557 ............................. <tImage.createMatte()>
+  [321] setlocal 13 ............................. tMatte = tImage.createMatte()
+  [323] getparam 1 .............................. <tImg>
+  [325] getlocal 7 .............................. <tImage>
+  [327] getlocal 11 ............................. <tRect>
+  [329] getlocal 7 .............................. <tImage>
+  [331] getobjprop 109 .......................... <tImage.rect>
+  [333] pushsymb 556 ............................ <#maskImage>
+  [336] getlocal 13 ............................. <tMatte>
+  [338] pushsymb 285 ............................ <#ink>
+  [341] getlocal 4 .............................. <tInk>
+  [343] pushsymb 288 ............................ <#bgColor>
+  [346] getlocal 5 .............................. <tColor>
+  [348] pusharglist 6 ........................... <[#maskImage: tMatte, #ink: tInk, #bgColor: tColor]>
+  [350] pushproplist ............................ <[#maskImage: tMatte, #ink: tInk, #bgColor: tColor]>
+  [351] pusharglistnoret 5 ...................... <tImg, tImage, tRect, tImage.rect, [#maskImage: tMatte, #ink: tInk, #bgColor: tColor]>
+  [353] objcall 381 ............................. tImg.copyPixels(tImage, tRect, tImage.rect, [#maskImage: tMatte, #ink: tInk, #bgColor: tColor])
+  [356] pushint8 1
+  [358] getlocal 0
+  [360] add
+  [361] setlocal 0
+  [363] endrepeat [  4]
+  [366] pushint8 1 .............................. <1>
+  [368] pusharglistnoret 1 ...................... <1>
+  [370] extcall 189 ............................. return 1
+  [372] ret
+end
+
+on reset me
+  [  0] pushcons 13 ............................. <"std">
+  [  2] setprop 544 ............................. pAction = "std"
+  [  5] ret
+end
+
+on skipAnimationFrame me
+  [  0] getprop 549 ............................. <pAnimFrame>
+  [  3] pushint8 1 .............................. <1>
+  [  5] add ..................................... <pAnimFrame + 1>
+  [  6] setprop 549 ............................. pAnimFrame = pAnimFrame + 1
+  [  9] getprop 549 ............................. <pAnimFrame>
+  [ 12] getprop 550 ............................. <pTotalFrame>
+  [ 15] gt ...................................... <pAnimFrame > pTotalFrame>
+  [ 16] jmpifz [ 24] ............................ if pAnimFrame > pTotalFrame then
+  [ 19] pushint8 1 .............................. <1>
+  [ 21] setprop 549 ............................. pAnimFrame = 1
+  [ 24] pushint8 1 .............................. <1>
+  [ 26] pusharglistnoret 1 ...................... <1>
+  [ 28] extcall 189 ............................. return 1
+  [ 30] ret
+end
+
+on changePartData me, tmodel, tColor
+  [  0] getparam 1 .............................. <tmodel>
+  [  2] pusharglist 1 ........................... <tmodel>
+  [  4] extcall 194 ............................. <voidp(tmodel)>
+  [  6] getparam 2 .............................. <tColor>
+  [  8] pusharglist 1 ........................... <tColor>
+  [ 10] extcall 194 ............................. <voidp(tColor)>
+  [ 12] or ...................................... <voidp(tmodel) or voidp(tColor)>
+  [ 13] jmpifz [ 21] ............................ if voidp(tmodel) or voidp(tColor) then
+  [ 16] pushzero ................................ <0>
+  [ 17] pusharglistnoret 1 ...................... <0>
+  [ 19] extcall 189 ............................. return 0
+  [ 21] getparam 0 .............................. <me>
+  [ 23] getparam 1 .............................. <tmodel>
+  [ 25] pusharglistnoret 2 ...................... <me, tmodel>
+  [ 27] objcall 433 ............................. me.setModel(tmodel)
+  [ 30] getparam 0 .............................. <me>
+  [ 32] getparam 2 .............................. <tColor>
+  [ 34] pusharglistnoret 2 ...................... <me, tColor>
+  [ 36] objcall 528 ............................. me.setColor(tColor)
+  [ 39] pushint8 1 .............................. <1>
+  [ 41] setlocal 0
+  [ 43] getlocal 0
+  [ 45] getprop 541 ............................. <pLayerPropList>
+  [ 48] getobjprop 172 .......................... <pLayerPropList.count>
+  [ 50] lteq
+  [ 51] jmpifz [125] ............................ repeat with i = 1 to pLayerPropList.count
+  [ 54] getprop 541 ............................. <pLayerPropList>
+  [ 57] getlocal 0 .............................. <i>
+  [ 59] pusharglist 2 ........................... <pLayerPropList, i>
+  [ 61] objcall 173 ............................. <pLayerPropList[i]>
+  [ 63] pushcons 1 .............................. <"memString">
+  [ 65] pusharglist 2 ........................... <pLayerPropList[i], "memString">
+  [ 67] objcall 173 ............................. <pLayerPropList[i]["memString"]>
+  [ 69] setlocal 1 .............................. tMemString = pLayerPropList[i]["memString"]
+  [ 71] getlocal 1 .............................. <tMemString>
+  [ 73] pushcons 6 .............................. <"_">
+  [ 75] pusharglist 2 ........................... <tMemString, "_">
+  [ 77] extcall 589 ............................. <explode(tMemString, "_")>
+  [ 80] setlocal 2 .............................. tMemNameList = explode(tMemString, "_")
+  [ 82] getlocal 2 .............................. <tMemNameList>
+  [ 84] pushint8 4 .............................. <4>
+  [ 86] getparam 1 .............................. <tmodel>
+  [ 88] pusharglistnoret 3 ...................... <tMemNameList, 4, tmodel>
+  [ 90] objcall 175 ............................. tMemNameList[4] = tmodel
+  [ 92] getprop 541 ............................. <pLayerPropList>
+  [ 95] getlocal 0 .............................. <i>
+  [ 97] pusharglist 2 ........................... <pLayerPropList, i>
+  [ 99] objcall 173 ............................. <pLayerPropList[i]>
+  [101] pushcons 1 .............................. <"memString">
+  [103] getlocal 2 .............................. <tMemNameList>
+  [105] pushcons 6 .............................. <"_">
+  [107] pusharglist 2 ........................... <tMemNameList, "_">
+  [109] extcall 590 ............................. <implode(tMemNameList, "_")>
+  [112] pusharglistnoret 3 ...................... <pLayerPropList[i], "memString", implode(tMemNameList, "_")>
+  [114] objcall 175 ............................. pLayerPropList[i]["memString"] = implode(tMemNameList, "_")
+  [116] pushint8 1
+  [118] getlocal 0
+  [120] add
+  [121] setlocal 0
+  [123] endrepeat [ 43]
+  [125] pushint8 1 .............................. <1>
+  [127] setlocal 3 .............................. tForced = 1
+  [129] getparam 0 .............................. <me>
+  [131] getlocal 3 .............................. <tForced>
+  [133] pusharglistnoret 2 ...................... <me, tForced>
+  [135] objcall 5 ............................... me.update(tForced)
+  [137] ret
+end
+
+on setAnimation me, tPart, tAnim
+  [  0] getparam 1 .............................. <tPart>
+  [  2] getprop 380 ............................. <pPart>
+  [  5] nteq .................................... <tPart <> pPart>
+  [  6] getparam 1 .............................. <tPart>
+  [  8] pushcons 14 ............................. <"all">
+  [ 10] nteq .................................... <tPart <> "all">
+  [ 11] and ..................................... <(tPart <> pPart) and (tPart <> "all")>
+  [ 12] jmpifz [ 19] ............................ if (tPart <> pPart) and (tPart <> "all") then
+  [ 15] pusharglistnoret 0 ...................... <>
+  [ 17] extcall 189 ............................. return 
+  [ 19] getparam 2 .............................. <tAnim>
+  [ 21] pusharglist 1 ........................... <tAnim>
+  [ 23] extcall 156 ............................. <value(tAnim)>
+  [ 25] setprop 548 ............................. pAnimation = value(tAnim)
+  [ 28] getprop 548 ............................. <pAnimation>
+  [ 31] pushsymb 593 ............................ <#frm>
+  [ 34] pusharglist 2 ........................... <pAnimation, #frm>
+  [ 36] objcall 290 ............................. <pAnimation.findPos(#frm)>
+  [ 39] pushzero ................................ <0>
+  [ 40] eq ...................................... <pAnimation.findPos(#frm) = 0>
+  [ 41] jmpifz [ 52] ............................ if pAnimation.findPos(#frm) = 0 then / else
+  [ 44] pushint8 1 .............................. <1>
+  [ 46] setprop 550 ............................. pTotalFrame = 1
+  [ 49] jmp [ 68]
+  [ 52] getprop 548 ............................. <pAnimation>
+  [ 55] pushsymb 593 ............................ <#frm>
+  [ 58] pusharglist 2 ........................... <pAnimation, #frm>
+  [ 60] objcall 272 ............................. <pAnimation.getaProp(#frm)>
+  [ 63] getobjprop 172 .......................... <pAnimation.getaProp(#frm).count>
+  [ 65] setprop 550 ............................. pTotalFrame = pAnimation.getaProp(#frm).count
+  [ 68] getprop 548 ............................. <pAnimation>
+  [ 71] pushsymb 594 ............................ <#skip>
+  [ 74] pusharglist 2 ........................... <pAnimation, #skip>
+  [ 76] objcall 272 ............................. <pAnimation.getaProp(#skip)>
+  [ 79] setprop 559 ............................. pFrameSkipTotal = pAnimation.getaProp(#skip)
+  [ 82] pushint8 1 .............................. <1>
+  [ 84] setprop 549 ............................. pAnimFrame = 1
+  [ 87] ret
+end
+
+on remAnimation me
+  [  0] pushzero ................................ <0>
+  [  1] setprop 548 ............................. pAnimation = 0
+  [  4] pushint8 1 .............................. <1>
+  [  6] setprop 549 ............................. pAnimFrame = 1
+  [  9] pushint8 1 .............................. <1>
+  [ 11] setprop 550 ............................. pTotalFrame = 1
+  [ 14] pushzero ................................ <0>
+  [ 15] setprop 545 ............................. pXFix = 0
+  [ 18] pushzero ................................ <0>
+  [ 19] setprop 546 ............................. pYFix = 0
+  [ 22] ret
+end
+
+on animateUpdate me
+  [  0] getprop 548 ............................. <pAnimation>
+  [  3] pusharglist 1 ........................... <pAnimation>
+  [  5] extcall 180 ............................. <ilk(pAnimation)>
+  [  7] pushsymb 183 ............................ <#propList>
+  [  9] nteq .................................... <ilk(pAnimation) <> #propList>
+  [ 10] jmpifz [ 17] ............................ if ilk(pAnimation) <> #propList then
+  [ 13] pusharglistnoret 0 ...................... <>
+  [ 15] extcall 189 ............................. return 
+  [ 17] getprop 548 ............................. <pAnimation>
+  [ 20] pushsymb 595 ............................ <#randomX>
+  [ 23] pusharglist 2 ........................... <pAnimation, #randomX>
+  [ 25] objcall 290 ............................. <pAnimation.findPos(#randomX)>
+  [ 28] pusharglist 0 ........................... <>
+  [ 30] extcall 101 ............................. <VOID>
+  [ 32] nteq .................................... <pAnimation.findPos(#randomX) <> VOID>
+  [ 33] jmpifz [ 68] ............................ if pAnimation.findPos(#randomX) <> VOID then / else
+  [ 36] getprop 549 ............................. <pAnimFrame>
+  [ 39] pushint8 1 .............................. <1>
+  [ 41] gt ...................................... <pAnimFrame > 1>
+  [ 42] jmpifz [ 51] ............................ if pAnimFrame > 1 then
+  [ 45] pushint8 1 .............................. <1>
+  [ 47] pusharglistnoret 1 ...................... <1>
+  [ 49] extcall 189 ............................. return 1
+  [ 51] getprop 542 ............................. <pBody>
+  [ 54] getchainedprop 219 ...................... <pBody.pBuffer>
+  [ 56] getobjprop 225 .......................... <pBody.pBuffer.width>
+  [ 58] pusharglist 1 ........................... <pBody.pBuffer.width>
+  [ 60] extcall 369 ............................. <random(pBody.pBuffer.width)>
+  [ 63] setlocal 0 .............................. tXFixRandom = random(pBody.pBuffer.width)
+  [ 65] jmp [ 71]
+  [ 68] pushzero ................................ <0>
+  [ 69] setlocal 0 .............................. tXFixRandom = 0
+  [ 71] getprop 548 ............................. <pAnimation>
+  [ 74] pushsymb 596 ............................ <#OffX>
+  [ 77] pusharglist 2 ........................... <pAnimation, #OffX>
+  [ 79] objcall 272 ............................. <pAnimation.getaProp(#OffX)>
+  [ 82] setlocal 1 .............................. tFixes = pAnimation.getaProp(#OffX)
+  [ 84] getlocal 1 .............................. <tFixes>
+  [ 86] pusharglist 0 ........................... <>
+  [ 88] extcall 101 ............................. <VOID>
+  [ 90] nteq .................................... <tFixes <> VOID>
+  [ 91] jmpifz [140] ............................ if tFixes <> VOID then / else
+  [ 94] getlocal 1 .............................. <tFixes>
+  [ 96] getobjprop 172 .......................... <tFixes.count>
+  [ 98] getprop 549 ............................. <pAnimFrame>
+  [101] lt ...................................... <tFixes.count < pAnimFrame>
+  [102] jmpifz [122] ............................ if tFixes.count < pAnimFrame then / else
+  [105] getlocal 1 .............................. <tFixes>
+  [107] pushint8 1 .............................. <1>
+  [109] pusharglist 2 ........................... <tFixes, 1>
+  [111] objcall 173 ............................. <tFixes[1]>
+  [113] getlocal 0 .............................. <tXFixRandom>
+  [115] add ..................................... <tFixes[1] + tXFixRandom>
+  [116] setprop 545 ............................. pXFix = tFixes[1] + tXFixRandom
+  [119] jmp [137]
+  [122] getlocal 1 .............................. <tFixes>
+  [124] getprop 549 ............................. <pAnimFrame>
+  [127] pusharglist 2 ........................... <tFixes, pAnimFrame>
+  [129] objcall 173 ............................. <tFixes[pAnimFrame]>
+  [131] getlocal 0 .............................. <tXFixRandom>
+  [133] add ..................................... <tFixes[pAnimFrame] + tXFixRandom>
+  [134] setprop 545 ............................. pXFix = tFixes[pAnimFrame] + tXFixRandom
+  [137] jmp [145]
+  [140] getlocal 0 .............................. <tXFixRandom>
+  [142] setprop 545 ............................. pXFix = tXFixRandom
+  [145] getprop 548 ............................. <pAnimation>
+  [148] pushsymb 597 ............................ <#randomY>
+  [151] pusharglist 2 ........................... <pAnimation, #randomY>
+  [153] objcall 290 ............................. <pAnimation.findPos(#randomY)>
+  [156] pusharglist 0 ........................... <>
+  [158] extcall 101 ............................. <VOID>
+  [160] nteq .................................... <pAnimation.findPos(#randomY) <> VOID>
+  [161] jmpifz [197] ............................ if pAnimation.findPos(#randomY) <> VOID then / else
+  [164] getprop 549 ............................. <pAnimFrame>
+  [167] pushint8 1 .............................. <1>
+  [169] gt ...................................... <pAnimFrame > 1>
+  [170] jmpifz [179] ............................ if pAnimFrame > 1 then
+  [173] pushint8 1 .............................. <1>
+  [175] pusharglistnoret 1 ...................... <1>
+  [177] extcall 189 ............................. return 1
+  [179] getprop 542 ............................. <pBody>
+  [182] getchainedprop 219 ...................... <pBody.pBuffer>
+  [184] getobjprop 217 .......................... <pBody.pBuffer.height>
+  [186] pusharglist 1 ........................... <pBody.pBuffer.height>
+  [188] extcall 369 ............................. <random(pBody.pBuffer.height)>
+  [191] inv ..................................... <-random(pBody.pBuffer.height)>
+  [192] setlocal 2 .............................. tYFixRandom = -random(pBody.pBuffer.height)
+  [194] jmp [200]
+  [197] pushzero ................................ <0>
+  [198] setlocal 2 .............................. tYFixRandom = 0
+  [200] getprop 548 ............................. <pAnimation>
+  [203] pushsymb 598 ............................ <#OffY>
+  [206] pusharglist 2 ........................... <pAnimation, #OffY>
+  [208] objcall 272 ............................. <pAnimation.getaProp(#OffY)>
+  [211] setlocal 1 .............................. tFixes = pAnimation.getaProp(#OffY)
+  [213] getlocal 1 .............................. <tFixes>
+  [215] pusharglist 0 ........................... <>
+  [217] extcall 101 ............................. <VOID>
+  [219] nteq .................................... <tFixes <> VOID>
+  [220] jmpifz [269] ............................ if tFixes <> VOID then / else
+  [223] getlocal 1 .............................. <tFixes>
+  [225] getobjprop 172 .......................... <tFixes.count>
+  [227] getprop 549 ............................. <pAnimFrame>
+  [230] lt ...................................... <tFixes.count < pAnimFrame>
+  [231] jmpifz [251] ............................ if tFixes.count < pAnimFrame then / else
+  [234] getlocal 1 .............................. <tFixes>
+  [236] pushint8 1 .............................. <1>
+  [238] pusharglist 2 ........................... <tFixes, 1>
+  [240] objcall 173 ............................. <tFixes[1]>
+  [242] getlocal 2 .............................. <tYFixRandom>
+  [244] add ..................................... <tFixes[1] + tYFixRandom>
+  [245] setprop 546 ............................. pYFix = tFixes[1] + tYFixRandom
+  [248] jmp [266]
+  [251] getlocal 1 .............................. <tFixes>
+  [253] getprop 549 ............................. <pAnimFrame>
+  [256] pusharglist 2 ........................... <tFixes, pAnimFrame>
+  [258] objcall 173 ............................. <tFixes[pAnimFrame]>
+  [260] getlocal 2 .............................. <tYFixRandom>
+  [262] add ..................................... <tFixes[pAnimFrame] + tYFixRandom>
+  [263] setprop 546 ............................. pYFix = tFixes[pAnimFrame] + tYFixRandom
+  [266] jmp [274]
+  [269] getlocal 2 .............................. <tYFixRandom>
+  [271] setprop 546 ............................. pYFix = tYFixRandom
+  [274] getprop 542 ............................. <pBody>
+  [277] getobjprop 260 .......................... <pBody.pDirection>
+  [280] peek 0 .................................. case pBody.pDirection of
+  [282] pushzero ................................ <0>
+  [283] eq
+  [284] jmpifz [312] ............................ (case) 0:
+  [287] getprop 546 ............................. <pYFix>
+  [290] getprop 545 ............................. <pXFix>
+  [293] pushint8 2 .............................. <2>
+  [295] div ..................................... <pXFix / 2>
+  [296] add ..................................... <pYFix + (pXFix / 2)>
+  [297] setprop 546 ............................. pYFix = pYFix + (pXFix / 2)
+  [300] getprop 545 ............................. <pXFix>
+  [303] pushint8 2 .............................. <2>
+  [305] div ..................................... <pXFix / 2>
+  [306] setprop 545 ............................. pXFix = pXFix / 2
+  [309] jmp [478]
+  [312] peek 0
+  [314] pushint8 1 .............................. <1>
+  [316] eq
+  [317] jmpifz [337] ............................ (case) 1:
+  [320] getprop 546 ............................. <pYFix>
+  [323] getprop 545 ............................. <pXFix>
+  [326] add ..................................... <pYFix + pXFix>
+  [327] setprop 546 ............................. pYFix = pYFix + pXFix
+  [330] pushzero ................................ <0>
+  [331] setprop 545 ............................. pXFix = 0
+  [334] jmp [478]
+  [337] peek 0
+  [339] pushint8 2 .............................. <2>
+  [341] eq
+  [342] jmpifz [370] ............................ (case) 2:
+  [345] getprop 546 ............................. <pYFix>
+  [348] getprop 545 ............................. <pXFix>
+  [351] pushint8 2 .............................. <2>
+  [353] div ..................................... <pXFix / 2>
+  [354] sub ..................................... <pYFix - (pXFix / 2)>
+  [355] setprop 546 ............................. pYFix = pYFix - (pXFix / 2)
+  [358] getprop 545 ............................. <pXFix>
+  [361] pushint8 2 .............................. <2>
+  [363] div ..................................... <pXFix / 2>
+  [364] setprop 545 ............................. pXFix = pXFix / 2
+  [367] jmp [478]
+  [370] peek 0
+  [372] pushint8 4 .............................. <4>
+  [374] eq
+  [375] jmpifz [404] ............................ (case) 4:
+  [378] getprop 546 ............................. <pYFix>
+  [381] getprop 545 ............................. <pXFix>
+  [384] pushint8 2 .............................. <2>
+  [386] div ..................................... <pXFix / 2>
+  [387] add ..................................... <pYFix + (pXFix / 2)>
+  [388] setprop 546 ............................. pYFix = pYFix + (pXFix / 2)
+  [391] getprop 545 ............................. <pXFix>
+  [394] inv ..................................... <-pXFix>
+  [395] pushint8 2 .............................. <2>
+  [397] div ..................................... <-pXFix / 2>
+  [398] setprop 545 ............................. pXFix = -pXFix / 2
+  [401] jmp [478]
+  [404] peek 0
+  [406] pushint8 5 .............................. <5>
+  [408] eq
+  [409] jmpifz [429] ............................ (case) 5:
+  [412] getprop 546 ............................. <pYFix>
+  [415] getprop 545 ............................. <pXFix>
+  [418] sub ..................................... <pYFix - pXFix>
+  [419] setprop 546 ............................. pYFix = pYFix - pXFix
+  [422] pushzero ................................ <0>
+  [423] setprop 545 ............................. pXFix = 0
+  [426] jmp [478]
+  [429] peek 0
+  [431] pushint8 6 .............................. <6>
+  [433] eq
+  [434] jmpifz [463] ............................ (case) 6:
+  [437] getprop 546 ............................. <pYFix>
+  [440] getprop 545 ............................. <pXFix>
+  [443] pushint8 2 .............................. <2>
+  [445] div ..................................... <pXFix / 2>
+  [446] sub ..................................... <pYFix - (pXFix / 2)>
+  [447] setprop 546 ............................. pYFix = pYFix - (pXFix / 2)
+  [450] getprop 545 ............................. <pXFix>
+  [453] inv ..................................... <-pXFix>
+  [454] pushint8 2 .............................. <2>
+  [456] div ..................................... <-pXFix / 2>
+  [457] setprop 545 ............................. pXFix = -pXFix / 2
+  [460] jmp [478]
+  [463] peek 0
+  [465] pushint8 7 .............................. <7>
+  [467] eq
+  [468] jmpifz [478] ............................ (case) 7:
+  [471] getprop 545 ............................. <pXFix>
+  [474] inv ..................................... <-pXFix>
+  [475] setprop 545 ............................. pXFix = -pXFix
+  [478] pop 1 ................................... end case
+  [480] getprop 542 ............................. <pBody>
+  [483] getobjprop 163 .......................... <pBody.pPeopleSize>
+  [485] pushcons 8 .............................. <"sh">
+  [487] eq ...................................... <pBody.pPeopleSize = "sh">
+  [488] jmpifz [501] ............................ if pBody.pPeopleSize = "sh" then / else
+  [491] pushfloat32 0.5 ......................... <0.5>
+  [496] setlocal 3 .............................. tSizeMultiplier = 0.5
+  [498] jmp [505]
+  [501] pushint8 1 .............................. <1>
+  [503] setlocal 3 .............................. tSizeMultiplier = 1
+  [505] getprop 545 ............................. <pXFix>
+  [508] getlocal 3 .............................. <tSizeMultiplier>
+  [510] mul ..................................... <pXFix * tSizeMultiplier>
+  [511] setprop 545 ............................. pXFix = pXFix * tSizeMultiplier
+  [514] getprop 546 ............................. <pYFix>
+  [517] getlocal 3 .............................. <tSizeMultiplier>
+  [519] mul ..................................... <pYFix * tSizeMultiplier>
+  [520] setprop 546 ............................. pYFix = pYFix * tSizeMultiplier
+  [523] ret
+end
+
+on animate me, tLayerIndex
+  [  0] getprop 548 ............................. <pAnimation>
+  [  3] not ..................................... <not pAnimation>
+  [  4] jmpifz [ 13] ............................ if not pAnimation then
+  [  7] pushcons 2 .............................. <EMPTY>
+  [  9] pusharglistnoret 1 ...................... <EMPTY>
+  [ 11] extcall 189 ............................. return EMPTY
+  [ 13] getparam 1 .............................. <tLayerIndex>
+  [ 15] pusharglist 1 ........................... <tLayerIndex>
+  [ 17] extcall 194 ............................. <voidp(tLayerIndex)>
+  [ 19] jmpifz [ 26] ............................ if voidp(tLayerIndex) then
+  [ 22] pushint8 1 .............................. <1>
+  [ 24] setparam 1 .............................. tLayerIndex = 1
+  [ 26] getparam 1 .............................. <tLayerIndex>
+  [ 28] pushint8 1 .............................. <1>
+  [ 30] lt ...................................... <tLayerIndex < 1>
+  [ 31] getparam 1 .............................. <tLayerIndex>
+  [ 33] getprop 541 ............................. <pLayerPropList>
+  [ 36] getobjprop 172 .......................... <pLayerPropList.count>
+  [ 38] gt ...................................... <tLayerIndex > pLayerPropList.count>
+  [ 39] or ...................................... <(tLayerIndex < 1) or (tLayerIndex > pLayerPropList.count)>
+  [ 40] jmpifz [ 49] ............................ if (tLayerIndex < 1) or (tLayerIndex > pLayerPropList.count) then
+  [ 43] pushcons 2 .............................. <EMPTY>
+  [ 45] pusharglistnoret 1 ...................... <EMPTY>
+  [ 47] extcall 189 ............................. return EMPTY
+  [ 49] getprop 541 ............................. <pLayerPropList>
+  [ 52] getparam 1 .............................. <tLayerIndex>
+  [ 54] pusharglist 2 ........................... <pLayerPropList, tLayerIndex>
+  [ 56] objcall 173 ............................. <pLayerPropList[tLayerIndex]>
+  [ 58] setlocal 0 .............................. tdata = pLayerPropList[tLayerIndex]
+  [ 60] getlocal 0 .............................. <tdata>
+  [ 62] pushcons 3 .............................. <"model">
+  [ 64] pusharglist 2 ........................... <tdata, "model">
+  [ 66] objcall 173 ............................. <tdata["model"]>
+  [ 68] setlocal 1 .............................. tmodel = tdata["model"]
+  [ 70] getprop 548 ............................. <pAnimation>
+  [ 73] pushsymb 603 ............................ <#OffD>
+  [ 76] pusharglist 2 ........................... <pAnimation, #OffD>
+  [ 78] objcall 272 ............................. <pAnimation.getaProp(#OffD)>
+  [ 81] setlocal 2 .............................. tFixes = pAnimation.getaProp(#OffD)
+  [ 83] getlocal 2 .............................. <tFixes>
+  [ 85] pusharglist 0 ........................... <>
+  [ 87] extcall 101 ............................. <VOID>
+  [ 89] nteq .................................... <tFixes <> VOID>
+  [ 90] jmpifz [139] ............................ if tFixes <> VOID then / else
+  [ 93] getlocal 2 .............................. <tFixes>
+  [ 95] getobjprop 172 .......................... <tFixes.count>
+  [ 97] getprop 549 ............................. <pAnimFrame>
+  [100] lt ...................................... <tFixes.count < pAnimFrame>
+  [101] jmpifz [121] ............................ if tFixes.count < pAnimFrame then / else
+  [104] getprop 260 ............................. <pDirection>
+  [107] getlocal 2 .............................. <tFixes>
+  [109] pushint8 1 .............................. <1>
+  [111] pusharglist 2 ........................... <tFixes, 1>
+  [113] objcall 173 ............................. <tFixes[1]>
+  [115] add ..................................... <pDirection + tFixes[1]>
+  [116] setlocal 3 .............................. tdir = pDirection + tFixes[1]
+  [118] jmp [136]
+  [121] getprop 260 ............................. <pDirection>
+  [124] getlocal 2 .............................. <tFixes>
+  [126] getprop 549 ............................. <pAnimFrame>
+  [129] pusharglist 2 ........................... <tFixes, pAnimFrame>
+  [131] objcall 173 ............................. <tFixes[pAnimFrame]>
+  [133] add ..................................... <pDirection + tFixes[pAnimFrame]>
+  [134] setlocal 3 .............................. tdir = pDirection + tFixes[pAnimFrame]
+  [136] jmp [144]
+  [139] getprop 260 ............................. <pDirection>
+  [142] setlocal 3 .............................. tdir = pDirection
+  [144] getlocal 3 .............................. <tdir>
+  [146] pushint8 7 .............................. <7>
+  [148] gt ...................................... <tdir > 7>
+  [149] jmpifz [169] ............................ if tdir > 7 then / else
+  [152] getlocal 3 .............................. <tdir>
+  [154] pushint8 8 .............................. <8>
+  [156] sub ..................................... <tdir - 8>
+  [157] pushint8 7 .............................. <7>
+  [159] pusharglist 2 ........................... <tdir - 8, 7>
+  [161] extcall 604 ............................. <min(tdir - 8, 7)>
+  [164] setlocal 3 .............................. tdir = min(tdir - 8, 7)
+  [166] jmp [192]
+  [169] getlocal 3 .............................. <tdir>
+  [171] pushzero ................................ <0>
+  [172] lt ...................................... <tdir < 0>
+  [173] jmpifz [192] ............................ if tdir < 0 then
+  [176] pushint8 7 .............................. <7>
+  [178] getlocal 3 .............................. <tdir>
+  [180] add ..................................... <7 + tdir>
+  [181] pushint8 1 .............................. <1>
+  [183] add ..................................... <7 + tdir + 1>
+  [184] pushzero ................................ <0>
+  [185] pusharglist 2 ........................... <7 + tdir + 1, 0>
+  [187] extcall 605 ............................. <max(7 + tdir + 1, 0)>
+  [190] setlocal 3 .............................. tdir = max(7 + tdir + 1, 0)
+  [192] getprop 548 ............................. <pAnimation>
+  [195] pushsymb 606 ............................ <#namebase>
+  [198] pusharglist 2 ........................... <pAnimation, #namebase>
+  [200] objcall 272 ............................. <pAnimation.getaProp(#namebase)>
+  [203] pushzero ................................ <0>
+  [204] nteq .................................... <pAnimation.getaProp(#namebase) <> 0>
+  [205] jmpifz [224] ............................ if pAnimation.getaProp(#namebase) <> 0 then / else
+  [208] getprop 548 ............................. <pAnimation>
+  [211] pushsymb 606 ............................ <#namebase>
+  [214] pusharglist 2 ........................... <pAnimation, #namebase>
+  [216] objcall 272 ............................. <pAnimation.getaProp(#namebase)>
+  [219] setlocal 4 .............................. tPart = pAnimation.getaProp(#namebase)
+  [221] jmp [229]
+  [224] getprop 380 ............................. <pPart>
+  [227] setlocal 4 .............................. tPart = pPart
+  [229] getprop 548 ............................. <pAnimation>
+  [232] pushsymb 607 ............................ <#act>
+  [235] pusharglist 2 ........................... <pAnimation, #act>
+  [237] objcall 272 ............................. <pAnimation.getaProp(#act)>
+  [240] setlocal 5 .............................. tActions = pAnimation.getaProp(#act)
+  [242] getlocal 5 .............................. <tActions>
+  [244] pusharglist 0 ........................... <>
+  [246] extcall 101 ............................. <VOID>
+  [248] eq ...................................... <tActions = VOID>
+  [249] jmpifz [260] ............................ if tActions = VOID then / else
+  [252] getprop 544 ............................. <pAction>
+  [255] setlocal 6 .............................. tAnimAct = pAction
+  [257] jmp [295]
+  [260] getlocal 5 .............................. <tActions>
+  [262] getobjprop 172 .......................... <tActions.count>
+  [264] getprop 549 ............................. <pAnimFrame>
+  [267] lt ...................................... <tActions.count < pAnimFrame>
+  [268] jmpifz [284] ............................ if tActions.count < pAnimFrame then / else
+  [271] getlocal 5 .............................. <tActions>
+  [273] pushint8 1 .............................. <1>
+  [275] pusharglist 2 ........................... <tActions, 1>
+  [277] objcall 173 ............................. <tActions[1]>
+  [279] setlocal 6 .............................. tAnimAct = tActions[1]
+  [281] jmp [295]
+  [284] getlocal 5 .............................. <tActions>
+  [286] getprop 549 ............................. <pAnimFrame>
+  [289] pusharglist 2 ........................... <tActions, pAnimFrame>
+  [291] objcall 173 ............................. <tActions[pAnimFrame]>
+  [293] setlocal 6 .............................. tAnimAct = tActions[pAnimFrame]
+  [295] getprop 548 ............................. <pAnimation>
+  [298] pushsymb 593 ............................ <#frm>
+  [301] pusharglist 2 ........................... <pAnimation, #frm>
+  [303] objcall 272 ............................. <pAnimation.getaProp(#frm)>
+  [306] setlocal 7 .............................. tFrames = pAnimation.getaProp(#frm)
+  [308] getlocal 7 .............................. <tFrames>
+  [310] pusharglist 0 ........................... <>
+  [312] extcall 101 ............................. <VOID>
+  [314] nteq .................................... <tFrames <> VOID>
+  [315] jmpifz [356] ............................ if tFrames <> VOID then / else
+  [318] getlocal 7 .............................. <tFrames>
+  [320] getobjprop 172 .......................... <tFrames.count>
+  [322] getprop 549 ............................. <pAnimFrame>
+  [325] lt ...................................... <tFrames.count < pAnimFrame>
+  [326] jmpifz [342] ............................ if tFrames.count < pAnimFrame then / else
+  [329] getlocal 7 .............................. <tFrames>
+  [331] pushint8 1 .............................. <1>
+  [333] pusharglist 2 ........................... <tFrames, 1>
+  [335] objcall 173 ............................. <tFrames[1]>
+  [337] setlocal 8 .............................. tAnimFrame = tFrames[1]
+  [339] jmp [353]
+  [342] getlocal 7 .............................. <tFrames>
+  [344] getprop 549 ............................. <pAnimFrame>
+  [347] pusharglist 2 ........................... <tFrames, pAnimFrame>
+  [349] objcall 173 ............................. <tFrames[pAnimFrame]>
+  [351] setlocal 8 .............................. tAnimFrame = tFrames[pAnimFrame]
+  [353] jmp [359]
+  [356] pushzero ................................ <0>
+  [357] setlocal 8 .............................. tAnimFrame = 0
+  [359] getlocal 3 .............................. <tdir>
+  [361] getprop 542 ............................. <pBody>
+  [364] pushsymb 105 ............................ <#pFlipList>
+  [366] getlocal 3 .............................. <tdir>
+  [368] pushint8 1 .............................. <1>
+  [370] add ..................................... <tdir + 1>
+  [371] pusharglist 3 ........................... <pBody, #pFlipList, tdir + 1>
+  [373] objcall 311 ............................. <pBody.pFlipList[tdir + 1]>
+  [376] nteq .................................... <tdir <> pBody.pFlipList[tdir + 1]>
+  [377] jmpifz [499] ............................ if tdir <> pBody.pFlipList[tdir + 1] then / else
+  [380] getlocal 3 .............................. <tdir>
+  [382] setlocal 9 .............................. tDirOrig = tdir
+  [384] getprop 542 ............................. <pBody>
+  [387] pushsymb 105 ............................ <#pFlipList>
+  [389] getlocal 3 .............................. <tdir>
+  [391] pushint8 1 .............................. <1>
+  [393] add ..................................... <tdir + 1>
+  [394] pusharglist 3 ........................... <pBody, #pFlipList, tdir + 1>
+  [396] objcall 311 ............................. <pBody.pFlipList[tdir + 1]>
+  [399] setlocal 3 .............................. tdir = pBody.pFlipList[tdir + 1]
+  [401] getlocal 0 .............................. <tdata>
+  [403] pushcons 5 .............................. <"flipH">
+  [405] pushint8 1 .............................. <1>
+  [407] pusharglistnoret 3 ...................... <tdata, "flipH", 1>
+  [409] objcall 175 ............................. tdata["flipH"] = 1
+  [411] getprop 552 ............................. <pFlipPart>
+  [414] pushcons 2 .............................. <EMPTY>
+  [416] nteq .................................... <pFlipPart <> EMPTY>
+  [417] jmpifz [496] ............................ if pFlipPart <> EMPTY then
+  [420] getprop 542 ............................. <pBody>
+  [423] getobjprop 163 .......................... <pBody.pPeopleSize>
+  [425] pushcons 6 .............................. <"_">
+  [427] joinstr ................................. <pBody.pPeopleSize & "_">
+  [428] getlocal 6 .............................. <tAnimAct>
+  [430] joinstr ................................. <pBody.pPeopleSize & "_" & tAnimAct>
+  [431] pushcons 6 .............................. <"_">
+  [433] joinstr ................................. <pBody.pPeopleSize & "_" & tAnimAct & "_">
+  [434] getlocal 4 .............................. <tPart>
+  [436] joinstr ................................. <pBody.pPeopleSize & "_" & tAnimAct & "_" & tPart>
+  [437] pushcons 6 .............................. <"_">
+  [439] joinstr ................................. <pBody.pPeopleSize & "_" & tAnimAct & "_" & tPart & "_">
+  [440] getlocal 1 .............................. <tmodel>
+  [442] joinstr ................................. <pBody.pPeopleSize & "_" & tAnimAct & "_" & tPart & "_" & tmodel>
+  [443] pushcons 6 .............................. <"_">
+  [445] joinstr ................................. <pBody.pPeopleSize & "_" & tAnimAct & "_" & tPart & "_" & tmodel & "_">
+  [446] getlocal 9 .............................. <tDirOrig>
+  [448] joinstr ................................. <pBody.pPeopleSize & "_" & tAnimAct & "_" & tPart & "_" & tmodel & "_" & tDirOrig>
+  [449] pushcons 6 .............................. <"_">
+  [451] joinstr ................................. <pBody.pPeopleSize & "_" & tAnimAct & "_" & tPart & "_" & tmodel & "_" & tDirOrig & "_">
+  [452] getlocal 8 .............................. <tAnimFrame>
+  [454] joinstr ................................. <pBody.pPeopleSize & "_" & tAnimAct & "_" & tPart & "_" & tmodel & "_" & tDirOrig & "_" & tAnimFrame>
+  [455] setlocal 10 ............................. tMemString = pBody.pPeopleSize & "_" & tAnimAct & "_" & tPart & "_" & tmodel & "_" & tDirOrig & "_" & tAnimFrame
+  [457] getparam 0 .............................. <me>
+  [459] getlocal 10 ............................. <tMemString>
+  [461] pusharglist 2 ........................... <me, tMemString>
+  [463] objcall 539 ............................. <me.getMemNumFast(tMemString)>
+  [466] setlocal 11 ............................. tMemNum = me.getMemNumFast(tMemString)
+  [468] getlocal 11 ............................. <tMemNum>
+  [470] pushzero ................................ <0>
+  [471] gt ...................................... <tMemNum > 0>
+  [472] jmpifz [491] ............................ if tMemNum > 0 then / else
+  [475] getlocal 9 .............................. <tDirOrig>
+  [477] setlocal 3 .............................. tdir = tDirOrig
+  [479] getlocal 0 .............................. <tdata>
+  [481] pushcons 5 .............................. <"flipH">
+  [483] pushzero ................................ <0>
+  [484] pusharglistnoret 3 ...................... <tdata, "flipH", 0>
+  [486] objcall 175 ............................. tdata["flipH"] = 0
+  [488] jmp [496]
+  [491] getprop 552 ............................. <pFlipPart>
+  [494] setlocal 4 .............................. tPart = pFlipPart
+  [496] jmp [508]
+  [499] getlocal 0 .............................. <tdata>
+  [501] pushcons 5 .............................. <"flipH">
+  [503] pushzero ................................ <0>
+  [504] pusharglistnoret 3 ...................... <tdata, "flipH", 0>
+  [506] objcall 175 ............................. tdata["flipH"] = 0
+  [508] getprop 542 ............................. <pBody>
+  [511] getobjprop 163 .......................... <pBody.pPeopleSize>
+  [513] pushcons 6 .............................. <"_">
+  [515] joinstr ................................. <pBody.pPeopleSize & "_">
+  [516] getlocal 6 .............................. <tAnimAct>
+  [518] joinstr ................................. <pBody.pPeopleSize & "_" & tAnimAct>
+  [519] pushcons 6 .............................. <"_">
+  [521] joinstr ................................. <pBody.pPeopleSize & "_" & tAnimAct & "_">
+  [522] getlocal 4 .............................. <tPart>
+  [524] joinstr ................................. <pBody.pPeopleSize & "_" & tAnimAct & "_" & tPart>
+  [525] pushcons 6 .............................. <"_">
+  [527] joinstr ................................. <pBody.pPeopleSize & "_" & tAnimAct & "_" & tPart & "_">
+  [528] getlocal 1 .............................. <tmodel>
+  [530] joinstr ................................. <pBody.pPeopleSize & "_" & tAnimAct & "_" & tPart & "_" & tmodel>
+  [531] pushcons 6 .............................. <"_">
+  [533] joinstr ................................. <pBody.pPeopleSize & "_" & tAnimAct & "_" & tPart & "_" & tmodel & "_">
+  [534] getlocal 3 .............................. <tdir>
+  [536] joinstr ................................. <pBody.pPeopleSize & "_" & tAnimAct & "_" & tPart & "_" & tmodel & "_" & tdir>
+  [537] pushcons 6 .............................. <"_">
+  [539] joinstr ................................. <pBody.pPeopleSize & "_" & tAnimAct & "_" & tPart & "_" & tmodel & "_" & tdir & "_">
+  [540] getlocal 8 .............................. <tAnimFrame>
+  [542] joinstr ................................. <pBody.pPeopleSize & "_" & tAnimAct & "_" & tPart & "_" & tmodel & "_" & tdir & "_" & tAnimFrame>
+  [543] setlocal 12 ............................. tMemName = pBody.pPeopleSize & "_" & tAnimAct & "_" & tPart & "_" & tmodel & "_" & tdir & "_" & tAnimFrame
+  [545] getlocal 12 ............................. <tMemName>
+  [547] pusharglistnoret 1 ...................... <tMemName>
+  [549] extcall 189 ............................. return tMemName
+  [551] ret
+end
+
+on flipHorizontal me, tImg
+  [  0] getparam 1 .............................. <tImg>
+  [  2] getobjprop 225 .......................... <tImg.width>
+  [  4] getparam 1 .............................. <tImg>
+  [  6] getobjprop 217 .......................... <tImg.height>
+  [  8] getparam 1 .............................. <tImg>
+  [ 10] getobjprop 427 .......................... <tImg.depth>
+  [ 13] pusharglist 3 ........................... <tImg.width, tImg.height, tImg.depth>
+  [ 15] extcall 216 ............................. <image(tImg.width, tImg.height, tImg.depth)>
+  [ 17] setlocal 0 .............................. tImage = image(tImg.width, tImg.height, tImg.depth)
+  [ 19] getparam 1 .............................. <tImg>
+  [ 21] getobjprop 225 .......................... <tImg.width>
+  [ 23] pushzero ................................ <0>
+  [ 24] pusharglist 2 ........................... <tImg.width, 0>
+  [ 26] extcall 107 ............................. <point(tImg.width, 0)>
+  [ 28] pushzero ................................ <0>
+  [ 29] pushzero ................................ <0>
+  [ 30] pusharglist 2 ........................... <0, 0>
+  [ 32] extcall 107 ............................. <point(0, 0)>
+  [ 34] pushzero ................................ <0>
+  [ 35] getparam 1 .............................. <tImg>
+  [ 37] getobjprop 217 .......................... <tImg.height>
+  [ 39] pusharglist 2 ........................... <0, tImg.height>
+  [ 41] extcall 107 ............................. <point(0, tImg.height)>
+  [ 43] getparam 1 .............................. <tImg>
+  [ 45] getobjprop 225 .......................... <tImg.width>
+  [ 47] getparam 1 .............................. <tImg>
+  [ 49] getobjprop 217 .......................... <tImg.height>
+  [ 51] pusharglist 2 ........................... <tImg.width, tImg.height>
+  [ 53] extcall 107 ............................. <point(tImg.width, tImg.height)>
+  [ 55] pusharglist 4 ........................... <[point(tImg.width, 0), point(0, 0), point(0, tImg.height), point(tImg.width, tImg.height)]>
+  [ 57] pushlist ................................ <[point(tImg.width, 0), point(0, 0), point(0, tImg.height), point(tImg.width, tImg.height)]>
+  [ 58] setlocal 1 .............................. tQuad = [point(tImg.width, 0), point(0, 0), point(0, tImg.height), point(tImg.width, tImg.height)]
+  [ 60] getlocal 0 .............................. <tImage>
+  [ 62] getparam 1 .............................. <tImg>
+  [ 64] getlocal 1 .............................. <tQuad>
+  [ 66] getparam 1 .............................. <tImg>
+  [ 68] getobjprop 109 .......................... <tImg.rect>
+  [ 70] pusharglistnoret 4 ...................... <tImage, tImg, tQuad, tImg.rect>
+  [ 72] objcall 381 ............................. tImage.copyPixels(tImg, tQuad, tImg.rect)
+  [ 75] getlocal 0 .............................. <tImage>
+  [ 77] pusharglistnoret 1 ...................... <tImage>
+  [ 79] extcall 189 ............................. return tImage
+  [ 81] ret
+end
+
+on getMemberNumber me, tdir, tHumanSize, tAction, tAnimFrame, tLayerIndex, tmodel
+  [  0] pushzero ................................ <0>
+  [  1] setlocal 0 .............................. tFlip = 0
+  [  3] getparam 1 .............................. <tdir>
+  [  5] pusharglist 1 ........................... <tdir>
+  [  7] extcall 194 ............................. <voidp(tdir)>
+  [  9] not ..................................... <not voidp(tdir)>
+  [ 10] jmpifz [ 75] ............................ if not voidp(tdir) then
+  [ 13] getparam 1 .............................. <tdir>
+  [ 15] pushzero ................................ <0>
+  [ 16] gt ...................................... <tdir > 0>
+  [ 17] getparam 1 .............................. <tdir>
+  [ 19] getprop 542 ............................. <pBody>
+  [ 22] pushsymb 105 ............................ <#pFlipList>
+  [ 24] pusharglist 2 ........................... <pBody, #pFlipList>
+  [ 26] objcall 172 ............................. <pBody.pFlipList.count>
+  [ 28] lt ...................................... <tdir < pBody.pFlipList.count>
+  [ 29] and ..................................... <(tdir > 0) and (tdir < pBody.pFlipList.count)>
+  [ 30] jmpifz [ 75] ............................ if (tdir > 0) and (tdir < pBody.pFlipList.count) then
+  [ 33] getparam 1 .............................. <tdir>
+  [ 35] getprop 542 ............................. <pBody>
+  [ 38] pushsymb 105 ............................ <#pFlipList>
+  [ 40] getparam 1 .............................. <tdir>
+  [ 42] pushint8 1 .............................. <1>
+  [ 44] add ..................................... <tdir + 1>
+  [ 45] pusharglist 3 ........................... <pBody, #pFlipList, tdir + 1>
+  [ 47] objcall 311 ............................. <pBody.pFlipList[tdir + 1]>
+  [ 50] nteq .................................... <tdir <> pBody.pFlipList[tdir + 1]>
+  [ 51] jmpifz [ 75] ............................ if tdir <> pBody.pFlipList[tdir + 1] then
+  [ 54] getprop 542 ............................. <pBody>
+  [ 57] pushsymb 105 ............................ <#pFlipList>
+  [ 59] getparam 1 .............................. <tdir>
+  [ 61] pushint8 1 .............................. <1>
+  [ 63] add ..................................... <tdir + 1>
+  [ 64] pusharglist 3 ........................... <pBody, #pFlipList, tdir + 1>
+  [ 66] objcall 311 ............................. <pBody.pFlipList[tdir + 1]>
+  [ 69] setparam 1 .............................. tdir = pBody.pFlipList[tdir + 1]
+  [ 71] pushint8 1 .............................. <1>
+  [ 73] setlocal 0 .............................. tFlip = 1
+  [ 75] getparam 1 .............................. <tdir>
+  [ 77] pusharglist 1 ........................... <tdir>
+  [ 79] extcall 194 ............................. <voidp(tdir)>
+  [ 81] jmpifz [ 88] ............................ if voidp(tdir) then
+  [ 84] pushcons 15 ............................. <"2">
+  [ 86] setparam 1 .............................. tdir = "2"
+  [ 88] getparam 2 .............................. <tHumanSize>
+  [ 90] pusharglist 1 ........................... <tHumanSize>
+  [ 92] extcall 194 ............................. <voidp(tHumanSize)>
+  [ 94] jmpifz [101] ............................ if voidp(tHumanSize) then
+  [ 97] pushcons 16 ............................. <"h">
+  [ 99] setparam 2 .............................. tHumanSize = "h"
+  [101] getparam 3 .............................. <tAction>
+  [103] pusharglist 1 ........................... <tAction>
+  [105] extcall 194 ............................. <voidp(tAction)>
+  [107] jmpifz [114] ............................ if voidp(tAction) then
+  [110] pushcons 13 ............................. <"std">
+  [112] setparam 3 .............................. tAction = "std"
+  [114] getparam 4 .............................. <tAnimFrame>
+  [116] pusharglist 1 ........................... <tAnimFrame>
+  [118] extcall 194 ............................. <voidp(tAnimFrame)>
+  [120] jmpifz [127] ............................ if voidp(tAnimFrame) then
+  [123] pushcons 17 ............................. <"0">
+  [125] setparam 4 .............................. tAnimFrame = "0"
+  [127] getparam 5 .............................. <tLayerIndex>
+  [129] pusharglist 1 ........................... <tLayerIndex>
+  [131] extcall 194 ............................. <voidp(tLayerIndex)>
+  [133] jmpifz [140] ............................ if voidp(tLayerIndex) then
+  [136] pushint8 1 .............................. <1>
+  [138] setparam 5 .............................. tLayerIndex = 1
+  [140] getparam 5 .............................. <tLayerIndex>
+  [142] pushint8 1 .............................. <1>
+  [144] lt ...................................... <tLayerIndex < 1>
+  [145] getparam 5 .............................. <tLayerIndex>
+  [147] getprop 541 ............................. <pLayerPropList>
+  [150] getobjprop 172 .......................... <pLayerPropList.count>
+  [152] gt ...................................... <tLayerIndex > pLayerPropList.count>
+  [153] or ...................................... <(tLayerIndex < 1) or (tLayerIndex > pLayerPropList.count)>
+  [154] jmpifz [161] ............................ if (tLayerIndex < 1) or (tLayerIndex > pLayerPropList.count) then
+  [157] pushint8 1 .............................. <1>
+  [159] setparam 5 .............................. tLayerIndex = 1
+  [161] getparam 6 .............................. <tmodel>
+  [163] pusharglist 1 ........................... <tmodel>
+  [165] extcall 194 ............................. <voidp(tmodel)>
+  [167] jmpifz [205] ............................ if voidp(tmodel) then
+  [170] getprop 541 ............................. <pLayerPropList>
+  [173] getobjprop 172 .......................... <pLayerPropList.count>
+  [175] getparam 5 .............................. <tLayerIndex>
+  [177] gteq .................................... <pLayerPropList.count >= tLayerIndex>
+  [178] jmpifz [201] ............................ if pLayerPropList.count >= tLayerIndex then / else
+  [181] getprop 541 ............................. <pLayerPropList>
+  [184] getparam 5 .............................. <tLayerIndex>
+  [186] pusharglist 2 ........................... <pLayerPropList, tLayerIndex>
+  [188] objcall 173 ............................. <pLayerPropList[tLayerIndex]>
+  [190] pushcons 3 .............................. <"model">
+  [192] pusharglist 2 ........................... <pLayerPropList[tLayerIndex], "model">
+  [194] objcall 173 ............................. <pLayerPropList[tLayerIndex]["model"]>
+  [196] setparam 6 .............................. tmodel = pLayerPropList[tLayerIndex]["model"]
+  [198] jmp [205]
+  [201] pushcons 2 .............................. <EMPTY>
+  [203] setparam 6 .............................. tmodel = EMPTY
+  [205] getprop 380 ............................. <pPart>
+  [208] setlocal 1 .............................. tPart = pPart
+  [210] getprop 552 ............................. <pFlipPart>
+  [213] pushcons 2 .............................. <EMPTY>
+  [215] nteq .................................... <pFlipPart <> EMPTY>
+  [216] getlocal 0 .............................. <tFlip>
+  [218] pushint8 1 .............................. <1>
+  [220] eq ...................................... <tFlip = 1>
+  [221] and ..................................... <(pFlipPart <> EMPTY) and (tFlip = 1)>
+  [222] jmpifz [230] ............................ if (pFlipPart <> EMPTY) and (tFlip = 1) then
+  [225] getprop 552 ............................. <pFlipPart>
+  [228] setlocal 1 .............................. tPart = pFlipPart
+  [230] getparam 2 .............................. <tHumanSize>
+  [232] pushcons 6 .............................. <"_">
+  [234] joinstr ................................. <tHumanSize & "_">
+  [235] getparam 3 .............................. <tAction>
+  [237] joinstr ................................. <tHumanSize & "_" & tAction>
+  [238] pushcons 6 .............................. <"_">
+  [240] joinstr ................................. <tHumanSize & "_" & tAction & "_">
+  [241] getlocal 1 .............................. <tPart>
+  [243] joinstr ................................. <tHumanSize & "_" & tAction & "_" & tPart>
+  [244] pushcons 6 .............................. <"_">
+  [246] joinstr ................................. <tHumanSize & "_" & tAction & "_" & tPart & "_">
+  [247] getparam 6 .............................. <tmodel>
+  [249] joinstr ................................. <tHumanSize & "_" & tAction & "_" & tPart & "_" & tmodel>
+  [250] pushcons 6 .............................. <"_">
+  [252] joinstr ................................. <tHumanSize & "_" & tAction & "_" & tPart & "_" & tmodel & "_">
+  [253] getparam 1 .............................. <tdir>
+  [255] joinstr ................................. <tHumanSize & "_" & tAction & "_" & tPart & "_" & tmodel & "_" & tdir>
+  [256] pushcons 6 .............................. <"_">
+  [258] joinstr ................................. <tHumanSize & "_" & tAction & "_" & tPart & "_" & tmodel & "_" & tdir & "_">
+  [259] getparam 4 .............................. <tAnimFrame>
+  [261] joinstr ................................. <tHumanSize & "_" & tAction & "_" & tPart & "_" & tmodel & "_" & tdir & "_" & tAnimFrame>
+  [262] setlocal 2 .............................. tMemName = tHumanSize & "_" & tAction & "_" & tPart & "_" & tmodel & "_" & tdir & "_" & tAnimFrame
+  [264] getparam 0 .............................. <me>
+  [266] getlocal 2 .............................. <tMemName>
+  [268] pusharglist 2 ........................... <me, tMemName>
+  [270] objcall 539 ............................. <me.getMemNumFast(tMemName)>
+  [273] setlocal 3 .............................. tNum = me.getMemNumFast(tMemName)
+  [275] pushsymb 580 ............................ <#memberNumber>
+  [278] getlocal 3 .............................. <tNum>
+  [280] pushsymb 581 ............................ <#flip>
+  [283] getlocal 0 .............................. <tFlip>
+  [285] pusharglist 4 ........................... <[#memberNumber: tNum, #flip: tFlip]>
+  [287] pushproplist ............................ <[#memberNumber: tNum, #flip: tFlip]>
+  [288] pusharglistnoret 1 ...................... <[#memberNumber: tNum, #flip: tFlip]>
+  [290] extcall 189 ............................. return [#memberNumber: tNum, #flip: tFlip]
+  [292] ret
+end
+
+on getDrawArea me, tLayerIndex
+  [  0] getparam 1 .............................. <tLayerIndex>
+  [  2] pushint8 1 .............................. <1>
+  [  4] lt ...................................... <tLayerIndex < 1>
+  [  5] getparam 1 .............................. <tLayerIndex>
+  [  7] getprop 541 ............................. <pLayerPropList>
+  [ 10] getobjprop 172 .......................... <pLayerPropList.count>
+  [ 12] gt ...................................... <tLayerIndex > pLayerPropList.count>
+  [ 13] or ...................................... <(tLayerIndex < 1) or (tLayerIndex > pLayerPropList.count)>
+  [ 14] jmpifz [ 29] ............................ if (tLayerIndex < 1) or (tLayerIndex > pLayerPropList.count) then
+  [ 17] pushzero ................................ <0>
+  [ 18] pushzero ................................ <0>
+  [ 19] pushzero ................................ <0>
+  [ 20] pushzero ................................ <0>
+  [ 21] pusharglist 4 ........................... <0, 0, 0, 0>
+  [ 23] extcall 109 ............................. <rect(0, 0, 0, 0)>
+  [ 25] pusharglistnoret 1 ...................... <rect(0, 0, 0, 0)>
+  [ 27] extcall 189 ............................. return rect(0, 0, 0, 0)
+  [ 29] getprop 541 ............................. <pLayerPropList>
+  [ 32] getparam 1 .............................. <tLayerIndex>
+  [ 34] pusharglist 2 ........................... <pLayerPropList, tLayerIndex>
+  [ 36] objcall 173 ............................. <pLayerPropList[tLayerIndex]>
+  [ 38] setlocal 0 .............................. tdata = pLayerPropList[tLayerIndex]
+  [ 40] getlocal 0 .............................. <tdata>
+  [ 42] pushcons 0 .............................. <"cacheRect">
+  [ 44] pusharglist 2 ........................... <tdata, "cacheRect">
+  [ 46] objcall 173 ............................. <tdata["cacheRect"]>
+  [ 48] setlocal 1 .............................. tRect = tdata["cacheRect"]
+  [ 50] getlocal 0 .............................. <tdata>
+  [ 52] pushcons 5 .............................. <"flipH">
+  [ 54] pusharglist 2 ........................... <tdata, "flipH">
+  [ 56] objcall 173 ............................. <tdata["flipH"]>
+  [ 58] jmpifz [149] ............................ if tdata["flipH"] then / else
+  [ 61] getlocal 1 .............................. <tRect>
+  [ 63] pushint8 3 .............................. <3>
+  [ 65] pusharglist 2 ........................... <tRect, 3>
+  [ 67] objcall 173 ............................. <tRect[3]>
+  [ 69] getlocal 1 .............................. <tRect>
+  [ 71] pushint8 2 .............................. <2>
+  [ 73] pusharglist 2 ........................... <tRect, 2>
+  [ 75] objcall 173 ............................. <tRect[2]>
+  [ 77] pusharglist 2 ........................... <tRect[3], tRect[2]>
+  [ 79] extcall 107 ............................. <point(tRect[3], tRect[2])>
+  [ 81] getlocal 1 .............................. <tRect>
+  [ 83] pushint8 1 .............................. <1>
+  [ 85] pusharglist 2 ........................... <tRect, 1>
+  [ 87] objcall 173 ............................. <tRect[1]>
+  [ 89] getlocal 1 .............................. <tRect>
+  [ 91] pushint8 2 .............................. <2>
+  [ 93] pusharglist 2 ........................... <tRect, 2>
+  [ 95] objcall 173 ............................. <tRect[2]>
+  [ 97] pusharglist 2 ........................... <tRect[1], tRect[2]>
+  [ 99] extcall 107 ............................. <point(tRect[1], tRect[2])>
+  [101] getlocal 1 .............................. <tRect>
+  [103] pushint8 1 .............................. <1>
+  [105] pusharglist 2 ........................... <tRect, 1>
+  [107] objcall 173 ............................. <tRect[1]>
+  [109] getlocal 1 .............................. <tRect>
+  [111] pushint8 4 .............................. <4>
+  [113] pusharglist 2 ........................... <tRect, 4>
+  [115] objcall 173 ............................. <tRect[4]>
+  [117] pusharglist 2 ........................... <tRect[1], tRect[4]>
+  [119] extcall 107 ............................. <point(tRect[1], tRect[4])>
+  [121] getlocal 1 .............................. <tRect>
+  [123] pushint8 3 .............................. <3>
+  [125] pusharglist 2 ........................... <tRect, 3>
+  [127] objcall 173 ............................. <tRect[3]>
+  [129] getlocal 1 .............................. <tRect>
+  [131] pushint8 4 .............................. <4>
+  [133] pusharglist 2 ........................... <tRect, 4>
+  [135] objcall 173 ............................. <tRect[4]>
+  [137] pusharglist 2 ........................... <tRect[3], tRect[4]>
+  [139] extcall 107 ............................. <point(tRect[3], tRect[4])>
+  [141] pusharglist 4 ........................... <[point(tRect[3], tRect[2]), point(tRect[1], tRect[2]), point(tRect[1], tRect[4]), point(tRect[3], tRect[4])]>
+  [143] pushlist ................................ <[point(tRect[3], tRect[2]), point(tRect[1], tRect[2]), point(tRect[1], tRect[4]), point(tRect[3], tRect[4])]>
+  [144] setlocal 2 .............................. tDrawArea = [point(tRect[3], tRect[2]), point(tRect[1], tRect[2]), point(tRect[1], tRect[4]), point(tRect[3], tRect[4])]
+  [146] jmp [153]
+  [149] getlocal 1 .............................. <tRect>
+  [151] setlocal 2 .............................. tDrawArea = tRect
+  [153] getlocal 2 .............................. <tDrawArea>
+  [155] pusharglist 1 ........................... <tDrawArea>
+  [157] objcall 220 ............................. <tDrawArea.duplicate()>
+  [159] pusharglistnoret 1 ...................... <tDrawArea.duplicate()>
+  [161] extcall 189 ............................. return tDrawArea.duplicate()
+  [163] ret
+end
+
+on getMemNumFast me, tName
+  [  0] getprop 540 ............................. <pMemNumCache>
+  [  3] getparam 1 .............................. <tName>
+  [  5] pusharglist 2 ........................... <pMemNumCache, tName>
+  [  7] objcall 173 ............................. <pMemNumCache[tName]>
+  [  9] setlocal 0 .............................. tNum = pMemNumCache[tName]
+  [ 11] getlocal 0 .............................. <tNum>
+  [ 13] pusharglist 1 ........................... <tNum>
+  [ 15] extcall 194 ............................. <voidp(tNum)>
+  [ 17] jmpifz [ 61] ............................ if voidp(tNum) then
+  [ 20] getparam 1 .............................. <tName>
+  [ 22] pusharglist 1 ........................... <tName>
+  [ 24] extcall 215 ............................. <getmemnum(tName)>
+  [ 26] setlocal 0 .............................. tNum = getmemnum(tName)
+  [ 28] getprop 540 ............................. <pMemNumCache>
+  [ 31] getparam 1 .............................. <tName>
+  [ 33] getlocal 0 .............................. <tNum>
+  [ 35] pusharglistnoret 3 ...................... <pMemNumCache, tName, tNum>
+  [ 37] objcall 398 ............................. pMemNumCache.addProp(tName, tNum)
+  [ 40] getprop 540 ............................. <pMemNumCache>
+  [ 43] getobjprop 172 .......................... <pMemNumCache.count>
+  [ 45] pushint8 20 ............................. <20>
+  [ 47] gt ...................................... <pMemNumCache.count > 20>
+  [ 48] jmpifz [ 61] ............................ if pMemNumCache.count > 20 then
+  [ 51] getprop 540 ............................. <pMemNumCache>
+  [ 54] pushint8 1 .............................. <1>
+  [ 56] pusharglistnoret 2 ...................... <pMemNumCache, 1>
+  [ 58] objcall 309 ............................. pMemNumCache.deleteAt(1)
+  [ 61] getlocal 0 .............................. <tNum>
+  [ 63] pusharglistnoret 1 ...................... <tNum>
+  [ 65] extcall 189 ............................. return tNum
+  [ 67] ret
+end

@@ -1,0 +1,723 @@
+property pWindowID, pState, pmode, pDefaultMode, pItemPointer, pLastRead, pWndLoc, pDragStart
+
+on construct me
+  [  0] pushcons 0 .............................. <"if_window">
+  [  2] setprop 494 ............................. pWindowID = "if_window"
+  [  5] pushzero ................................ <0>
+  [  6] setprop 28 .............................. pState = 0
+  [  8] pushzero ................................ <0>
+  [  9] setprop 1466 ............................ pDefaultMode = 0
+  [ 12] getprop 1466 ............................ <pDefaultMode>
+  [ 15] setprop 1467 ............................ pmode = pDefaultMode
+  [ 18] pushzero ................................ <0>
+  [ 19] pushzero ................................ <0>
+  [ 20] pusharglist 2 ........................... <0, 0>
+  [ 22] extcall 330 ............................. <point(0, 0)>
+  [ 25] setprop 1468 ............................ pDragStart = point(0, 0)
+  [ 28] pusharglist 0 ........................... <>
+  [ 30] thebuiltin 664 .......................... <the stageRight>
+  [ 33] pusharglist 0 ........................... <>
+  [ 35] thebuiltin 998 .......................... <the stageLeft>
+  [ 38] sub ..................................... <the stageRight - the stageLeft>
+  [ 39] setlocal 0 .............................. tStageWidth = the stageRight - the stageLeft
+  [ 41] pushcons 1 .............................. <"infofeed.window.location.prefname">
+  [ 43] pusharglist 1 ........................... <"infofeed.window.location.prefname">
+  [ 45] extcall 267 ............................. <getVariable("infofeed.window.location.prefname")>
+  [ 48] pusharglist 1 ........................... <getVariable("infofeed.window.location.prefname")>
+  [ 50] extcall 1469 ............................ <getPref(getVariable("infofeed.window.location.prefname"))>
+  [ 53] pusharglist 1 ........................... <getPref(getVariable("infofeed.window.location.prefname"))>
+  [ 55] extcall 192 ............................. <string(getPref(getVariable("infofeed.window.location.prefname")))>
+  [ 57] setlocal 1 .............................. tWndLocPref = string(getPref(getVariable("infofeed.window.location.prefname")))
+  [ 59] getlocal 1 .............................. <tWndLocPref>
+  [ 61] pushcons 2 .............................. <EMPTY>
+  [ 63] nteq .................................... <tWndLocPref <> EMPTY>
+  [ 64] jmpifz [ 76] ............................ if tWndLocPref <> EMPTY then
+  [ 67] getlocal 1 .............................. <tWndLocPref>
+  [ 69] pusharglist 1 ........................... <tWndLocPref>
+  [ 71] extcall 203 ............................. <value(tWndLocPref)>
+  [ 73] setprop 1470 ............................ pWndLoc = value(tWndLocPref)
+  [ 76] getprop 1470 ............................ <pWndLoc>
+  [ 79] getobjprop 146 .......................... <pWndLoc.ilk>
+  [ 81] pushsymb 330 ............................ <#point>
+  [ 84] nteq .................................... <pWndLoc.ilk <> #point>
+  [ 85] jmpifz [104] ............................ if pWndLoc.ilk <> #point then
+  [ 88] getlocal 0 .............................. <tStageWidth>
+  [ 90] pushint16 247 ........................... <247>
+  [ 93] sub ..................................... <tStageWidth - 247>
+  [ 94] pushint8 4 .............................. <4>
+  [ 96] pusharglist 2 ........................... <tStageWidth - 247, 4>
+  [ 98] extcall 330 ............................. <point(tStageWidth - 247, 4)>
+  [101] setprop 1470 ............................ pWndLoc = point(tStageWidth - 247, 4)
+  [104] pushsymb 510 ............................ <#changeRoom>
+  [107] getparam 0 .............................. <me>
+  [109] pusharglist 1 ........................... <me>
+  [111] objcall 89 .............................. <me.getID()>
+  [113] pushsymb 1451 ........................... <#minimize>
+  [116] pusharglistnoret 3 ...................... <#changeRoom, me.getID(), #minimize>
+  [118] extcall 374 ............................. registerMessage(#changeRoom, me.getID(), #minimize)
+  [121] pushsymb 1002 ........................... <#tutorial_hand_opened>
+  [124] getparam 0 .............................. <me>
+  [126] pusharglist 1 ........................... <me>
+  [128] objcall 89 .............................. <me.getID()>
+  [130] pushsymb 1461 ........................... <#pushBehindHand>
+  [133] pusharglistnoret 3 ...................... <#tutorial_hand_opened, me.getID(), #pushBehindHand>
+  [135] extcall 374 ............................. registerMessage(#tutorial_hand_opened, me.getID(), #pushBehindHand)
+  [138] pushint8 1 .............................. <1>
+  [140] pusharglistnoret 1 ...................... <1>
+  [142] extcall 50 .............................. return 1
+  [144] ret
+end
+
+on deconstruct me
+  [  0] pushsymb 510 ............................ <#changeRoom>
+  [  3] getparam 0 .............................. <me>
+  [  5] pusharglist 1 ........................... <me>
+  [  7] objcall 89 .............................. <me.getID()>
+  [  9] pusharglistnoret 2 ...................... <#changeRoom, me.getID()>
+  [ 11] extcall 386 ............................. unregisterMessage(#changeRoom, me.getID())
+  [ 14] getparam 0 .............................. <me>
+  [ 16] pusharglistnoret 1 ...................... <me>
+  [ 18] objcall 1456 ............................ me.removeUI()
+  [ 21] pushint8 1 .............................. <1>
+  [ 23] pusharglistnoret 1 ...................... <1>
+  [ 25] extcall 50 .............................. return 1
+  [ 27] ret
+end
+
+on hide me
+  [  0] getprop 28 .............................. <pState>
+  [  2] not ..................................... <not pState>
+  [  3] jmpifz [ 12] ............................ if not pState then
+  [  6] pushint8 1 .............................. <1>
+  [  8] pusharglistnoret 1 ...................... <1>
+  [ 10] extcall 50 .............................. return 1
+  [ 12] getparam 0 .............................. <me>
+  [ 14] pusharglist 1 ........................... <me>
+  [ 16] objcall 1456 ............................ <me.removeUI()>
+  [ 19] pusharglistnoret 1 ...................... <me.removeUI()>
+  [ 21] extcall 50 .............................. return me.removeUI()
+  [ 23] ret
+end
+
+on toggleMode me
+  [  0] getprop 1467 ............................ <pmode>
+  [  3] jmpifz [ 20] ............................ if pmode then / else
+  [  6] getparam 0 .............................. <me>
+  [  8] pusharglist 1 ........................... <me>
+  [ 10] objcall 1451 ............................ <me.minimize()>
+  [ 13] pusharglistnoret 1 ...................... <me.minimize()>
+  [ 15] extcall 50 .............................. return me.minimize()
+  [ 17] jmp [ 31]
+  [ 20] getparam 0 .............................. <me>
+  [ 22] pusharglist 1 ........................... <me>
+  [ 24] objcall 1452 ............................ <me.maximize()>
+  [ 27] pusharglistnoret 1 ...................... <me.maximize()>
+  [ 29] extcall 50 .............................. return me.maximize()
+  [ 31] ret
+end
+
+on minimize me
+  [  0] getprop 28 .............................. <pState>
+  [  2] not ..................................... <not pState>
+  [  3] jmpifz [ 11] ............................ if not pState then
+  [  6] pushzero ................................ <0>
+  [  7] pusharglistnoret 1 ...................... <0>
+  [  9] extcall 50 .............................. return 0
+  [ 11] getprop 1467 ............................ <pmode>
+  [ 14] not ..................................... <not pmode>
+  [ 15] jmpifz [ 24] ............................ if not pmode then
+  [ 18] pushint8 1 .............................. <1>
+  [ 20] pusharglistnoret 1 ...................... <1>
+  [ 22] extcall 50 .............................. return 1
+  [ 24] pushzero ................................ <0>
+  [ 25] setprop 1467 ............................ pmode = 0
+  [ 28] getparam 0 .............................. <me>
+  [ 30] pusharglist 1 ........................... <me>
+  [ 32] objcall 1457 ............................ <me.updateUI()>
+  [ 35] pusharglistnoret 1 ...................... <me.updateUI()>
+  [ 37] extcall 50 .............................. return me.updateUI()
+  [ 39] ret
+end
+
+on maximize me
+  [  0] getprop 28 .............................. <pState>
+  [  2] not ..................................... <not pState>
+  [  3] jmpifz [ 11] ............................ if not pState then
+  [  6] pushzero ................................ <0>
+  [  7] pusharglistnoret 1 ...................... <0>
+  [  9] extcall 50 .............................. return 0
+  [ 11] getprop 1467 ............................ <pmode>
+  [ 14] jmpifz [ 23] ............................ if pmode then
+  [ 17] pushint8 1 .............................. <1>
+  [ 19] pusharglistnoret 1 ...................... <1>
+  [ 21] extcall 50 .............................. return 1
+  [ 23] pushint8 1 .............................. <1>
+  [ 25] setprop 1467 ............................ pmode = 1
+  [ 28] getparam 0 .............................. <me>
+  [ 30] pusharglist 1 ........................... <me>
+  [ 32] objcall 1457 ............................ <me.updateUI()>
+  [ 35] pusharglistnoret 1 ...................... <me.updateUI()>
+  [ 37] extcall 50 .............................. return me.updateUI()
+  [ 39] ret
+end
+
+on showItem me, tItemID
+  [  0] getparam 1 .............................. <tItemID>
+  [  2] setprop 1473 ............................ pItemPointer = tItemID
+  [  5] getparam 0 .............................. <me>
+  [  7] pusharglistnoret 1 ...................... <me>
+  [  9] objcall 1457 ............................ me.updateUI()
+  [ 12] pushint8 1 .............................. <1>
+  [ 14] pusharglistnoret 1 ...................... <1>
+  [ 16] extcall 50 .............................. return 1
+  [ 18] ret
+end
+
+on itemCreated me, tItemID
+  [  0] getparam 0 .............................. <me>
+  [  2] pusharglist 1 ........................... <me>
+  [  4] objcall 82 .............................. <me.getComponent()>
+  [  6] getparam 1 .............................. <tItemID>
+  [  8] pusharglist 2 ........................... <me.getComponent(), tItemID>
+  [ 10] objcall 1474 ............................ <me.getComponent().getItem(tItemID)>
+  [ 13] setlocal 0 .............................. tItemObj = me.getComponent().getItem(tItemID)
+  [ 15] getlocal 0 .............................. <tItemObj>
+  [ 17] pusharglist 1 ........................... <tItemObj>
+  [ 19] objcall 1475 ............................ <tItemObj.getShowOnCreate()>
+  [ 22] jmpifz [ 48] ............................ if tItemObj.getShowOnCreate() then / else
+  [ 25] getparam 0 .............................. <me>
+  [ 27] pusharglistnoret 1 ...................... <me>
+  [ 29] objcall 1452 ............................ me.maximize()
+  [ 32] getparam 0 .............................. <me>
+  [ 34] getparam 1 .............................. <tItemID>
+  [ 36] pusharglist 2 ........................... <me, tItemID>
+  [ 38] objcall 1453 ............................ <me.showItem(tItemID)>
+  [ 41] pusharglistnoret 1 ...................... <me.showItem(tItemID)>
+  [ 43] extcall 50 .............................. return me.showItem(tItemID)
+  [ 45] jmp [ 59]
+  [ 48] getparam 0 .............................. <me>
+  [ 50] pusharglist 1 ........................... <me>
+  [ 52] objcall 1457 ............................ <me.updateUI()>
+  [ 55] pusharglistnoret 1 ...................... <me.updateUI()>
+  [ 57] extcall 50 .............................. return me.updateUI()
+  [ 59] ret
+end
+
+on createUI me
+  [  0] getparam 0 .............................. <me>
+  [  2] pusharglist 1 ........................... <me>
+  [  4] objcall 1460 ............................ <me.checkContentToDisplay()>
+  [  7] not ..................................... <not me.checkContentToDisplay()>
+  [  8] jmpifz [ 17] ............................ if not me.checkContentToDisplay() then
+  [ 11] pushint8 1 .............................. <1>
+  [ 13] pusharglistnoret 1 ...................... <1>
+  [ 15] extcall 50 .............................. return 1
+  [ 17] getprop 494 ............................. <pWindowID>
+  [ 20] pusharglist 1 ........................... <pWindowID>
+  [ 22] extcall 72 .............................. <windowExists(pWindowID)>
+  [ 24] not ..................................... <not windowExists(pWindowID)>
+  [ 25] jmpifz [126] ............................ if not windowExists(pWindowID) then
+  [ 28] getprop 494 ............................. <pWindowID>
+  [ 31] pusharglistnoret 1 ...................... <pWindowID>
+  [ 33] extcall 86 .............................. createWindow(pWindowID)
+  [ 35] getprop 494 ............................. <pWindowID>
+  [ 38] pusharglist 1 ........................... <pWindowID>
+  [ 40] extcall 87 .............................. <getWindow(pWindowID)>
+  [ 42] setlocal 0 .............................. tWndObj = getWindow(pWindowID)
+  [ 44] getlocal 0 .............................. <tWndObj>
+  [ 46] pushzero ................................ <0>
+  [ 47] eq ...................................... <tWndObj = 0>
+  [ 48] jmpifz [ 56] ............................ if tWndObj = 0 then
+  [ 51] pushzero ................................ <0>
+  [ 52] pusharglistnoret 1 ...................... <0>
+  [ 54] extcall 50 .............................. return 0
+  [ 56] getlocal 0 .............................. <tWndObj>
+  [ 58] getparam 0 .............................. <me>
+  [ 60] pusharglist 1 ........................... <me>
+  [ 62] objcall 89 .............................. <me.getID()>
+  [ 64] pusharglistnoret 2 ...................... <tWndObj, me.getID()>
+  [ 66] objcall 90 .............................. tWndObj.registerClient(me.getID())
+  [ 68] getlocal 0 .............................. <tWndObj>
+  [ 70] pushsymb 606 ............................ <#eventProc>
+  [ 73] getparam 0 .............................. <me>
+  [ 75] pusharglist 1 ........................... <me>
+  [ 77] objcall 89 .............................. <me.getID()>
+  [ 79] pushsymb 119 ............................ <#mouseUp>
+  [ 81] pusharglistnoret 4 ...................... <tWndObj, #eventProc, me.getID(), #mouseUp>
+  [ 83] objcall 91 .............................. tWndObj.registerProcedure(#eventProc, me.getID(), #mouseUp)
+  [ 85] getlocal 0 .............................. <tWndObj>
+  [ 87] pushsymb 606 ............................ <#eventProc>
+  [ 90] getparam 0 .............................. <me>
+  [ 92] pusharglist 1 ........................... <me>
+  [ 94] objcall 89 .............................. <me.getID()>
+  [ 96] pushsymb 860 ............................ <#mouseDown>
+  [ 99] pusharglistnoret 4 ...................... <tWndObj, #eventProc, me.getID(), #mouseDown>
+  [101] objcall 91 .............................. tWndObj.registerProcedure(#eventProc, me.getID(), #mouseDown)
+  [103] pushzero ................................ <0>
+  [104] setprop 1467 ............................ pmode = 0
+  [107] getlocal 0 .............................. <tWndObj>
+  [109] getprop 1470 ............................ <pWndLoc>
+  [112] getobjprop 307 .......................... <pWndLoc.locH>
+  [115] getprop 1470 ............................ <pWndLoc>
+  [118] getobjprop 342 .......................... <pWndLoc.locV>
+  [121] pusharglistnoret 3 ...................... <tWndObj, pWndLoc.locH, pWndLoc.locV>
+  [123] objcall 397 ............................. tWndObj.moveTo(pWndLoc.locH, pWndLoc.locV)
+  [126] pushint8 1 .............................. <1>
+  [128] setprop 28 .............................. pState = 1
+  [130] pushint8 1 .............................. <1>
+  [132] pusharglistnoret 1 ...................... <1>
+  [134] extcall 50 .............................. return 1
+  [136] ret
+end
+
+on removeUI me
+  [  0] getprop 494 ............................. <pWindowID>
+  [  3] pusharglist 1 ........................... <pWindowID>
+  [  5] extcall 72 .............................. <windowExists(pWindowID)>
+  [  7] jmpifz [ 17] ............................ if windowExists(pWindowID) then
+  [ 10] getprop 494 ............................. <pWindowID>
+  [ 13] pusharglistnoret 1 ...................... <pWindowID>
+  [ 15] extcall 129 ............................. removeWindow(pWindowID)
+  [ 17] pushzero ................................ <0>
+  [ 18] setprop 28 .............................. pState = 0
+  [ 20] getprop 1466 ............................ <pDefaultMode>
+  [ 23] setprop 1467 ............................ pmode = pDefaultMode
+  [ 26] pushint8 1 .............................. <1>
+  [ 28] pusharglistnoret 1 ...................... <1>
+  [ 30] extcall 50 .............................. return 1
+  [ 32] ret
+end
+
+on updateUI me
+  [  0] getparam 0 .............................. <me>
+  [  2] pusharglist 1 ........................... <me>
+  [  4] objcall 1460 ............................ <me.checkContentToDisplay()>
+  [  7] not ..................................... <not me.checkContentToDisplay()>
+  [  8] jmpifz [ 17] ............................ if not me.checkContentToDisplay() then
+  [ 11] pushint8 1 .............................. <1>
+  [ 13] pusharglistnoret 1 ...................... <1>
+  [ 15] extcall 50 .............................. return 1
+  [ 17] getprop 28 .............................. <pState>
+  [ 19] not ..................................... <not pState>
+  [ 20] jmpifz [ 30] ............................ if not pState then
+  [ 23] getparam 0 .............................. <me>
+  [ 25] pusharglistnoret 1 ...................... <me>
+  [ 27] objcall 1455 ............................ me.createUI()
+  [ 30] getprop 1467 ............................ <pmode>
+  [ 33] jmpifz [ 50] ............................ if pmode then / else
+  [ 36] getparam 0 .............................. <me>
+  [ 38] pusharglist 1 ........................... <me>
+  [ 40] objcall 1459 ............................ <me.updateFullUI()>
+  [ 43] pusharglistnoret 1 ...................... <me.updateFullUI()>
+  [ 45] extcall 50 .............................. return me.updateFullUI()
+  [ 47] jmp [ 61]
+  [ 50] getparam 0 .............................. <me>
+  [ 52] pusharglist 1 ........................... <me>
+  [ 54] objcall 1458 ............................ <me.updateMinUI()>
+  [ 57] pusharglistnoret 1 ...................... <me.updateMinUI()>
+  [ 59] extcall 50 .............................. return me.updateMinUI()
+  [ 61] ret
+end
+
+on updateMinUI me
+  [  0] getprop 494 ............................. <pWindowID>
+  [  3] pusharglist 1 ........................... <pWindowID>
+  [  5] extcall 87 .............................. <getWindow(pWindowID)>
+  [  7] setlocal 0 .............................. tWndObj = getWindow(pWindowID)
+  [  9] getlocal 0 .............................. <tWndObj>
+  [ 11] pushzero ................................ <0>
+  [ 12] eq ...................................... <tWndObj = 0>
+  [ 13] jmpifz [ 21] ............................ if tWndObj = 0 then
+  [ 16] pushzero ................................ <0>
+  [ 17] pusharglistnoret 1 ...................... <0>
+  [ 19] extcall 50 .............................. return 0
+  [ 21] getlocal 0 .............................. <tWndObj>
+  [ 23] pusharglistnoret 1 ...................... <tWndObj>
+  [ 25] objcall 438 ............................. tWndObj.unmerge()
+  [ 28] getparam 0 .............................. <me>
+  [ 30] pusharglist 1 ........................... <me>
+  [ 32] objcall 1463 ............................ <me.getCurrentItem()>
+  [ 35] setlocal 1 .............................. tItemRef = me.getCurrentItem()
+  [ 37] getlocal 1 .............................. <tItemRef>
+  [ 39] pushzero ................................ <0>
+  [ 40] eq ...................................... <tItemRef = 0>
+  [ 41] jmpifz [ 55] ............................ if tItemRef = 0 then
+  [ 44] getparam 0 .............................. <me>
+  [ 46] pusharglist 1 ........................... <me>
+  [ 48] objcall 1460 ............................ <me.checkContentToDisplay()>
+  [ 51] pusharglistnoret 1 ...................... <me.checkContentToDisplay()>
+  [ 53] extcall 50 .............................. return me.checkContentToDisplay()
+  [ 55] getprop 1476 ............................ <pLastRead>
+  [ 58] getparam 0 .............................. <me>
+  [ 60] pusharglist 1 ........................... <me>
+  [ 62] objcall 82 .............................. <me.getComponent()>
+  [ 64] pusharglist 1 ........................... <me.getComponent()>
+  [ 66] objcall 1477 ............................ <me.getComponent().getItemCount()>
+  [ 69] eq ...................................... <pLastRead = me.getComponent().getItemCount()>
+  [ 70] jmpifz [ 85] ............................ if pLastRead = me.getComponent().getItemCount() then / else
+  [ 73] getlocal 1 .............................. <tItemRef>
+  [ 75] getlocal 0 .............................. <tWndObj>
+  [ 77] pusharglistnoret 2 ...................... <tItemRef, tWndObj>
+  [ 79] objcall 1478 ............................ tItemRef.renderMinDefault(tWndObj)
+  [ 82] jmp [ 94]
+  [ 85] getlocal 1 .............................. <tItemRef>
+  [ 87] getlocal 0 .............................. <tWndObj>
+  [ 89] pusharglistnoret 2 ...................... <tItemRef, tWndObj>
+  [ 91] objcall 1479 ............................ tItemRef.renderMin(tWndObj)
+  [ 94] pushint8 1 .............................. <1>
+  [ 96] pusharglistnoret 1 ...................... <1>
+  [ 98] extcall 50 .............................. return 1
+  [100] ret
+end
+
+on updateFullUI me
+  [  0] getprop 494 ............................. <pWindowID>
+  [  3] pusharglist 1 ........................... <pWindowID>
+  [  5] extcall 87 .............................. <getWindow(pWindowID)>
+  [  7] setlocal 0 .............................. tWndObj = getWindow(pWindowID)
+  [  9] getlocal 0 .............................. <tWndObj>
+  [ 11] pushzero ................................ <0>
+  [ 12] eq ...................................... <tWndObj = 0>
+  [ 13] jmpifz [ 21] ............................ if tWndObj = 0 then
+  [ 16] pushzero ................................ <0>
+  [ 17] pusharglistnoret 1 ...................... <0>
+  [ 19] extcall 50 .............................. return 0
+  [ 21] getlocal 0 .............................. <tWndObj>
+  [ 23] pusharglistnoret 1 ...................... <tWndObj>
+  [ 25] objcall 438 ............................. tWndObj.unmerge()
+  [ 28] getparam 0 .............................. <me>
+  [ 30] pusharglist 1 ........................... <me>
+  [ 32] objcall 1463 ............................ <me.getCurrentItem()>
+  [ 35] setlocal 1 .............................. tItemRef = me.getCurrentItem()
+  [ 37] getlocal 1 .............................. <tItemRef>
+  [ 39] pushzero ................................ <0>
+  [ 40] eq ...................................... <tItemRef = 0>
+  [ 41] jmpifz [ 55] ............................ if tItemRef = 0 then
+  [ 44] getparam 0 .............................. <me>
+  [ 46] pusharglist 1 ........................... <me>
+  [ 48] objcall 1460 ............................ <me.checkContentToDisplay()>
+  [ 51] pusharglistnoret 1 ...................... <me.checkContentToDisplay()>
+  [ 53] extcall 50 .............................. return me.checkContentToDisplay()
+  [ 55] getparam 0 .............................. <me>
+  [ 57] pusharglist 1 ........................... <me>
+  [ 59] objcall 82 .............................. <me.getComponent()>
+  [ 61] setlocal 2 .............................. tComponent = me.getComponent()
+  [ 63] getlocal 2 .............................. <tComponent>
+  [ 65] getprop 1473 ............................ <pItemPointer>
+  [ 68] pusharglist 2 ........................... <tComponent, pItemPointer>
+  [ 70] objcall 1481 ............................ <tComponent.getItemPos(pItemPointer)>
+  [ 73] setlocal 3 .............................. tItemPos = tComponent.getItemPos(pItemPointer)
+  [ 75] getlocal 2 .............................. <tComponent>
+  [ 77] pusharglist 1 ........................... <tComponent>
+  [ 79] objcall 1477 ............................ <tComponent.getItemCount()>
+  [ 82] setlocal 4 .............................. tItemCount = tComponent.getItemCount()
+  [ 84] getlocal 1 .............................. <tItemRef>
+  [ 86] getlocal 0 .............................. <tWndObj>
+  [ 88] getlocal 3 .............................. <tItemPos>
+  [ 90] getlocal 4 .............................. <tItemCount>
+  [ 92] pusharglistnoret 4 ...................... <tItemRef, tWndObj, tItemPos, tItemCount>
+  [ 94] objcall 1482 ............................ tItemRef.renderFull(tWndObj, tItemPos, tItemCount)
+  [ 97] getprop 1476 ............................ <pLastRead>
+  [100] getlocal 3 .............................. <tItemPos>
+  [102] lt ...................................... <pLastRead < tItemPos>
+  [103] jmpifz [111] ............................ if pLastRead < tItemPos then
+  [106] getlocal 3 .............................. <tItemPos>
+  [108] setprop 1476 ............................ pLastRead = tItemPos
+  [111] pushint8 1 .............................. <1>
+  [113] pusharglistnoret 1 ...................... <1>
+  [115] extcall 50 .............................. return 1
+  [117] ret
+end
+
+on checkContentToDisplay me
+  [  0] getparam 0 .............................. <me>
+  [  2] pusharglist 1 ........................... <me>
+  [  4] objcall 1463 ............................ <me.getCurrentItem()>
+  [  7] pushzero ................................ <0>
+  [  8] nteq .................................... <me.getCurrentItem() <> 0>
+  [  9] jmpifz [ 18] ............................ if me.getCurrentItem() <> 0 then
+  [ 12] pushint8 1 .............................. <1>
+  [ 14] pusharglistnoret 1 ...................... <1>
+  [ 16] extcall 50 .............................. return 1
+  [ 18] getparam 0 .............................. <me>
+  [ 20] pusharglist 1 ........................... <me>
+  [ 22] objcall 82 .............................. <me.getComponent()>
+  [ 24] pusharglist 1 ........................... <me.getComponent()>
+  [ 26] objcall 1485 ............................ <me.getComponent().getLatestItemId()>
+  [ 29] setprop 1473 ............................ pItemPointer = me.getComponent().getLatestItemId()
+  [ 32] getparam 0 .............................. <me>
+  [ 34] pusharglist 1 ........................... <me>
+  [ 36] objcall 1463 ............................ <me.getCurrentItem()>
+  [ 39] pushzero ................................ <0>
+  [ 40] nteq .................................... <me.getCurrentItem() <> 0>
+  [ 41] jmpifz [ 50] ............................ if me.getCurrentItem() <> 0 then
+  [ 44] pushint8 1 .............................. <1>
+  [ 46] pusharglistnoret 1 ...................... <1>
+  [ 48] extcall 50 .............................. return 1
+  [ 50] getparam 0 .............................. <me>
+  [ 52] pusharglistnoret 1 ...................... <me>
+  [ 54] objcall 1456 ............................ me.removeUI()
+  [ 57] pushzero ................................ <0>
+  [ 58] pusharglistnoret 1 ...................... <0>
+  [ 60] extcall 50 .............................. return 0
+  [ 62] ret
+end
+
+on pushBehindHand me
+  [  0] getprop 494 ............................. <pWindowID>
+  [  3] pusharglist 1 ........................... <pWindowID>
+  [  5] extcall 87 .............................. <getWindow(pWindowID)>
+  [  7] setlocal 0 .............................. tWndObj = getWindow(pWindowID)
+  [  9] getlocal 0 .............................. <tWndObj>
+  [ 11] pushzero ................................ <0>
+  [ 12] eq ...................................... <tWndObj = 0>
+  [ 13] jmpifz [ 21] ............................ if tWndObj = 0 then
+  [ 16] pushzero ................................ <0>
+  [ 17] pusharglistnoret 1 ...................... <0>
+  [ 19] extcall 50 .............................. return 0
+  [ 21] pusharglist 0 ........................... <>
+  [ 23] thebuiltin 664 .......................... <the stageRight>
+  [ 26] pusharglist 0 ........................... <>
+  [ 28] thebuiltin 998 .......................... <the stageLeft>
+  [ 31] sub ..................................... <the stageRight - the stageLeft>
+  [ 32] setlocal 1 .............................. tStageWidth = the stageRight - the stageLeft
+  [ 34] getprop 1470 ............................ <pWndLoc>
+  [ 37] getobjprop 307 .......................... <pWndLoc.locH>
+  [ 40] getlocal 0 .............................. <tWndObj>
+  [ 42] pushsymb 95 ............................. <#width>
+  [ 44] pusharglist 2 ........................... <tWndObj, #width>
+  [ 46] objcall 96 .............................. <tWndObj.getProperty(#width)>
+  [ 48] add ..................................... <pWndLoc.locH + tWndObj.getProperty(#width)>
+  [ 49] getlocal 1 .............................. <tStageWidth>
+  [ 51] pushint16 325 ........................... <325>
+  [ 54] sub ..................................... <tStageWidth - 325>
+  [ 55] gt ...................................... <(pWndLoc.locH + tWndObj.getProperty(#width)) > (tStageWidth - 325)>
+  [ 56] getprop 1470 ............................ <pWndLoc>
+  [ 59] getobjprop 342 .......................... <pWndLoc.locV>
+  [ 62] pushint16 178 ........................... <178>
+  [ 65] lt ...................................... <pWndLoc.locV < 178>
+  [ 66] and ..................................... <((pWndLoc.locH + tWndObj.getProperty(#width)) > (tStageWidth - 325)) and (pWndLoc.locV < 178)>
+  [ 67] jmpifz [ 94] ............................ if ((pWndLoc.locH + tWndObj.getProperty(#width)) > (tStageWidth - 325)) and (pWndLoc.locV < 178) then
+  [ 70] getlocal 0 .............................. <tWndObj>
+  [ 72] pushsymb 308 ............................ <#locZ>
+  [ 75] pushint32 1000000 ....................... <1000000>
+  [ 80] inv ..................................... <-1000000>
+  [ 81] pusharglistnoret 3 ...................... <tWndObj, #locZ, -1000000>
+  [ 83] objcall 81 .............................. tWndObj.setProperty(#locZ, -1000000)
+  [ 85] getlocal 0 .............................. <tWndObj>
+  [ 87] pushint8 1 .............................. <1>
+  [ 89] pusharglistnoret 2 ...................... <tWndObj, 1>
+  [ 91] objcall 1061 ............................ tWndObj.lock(1)
+  [ 94] ret
+end
+
+on getItemPointer me
+  [  0] getparam 0 .............................. <me>
+  [  2] pusharglist 1 ........................... <me>
+  [  4] objcall 82 .............................. <me.getComponent()>
+  [  6] pusharglist 1 ........................... <me.getComponent()>
+  [  8] objcall 1477 ............................ <me.getComponent().getItemCount()>
+  [ 11] pushzero ................................ <0>
+  [ 12] eq ...................................... <me.getComponent().getItemCount() = 0>
+  [ 13] jmpifz [ 23] ............................ if me.getComponent().getItemCount() = 0 then
+  [ 16] pushint8 1 .............................. <1>
+  [ 18] inv ..................................... <-1>
+  [ 19] pusharglistnoret 1 ...................... <-1>
+  [ 21] extcall 50 .............................. return -1
+  [ 23] getprop 1473 ............................ <pItemPointer>
+  [ 26] pusharglistnoret 1 ...................... <pItemPointer>
+  [ 28] extcall 50 .............................. return pItemPointer
+  [ 30] ret
+end
+
+on getCurrentItem me
+  [  0] getparam 0 .............................. <me>
+  [  2] pusharglist 1 ........................... <me>
+  [  4] objcall 82 .............................. <me.getComponent()>
+  [  6] getparam 0 .............................. <me>
+  [  8] pusharglist 1 ........................... <me>
+  [ 10] objcall 1462 ............................ <me.getItemPointer()>
+  [ 13] pusharglist 2 ........................... <me.getComponent(), me.getItemPointer()>
+  [ 15] objcall 1474 ............................ <me.getComponent().getItem(me.getItemPointer())>
+  [ 18] setlocal 0 .............................. tItemRef = me.getComponent().getItem(me.getItemPointer())
+  [ 20] getlocal 0 .............................. <tItemRef>
+  [ 22] pusharglistnoret 1 ...................... <tItemRef>
+  [ 24] extcall 50 .............................. return tItemRef
+  [ 26] ret
+end
+
+on showNextItem me
+  [  0] ret
+end
+
+on saveWindowPosition me
+  [  0] getprop 494 ............................. <pWindowID>
+  [  3] pusharglist 1 ........................... <pWindowID>
+  [  5] extcall 87 .............................. <getWindow(pWindowID)>
+  [  7] setlocal 0 .............................. tWndObj = getWindow(pWindowID)
+  [  9] getlocal 0 .............................. <tWndObj>
+  [ 11] pushzero ................................ <0>
+  [ 12] eq ...................................... <tWndObj = 0>
+  [ 13] jmpifz [ 21] ............................ if tWndObj = 0 then
+  [ 16] pushzero ................................ <0>
+  [ 17] pusharglistnoret 1 ...................... <0>
+  [ 19] extcall 50 .............................. return 0
+  [ 21] getlocal 0 .............................. <tWndObj>
+  [ 23] pushsymb 1062 ........................... <#locX>
+  [ 26] pusharglist 2 ........................... <tWndObj, #locX>
+  [ 28] objcall 96 .............................. <tWndObj.getProperty(#locX)>
+  [ 30] getlocal 0 .............................. <tWndObj>
+  [ 32] pushsymb 1063 ........................... <#locY>
+  [ 35] pusharglist 2 ........................... <tWndObj, #locY>
+  [ 37] objcall 96 .............................. <tWndObj.getProperty(#locY)>
+  [ 39] pusharglist 2 ........................... <tWndObj.getProperty(#locX), tWndObj.getProperty(#locY)>
+  [ 41] extcall 330 ............................. <point(tWndObj.getProperty(#locX), tWndObj.getProperty(#locY))>
+  [ 44] setprop 1470 ............................ pWndLoc = point(tWndObj.getProperty(#locX), tWndObj.getProperty(#locY))
+  [ 47] pushcons 1 .............................. <"infofeed.window.location.prefname">
+  [ 49] pusharglist 1 ........................... <"infofeed.window.location.prefname">
+  [ 51] extcall 267 ............................. <getVariable("infofeed.window.location.prefname")>
+  [ 54] getprop 1470 ............................ <pWndLoc>
+  [ 57] pusharglist 1 ........................... <pWndLoc>
+  [ 59] extcall 192 ............................. <string(pWndLoc)>
+  [ 61] pusharglistnoret 2 ...................... <getVariable("infofeed.window.location.prefname"), string(pWndLoc)>
+  [ 63] extcall 1486 ............................ setPref(getVariable("infofeed.window.location.prefname"), string(pWndLoc))
+  [ 66] ret
+end
+
+on eventProc me, tEvent, tElemID, tParam
+  [  0] getprop 494 ............................. <pWindowID>
+  [  3] pusharglist 1 ........................... <pWindowID>
+  [  5] extcall 87 .............................. <getWindow(pWindowID)>
+  [  7] setlocal 0 .............................. tWndObj = getWindow(pWindowID)
+  [  9] getlocal 0 .............................. <tWndObj>
+  [ 11] pushzero ................................ <0>
+  [ 12] eq ...................................... <tWndObj = 0>
+  [ 13] jmpifz [ 21] ............................ if tWndObj = 0 then
+  [ 16] pushzero ................................ <0>
+  [ 17] pusharglistnoret 1 ...................... <0>
+  [ 19] extcall 50 .............................. return 0
+  [ 21] getparam 1 .............................. <tEvent>
+  [ 23] peek 0 .................................. case tEvent of
+  [ 25] pushsymb 119 ............................ <#mouseUp>
+  [ 27] eq
+  [ 28] jmpifz [239] ............................ (case) #mouseUp:
+  [ 31] getparam 2 .............................. <tElemID>
+  [ 33] peek 0 .................................. case tElemID of
+  [ 35] pushcons 3 .............................. <"if_title">
+  [ 37] eq
+  [ 38] jmpifz [ 93] ............................ (case) "if_title":
+  [ 41] getlocal 0 .............................. <tWndObj>
+  [ 43] pushzero ................................ <0>
+  [ 44] pusharglistnoret 2 ...................... <tWndObj, 0>
+  [ 46] objcall 1487 ............................ tWndObj.drag(0)
+  [ 49] getprop 1468 ............................ <pDragStart>
+  [ 52] getmovieprop 459 ........................ <the mouseLoc>
+  [ 55] eq ...................................... <pDragStart = the mouseLoc>
+  [ 56] jmpifz [ 75] ............................ if pDragStart = the mouseLoc then / else
+  [ 59] pop 2
+  [ 61] getparam 0 .............................. <me>
+  [ 63] pusharglist 1 ........................... <me>
+  [ 65] objcall 1450 ............................ <me.toggleMode()>
+  [ 68] pusharglistnoret 1 ...................... <me.toggleMode()>
+  [ 70] extcall 50 .............................. return me.toggleMode()
+  [ 72] jmp [ 82]
+  [ 75] getparam 0 .............................. <me>
+  [ 77] pusharglistnoret 1 ...................... <me>
+  [ 79] objcall 1465 ............................ me.saveWindowPosition()
+  [ 82] pop 2
+  [ 84] pushint8 1 .............................. <1>
+  [ 86] pusharglistnoret 1 ...................... <1>
+  [ 88] extcall 50 .............................. return 1
+  [ 90] jmp [234]
+  [ 93] peek 0
+  [ 95] pushcons 4 .............................. <"if_btn_toggle">
+  [ 97] eq
+  [ 98] jmpifz [117] ............................ (case) "if_btn_toggle":
+  [101] pop 2
+  [103] getparam 0 .............................. <me>
+  [105] pusharglist 1 ........................... <me>
+  [107] objcall 1450 ............................ <me.toggleMode()>
+  [110] pusharglistnoret 1 ...................... <me.toggleMode()>
+  [112] extcall 50 .............................. return me.toggleMode()
+  [114] jmp [234]
+  [117] peek 0
+  [119] pushcons 5 .............................. <"if_btn_prev">
+  [121] eq
+  [122] jmpifz [177] ............................ (case) "if_btn_prev":
+  [125] getparam 0 .............................. <me>
+  [127] pusharglist 1 ........................... <me>
+  [129] objcall 82 .............................. <me.getComponent()>
+  [131] getparam 0 .............................. <me>
+  [133] pusharglist 1 ........................... <me>
+  [135] objcall 1462 ............................ <me.getItemPointer()>
+  [138] pusharglistnoret 2 ...................... <me.getComponent(), me.getItemPointer()>
+  [140] objcall 1488 ............................ me.getComponent().executePrevCallbacks(me.getItemPointer())
+  [143] getparam 0 .............................. <me>
+  [145] pusharglist 1 ........................... <me>
+  [147] objcall 82 .............................. <me.getComponent()>
+  [149] getprop 1473 ............................ <pItemPointer>
+  [152] pusharglist 2 ........................... <me.getComponent(), pItemPointer>
+  [154] objcall 1489 ............................ <me.getComponent().getPreviousFrom(pItemPointer)>
+  [157] setlocal 1 .............................. tID = me.getComponent().getPreviousFrom(pItemPointer)
+  [159] pop 2
+  [161] getparam 0 .............................. <me>
+  [163] getlocal 1 .............................. <tID>
+  [165] pusharglist 2 ........................... <me, tID>
+  [167] objcall 1453 ............................ <me.showItem(tID)>
+  [170] pusharglistnoret 1 ...................... <me.showItem(tID)>
+  [172] extcall 50 .............................. return me.showItem(tID)
+  [174] jmp [234]
+  [177] peek 0
+  [179] pushcons 6 .............................. <"if_btn_next">
+  [181] eq
+  [182] jmpifz [234] ............................ (case) "if_btn_next":
+  [185] getparam 0 .............................. <me>
+  [187] pusharglist 1 ........................... <me>
+  [189] objcall 82 .............................. <me.getComponent()>
+  [191] getparam 0 .............................. <me>
+  [193] pusharglist 1 ........................... <me>
+  [195] objcall 1462 ............................ <me.getItemPointer()>
+  [198] pusharglistnoret 2 ...................... <me.getComponent(), me.getItemPointer()>
+  [200] objcall 1490 ............................ me.getComponent().executeNextCallbacks(me.getItemPointer())
+  [203] getparam 0 .............................. <me>
+  [205] pusharglist 1 ........................... <me>
+  [207] objcall 82 .............................. <me.getComponent()>
+  [209] getprop 1473 ............................ <pItemPointer>
+  [212] pusharglist 2 ........................... <me.getComponent(), pItemPointer>
+  [214] objcall 1491 ............................ <me.getComponent().getNextFrom(pItemPointer)>
+  [217] setlocal 1 .............................. tID = me.getComponent().getNextFrom(pItemPointer)
+  [219] pop 2
+  [221] getparam 0 .............................. <me>
+  [223] getlocal 1 .............................. <tID>
+  [225] pusharglist 2 ........................... <me, tID>
+  [227] objcall 1453 ............................ <me.showItem(tID)>
+  [230] pusharglistnoret 1 ...................... <me.showItem(tID)>
+  [232] extcall 50 .............................. return me.showItem(tID)
+  [234] pop 1 ................................... end case
+  [236] jmp [283]
+  [239] peek 0
+  [241] pushsymb 860 ............................ <#mouseDown>
+  [244] eq
+  [245] jmpifz [283] ............................ (case) #mouseDown:
+  [248] getlocal 0 .............................. <tWndObj>
+  [250] pushzero ................................ <0>
+  [251] pusharglistnoret 2 ...................... <tWndObj, 0>
+  [253] objcall 1061 ............................ tWndObj.lock(0)
+  [256] getparam 2 .............................. <tElemID>
+  [258] peek 0 .................................. case tElemID of
+  [260] pushcons 3 .............................. <"if_title">
+  [262] eq
+  [263] jmpifz [281] ............................ (case) "if_title":
+  [266] getmovieprop 459 ........................ <the mouseLoc>
+  [269] setprop 1468 ............................ pDragStart = the mouseLoc
+  [272] getlocal 0 .............................. <tWndObj>
+  [274] pushint8 1 .............................. <1>
+  [276] pusharglistnoret 2 ...................... <tWndObj, 1>
+  [278] objcall 1487 ............................ tWndObj.drag(1)
+  [281] pop 1
+  [283] pop 1 ................................... end case
+  [285] pushint8 1 .............................. <1>
+  [287] pusharglistnoret 1 ...................... <1>
+  [289] extcall 50 .............................. return 1
+  [291] ret
+end

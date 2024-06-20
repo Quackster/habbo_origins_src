@@ -1,0 +1,89 @@
+on construct me
+  [  0] pushint8 1 .............................. <1>
+  [  2] pusharglistnoret 1 ...................... <1>
+  [  4] extcall 44 .............................. return 1
+  [  6] ret
+end
+
+on deconstruct me
+  [  0] pushint8 1 .............................. <1>
+  [  2] pusharglistnoret 1 ...................... <1>
+  [  4] extcall 44 .............................. return 1
+  [  6] ret
+end
+
+on refresh me, tTopic, tdata
+  [  0] getparam 2 .............................. <tdata>
+  [  2] pushzero ................................ <0>
+  [  3] eq ...................................... <tdata = 0>
+  [  4] jmpifz [ 12] ............................ if tdata = 0 then
+  [  7] pushzero ................................ <0>
+  [  8] pusharglistnoret 1 ...................... <0>
+  [ 10] extcall 44 .............................. return 0
+  [ 12] getparam 2 .............................. <tdata>
+  [ 14] pushsymb 458 ............................ <#reasonstr>
+  [ 17] pusharglist 2 ........................... <tdata, #reasonstr>
+  [ 19] objcall 25 .............................. <tdata[#reasonstr]>
+  [ 21] peek 0 .................................. case tdata[#reasonstr] of
+  [ 23] pushcons 0 .............................. <"game_deleted">
+  [ 25] eq
+  [ 26] jmpifz [ 36] ............................ (case) "game_deleted":
+  [ 29] pushcons 1 .............................. <"bb_error_game_deleted">
+  [ 31] setlocal 0 .............................. tAlertStr = "bb_error_game_deleted"
+  [ 33] jmp [123]
+  [ 36] peek 0
+  [ 38] pushcons 2 .............................. <"invalidparam">
+  [ 40] eq
+  [ 41] jmpifz [ 51] ............................ (case) "invalidparam":
+  [ 44] pushcons 3 .............................. <"bb_error_invalid">
+  [ 46] setlocal 0 .............................. tAlertStr = "bb_error_invalid"
+  [ 48] jmp [123]
+  [ 51] peek 0
+  [ 53] pushcons 4 .............................. <"notickets">
+  [ 55] eq
+  [ 56] jmpifz [ 66] ............................ (case) "notickets":
+  [ 59] pushcons 5 .............................. <"bb_error_notickets">
+  [ 61] setlocal 0 .............................. tAlertStr = "bb_error_notickets"
+  [ 63] jmp [123]
+  [ 66] peek 0
+  [ 68] pushcons 6 .............................. <"dailylimit">
+  [ 70] eq
+  [ 71] jmpifz [ 81] ............................ (case) "dailylimit":
+  [ 74] pushcons 7 .............................. <"bb_error_dailylimit">
+  [ 76] setlocal 0 .............................. tAlertStr = "bb_error_dailylimit"
+  [ 78] jmp [123]
+  [ 81] peek 0
+  [ 83] pushcons 8 .............................. <"blockedip">
+  [ 85] eq
+  [ 86] jmpifz [ 96] ............................ (case) "blockedip":
+  [ 89] pushcons 9 .............................. <"bb_error_blockedip">
+  [ 91] setlocal 0 .............................. tAlertStr = "bb_error_blockedip"
+  [ 93] jmp [123] ............................... (case) otherwise:
+  [ 96] pushcons 10 ............................. <"bb_error_">
+  [ 98] getparam 2 .............................. <tdata>
+  [100] pushsymb 459 ............................ <#request>
+  [103] pusharglist 2 ........................... <tdata, #request>
+  [105] objcall 25 .............................. <tdata[#request]>
+  [107] joinstr ................................. <"bb_error_" & tdata[#request]>
+  [108] pushcons 11 ............................. <"_">
+  [110] joinstr ................................. <"bb_error_" & tdata[#request] & "_">
+  [111] getparam 2 .............................. <tdata>
+  [113] pushsymb 458 ............................ <#reasonstr>
+  [116] pusharglist 2 ........................... <tdata, #reasonstr>
+  [118] objcall 25 .............................. <tdata[#reasonstr]>
+  [120] joinstr ................................. <"bb_error_" & tdata[#request] & "_" & tdata[#reasonstr]>
+  [121] setlocal 0 .............................. tAlertStr = "bb_error_" & tdata[#request] & "_" & tdata[#reasonstr]
+  [123] pop 1 ................................... end case
+  [125] pushsymb 177 ............................ <#alert>
+  [127] pushsymb 147 ............................ <#id>
+  [129] pushcons 12 ............................. <"bb_error">
+  [131] pushsymb 178 ............................ <#msg>
+  [133] getlocal 0 .............................. <tAlertStr>
+  [135] pusharglist 4 ........................... <[#id: "bb_error", #msg: tAlertStr]>
+  [137] pushproplist ............................ <[#id: "bb_error", #msg: tAlertStr]>
+  [138] pusharglist 2 ........................... <#alert, [#id: "bb_error", #msg: tAlertStr]>
+  [140] extcall 129 ............................. <executeMessage(#alert, [#id: "bb_error", #msg: tAlertStr])>
+  [142] pusharglistnoret 1 ...................... <executeMessage(#alert, [#id: "bb_error", #msg: tAlertStr])>
+  [144] extcall 44 .............................. return executeMessage(#alert, [#id: "bb_error", #msg: tAlertStr])
+  [146] ret
+end

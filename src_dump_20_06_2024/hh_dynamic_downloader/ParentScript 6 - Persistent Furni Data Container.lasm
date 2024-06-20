@@ -1,0 +1,640 @@
+property pStuffData, pWallitemData, pStuffDataByClass, pWallitemDataByClass, pMemberName, pRetryDownloadCount, pDownloadedData, pDownloadRetriesLeft
+
+on construct me
+  [  0] pushint8 1 .............................. <1>
+  [  2] setprop 8 ............................... pDownloadRetriesLeft = 1
+  [  4] pusharglist 0 ........................... <[:]>
+  [  6] pushproplist ............................ <[:]>
+  [  7] setprop 9 ............................... pStuffData = [:]
+  [  9] getprop 9 ............................... <pStuffData>
+  [ 11] pusharglistnoret 1 ...................... <pStuffData>
+  [ 13] objcall 10 .............................. pStuffData.sort()
+  [ 15] pusharglist 0 ........................... <[:]>
+  [ 17] pushproplist ............................ <[:]>
+  [ 18] setprop 11 .............................. pWallitemData = [:]
+  [ 20] getprop 11 .............................. <pWallitemData>
+  [ 22] pusharglistnoret 1 ...................... <pWallitemData>
+  [ 24] objcall 10 .............................. pWallitemData.sort()
+  [ 26] pusharglist 0 ........................... <[:]>
+  [ 28] pushproplist ............................ <[:]>
+  [ 29] setprop 12 .............................. pStuffDataByClass = [:]
+  [ 31] getprop 12 .............................. <pStuffDataByClass>
+  [ 33] pusharglistnoret 1 ...................... <pStuffDataByClass>
+  [ 35] objcall 10 .............................. pStuffDataByClass.sort()
+  [ 37] pusharglist 0 ........................... <[:]>
+  [ 39] pushproplist ............................ <[:]>
+  [ 40] setprop 13 .............................. pWallitemDataByClass = [:]
+  [ 42] getprop 13 .............................. <pWallitemDataByClass>
+  [ 44] pusharglistnoret 1 ...................... <pWallitemDataByClass>
+  [ 46] objcall 10 .............................. pWallitemDataByClass.sort()
+  [ 48] pushint8 1 .............................. <1>
+  [ 50] setlocal 0 .............................. pDownloadRetryCount = 1
+  [ 52] pusharglist 0 ........................... <[]>
+  [ 54] pushlist ................................ <[]>
+  [ 55] setprop 16 .............................. pDownloadedData = []
+  [ 57] pushcons 0 .............................. <"furnidata.load.url">
+  [ 59] pusharglist 1 ........................... <"furnidata.load.url">
+  [ 61] extcall 17 .............................. <variableExists("furnidata.load.url")>
+  [ 63] jmpifz [ 75] ............................ if variableExists("furnidata.load.url") then / else
+  [ 66] getparam 0 .............................. <me>
+  [ 68] pusharglistnoret 1 ...................... <me>
+  [ 70] objcall 4 ............................... me.initDownload()
+  [ 72] jmp [ 86]
+  [ 75] pushcons 1 .............................. <"error">
+  [ 77] pushcons 2 .............................. <"furnidata_config">
+  [ 79] pusharglist 2 ........................... <["error": "furnidata_config"]>
+  [ 81] pushproplist ............................ <["error": "furnidata_config"]>
+  [ 82] pusharglistnoret 1 ...................... <["error": "furnidata_config"]>
+  [ 84] extcall 18 .............................. fatalError(["error": "furnidata_config"])
+  [ 86] ret
+end
+
+on deconstruct me
+  [  0] pusharglist 0 ........................... <[:]>
+  [  2] pushproplist ............................ <[:]>
+  [  3] setprop 9 ............................... pStuffData = [:]
+  [  5] pusharglist 0 ........................... <[:]>
+  [  7] pushproplist ............................ <[:]>
+  [  8] setprop 11 .............................. pWallitemData = [:]
+  [ 10] ret
+end
+
+on getProps me, ttype, tID
+  [  0] getparam 1 .............................. <ttype>
+  [  2] peek 0 .................................. case ttype of
+  [  4] pushcons 3 .............................. <"s">
+  [  6] eq
+  [  7] jmpifz [ 27] ............................ (case) "s":
+  [ 10] pop 1
+  [ 12] getprop 9 ............................... <pStuffData>
+  [ 14] getparam 2 .............................. <tID>
+  [ 16] pusharglist 2 ........................... <pStuffData, tID>
+  [ 18] objcall 22 .............................. <pStuffData.getaProp(tID)>
+  [ 20] pusharglistnoret 1 ...................... <pStuffData.getaProp(tID)>
+  [ 22] extcall 21 .............................. return pStuffData.getaProp(tID)
+  [ 24] jmp [ 72]
+  [ 27] peek 0
+  [ 29] pushcons 4 .............................. <"i">
+  [ 31] nteq
+  [ 32] jmpifz [ 43] ............................ (case) "i", ...
+  [ 35] peek 0
+  [ 37] pushcons 5 .............................. <"e">
+  [ 39] eq
+  [ 40] jmpifz [ 60] ............................ (case) ..., "e":
+  [ 43] pop 1
+  [ 45] getprop 11 .............................. <pWallitemData>
+  [ 47] getparam 2 .............................. <tID>
+  [ 49] pusharglist 2 ........................... <pWallitemData, tID>
+  [ 51] objcall 22 .............................. <pWallitemData.getaProp(tID)>
+  [ 53] pusharglistnoret 1 ...................... <pWallitemData.getaProp(tID)>
+  [ 55] extcall 21 .............................. return pWallitemData.getaProp(tID)
+  [ 57] jmp [ 72] ............................... (case) otherwise:
+  [ 60] getparam 0 .............................. <me>
+  [ 62] pushcons 6 .............................. <"invalid item type">
+  [ 64] pushsymb 2 .............................. <#getProps>
+  [ 66] pushsymb 24 ............................. <#minor>
+  [ 68] pusharglistnoret 4 ...................... <me, "invalid item type", #getProps, #minor>
+  [ 70] extcall 23 .............................. error(me, "invalid item type", #getProps, #minor)
+  [ 72] pop 1 ................................... end case
+  [ 74] ret
+end
+
+on getPropsByClass me, ttype, tClass
+  [  0] getparam 1 .............................. <ttype>
+  [  2] peek 0 .................................. case ttype of
+  [  4] pushcons 3 .............................. <"s">
+  [  6] eq
+  [  7] jmpifz [ 27] ............................ (case) "s":
+  [ 10] pop 1
+  [ 12] getprop 12 .............................. <pStuffDataByClass>
+  [ 14] getparam 2 .............................. <tClass>
+  [ 16] pusharglist 2 ........................... <pStuffDataByClass, tClass>
+  [ 18] objcall 22 .............................. <pStuffDataByClass.getaProp(tClass)>
+  [ 20] pusharglistnoret 1 ...................... <pStuffDataByClass.getaProp(tClass)>
+  [ 22] extcall 21 .............................. return pStuffDataByClass.getaProp(tClass)
+  [ 24] jmp [ 72]
+  [ 27] peek 0
+  [ 29] pushcons 4 .............................. <"i">
+  [ 31] nteq
+  [ 32] jmpifz [ 43] ............................ (case) "i", ...
+  [ 35] peek 0
+  [ 37] pushcons 5 .............................. <"e">
+  [ 39] eq
+  [ 40] jmpifz [ 60] ............................ (case) ..., "e":
+  [ 43] pop 1
+  [ 45] getprop 13 .............................. <pWallitemDataByClass>
+  [ 47] getparam 2 .............................. <tClass>
+  [ 49] pusharglist 2 ........................... <pWallitemDataByClass, tClass>
+  [ 51] objcall 22 .............................. <pWallitemDataByClass.getaProp(tClass)>
+  [ 53] pusharglistnoret 1 ...................... <pWallitemDataByClass.getaProp(tClass)>
+  [ 55] extcall 21 .............................. return pWallitemDataByClass.getaProp(tClass)
+  [ 57] jmp [ 72] ............................... (case) otherwise:
+  [ 60] getparam 0 .............................. <me>
+  [ 62] pushcons 6 .............................. <"invalid item type">
+  [ 64] pushsymb 2 .............................. <#getProps>
+  [ 66] pushsymb 24 ............................. <#minor>
+  [ 68] pusharglistnoret 4 ...................... <me, "invalid item type", #getProps, #minor>
+  [ 70] extcall 23 .............................. error(me, "invalid item type", #getProps, #minor)
+  [ 72] pop 1 ................................... end case
+  [ 74] ret
+end
+
+on initDownload me
+  [  0] pushcons 0 .............................. <"furnidata.load.url">
+  [  2] pusharglist 1 ........................... <"furnidata.load.url">
+  [  4] extcall 28 .............................. <getVariable("furnidata.load.url")>
+  [  6] setlocal 0 .............................. tURL = getVariable("furnidata.load.url")
+  [  8] getlocal 0 .............................. <tURL>
+  [ 10] pushcons 7 .............................. <"-">
+  [ 12] joinstr ................................. <tURL & "-">
+  [ 13] getprop 8 ............................... <pDownloadRetriesLeft>
+  [ 15] joinstr ................................. <tURL & "-" & pDownloadRetriesLeft>
+  [ 16] setprop 14 .............................. pMemberName = tURL & "-" & pDownloadRetriesLeft
+  [ 18] pusharglist 0 ........................... <>
+  [ 20] extcall 29 .............................. <getSpecialServices()>
+  [ 22] pusharglist 1 ........................... <getSpecialServices()>
+  [ 24] objcall 30 .............................. <getSpecialServices().getSessionHash()>
+  [ 26] setlocal 1 .............................. tHash = getSpecialServices().getSessionHash()
+  [ 28] getlocal 1 .............................. <tHash>
+  [ 30] pushcons 8 .............................. <EMPTY>
+  [ 32] eq ...................................... <tHash = EMPTY>
+  [ 33] jmpifz [ 51] ............................ if tHash = EMPTY then
+  [ 36] pushint32 1000000 ....................... <1000000>
+  [ 41] pusharglist 1 ........................... <1000000>
+  [ 43] extcall 32 .............................. <random(1000000)>
+  [ 45] pusharglist 1 ........................... <random(1000000)>
+  [ 47] extcall 31 .............................. <string(random(1000000))>
+  [ 49] setlocal 1 .............................. tHash = string(random(1000000))
+  [ 51] getlocal 0 .............................. <tURL>
+  [ 53] pushcons 9 .............................. <"%hash%">
+  [ 55] getlocal 1 .............................. <tHash>
+  [ 57] pusharglist 3 ........................... <tURL, "%hash%", tHash>
+  [ 59] extcall 33 .............................. <replaceChunks(tURL, "%hash%", tHash)>
+  [ 61] setlocal 0 .............................. tURL = replaceChunks(tURL, "%hash%", tHash)
+  [ 63] getprop 14 .............................. <pMemberName>
+  [ 65] pushsymb 35 ............................. <#field>
+  [ 67] pusharglist 2 ........................... <pMemberName, #field>
+  [ 69] extcall 34 .............................. <createMember(pMemberName, #field)>
+  [ 71] not ..................................... <not createMember(pMemberName, #field)>
+  [ 72] jmpifz [ 91] ............................ if not createMember(pMemberName, #field) then
+  [ 75] getparam 0 .............................. <me>
+  [ 77] pushcons 10 ............................. <"Could not create member!">
+  [ 79] pushsymb 4 .............................. <#initDownload>
+  [ 81] pushsymb 36 ............................. <#critical>
+  [ 83] pusharglist 4 ........................... <me, "Could not create member!", #initDownload, #critical>
+  [ 85] extcall 23 .............................. <error(me, "Could not create member!", #initDownload, #critical)>
+  [ 87] pusharglistnoret 1 ...................... <error(me, "Could not create member!", #initDownload, #critical)>
+  [ 89] extcall 21 .............................. return error(me, "Could not create member!", #initDownload, #critical)
+  [ 91] getlocal 0 .............................. <tURL>
+  [ 93] getprop 14 .............................. <pMemberName>
+  [ 95] pushsymb 35 ............................. <#field>
+  [ 97] pushint8 1 .............................. <1>
+  [ 99] pusharglist 4 ........................... <tURL, pMemberName, #field, 1>
+  [101] extcall 37 .............................. <queueDownload(tURL, pMemberName, #field, 1)>
+  [103] setlocal 2 .............................. tMemNum = queueDownload(tURL, pMemberName, #field, 1)
+  [105] getlocal 2 .............................. <tMemNum>
+  [107] pushsymb 5 .............................. <#downloadCallback>
+  [109] getparam 0 .............................. <me>
+  [111] pusharglist 1 ........................... <me>
+  [113] objcall 39 .............................. <me.getID()>
+  [115] getlocal 2 .............................. <tMemNum>
+  [117] pusharglistnoret 4 ...................... <tMemNum, #downloadCallback, me.getID(), tMemNum>
+  [119] extcall 38 .............................. registerDownloadCallback(tMemNum, #downloadCallback, me.getID(), tMemNum)
+  [121] ret
+end
+
+on downloadCallback me, tParams, tSuccess
+  [  0] getparam 2 .............................. <tSuccess>
+  [  2] jmpifz [ 60] ............................ if tSuccess then / else
+  [  5] pusharglist 0 ........................... <[:]>
+  [  7] pushproplist ............................ <[:]>
+  [  8] setlocal 0 .............................. pData = [:]
+  [ 10] getparam 1 .............................. <tParams>
+  [ 12] pusharglist 1 ........................... <tParams>
+  [ 14] extcall 44 .............................. <member(tParams)>
+  [ 16] setlocal 1 .............................. tmember = member(tParams)
+  [ 18] pushsymb 44 ............................. <#member>
+  [ 20] getlocal 1 .............................. <tmember>
+  [ 22] pushsymb 45 ............................. <#start>
+  [ 24] pushint8 1 .............................. <1>
+  [ 26] pushsymb 46 ............................. <#count>
+  [ 28] pushint8 1 .............................. <1>
+  [ 30] pusharglist 6 ........................... <[#member: tmember, #start: 1, #count: 1]>
+  [ 32] pushproplist ............................ <[#member: tmember, #start: 1, #count: 1]>
+  [ 33] setlocal 2 .............................. tNewArgument = [#member: tmember, #start: 1, #count: 1]
+  [ 35] pusharglist 0 ........................... <>
+  [ 37] extcall 15 .............................. <getUniqueID()>
+  [ 39] pushint8 10 ............................. <10>
+  [ 41] pushsymb 6 .............................. <#parseCallback>
+  [ 43] getparam 0 .............................. <me>
+  [ 45] pusharglist 1 ........................... <me>
+  [ 47] objcall 39 .............................. <me.getID()>
+  [ 49] getlocal 2 .............................. <tNewArgument>
+  [ 51] pushint8 1 .............................. <1>
+  [ 53] pusharglistnoret 6 ...................... <getUniqueID(), 10, #parseCallback, me.getID(), tNewArgument, 1>
+  [ 55] extcall 47 .............................. createTimeout(getUniqueID(), 10, #parseCallback, me.getID(), tNewArgument, 1)
+  [ 57] jmp [ 87]
+  [ 60] pushcons 1 .............................. <"error">
+  [ 62] pushcons 11 ............................. <"furnidata">
+  [ 64] pusharglist 2 ........................... <["error": "furnidata"]>
+  [ 66] pushproplist ............................ <["error": "furnidata"]>
+  [ 67] pusharglistnoret 1 ...................... <["error": "furnidata"]>
+  [ 69] extcall 18 .............................. fatalError(["error": "furnidata"])
+  [ 71] getparam 0 .............................. <me>
+  [ 73] pushcons 12 ............................. <"Failure while loading furnidata">
+  [ 75] pushsymb 5 .............................. <#downloadCallback>
+  [ 77] pushsymb 36 ............................. <#critical>
+  [ 79] pusharglist 4 ........................... <me, "Failure while loading furnidata", #downloadCallback, #critical>
+  [ 81] extcall 23 .............................. <error(me, "Failure while loading furnidata", #downloadCallback, #critical)>
+  [ 83] pusharglistnoret 1 ...................... <error(me, "Failure while loading furnidata", #downloadCallback, #critical)>
+  [ 85] extcall 21 .............................. return error(me, "Failure while loading furnidata", #downloadCallback, #critical)
+  [ 87] ret
+end
+
+on parseCallback me, tArgument
+  [  0] pusharglist 0 ........................... <[]>
+  [  2] pushlist ................................ <[]>
+  [  3] setprop 16 .............................. pDownloadedData = []
+  [  5] getparam 1 .............................. <tArgument>
+  [  7] pushsymb 44 ............................. <#member>
+  [  9] pusharglist 2 ........................... <tArgument, #member>
+  [ 11] objcall 54 .............................. <tArgument[#member]>
+  [ 13] setlocal 0 .............................. tmember = tArgument[#member]
+  [ 15] getlocal 0 .............................. <tmember>
+  [ 17] pusharglist 1 ........................... <tmember>
+  [ 19] extcall 55 .............................. <ilk(tmember)>
+  [ 21] pushsymb 44 ............................. <#member>
+  [ 23] nteq .................................... <ilk(tmember) <> #member>
+  [ 24] jmpifz [ 54] ............................ if ilk(tmember) <> #member then
+  [ 27] pushcons 1 .............................. <"error">
+  [ 29] pushcons 13 ............................. <"furnidata_member">
+  [ 31] pusharglist 2 ........................... <["error": "furnidata_member"]>
+  [ 33] pushproplist ............................ <["error": "furnidata_member"]>
+  [ 34] pusharglistnoret 1 ...................... <["error": "furnidata_member"]>
+  [ 36] extcall 18 .............................. fatalError(["error": "furnidata_member"])
+  [ 38] getparam 0 .............................. <me>
+  [ 40] pushcons 14 ............................. <"Failure with furnidata member">
+  [ 42] pushsymb 6 .............................. <#parseCallback>
+  [ 44] pushsymb 36 ............................. <#critical>
+  [ 46] pusharglist 4 ........................... <me, "Failure with furnidata member", #parseCallback, #critical>
+  [ 48] extcall 23 .............................. <error(me, "Failure with furnidata member", #parseCallback, #critical)>
+  [ 50] pusharglistnoret 1 ...................... <error(me, "Failure with furnidata member", #parseCallback, #critical)>
+  [ 52] extcall 21 .............................. return error(me, "Failure with furnidata member", #parseCallback, #critical)
+  [ 54] pushint8 1 .............................. <1>
+  [ 56] setlocal 1
+  [ 58] getlocal 1
+  [ 60] getlocal 0 .............................. <tmember>
+  [ 62] getchainedprop 56 ....................... <tmember.text>
+  [ 64] pushsymb 57 ............................. <#line>
+  [ 66] pusharglist 2 ........................... <tmember.text, #line>
+  [ 68] objcall 46 .............................. <tmember.text.line.count>
+  [ 70] lteq
+  [ 71] jmpifz [107] ............................ repeat with tLineNo = 1 to tmember.text.line.count
+  [ 74] getlocal 0 .............................. <tmember>
+  [ 76] getchainedprop 56 ....................... <tmember.text>
+  [ 78] pushsymb 57 ............................. <#line>
+  [ 80] getlocal 1 .............................. <tLineNo>
+  [ 82] pusharglist 3 ........................... <tmember.text, #line, tLineNo>
+  [ 84] objcall 58 .............................. <tmember.text.line[tLineNo]>
+  [ 86] setlocal 2 .............................. tLineTxt = tmember.text.line[tLineNo]
+  [ 88] getprop 16 .............................. <pDownloadedData>
+  [ 90] getlocal 1 .............................. <tLineNo>
+  [ 92] getlocal 2 .............................. <tLineTxt>
+  [ 94] pusharglistnoret 3 ...................... <pDownloadedData, tLineNo, tLineTxt>
+  [ 96] objcall 59 .............................. pDownloadedData[tLineNo] = tLineTxt
+  [ 98] pushint8 1
+  [100] getlocal 1
+  [102] add
+  [103] setlocal 1
+  [105] endrepeat [ 58]
+  [107] getparam 0 .............................. <me>
+  [109] getparam 1 .............................. <tArgument>
+  [111] pusharglistnoret 2 ...................... <me, tArgument>
+  [113] objcall 7 ............................... me.parseOneLine(tArgument)
+  [115] ret
+end
+
+on parseOneLine me, tArgument
+  [  0] getparam 1 .............................. <tArgument>
+  [  2] pushsymb 45 ............................. <#start>
+  [  4] pusharglist 2 ........................... <tArgument, #start>
+  [  6] objcall 54 .............................. <tArgument[#start]>
+  [  8] setlocal 0 .............................. tStartingLine = tArgument[#start]
+  [ 10] getparam 1 .............................. <tArgument>
+  [ 12] pushsymb 46 ............................. <#count>
+  [ 14] pusharglist 2 ........................... <tArgument, #count>
+  [ 16] objcall 54 .............................. <tArgument[#count]>
+  [ 18] setlocal 1 .............................. tLineCount = tArgument[#count]
+  [ 20] getlocal 0 .............................. <tStartingLine>
+  [ 22] getlocal 1 .............................. <tLineCount>
+  [ 24] add ..................................... <tStartingLine + tLineCount>
+  [ 25] getprop 16 .............................. <pDownloadedData>
+  [ 27] getobjprop 46 ........................... <pDownloadedData.count>
+  [ 29] gt ...................................... <(tStartingLine + tLineCount) > pDownloadedData.count>
+  [ 30] jmpifz [ 42] ............................ if (tStartingLine + tLineCount) > pDownloadedData.count then
+  [ 33] getprop 16 .............................. <pDownloadedData>
+  [ 35] getobjprop 46 ........................... <pDownloadedData.count>
+  [ 37] getlocal 0 .............................. <tStartingLine>
+  [ 39] sub ..................................... <pDownloadedData.count - tStartingLine>
+  [ 40] setlocal 1 .............................. tLineCount = pDownloadedData.count - tStartingLine
+  [ 42] getlocal 0 .............................. <tStartingLine>
+  [ 44] setlocal 2
+  [ 46] getlocal 2
+  [ 48] getlocal 0 .............................. <tStartingLine>
+  [ 50] getlocal 1 .............................. <tLineCount>
+  [ 52] add ..................................... <tStartingLine + tLineCount>
+  [ 53] lteq
+  [ 54] jmpifz [547] ............................ repeat with l = tStartingLine to tStartingLine + tLineCount
+  [ 57] getprop 16 .............................. <pDownloadedData>
+  [ 59] getlocal 2 .............................. <l>
+  [ 61] pusharglist 2 ........................... <pDownloadedData, l>
+  [ 63] objcall 54 .............................. <pDownloadedData[l]>
+  [ 65] pusharglist 1 ........................... <pDownloadedData[l]>
+  [ 67] extcall 63 .............................. <value(pDownloadedData[l])>
+  [ 69] setlocal 3 .............................. tVal = value(pDownloadedData[l])
+  [ 71] getlocal 3 .............................. <tVal>
+  [ 73] pusharglist 1 ........................... <tVal>
+  [ 75] extcall 55 .............................. <ilk(tVal)>
+  [ 77] pushsymb 64 ............................. <#list>
+  [ 79] eq ...................................... <ilk(tVal) = #list>
+  [ 80] jmpifz [437] ............................ if ilk(tVal) = #list then
+  [ 83] getlocal 3 .............................. <tVal>
+  [ 85] peek 0
+  [ 87] pusharglist 1
+  [ 89] extcall 46
+  [ 91] pushint8 1
+  [ 93] peek 0
+  [ 95] peek 2
+  [ 97] lteq
+  [ 98] jmpifz [432] ............................ repeat with tItem in tVal
+  [101] peek 2
+  [103] peek 1
+  [105] pusharglist 2
+  [107] extcall 54
+  [109] setlocal 4
+  [111] pusharglist 0 ........................... <[:]>
+  [113] pushproplist ............................ <[:]>
+  [114] setlocal 5 .............................. tdata = [:]
+  [116] getlocal 5 .............................. <tdata>
+  [118] pushsymb 65 ............................. <#type>
+  [120] getlocal 4 .............................. <tItem>
+  [122] pushint8 1 .............................. <1>
+  [124] pusharglist 2 ........................... <tItem, 1>
+  [126] objcall 54 .............................. <tItem[1]>
+  [128] pusharglistnoret 3 ...................... <tdata, #type, tItem[1]>
+  [130] objcall 59 .............................. tdata[#type] = tItem[1]
+  [132] getlocal 5 .............................. <tdata>
+  [134] pushsymb 66 ............................. <#classID>
+  [136] getlocal 4 .............................. <tItem>
+  [138] pushint8 2 .............................. <2>
+  [140] pusharglist 2 ........................... <tItem, 2>
+  [142] objcall 54 .............................. <tItem[2]>
+  [144] pusharglist 1 ........................... <tItem[2]>
+  [146] extcall 63 .............................. <value(tItem[2])>
+  [148] pusharglistnoret 3 ...................... <tdata, #classID, value(tItem[2])>
+  [150] objcall 59 .............................. tdata[#classID] = value(tItem[2])
+  [152] getlocal 5 .............................. <tdata>
+  [154] pushsymb 67 ............................. <#class>
+  [156] getlocal 4 .............................. <tItem>
+  [158] pushint8 3 .............................. <3>
+  [160] pusharglist 2 ........................... <tItem, 3>
+  [162] objcall 54 .............................. <tItem[3]>
+  [164] pusharglistnoret 3 ...................... <tdata, #class, tItem[3]>
+  [166] objcall 59 .............................. tdata[#class] = tItem[3]
+  [168] getlocal 5 .............................. <tdata>
+  [170] pushsymb 68 ............................. <#revision>
+  [172] getlocal 4 .............................. <tItem>
+  [174] pushint8 4 .............................. <4>
+  [176] pusharglist 2 ........................... <tItem, 4>
+  [178] objcall 54 .............................. <tItem[4]>
+  [180] pusharglist 1 ........................... <tItem[4]>
+  [182] extcall 63 .............................. <value(tItem[4])>
+  [184] pusharglistnoret 3 ...................... <tdata, #revision, value(tItem[4])>
+  [186] objcall 59 .............................. tdata[#revision] = value(tItem[4])
+  [188] getlocal 5 .............................. <tdata>
+  [190] pushsymb 69 ............................. <#defaultDir>
+  [192] getlocal 4 .............................. <tItem>
+  [194] pushint8 5 .............................. <5>
+  [196] pusharglist 2 ........................... <tItem, 5>
+  [198] objcall 54 .............................. <tItem[5]>
+  [200] pusharglist 1 ........................... <tItem[5]>
+  [202] extcall 63 .............................. <value(tItem[5])>
+  [204] pusharglistnoret 3 ...................... <tdata, #defaultDir, value(tItem[5])>
+  [206] objcall 59 .............................. tdata[#defaultDir] = value(tItem[5])
+  [208] getlocal 5 .............................. <tdata>
+  [210] pushsymb 70 ............................. <#xdim>
+  [212] getlocal 4 .............................. <tItem>
+  [214] pushint8 6 .............................. <6>
+  [216] pusharglist 2 ........................... <tItem, 6>
+  [218] objcall 54 .............................. <tItem[6]>
+  [220] pusharglist 1 ........................... <tItem[6]>
+  [222] extcall 63 .............................. <value(tItem[6])>
+  [224] pusharglistnoret 3 ...................... <tdata, #xdim, value(tItem[6])>
+  [226] objcall 59 .............................. tdata[#xdim] = value(tItem[6])
+  [228] getlocal 5 .............................. <tdata>
+  [230] pushsymb 71 ............................. <#ydim>
+  [232] getlocal 4 .............................. <tItem>
+  [234] pushint8 7 .............................. <7>
+  [236] pusharglist 2 ........................... <tItem, 7>
+  [238] objcall 54 .............................. <tItem[7]>
+  [240] pusharglist 1 ........................... <tItem[7]>
+  [242] extcall 63 .............................. <value(tItem[7])>
+  [244] pusharglistnoret 3 ...................... <tdata, #ydim, value(tItem[7])>
+  [246] objcall 59 .............................. tdata[#ydim] = value(tItem[7])
+  [248] getlocal 5 .............................. <tdata>
+  [250] pushsymb 72 ............................. <#partColors>
+  [252] getlocal 4 .............................. <tItem>
+  [254] pushint8 8 .............................. <8>
+  [256] pusharglist 2 ........................... <tItem, 8>
+  [258] objcall 54 .............................. <tItem[8]>
+  [260] pusharglistnoret 3 ...................... <tdata, #partColors, tItem[8]>
+  [262] objcall 59 .............................. tdata[#partColors] = tItem[8]
+  [264] getlocal 5 .............................. <tdata>
+  [266] pushsymb 73 ............................. <#localizedName>
+  [268] getlocal 4 .............................. <tItem>
+  [270] pushint8 9 .............................. <9>
+  [272] pusharglist 2 ........................... <tItem, 9>
+  [274] objcall 54 .............................. <tItem[9]>
+  [276] pusharglist 1 ........................... <tItem[9]>
+  [278] extcall 74 .............................. <decodeUTF8(tItem[9])>
+  [280] pusharglistnoret 3 ...................... <tdata, #localizedName, decodeUTF8(tItem[9])>
+  [282] objcall 59 .............................. tdata[#localizedName] = decodeUTF8(tItem[9])
+  [284] getlocal 5 .............................. <tdata>
+  [286] pushsymb 75 ............................. <#localizedDesc>
+  [288] getlocal 4 .............................. <tItem>
+  [290] pushint8 10 ............................. <10>
+  [292] pusharglist 2 ........................... <tItem, 10>
+  [294] objcall 54 .............................. <tItem[10]>
+  [296] pusharglist 1 ........................... <tItem[10]>
+  [298] extcall 74 .............................. <decodeUTF8(tItem[10])>
+  [300] pusharglistnoret 3 ...................... <tdata, #localizedDesc, decodeUTF8(tItem[10])>
+  [302] objcall 59 .............................. tdata[#localizedDesc] = decodeUTF8(tItem[10])
+  [304] pushcons 15 ............................. <"dynamicdownloader">
+  [306] pusharglist 1 ........................... <"dynamicdownloader">
+  [308] extcall 76 .............................. <getThread("dynamicdownloader")>
+  [310] pusharglist 1 ........................... <getThread("dynamicdownloader")>
+  [312] objcall 77 .............................. <getThread("dynamicdownloader").getComponent()>
+  [314] getlocal 5 .............................. <tdata>
+  [316] pushsymb 67 ............................. <#class>
+  [318] pusharglist 2 ........................... <tdata, #class>
+  [320] objcall 54 .............................. <tdata[#class]>
+  [322] getlocal 5 .............................. <tdata>
+  [324] pushsymb 68 ............................. <#revision>
+  [326] pusharglist 2 ........................... <tdata, #revision>
+  [328] objcall 54 .............................. <tdata[#revision]>
+  [330] getlocal 5 .............................. <tdata>
+  [332] pushsymb 65 ............................. <#type>
+  [334] pusharglist 2 ........................... <tdata, #type>
+  [336] objcall 54 .............................. <tdata[#type]>
+  [338] pushcons 3 .............................. <"s">
+  [340] eq ...................................... <tdata[#type] = "s">
+  [341] pusharglistnoret 4 ...................... <getThread("dynamicdownloader").getComponent(), tdata[#class], tdata[#revision], tdata[#type] = "s">
+  [343] objcall 78 .............................. getThread("dynamicdownloader").getComponent().setFurniRevision(tdata[#class], tdata[#revision], tdata[#type] = "s")
+  [345] getlocal 5 .............................. <tdata>
+  [347] pushsymb 65 ............................. <#type>
+  [349] pusharglist 2 ........................... <tdata, #type>
+  [351] objcall 54 .............................. <tdata[#type]>
+  [353] pushcons 3 .............................. <"s">
+  [355] eq ...................................... <tdata[#type] = "s">
+  [356] jmpifz [394] ............................ if tdata[#type] = "s" then
+  [359] getprop 9 ............................... <pStuffData>
+  [361] getlocal 5 .............................. <tdata>
+  [363] pushsymb 66 ............................. <#classID>
+  [365] pusharglist 2 ........................... <tdata, #classID>
+  [367] objcall 54 .............................. <tdata[#classID]>
+  [369] getlocal 5 .............................. <tdata>
+  [371] pusharglistnoret 3 ...................... <pStuffData, tdata[#classID], tdata>
+  [373] objcall 79 .............................. pStuffData.setaProp(tdata[#classID], tdata)
+  [375] getprop 12 .............................. <pStuffDataByClass>
+  [377] getlocal 4 .............................. <tItem>
+  [379] pushint8 3 .............................. <3>
+  [381] pusharglist 2 ........................... <tItem, 3>
+  [383] objcall 54 .............................. <tItem[3]>
+  [385] getlocal 5 .............................. <tdata>
+  [387] pusharglistnoret 3 ...................... <pStuffDataByClass, tItem[3], tdata>
+  [389] objcall 79 .............................. pStuffDataByClass.setaProp(tItem[3], tdata)
+  [391] jmp [426] ............................... next repeat
+  [394] getprop 11 .............................. <pWallitemData>
+  [396] getlocal 5 .............................. <tdata>
+  [398] pushsymb 66 ............................. <#classID>
+  [400] pusharglist 2 ........................... <tdata, #classID>
+  [402] objcall 54 .............................. <tdata[#classID]>
+  [404] getlocal 5 .............................. <tdata>
+  [406] pusharglistnoret 3 ...................... <pWallitemData, tdata[#classID], tdata>
+  [408] objcall 79 .............................. pWallitemData.setaProp(tdata[#classID], tdata)
+  [410] getprop 13 .............................. <pWallitemDataByClass>
+  [412] getlocal 4 .............................. <tItem>
+  [414] pushint8 3 .............................. <3>
+  [416] pusharglist 2 ........................... <tItem, 3>
+  [418] objcall 54 .............................. <tItem[3]>
+  [420] getlocal 5 .............................. <tdata>
+  [422] pusharglistnoret 3 ...................... <pWallitemDataByClass, tItem[3], tdata>
+  [424] objcall 79 .............................. pWallitemDataByClass.setaProp(tItem[3], tdata)
+  [426] pushint8 1
+  [428] add
+  [429] endrepeat [ 93]
+  [432] pop 3
+  [434] jmp [537] ............................... next repeat
+  [437] getlocal 2 .............................. <l>
+  [439] getprop 16 .............................. <pDownloadedData>
+  [441] getobjprop 46 ........................... <pDownloadedData.count>
+  [443] eq ...................................... <l = pDownloadedData.count>
+  [444] getprop 16 .............................. <pDownloadedData>
+  [446] getobjprop 46 ........................... <pDownloadedData.count>
+  [448] pushint8 1 .............................. <1>
+  [450] gt ...................................... <pDownloadedData.count > 1>
+  [451] and ..................................... <(l = pDownloadedData.count) and (pDownloadedData.count > 1)>
+  [452] getprop 16 .............................. <pDownloadedData>
+  [454] getlocal 2 .............................. <l>
+  [456] pusharglist 2 ........................... <pDownloadedData, l>
+  [458] objcall 54 .............................. <pDownloadedData[l]>
+  [460] pushcons 8 .............................. <EMPTY>
+  [462] eq ...................................... <pDownloadedData[l] = EMPTY>
+  [463] and ..................................... <(l = pDownloadedData.count) and (pDownloadedData.count > 1) and (pDownloadedData[l] = EMPTY)>
+  [464] jmpifz [474] ............................ if (l = pDownloadedData.count) and (pDownloadedData.count > 1) and (pDownloadedData[l] = EMPTY) then
+  [467] pusharglistnoret 0 ...................... <>
+  [469] extcall 80 .............................. nothing()
+  [471] jmp [537] ............................... next repeat
+  [474] getprop 8 ............................... <pDownloadRetriesLeft>
+  [476] pushzero ................................ <0>
+  [477] gt ...................................... <pDownloadRetriesLeft > 0>
+  [478] jmpifz [502] ............................ if pDownloadRetriesLeft > 0 then
+  [481] getprop 8 ............................... <pDownloadRetriesLeft>
+  [483] pushint8 1 .............................. <1>
+  [485] sub ..................................... <pDownloadRetriesLeft - 1>
+  [486] setprop 8 ............................... pDownloadRetriesLeft = pDownloadRetriesLeft - 1
+  [488] getparam 0 .............................. <me>
+  [490] pusharglistnoret 1 ...................... <me>
+  [492] objcall 4 ............................... me.initDownload()
+  [494] pushzero ................................ <0>
+  [495] pusharglistnoret 1 ...................... <0>
+  [497] extcall 21 .............................. return 0
+  [499] jmp [537] ............................... next repeat
+  [502] getprop 16 .............................. <pDownloadedData>
+  [504] pusharglist 1 ........................... <pDownloadedData>
+  [506] extcall 31 .............................. <string(pDownloadedData)>
+  [508] setglobal 81 ............................ gLogVarUrl = string(pDownloadedData)
+  [510] pushcons 1 .............................. <"error">
+  [512] pushcons 16 ............................. <"furnidata_malformed">
+  [514] pusharglist 2 ........................... <["error": "furnidata_malformed"]>
+  [516] pushproplist ............................ <["error": "furnidata_malformed"]>
+  [517] pusharglistnoret 1 ...................... <["error": "furnidata_malformed"]>
+  [519] extcall 18 .............................. fatalError(["error": "furnidata_malformed"])
+  [521] getparam 0 .............................. <me>
+  [523] pushcons 17 ............................. <"Failure while parsing furnitdata">
+  [525] pushsymb 7 .............................. <#parseOneLine>
+  [527] pushsymb 36 ............................. <#critical>
+  [529] pusharglist 4 ........................... <me, "Failure while parsing furnitdata", #parseOneLine, #critical>
+  [531] extcall 23 .............................. <error(me, "Failure while parsing furnitdata", #parseOneLine, #critical)>
+  [533] pusharglistnoret 1 ...................... <error(me, "Failure while parsing furnitdata", #parseOneLine, #critical)>
+  [535] extcall 21 .............................. return error(me, "Failure while parsing furnitdata", #parseOneLine, #critical)
+  [537] pushint8 1
+  [539] getlocal 2
+  [541] add
+  [542] setlocal 2
+  [544] endrepeat [ 46]
+  [547] getlocal 0 .............................. <tStartingLine>
+  [549] getlocal 1 .............................. <tLineCount>
+  [551] add ..................................... <tStartingLine + tLineCount>
+  [552] getprop 16 .............................. <pDownloadedData>
+  [554] getobjprop 46 ........................... <pDownloadedData.count>
+  [556] gteq .................................... <(tStartingLine + tLineCount) >= pDownloadedData.count>
+  [557] jmpifz [593] ............................ if (tStartingLine + tLineCount) >= pDownloadedData.count then / else
+  [560] pushcons 15 ............................. <"dynamicdownloader">
+  [562] pusharglist 1 ........................... <"dynamicdownloader">
+  [564] extcall 76 .............................. <getThread("dynamicdownloader")>
+  [566] pusharglist 1 ........................... <getThread("dynamicdownloader")>
+  [568] objcall 77 .............................. <getThread("dynamicdownloader").getComponent()>
+  [570] pusharglist 0 ........................... <>
+  [572] extcall 82 .............................. <VOID>
+  [574] pusharglistnoret 2 ...................... <getThread("dynamicdownloader").getComponent(), VOID>
+  [576] objcall 78 .............................. getThread("dynamicdownloader").getComponent().setFurniRevision(VOID)
+  [578] pushint8 25 ............................. <25>
+  [580] pusharglistnoret 1 ...................... <25>
+  [582] extcall 83 .............................. sendProcessTracking(25)
+  [584] pushsymb 85 ............................. <#furnidataReceived>
+  [586] pusharglistnoret 1 ...................... <#furnidataReceived>
+  [588] extcall 84 .............................. executeMessage(#furnidataReceived)
+  [590] jmp [632]
+  [593] pushsymb 45 ............................. <#start>
+  [595] getlocal 0 .............................. <tStartingLine>
+  [597] getlocal 1 .............................. <tLineCount>
+  [599] add ..................................... <tStartingLine + tLineCount>
+  [600] pushsymb 46 ............................. <#count>
+  [602] getlocal 1 .............................. <tLineCount>
+  [604] pusharglist 4 ........................... <[#start: tStartingLine + tLineCount, #count: tLineCount]>
+  [606] pushproplist ............................ <[#start: tStartingLine + tLineCount, #count: tLineCount]>
+  [607] setlocal 6 .............................. tNewArgument = [#start: tStartingLine + tLineCount, #count: tLineCount]
+  [609] pusharglist 0 ........................... <>
+  [611] extcall 15 .............................. <getUniqueID()>
+  [613] pushint16 250 ........................... <250>
+  [616] pushsymb 7 .............................. <#parseOneLine>
+  [618] getparam 0 .............................. <me>
+  [620] pusharglist 1 ........................... <me>
+  [622] objcall 39 .............................. <me.getID()>
+  [624] getlocal 6 .............................. <tNewArgument>
+  [626] pushint8 1 .............................. <1>
+  [628] pusharglistnoret 6 ...................... <getUniqueID(), 250, #parseOneLine, me.getID(), tNewArgument, 1>
+  [630] extcall 47 .............................. createTimeout(getUniqueID(), 250, #parseOneLine, me.getID(), tNewArgument, 1)
+  [632] ret
+end

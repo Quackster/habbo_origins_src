@@ -1,0 +1,824 @@
+property pCurrentEffects
+
+on construct me
+  [  0] pusharglist 0 ........................... <[:]>
+  [  2] pushproplist ............................ <[:]>
+  [  3] setprop 817 ............................. pCurrentEffects = [:]
+  [  6] pushint8 1 .............................. <1>
+  [  8] pusharglistnoret 1 ...................... <1>
+  [ 10] extcall 189 ............................. return 1
+  [ 12] ret
+end
+
+on deconstruct me
+  [  0] getparam 0 .............................. <me>
+  [  2] pusharglistnoret 1 ...................... <me>
+  [  4] objcall 95 .............................. me.clearEffects()
+  [  6] pushint8 1 .............................. <1>
+  [  8] pusharglistnoret 1 ...................... <1>
+  [ 10] extcall 189 ............................. return 1
+  [ 12] ret
+end
+
+on getCurrentEffectState me
+  [  0] getprop 817 ............................. <pCurrentEffects>
+  [  3] getobjprop 172 .......................... <pCurrentEffects.count>
+  [  5] pushzero ................................ <0>
+  [  6] eq ...................................... <pCurrentEffects.count = 0>
+  [  7] jmpifz [ 15] ............................ if pCurrentEffects.count = 0 then
+  [ 10] pushzero ................................ <0>
+  [ 11] pusharglistnoret 1 ...................... <0>
+  [ 13] extcall 189 ............................. return 0
+  [ 15] getprop 817 ............................. <pCurrentEffects>
+  [ 18] pushint8 1 .............................. <1>
+  [ 20] pusharglist 2 ........................... <pCurrentEffects, 1>
+  [ 22] objcall 293 ............................. <pCurrentEffects.getPropAt(1)>
+  [ 25] setlocal 0 .............................. tID = pCurrentEffects.getPropAt(1)
+  [ 27] pusharglist 0 ........................... <[:]>
+  [ 29] pushproplist ............................ <[:]>
+  [ 30] setlocal 1 .............................. tR = [:]
+  [ 32] getlocal 1 .............................. <tR>
+  [ 34] getlocal 0 .............................. <tID>
+  [ 36] getparam 0 .............................. <me>
+  [ 38] getlocal 0 .............................. <tID>
+  [ 40] pusharglist 2 ........................... <me, tID>
+  [ 42] objcall 816 ............................. <me.getEffectTimeRemaining(tID)>
+  [ 45] pusharglistnoret 3 ...................... <tR, tID, me.getEffectTimeRemaining(tID)>
+  [ 47] objcall 332 ............................. tR.setaProp(tID, me.getEffectTimeRemaining(tID))
+  [ 50] getlocal 1 .............................. <tR>
+  [ 52] pusharglistnoret 1 ...................... <tR>
+  [ 54] extcall 189 ............................. return tR
+  [ 56] ret
+end
+
+on constructEffect me, tAvatarObj, tID
+  [  0] getparam 2 .............................. <tID>
+  [  2] pusharglist 0 ........................... <>
+  [  4] extcall 101 ............................. <VOID>
+  [  6] eq ...................................... <tID = VOID>
+  [  7] jmpifz [ 15] ............................ if tID = VOID then
+  [ 10] pushzero ................................ <0>
+  [ 11] pusharglistnoret 1 ...................... <0>
+  [ 13] extcall 189 ............................. return 0
+  [ 15] getprop 817 ............................. <pCurrentEffects>
+  [ 18] getparam 2 .............................. <tID>
+  [ 20] pusharglist 2 ........................... <pCurrentEffects, tID>
+  [ 22] objcall 272 ............................. <pCurrentEffects.getaProp(tID)>
+  [ 25] pushzero ................................ <0>
+  [ 26] nteq .................................... <pCurrentEffects.getaProp(tID) <> 0>
+  [ 27] jmpifz [ 44] ............................ if pCurrentEffects.getaProp(tID) <> 0 then
+  [ 30] getprop 817 ............................. <pCurrentEffects>
+  [ 33] getparam 2 .............................. <tID>
+  [ 35] pusharglist 2 ........................... <pCurrentEffects, tID>
+  [ 37] objcall 272 ............................. <pCurrentEffects.getaProp(tID)>
+  [ 40] pusharglistnoret 1 ...................... <pCurrentEffects.getaProp(tID)>
+  [ 42] extcall 189 ............................. return pCurrentEffects.getaProp(tID)
+  [ 44] pushcons 0 .............................. <"fx.">
+  [ 46] getparam 2 .............................. <tID>
+  [ 48] joinstr ................................. <"fx." & tID>
+  [ 49] setlocal 0 .............................. tMemName = "fx." & tID
+  [ 51] getlocal 0 .............................. <tMemName>
+  [ 53] pusharglist 1 ........................... <tMemName>
+  [ 55] extcall 201 ............................. <memberExists(tMemName)>
+  [ 57] not ..................................... <not memberExists(tMemName)>
+  [ 58] jmpifz [ 81] ............................ if not memberExists(tMemName) then
+  [ 61] getparam 0 .............................. <me>
+  [ 63] pushcons 1 .............................. <"Definition for effect not found:">
+  [ 65] getlocal 0 .............................. <tMemName>
+  [ 67] joinpadstr .............................. <"Definition for effect not found:" && tMemName>
+  [ 68] pushsymb 82 ............................. <#action_fx>
+  [ 70] pushsymb 275 ............................ <#minor>
+  [ 73] pusharglist 4 ........................... <me, "Definition for effect not found:" && tMemName, #action_fx, #minor>
+  [ 75] extcall 176 ............................. <error(me, "Definition for effect not found:" && tMemName, #action_fx, #minor)>
+  [ 77] pusharglistnoret 1 ...................... <error(me, "Definition for effect not found:" && tMemName, #action_fx, #minor)>
+  [ 79] extcall 189 ............................. return error(me, "Definition for effect not found:" && tMemName, #action_fx, #minor)
+  [ 81] getlocal 0 .............................. <tMemName>
+  [ 83] pusharglist 1 ........................... <tMemName>
+  [ 85] extcall 215 ............................. <getmemnum(tMemName)>
+  [ 87] pusharglist 1 ........................... <getmemnum(tMemName)>
+  [ 89] extcall 142 ............................. <member(getmemnum(tMemName))>
+  [ 91] setlocal 1 .............................. tmember = member(getmemnum(tMemName))
+  [ 93] getlocal 1 .............................. <tmember>
+  [ 95] getobjprop 349 .......................... <tmember.text>
+  [ 98] setlocal 2 .............................. tProps = tmember.text
+  [100] pushcons 2 .............................. <"Avatar Effect Class">
+  [102] setlocal 3 .............................. tClass = "Avatar Effect Class"
+  [104] pushcons 3 .............................. <"Avatar Effect">
+  [106] getparam 2 .............................. <tID>
+  [108] joinpadstr .............................. <"Avatar Effect" && tID>
+  [109] pushcons 4 .............................. <"Class">
+  [111] joinpadstr .............................. <"Avatar Effect" && tID && "Class">
+  [112] pusharglist 1 ........................... <"Avatar Effect" && tID && "Class">
+  [114] extcall 215 ............................. <getmemnum("Avatar Effect" && tID && "Class")>
+  [116] setlocal 4 .............................. tMemNum = getmemnum("Avatar Effect" && tID && "Class")
+  [118] getlocal 4 .............................. <tMemNum>
+  [120] pushzero ................................ <0>
+  [121] gt ...................................... <tMemNum > 0>
+  [122] jmpifz [140] ............................ if tMemNum > 0 then
+  [125] getlocal 3 .............................. <tClass>
+  [127] pushcons 3 .............................. <"Avatar Effect">
+  [129] getparam 2 .............................. <tID>
+  [131] joinpadstr .............................. <"Avatar Effect" && tID>
+  [132] pushcons 4 .............................. <"Class">
+  [134] joinpadstr .............................. <"Avatar Effect" && tID && "Class">
+  [135] pusharglist 2 ........................... <[tClass, "Avatar Effect" && tID && "Class"]>
+  [137] pushlist ................................ <[tClass, "Avatar Effect" && tID && "Class"]>
+  [138] setlocal 3 .............................. tClass = [tClass, "Avatar Effect" && tID && "Class"]
+  [140] pushsymb 404 ............................ <#temp>
+  [143] getlocal 3 .............................. <tClass>
+  [145] pusharglist 2 ........................... <#temp, tClass>
+  [147] extcall 403 ............................. <createObject(#temp, tClass)>
+  [150] setlocal 5 .............................. tObject = createObject(#temp, tClass)
+  [152] getlocal 5 .............................. <tObject>
+  [154] pushzero ................................ <0>
+  [155] eq ...................................... <tObject = 0>
+  [156] jmpifz [164] ............................ if tObject = 0 then
+  [159] pushzero ................................ <0>
+  [160] pusharglistnoret 1 ...................... <0>
+  [162] extcall 189 ............................. return 0
+  [164] getlocal 5 .............................. <tObject>
+  [166] getparam 2 .............................. <tID>
+  [168] getlocal 2 .............................. <tProps>
+  [170] getparam 1 .............................. <tAvatarObj>
+  [172] pusharglistnoret 4 ...................... <tObject, tID, tProps, tAvatarObj>
+  [174] objcall 2 ............................... tObject.define(tID, tProps, tAvatarObj)
+  [176] getprop 817 ............................. <pCurrentEffects>
+  [179] getparam 2 .............................. <tID>
+  [181] getlocal 5 .............................. <tObject>
+  [183] pusharglistnoret 3 ...................... <pCurrentEffects, tID, tObject>
+  [185] objcall 332 ............................. pCurrentEffects.setaProp(tID, tObject)
+  [188] getlocal 5 .............................. <tObject>
+  [190] pusharglist 1 ........................... <tObject>
+  [192] objcall 819 ............................. <tObject.changesBodyparts()>
+  [195] jmpifz [296] ............................ if tObject.changesBodyparts() then
+  [198] getlocal 5 .............................. <tObject>
+  [200] pusharglist 1 ........................... <tObject>
+  [202] objcall 820 ............................. <tObject.getAddedBodyPartIndex()>
+  [205] setlocal 6 .............................. tPartIndex = tObject.getAddedBodyPartIndex()
+  [207] getlocal 6 .............................. <tPartIndex>
+  [209] peek 0
+  [211] pusharglist 1
+  [213] extcall 172
+  [215] pushint8 1
+  [217] peek 0
+  [219] peek 2
+  [221] lteq
+  [222] jmpifz [288] ............................ repeat with tPart in tPartIndex
+  [225] peek 2
+  [227] peek 1
+  [229] pusharglist 2
+  [231] extcall 173
+  [233] setlocal 7
+  [235] getlocal 5 .............................. <tObject>
+  [237] getlocal 7 .............................. <tPart>
+  [239] pusharglist 2 ........................... <tObject, tPart>
+  [241] objcall 821 ............................. <tObject.getEffectBodyPartModel(tPart)>
+  [244] setlocal 8 .............................. tmodel = tObject.getEffectBodyPartModel(tPart)
+  [246] getparam 1 .............................. <tAvatarObj>
+  [248] getchainedprop 165 ...................... <tAvatarObj.pRawFigure>
+  [250] getlocal 7 .............................. <tPart>
+  [252] getlocal 8 .............................. <tmodel>
+  [254] pusharglistnoret 3 ...................... <tAvatarObj.pRawFigure, tPart, tmodel>
+  [256] objcall 332 ............................. tAvatarObj.pRawFigure.setaProp(tPart, tmodel)
+  [259] getlocal 5 .............................. <tObject>
+  [261] getlocal 7 .............................. <tPart>
+  [263] pusharglist 2 ........................... <tObject, tPart>
+  [265] objcall 822 ............................. <tObject.getEffectBodyPartAction(tPart)>
+  [268] setlocal 9 .............................. tPartListAction = tObject.getEffectBodyPartAction(tPart)
+  [270] getparam 1 .............................. <tAvatarObj>
+  [272] getlocal 7 .............................. <tPart>
+  [274] pusharglist 1 ........................... <[tPart]>
+  [276] pushlist ................................ <[tPart]>
+  [277] getlocal 9 .............................. <tPartListAction>
+  [279] pusharglistnoret 3 ...................... <tAvatarObj, [tPart], tPartListAction>
+  [281] objcall 49 .............................. tAvatarObj.definePartListAction([tPart], tPartListAction)
+  [283] pushint8 1
+  [285] add
+  [286] endrepeat [217]
+  [288] pop 3
+  [290] getparam 1 .............................. <tAvatarObj>
+  [292] pusharglistnoret 1 ...................... <tAvatarObj>
+  [294] objcall 3 ............................... tAvatarObj.changeFigureAndData()
+  [296] getparam 1 .............................. <tAvatarObj>
+  [298] getlocal 0 .............................. <tMemName>
+  [300] pusharglistnoret 2 ...................... <tAvatarObj, tMemName>
+  [302] objcall 32 .............................. tAvatarObj.startAnimation(tMemName)
+  [304] pushint8 1 .............................. <1>
+  [306] pusharglistnoret 1 ...................... <1>
+  [308] extcall 189 ............................. return 1
+  [310] ret
+end
+
+on updateEffects me, tAvatarObj
+  [  0] getprop 817 ............................. <pCurrentEffects>
+  [  3] peek 0
+  [  5] pusharglist 1
+  [  7] extcall 172
+  [  9] pushint8 1
+  [ 11] peek 0
+  [ 13] peek 2
+  [ 15] lteq
+  [ 16] jmpifz [ 53] ............................ repeat with tObject in pCurrentEffects
+  [ 19] peek 2
+  [ 21] peek 1
+  [ 23] pusharglist 2
+  [ 25] extcall 173
+  [ 27] setlocal 0
+  [ 29] getlocal 0 .............................. <tObject>
+  [ 31] pusharglist 1 ........................... <tObject>
+  [ 33] objcall 825 ............................. <tObject.hasSprites()>
+  [ 36] jmpifz [ 48] ............................ if tObject.hasSprites() then
+  [ 39] getlocal 0 .............................. <tObject>
+  [ 41] getparam 1 .............................. <tAvatarObj>
+  [ 43] pusharglistnoret 2 ...................... <tObject, tAvatarObj>
+  [ 45] objcall 826 ............................. tObject.updateSprites(tAvatarObj)
+  [ 48] pushint8 1
+  [ 50] add
+  [ 51] endrepeat [ 11]
+  [ 53] pop 3
+  [ 55] ret
+end
+
+on clearEffects me, tAvatarObj
+  [  0] getprop 817 ............................. <pCurrentEffects>
+  [  3] peek 0
+  [  5] pusharglist 1
+  [  7] extcall 172
+  [  9] pushint8 1
+  [ 11] peek 0
+  [ 13] peek 2
+  [ 15] lteq
+  [ 16] jmpifz [168] ............................ repeat with tObject in pCurrentEffects
+  [ 19] peek 2
+  [ 21] peek 1
+  [ 23] pusharglist 2
+  [ 25] extcall 173
+  [ 27] setlocal 0
+  [ 29] getlocal 0 .............................. <tObject>
+  [ 31] pusharglist 1 ........................... <tObject>
+  [ 33] objcall 819 ............................. <tObject.changesBodyparts()>
+  [ 36] jmpifz [157] ............................ if tObject.changesBodyparts() then
+  [ 39] getlocal 0 .............................. <tObject>
+  [ 41] pusharglist 1 ........................... <tObject>
+  [ 43] objcall 820 ............................. <tObject.getAddedBodyPartIndex()>
+  [ 46] setlocal 1 .............................. tPartIndex = tObject.getAddedBodyPartIndex()
+  [ 48] getlocal 1 .............................. <tPartIndex>
+  [ 50] peek 0
+  [ 52] pusharglist 1
+  [ 54] extcall 172
+  [ 56] pushint8 1
+  [ 58] peek 0
+  [ 60] peek 2
+  [ 62] lteq
+  [ 63] jmpifz [151] ............................ repeat with tPart in tPartIndex
+  [ 66] peek 2
+  [ 68] peek 1
+  [ 70] pusharglist 2
+  [ 72] extcall 173
+  [ 74] setlocal 2
+  [ 76] getparam 1 .............................. <tAvatarObj>
+  [ 78] pusharglist 1 ........................... <tAvatarObj>
+  [ 80] extcall 203 ............................. <objectp(tAvatarObj)>
+  [ 82] jmpifz [146] ............................ if objectp(tAvatarObj) then
+  [ 85] pushint8 1 .............................. <1>
+  [ 87] setlocal 3 .............................. i = 1
+  [ 89] getlocal 3 .............................. <i>
+  [ 91] getparam 1 .............................. <tAvatarObj>
+  [ 93] pushsymb 103 ............................ <#pPartList>
+  [ 95] pusharglist 2 ........................... <tAvatarObj, #pPartList>
+  [ 97] objcall 172 ............................. <tAvatarObj.pPartList.count>
+  [ 99] lteq .................................... <i <= tAvatarObj.pPartList.count>
+  [100] jmpifz [146] ............................ repeat while i <= tAvatarObj.pPartList.count
+  [103] getparam 1 .............................. <tAvatarObj>
+  [105] pushsymb 103 ............................ <#pPartList>
+  [107] getlocal 3 .............................. <i>
+  [109] pusharglist 3 ........................... <tAvatarObj, #pPartList, i>
+  [111] objcall 352 ............................. <tAvatarObj.pPartList[i]>
+  [114] getobjprop 380 .......................... <tAvatarObj.pPartList[i].pPart>
+  [117] getlocal 2 .............................. <tPart>
+  [119] eq ...................................... <tAvatarObj.pPartList[i].pPart = tPart>
+  [120] jmpifz [137] ............................ if tAvatarObj.pPartList[i].pPart = tPart then
+  [123] getparam 1 .............................. <tAvatarObj>
+  [125] getchainedprop 103 ...................... <tAvatarObj.pPartList>
+  [127] getlocal 3 .............................. <i>
+  [129] pusharglistnoret 2 ...................... <tAvatarObj.pPartList, i>
+  [131] objcall 309 ............................. tAvatarObj.pPartList.deleteAt(i)
+  [134] jmp [144] ............................... next repeat
+  [137] getlocal 3 .............................. <i>
+  [139] pushint8 1 .............................. <1>
+  [141] add ..................................... <i + 1>
+  [142] setlocal 3 .............................. i = i + 1
+  [144] endrepeat [ 89]
+  [146] pushint8 1
+  [148] add
+  [149] endrepeat [ 58]
+  [151] pop 3
+  [153] pushint8 1 .............................. <1>
+  [155] setlocal 4 .............................. tFigureChanged = 1
+  [157] getlocal 0 .............................. <tObject>
+  [159] pusharglistnoret 1 ...................... <tObject>
+  [161] objcall 1 ............................... tObject.deconstruct()
+  [163] pushint8 1
+  [165] add
+  [166] endrepeat [ 11]
+  [168] pop 3
+  [170] pusharglist 0 ........................... <[:]>
+  [172] pushproplist ............................ <[:]>
+  [173] setprop 817 ............................. pCurrentEffects = [:]
+  [176] getparam 1 .............................. <tAvatarObj>
+  [178] pusharglist 1 ........................... <tAvatarObj>
+  [180] extcall 203 ............................. <objectp(tAvatarObj)>
+  [182] jmpifz [274] ............................ if objectp(tAvatarObj) then
+  [185] getparam 1 .............................. <tAvatarObj>
+  [187] pusharglist 0 ........................... <[:]>
+  [189] pushproplist ............................ <[:]>
+  [190] setobjprop 104 .......................... tAvatarObj.pPartIndex = [:]
+  [192] pushint8 1 .............................. <1>
+  [194] setlocal 3
+  [196] getlocal 3
+  [198] getparam 1 .............................. <tAvatarObj>
+  [200] pushsymb 103 ............................ <#pPartList>
+  [202] pusharglist 2 ........................... <tAvatarObj, #pPartList>
+  [204] objcall 172 ............................. <tAvatarObj.pPartList.count>
+  [206] lteq
+  [207] jmpifz [244] ............................ repeat with i = 1 to tAvatarObj.pPartList.count
+  [210] getparam 1 .............................. <tAvatarObj>
+  [212] getchainedprop 104 ...................... <tAvatarObj.pPartIndex>
+  [214] getparam 1 .............................. <tAvatarObj>
+  [216] pushsymb 103 ............................ <#pPartList>
+  [218] getlocal 3 .............................. <i>
+  [220] pusharglist 3 ........................... <tAvatarObj, #pPartList, i>
+  [222] objcall 352 ............................. <tAvatarObj.pPartList[i]>
+  [225] getobjprop 380 .......................... <tAvatarObj.pPartList[i].pPart>
+  [228] getlocal 3 .............................. <i>
+  [230] pusharglistnoret 3 ...................... <tAvatarObj.pPartIndex, tAvatarObj.pPartList[i].pPart, i>
+  [232] objcall 398 ............................. tAvatarObj.pPartIndex.addProp(tAvatarObj.pPartList[i].pPart, i)
+  [235] pushint8 1
+  [237] getlocal 3
+  [239] add
+  [240] setlocal 3
+  [242] endrepeat [196]
+  [244] getlocal 4 .............................. <tFigureChanged>
+  [246] jmpifz [255] ............................ if tFigureChanged then
+  [249] getparam 1 .............................. <tAvatarObj>
+  [251] pusharglistnoret 1 ...................... <tAvatarObj>
+  [253] objcall 3 ............................... tAvatarObj.changeFigureAndData()
+  [255] getparam 1 .............................. <tAvatarObj>
+  [257] pusharglistnoret 1 ...................... <tAvatarObj>
+  [259] objcall 33 .............................. tAvatarObj.stopAnimation()
+  [261] getparam 1 .............................. <tAvatarObj>
+  [263] pushzero ................................ <0>
+  [264] setobjprop 127 .......................... tAvatarObj.pFx = 0
+  [266] pushsymb 459 ............................ <#updateInfostandAvatar>
+  [269] pusharglistnoret 1 ...................... <#updateInfostandAvatar>
+  [271] extcall 291 ............................. executeMessage(#updateInfostandAvatar)
+  [274] pushint8 1 .............................. <1>
+  [276] pusharglistnoret 1 ...................... <1>
+  [278] extcall 189 ............................. return 1
+  [280] ret
+end
+
+on effectExists me, tID
+  [  0] getparam 1 .............................. <tID>
+  [  2] pusharglist 0 ........................... <>
+  [  4] extcall 101 ............................. <VOID>
+  [  6] eq ...................................... <tID = VOID>
+  [  7] jmpifz [ 15] ............................ if tID = VOID then
+  [ 10] pushzero ................................ <0>
+  [ 11] pusharglistnoret 1 ...................... <0>
+  [ 13] extcall 189 ............................. return 0
+  [ 15] getprop 817 ............................. <pCurrentEffects>
+  [ 18] getparam 1 .............................. <tID>
+  [ 20] pusharglist 2 ........................... <pCurrentEffects, tID>
+  [ 22] objcall 290 ............................. <pCurrentEffects.findPos(tID)>
+  [ 25] pushzero ................................ <0>
+  [ 26] gt ...................................... <pCurrentEffects.findPos(tID) > 0>
+  [ 27] pusharglistnoret 1 ...................... <pCurrentEffects.findPos(tID) > 0>
+  [ 29] extcall 189 ............................. return pCurrentEffects.findPos(tID) > 0
+  [ 31] ret
+end
+
+on getEffectDirOffset me
+  [  0] getprop 817 ............................. <pCurrentEffects>
+  [  3] peek 0
+  [  5] pusharglist 1
+  [  7] extcall 172
+  [  9] pushint8 1
+  [ 11] peek 0
+  [ 13] peek 2
+  [ 15] lteq
+  [ 16] jmpifz [ 55] ............................ repeat with tEffect in pCurrentEffects
+  [ 19] peek 2
+  [ 21] peek 1
+  [ 23] pusharglist 2
+  [ 25] extcall 173
+  [ 27] setlocal 0
+  [ 29] getlocal 0 .............................. <tEffect>
+  [ 31] pusharglist 1 ........................... <tEffect>
+  [ 33] objcall 89 .............................. <tEffect.getEffectDirOffset()>
+  [ 35] setlocal 1 .............................. tOffD = tEffect.getEffectDirOffset()
+  [ 37] getlocal 1 .............................. <tOffD>
+  [ 39] pushzero ................................ <0>
+  [ 40] nteq .................................... <tOffD <> 0>
+  [ 41] jmpifz [ 50] ............................ if tOffD <> 0 then
+  [ 44] getlocal 1 .............................. <tOffD>
+  [ 46] pusharglistnoret 1 ...................... <tOffD>
+  [ 48] extcall 189 ............................. return tOffD
+  [ 50] pushint8 1
+  [ 52] add
+  [ 53] endrepeat [ 11]
+  [ 55] pop 3
+  [ 57] pushzero ................................ <0>
+  [ 58] pusharglistnoret 1 ...................... <0>
+  [ 60] extcall 189 ............................. return 0
+  [ 62] ret
+end
+
+on getEffectSizeParams me
+  [  0] pushzero ................................ <0>
+  [  1] pushzero ................................ <0>
+  [  2] pusharglist 2 ........................... <[0, 0]>
+  [  4] pushlist ................................ <[0, 0]>
+  [  5] setlocal 0 .............................. tSize = [0, 0]
+  [  7] getprop 817 ............................. <pCurrentEffects>
+  [ 10] peek 0
+  [ 12] pusharglist 1
+  [ 14] extcall 172
+  [ 16] pushint8 1
+  [ 18] peek 0
+  [ 20] peek 2
+  [ 22] lteq
+  [ 23] jmpifz [129] ............................ repeat with tEffect in pCurrentEffects
+  [ 26] peek 2
+  [ 28] peek 1
+  [ 30] pusharglist 2
+  [ 32] extcall 173
+  [ 34] setlocal 1
+  [ 36] getlocal 1 .............................. <tEffect>
+  [ 38] pusharglist 1 ........................... <tEffect>
+  [ 40] objcall 375 ............................. <tEffect.getEffectSizeParams()>
+  [ 43] setlocal 2 .............................. tEffectSize = tEffect.getEffectSizeParams()
+  [ 45] getlocal 2 .............................. <tEffectSize>
+  [ 47] pushzero ................................ <0>
+  [ 48] nteq .................................... <tEffectSize <> 0>
+  [ 49] jmpifz [124] ............................ if tEffectSize <> 0 then
+  [ 52] getlocal 2 .............................. <tEffectSize>
+  [ 54] pushint8 1 .............................. <1>
+  [ 56] pusharglist 2 ........................... <tEffectSize, 1>
+  [ 58] objcall 173 ............................. <tEffectSize[1]>
+  [ 60] getlocal 0 .............................. <tSize>
+  [ 62] pushint8 1 .............................. <1>
+  [ 64] pusharglist 2 ........................... <tSize, 1>
+  [ 66] objcall 173 ............................. <tSize[1]>
+  [ 68] gt ...................................... <tEffectSize[1] > tSize[1]>
+  [ 69] jmpifz [ 88] ............................ if tEffectSize[1] > tSize[1] then
+  [ 72] getlocal 0 .............................. <tSize>
+  [ 74] pushint8 1 .............................. <1>
+  [ 76] getlocal 2 .............................. <tEffectSize>
+  [ 78] pushint8 1 .............................. <1>
+  [ 80] pusharglist 2 ........................... <tEffectSize, 1>
+  [ 82] objcall 173 ............................. <tEffectSize[1]>
+  [ 84] pusharglistnoret 3 ...................... <tSize, 1, tEffectSize[1]>
+  [ 86] objcall 175 ............................. tSize[1] = tEffectSize[1]
+  [ 88] getlocal 2 .............................. <tEffectSize>
+  [ 90] pushint8 2 .............................. <2>
+  [ 92] pusharglist 2 ........................... <tEffectSize, 2>
+  [ 94] objcall 173 ............................. <tEffectSize[2]>
+  [ 96] getlocal 0 .............................. <tSize>
+  [ 98] pushint8 2 .............................. <2>
+  [100] pusharglist 2 ........................... <tSize, 2>
+  [102] objcall 173 ............................. <tSize[2]>
+  [104] gt ...................................... <tEffectSize[2] > tSize[2]>
+  [105] jmpifz [124] ............................ if tEffectSize[2] > tSize[2] then
+  [108] getlocal 0 .............................. <tSize>
+  [110] pushint8 2 .............................. <2>
+  [112] getlocal 2 .............................. <tEffectSize>
+  [114] pushint8 2 .............................. <2>
+  [116] pusharglist 2 ........................... <tEffectSize, 2>
+  [118] objcall 173 ............................. <tEffectSize[2]>
+  [120] pusharglistnoret 3 ...................... <tSize, 2, tEffectSize[2]>
+  [122] objcall 175 ............................. tSize[2] = tEffectSize[2]
+  [124] pushint8 1
+  [126] add
+  [127] endrepeat [ 18]
+  [129] pop 3
+  [131] getlocal 0 .............................. <tSize>
+  [133] pusharglistnoret 1 ...................... <tSize>
+  [135] extcall 189 ............................. return tSize
+  [137] ret
+end
+
+on getEffectShadowName me
+  [  0] getprop 817 ............................. <pCurrentEffects>
+  [  3] peek 0
+  [  5] pusharglist 1
+  [  7] extcall 172
+  [  9] pushint8 1
+  [ 11] peek 0
+  [ 13] peek 2
+  [ 15] lteq
+  [ 16] jmpifz [ 55] ............................ repeat with tEffect in pCurrentEffects
+  [ 19] peek 2
+  [ 21] peek 1
+  [ 23] pusharglist 2
+  [ 25] extcall 173
+  [ 27] setlocal 0
+  [ 29] getlocal 0 .............................. <tEffect>
+  [ 31] pusharglist 1 ........................... <tEffect>
+  [ 33] objcall 90 .............................. <tEffect.getEffectShadowName()>
+  [ 35] setlocal 1 .............................. tShadow = tEffect.getEffectShadowName()
+  [ 37] getlocal 1 .............................. <tShadow>
+  [ 39] pushzero ................................ <0>
+  [ 40] nteq .................................... <tShadow <> 0>
+  [ 41] jmpifz [ 50] ............................ if tShadow <> 0 then
+  [ 44] getlocal 1 .............................. <tShadow>
+  [ 46] pusharglistnoret 1 ...................... <tShadow>
+  [ 48] extcall 189 ............................. return tShadow
+  [ 50] pushint8 1
+  [ 52] add
+  [ 53] endrepeat [ 11]
+  [ 55] pop 3
+  [ 57] pushzero ................................ <0>
+  [ 58] pusharglistnoret 1 ...................... <0>
+  [ 60] extcall 189 ............................. return 0
+  [ 62] ret
+end
+
+on getEffectSpriteProps me
+  [  0] pusharglist 0 ........................... <[]>
+  [  2] pushlist ................................ <[]>
+  [  3] setlocal 0 .............................. tList = []
+  [  5] pushint8 1 .............................. <1>
+  [  7] setlocal 1
+  [  9] getlocal 1
+  [ 11] getprop 817 ............................. <pCurrentEffects>
+  [ 14] getobjprop 172 .......................... <pCurrentEffects.count>
+  [ 16] lteq
+  [ 17] jmpifz [ 92] ............................ repeat with i = 1 to pCurrentEffects.count
+  [ 20] getprop 817 ............................. <pCurrentEffects>
+  [ 23] getlocal 1 .............................. <i>
+  [ 25] pusharglist 2 ........................... <pCurrentEffects, i>
+  [ 27] objcall 173 ............................. <pCurrentEffects[i]>
+  [ 29] setlocal 2 .............................. tEffect = pCurrentEffects[i]
+  [ 31] getlocal 2 .............................. <tEffect>
+  [ 33] pusharglist 1 ........................... <tEffect>
+  [ 35] objcall 91 .............................. <tEffect.getEffectSpriteProps()>
+  [ 37] setlocal 3 .............................. tEffectSprites = tEffect.getEffectSpriteProps()
+  [ 39] getlocal 3 .............................. <tEffectSprites>
+  [ 41] peek 0
+  [ 43] pusharglist 1
+  [ 45] extcall 172
+  [ 47] pushint8 1
+  [ 49] peek 0
+  [ 51] peek 2
+  [ 53] lteq
+  [ 54] jmpifz [ 81] ............................ repeat with tsprite in tEffectSprites
+  [ 57] peek 2
+  [ 59] peek 1
+  [ 61] pusharglist 2
+  [ 63] extcall 173
+  [ 65] setlocal 4
+  [ 67] getlocal 0 .............................. <tList>
+  [ 69] getlocal 4 .............................. <tsprite>
+  [ 71] pusharglistnoret 2 ...................... <tList, tsprite>
+  [ 73] objcall 319 ............................. tList.append(tsprite)
+  [ 76] pushint8 1
+  [ 78] add
+  [ 79] endrepeat [ 49]
+  [ 81] pop 3
+  [ 83] pushint8 1
+  [ 85] getlocal 1
+  [ 87] add
+  [ 88] setlocal 1
+  [ 90] endrepeat [  9]
+  [ 92] getlocal 0 .............................. <tList>
+  [ 94] pusharglistnoret 1 ...................... <tList>
+  [ 96] extcall 189 ............................. return tList
+  [ 98] ret
+end
+
+on getEffectAddedPartIndex me
+  [  0] pusharglist 0 ........................... <[]>
+  [  2] pushlist ................................ <[]>
+  [  3] setlocal 0 .............................. tList = []
+  [  5] pushint8 1 .............................. <1>
+  [  7] setlocal 1
+  [  9] getlocal 1
+  [ 11] getprop 817 ............................. <pCurrentEffects>
+  [ 14] getobjprop 172 .......................... <pCurrentEffects.count>
+  [ 16] lteq
+  [ 17] jmpifz [107] ............................ repeat with i = 1 to pCurrentEffects.count
+  [ 20] getprop 817 ............................. <pCurrentEffects>
+  [ 23] getlocal 1 .............................. <i>
+  [ 25] pusharglist 2 ........................... <pCurrentEffects, i>
+  [ 27] objcall 173 ............................. <pCurrentEffects[i]>
+  [ 29] setlocal 2 .............................. tEffect = pCurrentEffects[i]
+  [ 31] getlocal 2 .............................. <tEffect>
+  [ 33] pusharglist 1 ........................... <tEffect>
+  [ 35] objcall 820 ............................. <tEffect.getAddedBodyPartIndex()>
+  [ 38] setlocal 3 .............................. tEffectParts = tEffect.getAddedBodyPartIndex()
+  [ 40] getlocal 3 .............................. <tEffectParts>
+  [ 42] peek 0
+  [ 44] pusharglist 1
+  [ 46] extcall 172
+  [ 48] pushint8 1
+  [ 50] peek 0
+  [ 52] peek 2
+  [ 54] lteq
+  [ 55] jmpifz [ 96] ............................ repeat with tPart in tEffectParts
+  [ 58] peek 2
+  [ 60] peek 1
+  [ 62] pusharglist 2
+  [ 64] extcall 173
+  [ 66] setlocal 4
+  [ 68] getlocal 0 .............................. <tList>
+  [ 70] getlocal 4 .............................. <tPart>
+  [ 72] pusharglist 2 ........................... <tList, tPart>
+  [ 74] objcall 290 ............................. <tList.findPos(tPart)>
+  [ 77] pushzero ................................ <0>
+  [ 78] eq ...................................... <tList.findPos(tPart) = 0>
+  [ 79] jmpifz [ 91] ............................ if tList.findPos(tPart) = 0 then
+  [ 82] getlocal 0 .............................. <tList>
+  [ 84] getlocal 4 .............................. <tPart>
+  [ 86] pusharglistnoret 2 ...................... <tList, tPart>
+  [ 88] objcall 319 ............................. tList.append(tPart)
+  [ 91] pushint8 1
+  [ 93] add
+  [ 94] endrepeat [ 50]
+  [ 96] pop 3
+  [ 98] pushint8 1
+  [100] getlocal 1
+  [102] add
+  [103] setlocal 1
+  [105] endrepeat [  9]
+  [107] getlocal 0 .............................. <tList>
+  [109] pusharglistnoret 1 ...................... <tList>
+  [111] extcall 189 ............................. return tList
+  [113] ret
+end
+
+on getEffectExcludedPartIndex me
+  [  0] pusharglist 0 ........................... <[]>
+  [  2] pushlist ................................ <[]>
+  [  3] setlocal 0 .............................. tList = []
+  [  5] getprop 817 ............................. <pCurrentEffects>
+  [  8] peek 0
+  [ 10] pusharglist 1
+  [ 12] extcall 172
+  [ 14] pushint8 1
+  [ 16] peek 0
+  [ 18] peek 2
+  [ 20] lteq
+  [ 21] jmpifz [106] ............................ repeat with tEffect in pCurrentEffects
+  [ 24] peek 2
+  [ 26] peek 1
+  [ 28] pusharglist 2
+  [ 30] extcall 173
+  [ 32] setlocal 1
+  [ 34] getlocal 1 .............................. <tEffect>
+  [ 36] pusharglist 1 ........................... <tEffect>
+  [ 38] objcall 832 ............................. <tEffect.getExcludedBodyPartIndex()>
+  [ 41] setlocal 2 .............................. tEffectParts = tEffect.getExcludedBodyPartIndex()
+  [ 43] getlocal 2 .............................. <tEffectParts>
+  [ 45] peek 0
+  [ 47] pusharglist 1
+  [ 49] extcall 172
+  [ 51] pushint8 1
+  [ 53] peek 0
+  [ 55] peek 2
+  [ 57] lteq
+  [ 58] jmpifz [ 99] ............................ repeat with tPart in tEffectParts
+  [ 61] peek 2
+  [ 63] peek 1
+  [ 65] pusharglist 2
+  [ 67] extcall 173
+  [ 69] setlocal 3
+  [ 71] getlocal 0 .............................. <tList>
+  [ 73] getlocal 3 .............................. <tPart>
+  [ 75] pusharglist 2 ........................... <tList, tPart>
+  [ 77] objcall 290 ............................. <tList.findPos(tPart)>
+  [ 80] pushzero ................................ <0>
+  [ 81] eq ...................................... <tList.findPos(tPart) = 0>
+  [ 82] jmpifz [ 94] ............................ if tList.findPos(tPart) = 0 then
+  [ 85] getlocal 0 .............................. <tList>
+  [ 87] getlocal 3 .............................. <tPart>
+  [ 89] pusharglistnoret 2 ...................... <tList, tPart>
+  [ 91] objcall 319 ............................. tList.append(tPart)
+  [ 94] pushint8 1
+  [ 96] add
+  [ 97] endrepeat [ 53]
+  [ 99] pop 3
+  [101] pushint8 1
+  [103] add
+  [104] endrepeat [ 16]
+  [106] pop 3
+  [108] getlocal 0 .............................. <tList>
+  [110] pusharglistnoret 1 ...................... <tList>
+  [112] extcall 189 ............................. return tList
+  [114] ret
+end
+
+on alignEffectBodyparts me, tPartDefinition, tDirection
+  [  0] pushint8 1 .............................. <1>
+  [  2] setlocal 0
+  [  4] getlocal 0
+  [  6] getprop 817 ............................. <pCurrentEffects>
+  [  9] getobjprop 172 .......................... <pCurrentEffects.count>
+  [ 11] lteq
+  [ 12] jmpifz [ 56] ............................ repeat with i = 1 to pCurrentEffects.count
+  [ 15] getprop 817 ............................. <pCurrentEffects>
+  [ 18] getlocal 0 .............................. <i>
+  [ 20] pusharglist 2 ........................... <pCurrentEffects, i>
+  [ 22] objcall 173 ............................. <pCurrentEffects[i]>
+  [ 24] setlocal 1 .............................. tEffect = pCurrentEffects[i]
+  [ 26] getlocal 1 .............................. <tEffect>
+  [ 28] pusharglist 1 ........................... <tEffect>
+  [ 30] objcall 833 ............................. <tEffect.addsBodyparts()>
+  [ 33] jmpifz [ 47] ............................ if tEffect.addsBodyparts() then
+  [ 36] getlocal 1 .............................. <tEffect>
+  [ 38] getparam 1 .............................. <tPartDefinition>
+  [ 40] getparam 2 .............................. <tDirection>
+  [ 42] pusharglistnoret 3 ...................... <tEffect, tPartDefinition, tDirection>
+  [ 44] objcall 422 ............................. tEffect.alignEffectBodyparts(tPartDefinition, tDirection)
+  [ 47] pushint8 1
+  [ 49] getlocal 0
+  [ 51] add
+  [ 52] setlocal 0
+  [ 54] endrepeat [  4]
+  [ 56] getparam 1 .............................. <tPartDefinition>
+  [ 58] pusharglistnoret 1 ...................... <tPartDefinition>
+  [ 60] extcall 189 ............................. return tPartDefinition
+  [ 62] ret
+end
+
+on setAnimation me, tPart, tAnim
+  [  0] pushsymb 355 ............................ <#setAnimation>
+  [  3] getprop 817 ............................. <pCurrentEffects>
+  [  6] getparam 1 .............................. <tPart>
+  [  8] getparam 2 .............................. <tAnim>
+  [ 10] pusharglist 1 ........................... <tAnim>
+  [ 12] extcall 156 ............................. <value(tAnim)>
+  [ 14] pusharglistnoret 4 ...................... <#setAnimation, pCurrentEffects, tPart, value(tAnim)>
+  [ 16] extcall 205 ............................. call(#setAnimation, pCurrentEffects, tPart, value(tAnim))
+  [ 18] ret
+end
+
+on getEffectTimeRemaining me, tID
+  [  0] getparam 1 .............................. <tID>
+  [  2] pusharglist 0 ........................... <>
+  [  4] extcall 101 ............................. <VOID>
+  [  6] eq ...................................... <tID = VOID>
+  [  7] jmpifz [ 17] ............................ if tID = VOID then
+  [ 10] pushint8 1 .............................. <1>
+  [ 12] inv ..................................... <-1>
+  [ 13] pusharglistnoret 1 ...................... <-1>
+  [ 15] extcall 189 ............................. return -1
+  [ 17] pushsymb 277 ............................ <#session>
+  [ 20] pusharglist 1 ........................... <#session>
+  [ 22] extcall 276 ............................. <getObject(#session)>
+  [ 25] pushcons 5 .............................. <"active_fx">
+  [ 27] pusharglist 2 ........................... <getObject(#session), "active_fx">
+  [ 29] objcall 159 ............................. <getObject(#session).GET("active_fx")>
+  [ 31] setlocal 0 .............................. tActiveList = getObject(#session).GET("active_fx")
+  [ 33] getlocal 0 .............................. <tActiveList>
+  [ 35] pushzero ................................ <0>
+  [ 36] eq ...................................... <tActiveList = 0>
+  [ 37] jmpifz [ 47] ............................ if tActiveList = 0 then
+  [ 40] pushint8 1 .............................. <1>
+  [ 42] inv ..................................... <-1>
+  [ 43] pusharglistnoret 1 ...................... <-1>
+  [ 45] extcall 189 ............................. return -1
+  [ 47] getlocal 0 .............................. <tActiveList>
+  [ 49] getparam 1 .............................. <tID>
+  [ 51] pusharglist 2 ........................... <tActiveList, tID>
+  [ 53] objcall 290 ............................. <tActiveList.findPos(tID)>
+  [ 56] pushzero ................................ <0>
+  [ 57] eq ...................................... <tActiveList.findPos(tID) = 0>
+  [ 58] jmpifz [ 68] ............................ if tActiveList.findPos(tID) = 0 then
+  [ 61] pushint8 1 .............................. <1>
+  [ 63] inv ..................................... <-1>
+  [ 64] pusharglistnoret 1 ...................... <-1>
+  [ 66] extcall 189 ............................. return -1
+  [ 68] getlocal 0 .............................. <tActiveList>
+  [ 70] getparam 1 .............................. <tID>
+  [ 72] pusharglist 2 ........................... <tActiveList, tID>
+  [ 74] objcall 272 ............................. <tActiveList.getaProp(tID)>
+  [ 77] setlocal 1 .............................. tEndTime = tActiveList.getaProp(tID)
+  [ 79] getlocal 1 .............................. <tEndTime>
+  [ 81] getmovieprop 345 ........................ <the milliSeconds>
+  [ 84] sub ..................................... <tEndTime - the milliSeconds>
+  [ 85] pushint16 1000 .......................... <1000>
+  [ 88] div ..................................... <(tEndTime - the milliSeconds) / 1000>
+  [ 89] setlocal 2 .............................. tTime = (tEndTime - the milliSeconds) / 1000
+  [ 91] getlocal 2 .............................. <tTime>
+  [ 93] pushzero ................................ <0>
+  [ 94] lt ...................................... <tTime < 0>
+  [ 95] jmpifz [103] ............................ if tTime < 0 then
+  [ 98] pushzero ................................ <0>
+  [ 99] pusharglistnoret 1 ...................... <0>
+  [101] extcall 189 ............................. return 0
+  [103] getlocal 2 .............................. <tTime>
+  [105] pusharglistnoret 1 ...................... <tTime>
+  [107] extcall 189 ............................. return tTime
+  [109] ret
+end

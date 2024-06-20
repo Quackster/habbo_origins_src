@@ -1,0 +1,349 @@
+property pSelectedLevelId, pInviteMaxCount, pInviteSentData
+
+on construct me
+  [  0] pushint8 1 .............................. <1>
+  [  2] inv ..................................... <-1>
+  [  3] setprop 883 ............................. pSelectedLevelId = -1
+  [  6] pushint8 5 .............................. <5>
+  [  8] setprop 884 ............................. pInviteMaxCount = 5
+  [ 11] pusharglist 0 ........................... <[:]>
+  [ 13] pushproplist ............................ <[:]>
+  [ 14] setprop 885 ............................. pInviteSentData = [:]
+  [ 17] getparam 0 .............................. <me>
+  [ 19] pushzero ................................ <0>
+  [ 20] setobjprop 435 .......................... me.pTimeoutUpdates = 0
+  [ 23] pushint8 1 .............................. <1>
+  [ 25] pusharglistnoret 1 ...................... <1>
+  [ 27] extcall 38 .............................. return 1
+  [ 29] ret
+end
+
+on deconstruct me
+  [  0] getparam 0 .............................. <me>
+  [  2] getchainedprop 470 ...................... <me.ancestor>
+  [  5] pusharglist 1 ........................... <me.ancestor>
+  [  7] objcall 1 ............................... <me.ancestor.deconstruct()>
+  [  9] pusharglistnoret 1 ...................... <me.ancestor.deconstruct()>
+  [ 11] extcall 38 .............................. return me.ancestor.deconstruct()
+  [ 13] ret
+end
+
+on Initialize me
+  [  0] getparam 0 .............................. <me>
+  [  2] pushcons 0 .............................. <"IG ItemContainer Base Class">
+  [  4] pushcons 1 .............................. <"IG LevelInstanceData Class">
+  [  6] pusharglist 2 ........................... <["IG ItemContainer Base Class", "IG LevelInstanceData Class"]>
+  [  8] pushlist ................................ <["IG ItemContainer Base Class", "IG LevelInstanceData Class"]>
+  [  9] setobjprop 478 .......................... me.pListItemContainerClass = ["IG ItemContainer Base Class", "IG LevelInstanceData Class"]
+  [ 12] getparam 0 .............................. <me>
+  [ 14] pusharglistnoret 1 ...................... <me>
+  [ 16] objcall 431 ............................. me.pollContentUpdate()
+  [ 19] ret
+end
+
+on storeLevelListInfo me, tLevelData
+  [  0] getparam 0 .............................. <me>
+  [  2] getparam 1 .............................. <tLevelData>
+  [  4] pushzero ................................ <0>
+  [  5] pusharglistnoret 3 ...................... <me, tLevelData, 0>
+  [  7] objcall 459 ............................. me.storeNewList(tLevelData, 0)
+  [ 10] getparam 0 .............................. <me>
+  [ 12] pusharglist 1 ........................... <me>
+  [ 14] objcall 880 ............................. <me.getSelectedLevelId()>
+  [ 17] pushint8 1 .............................. <1>
+  [ 19] inv ..................................... <-1>
+  [ 20] eq ...................................... <me.getSelectedLevelId() = -1>
+  [ 21] jmpifz [ 42] ............................ if me.getSelectedLevelId() = -1 then
+  [ 24] getparam 0 .............................. <me>
+  [ 26] getparam 0 .............................. <me>
+  [ 28] pushint8 1 .............................. <1>
+  [ 30] pusharglist 2 ........................... <me, 1>
+  [ 32] objcall 465 ............................. <me.getListIdByIndex(1)>
+  [ 35] pushint8 1 .............................. <1>
+  [ 37] pusharglistnoret 3 ...................... <me, me.getListIdByIndex(1), 1>
+  [ 39] objcall 879 ............................. me.selectLevel(me.getListIdByIndex(1), 1)
+  [ 42] pushint8 1 .............................. <1>
+  [ 44] pusharglistnoret 1 ...................... <1>
+  [ 46] extcall 38 .............................. return 1
+  [ 48] ret
+end
+
+on getMainListIds me, tPageSize
+  [  0] pushint8 1 .............................. <1>
+  [  2] setlocal 0 .............................. tFirst = 1
+  [  4] getlocal 0 .............................. <tFirst>
+  [  6] getparam 1 .............................. <tPageSize>
+  [  8] add ..................................... <tFirst + tPageSize>
+  [  9] pushint8 1 .............................. <1>
+  [ 11] sub ..................................... <tFirst + tPageSize - 1>
+  [ 12] setlocal 1 .............................. tLast = tFirst + tPageSize - 1
+  [ 14] pusharglist 0 ........................... <[]>
+  [ 16] pushlist ................................ <[]>
+  [ 17] setlocal 2 .............................. tList = []
+  [ 19] getlocal 0 .............................. <tFirst>
+  [ 21] setlocal 3
+  [ 23] getlocal 3
+  [ 25] getlocal 1 .............................. <tLast>
+  [ 27] lteq
+  [ 28] jmpifz [ 72] ............................ repeat with i = tFirst to tLast
+  [ 31] getlocal 3 .............................. <i>
+  [ 33] getparam 0 .............................. <me>
+  [ 35] pushsymb 468 ............................ <#pListIndex>
+  [ 38] pusharglist 2 ........................... <me, #pListIndex>
+  [ 40] objcall 180 ............................. <me.pListIndex.count>
+  [ 42] lteq .................................... <i <= me.pListIndex.count>
+  [ 43] jmpifz [ 63] ............................ if i <= me.pListIndex.count then
+  [ 46] getlocal 2 .............................. <tList>
+  [ 48] getparam 0 .............................. <me>
+  [ 50] getchainedprop 468 ...................... <me.pListIndex>
+  [ 53] getlocal 3 .............................. <i>
+  [ 55] pusharglist 2 ........................... <me.pListIndex, i>
+  [ 57] objcall 181 ............................. <me.pListIndex[i]>
+  [ 59] pusharglistnoret 2 ...................... <tList, me.pListIndex[i]>
+  [ 61] objcall 224 ............................. tList.append(me.pListIndex[i])
+  [ 63] pushint8 1
+  [ 65] getlocal 3
+  [ 67] add
+  [ 68] setlocal 3
+  [ 70] endrepeat [ 23]
+  [ 72] getlocal 2 .............................. <tList>
+  [ 74] pusharglistnoret 1 ...................... <tList>
+  [ 76] extcall 38 .............................. return tList
+  [ 78] ret
+end
+
+on createGame me
+  [  0] getparam 0 .............................. <me>
+  [  2] pusharglist 1 ........................... <me>
+  [  4] objcall 881 ............................. <me.getSelectedLevel()>
+  [  7] setlocal 0 .............................. tLevelItem = me.getSelectedLevel()
+  [  9] getlocal 0 .............................. <tLevelItem>
+  [ 11] pushzero ................................ <0>
+  [ 12] eq ...................................... <tLevelItem = 0>
+  [ 13] jmpifz [ 21] ............................ if tLevelItem = 0 then
+  [ 16] pushzero ................................ <0>
+  [ 17] pusharglistnoret 1 ...................... <0>
+  [ 19] extcall 38 .............................. return 0
+  [ 21] getparam 0 .............................. <me>
+  [ 23] pushcons 2 .............................. <"GameTypes">
+  [ 25] pusharglist 2 ........................... <me, "GameTypes">
+  [ 27] objcall 52 .............................. <me.getIGComponent("GameTypes")>
+  [ 29] setlocal 1 .............................. tTypeService = me.getIGComponent("GameTypes")
+  [ 31] getlocal 1 .............................. <tTypeService>
+  [ 33] getlocal 0 .............................. <tLevelItem>
+  [ 35] pushsymb 61 ............................. <#game_type>
+  [ 37] pusharglist 2 ........................... <tLevelItem, #game_type>
+  [ 39] objcall 63 .............................. <tLevelItem.getProperty(#game_type)>
+  [ 41] getlocal 0 .............................. <tLevelItem>
+  [ 43] pusharglist 1 ........................... <tLevelItem>
+  [ 45] objcall 463 ............................. <tLevelItem.dump()>
+  [ 48] pusharglist 3 ........................... <tTypeService, tLevelItem.getProperty(#game_type), tLevelItem.dump()>
+  [ 50] objcall 713 ............................. <tTypeService.convertGamePropsForCreate(tLevelItem.getProperty(#game_type), tLevelItem.dump())>
+  [ 53] setlocal 2 .............................. tGameParams = tTypeService.convertGamePropsForCreate(tLevelItem.getProperty(#game_type), tLevelItem.dump())
+  [ 55] getlocal 2 .............................. <tGameParams>
+  [ 57] pushzero ................................ <0>
+  [ 58] eq ...................................... <tGameParams = 0>
+  [ 59] jmpifz [ 67] ............................ if tGameParams = 0 then
+  [ 62] pushzero ................................ <0>
+  [ 63] pusharglistnoret 1 ...................... <0>
+  [ 65] extcall 38 .............................. return 0
+  [ 67] pushsymb 1267 ........................... <#sendTrackingPoint>
+  [ 70] pushcons 3 .............................. <"/game/created">
+  [ 72] pusharglistnoret 2 ...................... <#sendTrackingPoint, "/game/created">
+  [ 74] extcall 79 .............................. executeMessage(#sendTrackingPoint, "/game/created")
+  [ 76] getprop 883 ............................. <pSelectedLevelId>
+  [ 79] getlocal 2 .............................. <tGameParams>
+  [ 81] joinpadstr .............................. <pSelectedLevelId && tGameParams>
+  [ 82] pusharglistnoret 1 ...................... <pSelectedLevelId && tGameParams>
+  [ 84] extcall 174 ............................. put pSelectedLevelId && tGameParams
+  [ 86] getparam 0 .............................. <me>
+  [ 88] pusharglist 1 ........................... <me>
+  [ 90] objcall 100 ............................. <me.getHandler()>
+  [ 92] getprop 883 ............................. <pSelectedLevelId>
+  [ 95] pusharglist 1 ........................... <pSelectedLevelId>
+  [ 97] extcall 179 ............................. <string(pSelectedLevelId)>
+  [ 99] getlocal 2 .............................. <tGameParams>
+  [101] pusharglist 3 ........................... <me.getHandler(), string(pSelectedLevelId), tGameParams>
+  [103] objcall 126 ............................. <me.getHandler().send_CREATE_GAME(string(pSelectedLevelId), tGameParams)>
+  [105] pusharglistnoret 1 ...................... <me.getHandler().send_CREATE_GAME(string(pSelectedLevelId), tGameParams)>
+  [107] extcall 38 .............................. return me.getHandler().send_CREATE_GAME(string(pSelectedLevelId), tGameParams)
+  [109] ret
+end
+
+on selectLevel me, tLevelId, tRenderFlag
+  [  0] getparam 1 .............................. <tLevelId>
+  [  2] pusharglist 1 ........................... <tLevelId>
+  [  4] extcall 103 ............................. <voidp(tLevelId)>
+  [  6] jmpifz [ 14] ............................ if voidp(tLevelId) then
+  [  9] pushint8 1 .............................. <1>
+  [ 11] inv ..................................... <-1>
+  [ 12] setparam 1 .............................. tLevelId = -1
+  [ 14] getparam 1 .............................. <tLevelId>
+  [ 16] setprop 883 ............................. pSelectedLevelId = tLevelId
+  [ 19] getparam 0 .............................. <me>
+  [ 21] pusharglist 1 ........................... <me>
+  [ 23] objcall 64 .............................. <me.getRenderer()>
+  [ 25] setlocal 0 .............................. tRenderObj = me.getRenderer()
+  [ 27] getlocal 0 .............................. <tRenderObj>
+  [ 29] pushzero ................................ <0>
+  [ 30] eq ...................................... <tRenderObj = 0>
+  [ 31] jmpifz [ 39] ............................ if tRenderObj = 0 then
+  [ 34] pushzero ................................ <0>
+  [ 35] pusharglistnoret 1 ...................... <0>
+  [ 37] extcall 38 .............................. return 0
+  [ 39] getlocal 0 .............................. <tRenderObj>
+  [ 41] pushcons 4 .............................. <"Details">
+  [ 43] pusharglistnoret 2 ...................... <tRenderObj, "Details">
+  [ 45] objcall 421 ............................. tRenderObj.resetSubComponent("Details")
+  [ 48] getlocal 0 .............................. <tRenderObj>
+  [ 50] pushsymb 262 ............................ <#Info>
+  [ 53] pusharglistnoret 2 ...................... <tRenderObj, #Info>
+  [ 55] objcall 75 .............................. tRenderObj.setViewMode(#Info)
+  [ 57] pushint8 1 .............................. <1>
+  [ 59] pusharglistnoret 1 ...................... <1>
+  [ 61] extcall 38 .............................. return 1
+  [ 63] ret
+end
+
+on getSelectedLevelId me
+  [  0] getprop 883 ............................. <pSelectedLevelId>
+  [  3] pusharglistnoret 1 ...................... <pSelectedLevelId>
+  [  5] extcall 38 .............................. return pSelectedLevelId
+  [  7] ret
+end
+
+on getSelectedLevel me
+  [  0] getparam 0 .............................. <me>
+  [  2] getprop 883 ............................. <pSelectedLevelId>
+  [  5] pusharglist 2 ........................... <me, pSelectedLevelId>
+  [  7] objcall 460 ............................. <me.getListEntry(pSelectedLevelId)>
+  [ 10] setlocal 0 .............................. tItemRef = me.getListEntry(pSelectedLevelId)
+  [ 12] getlocal 0 .............................. <tItemRef>
+  [ 14] pushzero ................................ <0>
+  [ 15] eq ...................................... <tItemRef = 0>
+  [ 16] jmpifz [ 38] ............................ if tItemRef = 0 then
+  [ 19] getparam 0 .............................. <me>
+  [ 21] pushcons 5 .............................. <"No selected level item!">
+  [ 23] getprop 883 ............................. <pSelectedLevelId>
+  [ 26] joinpadstr .............................. <"No selected level item!" && pSelectedLevelId>
+  [ 27] pushsymb 881 ............................ <#getSelectedLevel>
+  [ 30] pusharglist 3 ........................... <me, "No selected level item!" && pSelectedLevelId, #getSelectedLevel>
+  [ 32] extcall 210 ............................. <error(me, "No selected level item!" && pSelectedLevelId, #getSelectedLevel)>
+  [ 34] pusharglistnoret 1 ...................... <error(me, "No selected level item!" && pSelectedLevelId, #getSelectedLevel)>
+  [ 36] extcall 38 .............................. return error(me, "No selected level item!" && pSelectedLevelId, #getSelectedLevel)
+  [ 38] getlocal 0 .............................. <tItemRef>
+  [ 40] pusharglistnoret 1 ...................... <tItemRef>
+  [ 42] extcall 38 .............................. return tItemRef
+  [ 44] ret
+end
+
+on getRemInviteCount me
+  [  0] getprop 884 ............................. <pInviteMaxCount>
+  [  3] getprop 885 ............................. <pInviteSentData>
+  [  6] getobjprop 180 .......................... <pInviteSentData.count>
+  [  8] sub ..................................... <pInviteMaxCount - pInviteSentData.count>
+  [  9] pusharglistnoret 1 ...................... <pInviteMaxCount - pInviteSentData.count>
+  [ 11] extcall 38 .............................. return pInviteMaxCount - pInviteSentData.count
+  [ 13] ret
+end
+
+on setProperty me, tKey, tValue
+  [  0] getparam 0 .............................. <me>
+  [  2] pusharglist 1 ........................... <me>
+  [  4] objcall 881 ............................. <me.getSelectedLevel()>
+  [  7] setlocal 0 .............................. tLevelRef = me.getSelectedLevel()
+  [  9] getlocal 0 .............................. <tLevelRef>
+  [ 11] pushzero ................................ <0>
+  [ 12] eq ...................................... <tLevelRef = 0>
+  [ 13] jmpifz [ 21] ............................ if tLevelRef = 0 then
+  [ 16] pushzero ................................ <0>
+  [ 17] pusharglistnoret 1 ...................... <0>
+  [ 19] extcall 38 .............................. return 0
+  [ 21] getlocal 0 .............................. <tLevelRef>
+  [ 23] getparam 1 .............................. <tKey>
+  [ 25] getparam 2 .............................. <tValue>
+  [ 27] pusharglistnoret 3 ...................... <tLevelRef, tKey, tValue>
+  [ 29] objcall 479 ............................. tLevelRef.setProperty(tKey, tValue)
+  [ 32] getparam 0 .............................. <me>
+  [ 34] pusharglist 1 ........................... <me>
+  [ 36] objcall 64 .............................. <me.getRenderer()>
+  [ 38] setlocal 1 .............................. tRenderObj = me.getRenderer()
+  [ 40] getlocal 1 .............................. <tRenderObj>
+  [ 42] pushzero ................................ <0>
+  [ 43] eq ...................................... <tRenderObj = 0>
+  [ 44] jmpifz [ 52] ............................ if tRenderObj = 0 then
+  [ 47] pushzero ................................ <0>
+  [ 48] pusharglistnoret 1 ...................... <0>
+  [ 50] extcall 38 .............................. return 0
+  [ 52] getlocal 1 .............................. <tRenderObj>
+  [ 54] getparam 1 .............................. <tKey>
+  [ 56] getlocal 0 .............................. <tLevelRef>
+  [ 58] getparam 1 .............................. <tKey>
+  [ 60] pusharglist 2 ........................... <tLevelRef, tKey>
+  [ 62] objcall 63 .............................. <tLevelRef.getProperty(tKey)>
+  [ 64] pusharglistnoret 3 ...................... <tRenderObj, tKey, tLevelRef.getProperty(tKey)>
+  [ 66] objcall 845 ............................. tRenderObj.renderProperty(tKey, tLevelRef.getProperty(tKey))
+  [ 69] pushint8 1 .............................. <1>
+  [ 71] pusharglistnoret 1 ...................... <1>
+  [ 73] extcall 38 .............................. return 1
+  [ 75] ret
+end
+
+on handleUpdate me, tUpdateId, tSenderId
+  [  0] getparam 2 .............................. <tSenderId>
+  [  2] peek 0 .................................. case tSenderId of
+  [  4] pushcons 6 .............................. <"LevelList">
+  [  6] eq
+  [  7] jmpifz [ 53] ............................ (case) "LevelList":
+  [ 10] getparam 0 .............................. <me>
+  [ 12] pusharglist 1 ........................... <me>
+  [ 14] objcall 881 ............................. <me.getSelectedLevel()>
+  [ 17] setlocal 0 .............................. tItemRef = me.getSelectedLevel()
+  [ 19] getlocal 0 .............................. <tItemRef>
+  [ 21] pushzero ................................ <0>
+  [ 22] nteq .................................... <tItemRef <> 0>
+  [ 23] jmpifz [ 53] ............................ if tItemRef <> 0 then
+  [ 26] getparam 1 .............................. <tUpdateId>
+  [ 28] getlocal 0 .............................. <tItemRef>
+  [ 30] pushsymb 214 ............................ <#id>
+  [ 32] pusharglist 2 ........................... <tItemRef, #id>
+  [ 34] objcall 63 .............................. <tItemRef.getProperty(#id)>
+  [ 36] eq ...................................... <tUpdateId = tItemRef.getProperty(#id)>
+  [ 37] jmpifz [ 53] ............................ if tUpdateId = tItemRef.getProperty(#id) then
+  [ 40] pop 1
+  [ 42] getparam 0 .............................. <me>
+  [ 44] pusharglist 1 ........................... <me>
+  [ 46] objcall 420 ............................. <me.renderUI()>
+  [ 49] pusharglistnoret 1 ...................... <me.renderUI()>
+  [ 51] extcall 38 .............................. return me.renderUI()
+  [ 53] pop 1
+  [ 55] pushint8 1 .............................. <1>
+  [ 57] pusharglistnoret 1 ...................... <1>
+  [ 59] extcall 38 .............................. return 1
+  [ 61] ret
+end
+
+on pollContentUpdate me, tForced
+  [  0] getparam 1 .............................. <tForced>
+  [  2] not ..................................... <not tForced>
+  [  3] getparam 0 .............................. <me>
+  [  5] pusharglist 1 ........................... <me>
+  [  7] objcall 433 ............................. <me.isUpdateTimestampExpired()>
+  [ 10] not ..................................... <not me.isUpdateTimestampExpired()>
+  [ 11] and ..................................... <not tForced and not me.isUpdateTimestampExpired()>
+  [ 12] jmpifz [ 20] ............................ if not tForced and not me.isUpdateTimestampExpired() then
+  [ 15] pushzero ................................ <0>
+  [ 16] pusharglistnoret 1 ...................... <0>
+  [ 18] extcall 38 .............................. return 0
+  [ 20] getparam 0 .............................. <me>
+  [ 22] pusharglistnoret 1 ...................... <me>
+  [ 24] objcall 432 ............................. me.setUpdateTimestamp()
+  [ 27] getparam 0 .............................. <me>
+  [ 29] pusharglist 1 ........................... <me>
+  [ 31] objcall 100 ............................. <me.getHandler()>
+  [ 33] pusharglist 1 ........................... <me.getHandler()>
+  [ 35] objcall 128 ............................. <me.getHandler().send_GET_CREATE_GAME_INFO()>
+  [ 37] pusharglistnoret 1 ...................... <me.getHandler().send_GET_CREATE_GAME_INFO()>
+  [ 39] extcall 38 .............................. return me.getHandler().send_GET_CREATE_GAME_INFO()
+  [ 41] ret
+end

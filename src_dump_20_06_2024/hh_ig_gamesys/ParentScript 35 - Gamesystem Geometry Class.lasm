@@ -1,0 +1,192 @@
+property pVelocityTable, pComponentToAngle
+
+on direction8to360 me, tValue
+  [  0] getparam 1 .............................. <tValue>
+  [  2] pushint8 1 .............................. <1>
+  [  4] add ..................................... <tValue + 1>
+  [  5] pushint8 8 .............................. <8>
+  [  7] mod ..................................... <(tValue + 1) mod 8>
+  [  8] pushzero ................................ <0>
+  [  9] sub ..................................... <((tValue + 1) mod 8) - 0>
+  [ 10] setparam 1 .............................. tValue = ((tValue + 1) mod 8) - 0
+  [ 12] pushint16 360 ........................... <360>
+  [ 15] getparam 1 .............................. <tValue>
+  [ 17] pushfloat32 8.0 ......................... <8.0>
+  [ 22] div ..................................... <tValue / 8.0>
+  [ 23] mul ..................................... <360 * (tValue / 8.0)>
+  [ 24] pushint16 360 ........................... <360>
+  [ 27] mod ..................................... <360 * (tValue / 8.0) mod 360>
+  [ 28] setlocal 0 .............................. tValue360 = 360 * (tValue / 8.0) mod 360
+  [ 30] getlocal 0 .............................. <tValue360>
+  [ 32] pusharglistnoret 1 ...................... <tValue360>
+  [ 34] extcall 53 .............................. return tValue360
+  [ 36] ret
+end
+
+on direction360to8 me, tValue
+  [  0] getparam 0 .............................. <me>
+  [  2] getparam 0 .............................. <me>
+  [  4] getparam 1 .............................. <tValue>
+  [  6] pushint8 22 ............................. <22>
+  [  8] sub ..................................... <tValue - 22>
+  [  9] pusharglist 2 ........................... <me, tValue - 22>
+  [ 11] objcall 625 ............................. <me.validateDirection360Value(tValue - 22)>
+  [ 14] pushint8 45 ............................. <45>
+  [ 16] div ..................................... <me.validateDirection360Value(tValue - 22) / 45>
+  [ 17] pushint8 1 .............................. <1>
+  [ 19] add ..................................... <(me.validateDirection360Value(tValue - 22) / 45) + 1>
+  [ 20] pusharglist 2 ........................... <me, (me.validateDirection360Value(tValue - 22) / 45) + 1>
+  [ 22] objcall 626 ............................. <me.validateDirection8Value((me.validateDirection360Value(tValue - 22) / 45) + 1)>
+  [ 25] pusharglistnoret 1 ...................... <me.validateDirection8Value((me.validateDirection360Value(tValue - 22) / 45) + 1)>
+  [ 27] extcall 53 .............................. return me.validateDirection8Value((me.validateDirection360Value(tValue - 22) / 45) + 1)
+  [ 29] ret
+end
+
+on validateDirection360Value me, tValue
+  [  0] getparam 1 .............................. <tValue>
+  [  2] pushint16 359 ........................... <359>
+  [  5] gt ...................................... <tValue > 359>
+  [  6] jmpifz [ 20] ............................ if tValue > 359 then / else
+  [  9] getparam 1 .............................. <tValue>
+  [ 11] pushint16 360 ........................... <360>
+  [ 14] mod ..................................... <tValue mod 360>
+  [ 15] setparam 1 .............................. tValue = tValue mod 360
+  [ 17] jmp [ 39]
+  [ 20] getparam 1 .............................. <tValue>
+  [ 22] pushzero ................................ <0>
+  [ 23] lt ...................................... <tValue < 0>
+  [ 24] jmpifz [ 39] ............................ if tValue < 0 then
+  [ 27] pushint16 360 ........................... <360>
+  [ 30] getparam 1 .............................. <tValue>
+  [ 32] pushint16 360 ........................... <360>
+  [ 35] mod ..................................... <tValue mod 360>
+  [ 36] add ..................................... <360 + (tValue mod 360)>
+  [ 37] setparam 1 .............................. tValue = 360 + (tValue mod 360)
+  [ 39] getparam 1 .............................. <tValue>
+  [ 41] pusharglist 1 ........................... <tValue>
+  [ 43] extcall 277 ............................. <integer(tValue)>
+  [ 46] pusharglistnoret 1 ...................... <integer(tValue)>
+  [ 48] extcall 53 .............................. return integer(tValue)
+  [ 50] ret
+end
+
+on validateDirection8Value me, tValue
+  [  0] getparam 1 .............................. <tValue>
+  [  2] pushint8 7 .............................. <7>
+  [  4] gt ...................................... <tValue > 7>
+  [  5] jmpifz [ 18] ............................ if tValue > 7 then / else
+  [  8] getparam 1 .............................. <tValue>
+  [ 10] pushint8 8 .............................. <8>
+  [ 12] mod ..................................... <tValue mod 8>
+  [ 13] setparam 1 .............................. tValue = tValue mod 8
+  [ 15] jmp [ 38]
+  [ 18] getparam 1 .............................. <tValue>
+  [ 20] pushzero ................................ <0>
+  [ 21] lt ...................................... <tValue < 0>
+  [ 22] jmpifz [ 38] ............................ if tValue < 0 then
+  [ 25] pushint8 8 .............................. <8>
+  [ 27] getparam 1 .............................. <tValue>
+  [ 29] pushint8 8 .............................. <8>
+  [ 31] mod ..................................... <tValue mod 8>
+  [ 32] add ..................................... <8 + (tValue mod 8)>
+  [ 33] pushint8 8 .............................. <8>
+  [ 35] mod ..................................... <(8 + (tValue mod 8)) mod 8>
+  [ 36] setparam 1 .............................. tValue = (8 + (tValue mod 8)) mod 8
+  [ 38] getparam 1 .............................. <tValue>
+  [ 40] pusharglist 1 ........................... <tValue>
+  [ 42] extcall 277 ............................. <integer(tValue)>
+  [ 45] pusharglistnoret 1 ...................... <integer(tValue)>
+  [ 47] extcall 53 .............................. return integer(tValue)
+  [ 49] ret
+end
+
+on rotateDirection45DegreesCW me, tValue
+  [  0] getparam 0 .............................. <me>
+  [  2] getparam 1 .............................. <tValue>
+  [  4] pushint8 45 ............................. <45>
+  [  6] add ..................................... <tValue + 45>
+  [  7] pusharglist 2 ........................... <me, tValue + 45>
+  [  9] objcall 625 ............................. <me.validateDirection360Value(tValue + 45)>
+  [ 12] pusharglistnoret 1 ...................... <me.validateDirection360Value(tValue + 45)>
+  [ 14] extcall 53 .............................. return me.validateDirection360Value(tValue + 45)
+  [ 16] ret
+end
+
+on rotateDirection45DegreesCCW me, tValue
+  [  0] getparam 0 .............................. <me>
+  [  2] getparam 1 .............................. <tValue>
+  [  4] pushint8 45 ............................. <45>
+  [  6] sub ..................................... <tValue - 45>
+  [  7] pusharglist 2 ........................... <me, tValue - 45>
+  [  9] objcall 625 ............................. <me.validateDirection360Value(tValue - 45)>
+  [ 12] pusharglistnoret 1 ...................... <me.validateDirection360Value(tValue - 45)>
+  [ 14] extcall 53 .............................. return me.validateDirection360Value(tValue - 45)
+  [ 16] ret
+end
+
+on getAngleFromComponents me, tX, tY
+  [  0] getprop 427 ............................. <pComponentToAngle>
+  [  3] pusharglist 0 ........................... <>
+  [  5] extcall 61 .............................. <VOID>
+  [  7] eq ...................................... <pComponentToAngle = VOID>
+  [  8] jmpifz [ 49] ............................ if pComponentToAngle = VOID then
+  [ 11] pushsymb 140 ............................ <#temp>
+  [ 13] pushcons 0 .............................. <"gamesystem.componenttoangle.class">
+  [ 15] pusharglist 1 ........................... <"gamesystem.componenttoangle.class">
+  [ 17] extcall 138 ............................. <getClassVariable("gamesystem.componenttoangle.class")>
+  [ 19] pusharglist 2 ........................... <#temp, getClassVariable("gamesystem.componenttoangle.class")>
+  [ 21] extcall 137 ............................. <createObject(#temp, getClassVariable("gamesystem.componenttoangle.class"))>
+  [ 23] setprop 427 ............................. pComponentToAngle = createObject(#temp, getClassVariable("gamesystem.componenttoangle.class"))
+  [ 26] getprop 427 ............................. <pComponentToAngle>
+  [ 29] pusharglist 1 ........................... <pComponentToAngle>
+  [ 31] extcall 55 .............................. <objectp(pComponentToAngle)>
+  [ 33] not ..................................... <not objectp(pComponentToAngle)>
+  [ 34] jmpifz [ 49] ............................ if not objectp(pComponentToAngle) then
+  [ 37] getparam 0 .............................. <me>
+  [ 39] pushcons 1 .............................. <"Cannot create pComponentToAngle">
+  [ 41] pusharglist 2 ........................... <me, "Cannot create pComponentToAngle">
+  [ 43] extcall 62 .............................. <error(me, "Cannot create pComponentToAngle")>
+  [ 45] pusharglistnoret 1 ...................... <error(me, "Cannot create pComponentToAngle")>
+  [ 47] extcall 53 .............................. return error(me, "Cannot create pComponentToAngle")
+  [ 49] getparam 0 .............................. <me>
+  [ 51] getprop 427 ............................. <pComponentToAngle>
+  [ 54] getparam 1 .............................. <tX>
+  [ 56] getparam 2 .............................. <tY>
+  [ 58] pusharglist 3 ........................... <pComponentToAngle, tX, tY>
+  [ 60] objcall 115 ............................. <pComponentToAngle.getAngleFromComponents(tX, tY)>
+  [ 62] pusharglist 2 ........................... <me, pComponentToAngle.getAngleFromComponents(tX, tY)>
+  [ 64] objcall 625 ............................. <me.validateDirection360Value(pComponentToAngle.getAngleFromComponents(tX, tY))>
+  [ 67] pusharglistnoret 1 ...................... <me.validateDirection360Value(pComponentToAngle.getAngleFromComponents(tX, tY))>
+  [ 69] extcall 53 .............................. return me.validateDirection360Value(pComponentToAngle.getAngleFromComponents(tX, tY))
+  [ 71] ret
+end
+
+on GetVelocityTable me
+  [  0] getprop 629 ............................. <pVelocityTable>
+  [  3] pusharglist 0 ........................... <>
+  [  5] extcall 61 .............................. <VOID>
+  [  7] eq ...................................... <pVelocityTable = VOID>
+  [  8] jmpifz [ 49] ............................ if pVelocityTable = VOID then
+  [ 11] pushsymb 140 ............................ <#temp>
+  [ 13] pushcons 2 .............................. <"gamesystem.velocitytable.class">
+  [ 15] pusharglist 1 ........................... <"gamesystem.velocitytable.class">
+  [ 17] extcall 138 ............................. <getClassVariable("gamesystem.velocitytable.class")>
+  [ 19] pusharglist 2 ........................... <#temp, getClassVariable("gamesystem.velocitytable.class")>
+  [ 21] extcall 137 ............................. <createObject(#temp, getClassVariable("gamesystem.velocitytable.class"))>
+  [ 23] setprop 629 ............................. pVelocityTable = createObject(#temp, getClassVariable("gamesystem.velocitytable.class"))
+  [ 26] getprop 629 ............................. <pVelocityTable>
+  [ 29] pusharglist 1 ........................... <pVelocityTable>
+  [ 31] extcall 55 .............................. <objectp(pVelocityTable)>
+  [ 33] not ..................................... <not objectp(pVelocityTable)>
+  [ 34] jmpifz [ 49] ............................ if not objectp(pVelocityTable) then
+  [ 37] getparam 0 .............................. <me>
+  [ 39] pushcons 3 .............................. <"Cannot create pVelocityTable">
+  [ 41] pusharglist 2 ........................... <me, "Cannot create pVelocityTable">
+  [ 43] extcall 62 .............................. <error(me, "Cannot create pVelocityTable")>
+  [ 45] pusharglistnoret 1 ...................... <error(me, "Cannot create pVelocityTable")>
+  [ 47] extcall 53 .............................. return error(me, "Cannot create pVelocityTable")
+  [ 49] getprop 629 ............................. <pVelocityTable>
+  [ 52] pusharglistnoret 1 ...................... <pVelocityTable>
+  [ 54] extcall 53 .............................. return pVelocityTable
+  [ 56] ret
+end

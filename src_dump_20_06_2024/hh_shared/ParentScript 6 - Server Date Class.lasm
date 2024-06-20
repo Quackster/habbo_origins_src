@@ -1,0 +1,167 @@
+on construct me
+  [  0] getparam 0 .............................. <me>
+  [  2] pushint8 1 .............................. <1>
+  [  4] pusharglist 2 ........................... <me, 1>
+  [  6] objcall 233 ............................. <me.regMsgList(1)>
+  [  8] pusharglistnoret 1 ...................... <me.regMsgList(1)>
+  [ 10] extcall 44 .............................. return me.regMsgList(1)
+  [ 12] ret
+end
+
+on deconstruct me
+  [  0] getparam 0 .............................. <me>
+  [  2] pushzero ................................ <0>
+  [  3] pusharglist 2 ........................... <me, 0>
+  [  5] objcall 233 ............................. <me.regMsgList(0)>
+  [  7] pusharglistnoret 1 ...................... <me.regMsgList(0)>
+  [  9] extcall 44 .............................. return me.regMsgList(0)
+  [ 11] ret
+end
+
+on getDate me
+  [  0] pushcons 0 .............................. <"connection.info.id">
+  [  2] pusharglist 1 ........................... <"connection.info.id">
+  [  4] extcall 149 ............................. <getVariable("connection.info.id")>
+  [  6] pusharglist 1 ........................... <getVariable("connection.info.id")>
+  [  8] extcall 187 ............................. <connectionExists(getVariable("connection.info.id"))>
+  [ 10] jmpifz [ 36] ............................ if connectionExists(getVariable("connection.info.id")) then / else
+  [ 13] pushcons 0 .............................. <"connection.info.id">
+  [ 15] pusharglist 1 ........................... <"connection.info.id">
+  [ 17] extcall 149 ............................. <getVariable("connection.info.id")>
+  [ 19] pusharglist 1 ........................... <getVariable("connection.info.id")>
+  [ 21] extcall 148 ............................. <getConnection(getVariable("connection.info.id"))>
+  [ 23] pushcons 1 .............................. <"GDATE">
+  [ 25] pusharglist 2 ........................... <getConnection(getVariable("connection.info.id")), "GDATE">
+  [ 27] objcall 150 ............................. <getConnection(getVariable("connection.info.id")).send("GDATE")>
+  [ 29] pusharglistnoret 1 ...................... <getConnection(getVariable("connection.info.id")).send("GDATE")>
+  [ 31] extcall 44 .............................. return getConnection(getVariable("connection.info.id")).send("GDATE")
+  [ 33] jmp [ 41]
+  [ 36] pushzero ................................ <0>
+  [ 37] pusharglistnoret 1 ...................... <0>
+  [ 39] extcall 44 .............................. return 0
+  [ 41] ret
+end
+
+on handle_date me, tMsg
+  [  0] getparam 1 .............................. <tMsg>
+  [  2] getobjprop 259 .......................... <tMsg.content>
+  [  5] pusharglist 1 ........................... <tMsg.content>
+  [  7] extcall 107 ............................. <stringp(tMsg.content)>
+  [  9] jmpifz [117] ............................ if stringp(tMsg.content) then
+  [ 12] getparam 1 .............................. <tMsg>
+  [ 14] getobjprop 259 .......................... <tMsg.content>
+  [ 17] setparam 1 .............................. tMsg = tMsg.content
+  [ 19] getmovieprop 197 ........................ <the itemDelimiter>
+  [ 21] setlocal 0 .............................. tDelim = the itemDelimiter
+  [ 23] pushcons 2 .............................. <"-">
+  [ 25] setmovieprop 197 ........................ the itemDelimiter = "-"
+  [ 27] getparam 1 .............................. <tMsg>
+  [ 29] pushsymb 198 ............................ <#item>
+  [ 31] pusharglist 2 ........................... <tMsg, #item>
+  [ 33] objcall 78 .............................. <tMsg.item.count>
+  [ 35] pushint8 3 .............................. <3>
+  [ 37] eq ...................................... <tMsg.item.count = 3>
+  [ 38] jmpifz [113] ............................ if tMsg.item.count = 3 then
+  [ 41] getparam 1 .............................. <tMsg>
+  [ 43] pushsymb 198 ............................ <#item>
+  [ 45] pushint8 1 .............................. <1>
+  [ 47] pusharglist 3 ........................... <tMsg, #item, 1>
+  [ 49] objcall 104 ............................. <tMsg.item[1]>
+  [ 51] pushcons 3 .............................. <".">
+  [ 53] joinstr ................................. <tMsg.item[1] & ".">
+  [ 54] getparam 1 .............................. <tMsg>
+  [ 56] pushsymb 198 ............................ <#item>
+  [ 58] pushint8 2 .............................. <2>
+  [ 60] pusharglist 3 ........................... <tMsg, #item, 2>
+  [ 62] objcall 104 ............................. <tMsg.item[2]>
+  [ 64] joinstr ................................. <tMsg.item[1] & "." & tMsg.item[2]>
+  [ 65] pushcons 3 .............................. <".">
+  [ 67] joinstr ................................. <tMsg.item[1] & "." & tMsg.item[2] & ".">
+  [ 68] getparam 1 .............................. <tMsg>
+  [ 70] pushsymb 198 ............................ <#item>
+  [ 72] pushint8 3 .............................. <3>
+  [ 74] pusharglist 3 ........................... <tMsg, #item, 3>
+  [ 76] objcall 104 ............................. <tMsg.item[3]>
+  [ 78] joinstr ................................. <tMsg.item[1] & "." & tMsg.item[2] & "." & tMsg.item[3]>
+  [ 79] setparam 1 .............................. tMsg = tMsg.item[1] & "." & tMsg.item[2] & "." & tMsg.item[3]
+  [ 81] pushsymb 68 ............................. <#session>
+  [ 83] pusharglist 1 ........................... <#session>
+  [ 85] extcall 67 .............................. <getObject(#session)>
+  [ 87] pushcons 4 .............................. <"server_date">
+  [ 89] getparam 1 .............................. <tMsg>
+  [ 91] pusharglistnoret 3 ...................... <getObject(#session), "server_date", tMsg>
+  [ 93] objcall 260 ............................. getObject(#session).set("server_date", tMsg)
+  [ 96] getlocal 0 .............................. <tDelim>
+  [ 98] setmovieprop 197 ........................ the itemDelimiter = tDelim
+  [100] pushsymb 261 ............................ <#serverDate>
+  [103] getparam 1 .............................. <tMsg>
+  [105] pusharglist 2 ........................... <#serverDate, tMsg>
+  [107] extcall 188 ............................. <executeMessage(#serverDate, tMsg)>
+  [109] pusharglistnoret 1 ...................... <executeMessage(#serverDate, tMsg)>
+  [111] extcall 44 .............................. return executeMessage(#serverDate, tMsg)
+  [113] getlocal 0 .............................. <tDelim>
+  [115] setmovieprop 197 ........................ the itemDelimiter = tDelim
+  [117] ret
+end
+
+on regMsgList me, tBool
+  [  0] pusharglist 0 ........................... <[:]>
+  [  2] pushproplist ............................ <[:]>
+  [  3] setlocal 0 .............................. tMsgs = [:]
+  [  5] getlocal 0 .............................. <tMsgs>
+  [  7] pushint16 163 ........................... <163>
+  [ 10] pushsymb 258 ............................ <#handle_date>
+  [ 13] pusharglistnoret 3 ...................... <tMsgs, 163, #handle_date>
+  [ 15] objcall 249 ............................. tMsgs.setaProp(163, #handle_date)
+  [ 17] pusharglist 0 ........................... <[:]>
+  [ 19] pushproplist ............................ <[:]>
+  [ 20] setlocal 1 .............................. tCmds = [:]
+  [ 22] getlocal 1 .............................. <tCmds>
+  [ 24] pushcons 1 .............................. <"GDATE">
+  [ 26] pushint8 49 ............................. <49>
+  [ 28] pusharglistnoret 3 ...................... <tCmds, "GDATE", 49>
+  [ 30] objcall 249 ............................. tCmds.setaProp("GDATE", 49)
+  [ 32] getparam 1 .............................. <tBool>
+  [ 34] jmpifz [ 76] ............................ if tBool then / else
+  [ 37] pushcons 0 .............................. <"connection.info.id">
+  [ 39] pusharglist 1 ........................... <"connection.info.id">
+  [ 41] extcall 149 ............................. <getVariable("connection.info.id")>
+  [ 43] getparam 0 .............................. <me>
+  [ 45] pusharglist 1 ........................... <me>
+  [ 47] objcall 42 .............................. <me.getID()>
+  [ 49] getlocal 0 .............................. <tMsgs>
+  [ 51] pusharglistnoret 3 ...................... <getVariable("connection.info.id"), me.getID(), tMsgs>
+  [ 53] extcall 250 ............................. registerListener(getVariable("connection.info.id"), me.getID(), tMsgs)
+  [ 55] pushcons 0 .............................. <"connection.info.id">
+  [ 57] pusharglist 1 ........................... <"connection.info.id">
+  [ 59] extcall 149 ............................. <getVariable("connection.info.id")>
+  [ 61] getparam 0 .............................. <me>
+  [ 63] pusharglist 1 ........................... <me>
+  [ 65] objcall 42 .............................. <me.getID()>
+  [ 67] getlocal 1 .............................. <tCmds>
+  [ 69] pusharglistnoret 3 ...................... <getVariable("connection.info.id"), me.getID(), tCmds>
+  [ 71] extcall 251 ............................. registerCommands(getVariable("connection.info.id"), me.getID(), tCmds)
+  [ 73] jmp [112]
+  [ 76] pushcons 0 .............................. <"connection.info.id">
+  [ 78] pusharglist 1 ........................... <"connection.info.id">
+  [ 80] extcall 149 ............................. <getVariable("connection.info.id")>
+  [ 82] getparam 0 .............................. <me>
+  [ 84] pusharglist 1 ........................... <me>
+  [ 86] objcall 42 .............................. <me.getID()>
+  [ 88] getlocal 0 .............................. <tMsgs>
+  [ 90] pusharglistnoret 3 ...................... <getVariable("connection.info.id"), me.getID(), tMsgs>
+  [ 92] extcall 252 ............................. unregisterListener(getVariable("connection.info.id"), me.getID(), tMsgs)
+  [ 94] pushcons 0 .............................. <"connection.info.id">
+  [ 96] pusharglist 1 ........................... <"connection.info.id">
+  [ 98] extcall 149 ............................. <getVariable("connection.info.id")>
+  [100] getparam 0 .............................. <me>
+  [102] pusharglist 1 ........................... <me>
+  [104] objcall 42 .............................. <me.getID()>
+  [106] getlocal 1 .............................. <tCmds>
+  [108] pusharglistnoret 3 ...................... <getVariable("connection.info.id"), me.getID(), tCmds>
+  [110] extcall 253 ............................. unregisterCommands(getVariable("connection.info.id"), me.getID(), tCmds)
+  [112] pushint8 1 .............................. <1>
+  [114] pusharglistnoret 1 ...................... <1>
+  [116] extcall 44 .............................. return 1
+  [118] ret
+end

@@ -1,0 +1,938 @@
+property pOkToLogin, pLatencyTestID, pLatencyValueList, pLatencyTestTimeStampList, pLatencyTotalValue, pLatencyValueCount, pLatencyClearedValue, pLatencyClearedCount, pLatencyReportIndex, pLatencyReported, pLatencyReportDelta, pLatencyTestInterval, pLatencyTestTimeoutID, pDisconnectErrorState
+
+on construct me
+  [  0] pushzero ................................ <0>
+  [  1] setprop 16 .............................. pOkToLogin = 0
+  [  3] pushint8 1 .............................. <1>
+  [  5] setprop 17 .............................. pLatencyTestID = 1
+  [  7] pusharglist 0 ........................... <[]>
+  [  9] pushlist ................................ <[]>
+  [ 10] setprop 18 .............................. pLatencyValueList = []
+  [ 12] pusharglist 0 ........................... <[:]>
+  [ 14] pushproplist ............................ <[:]>
+  [ 15] setprop 19 .............................. pLatencyTestTimeStampList = [:]
+  [ 17] pushzero ................................ <0>
+  [ 18] setprop 20 .............................. pLatencyTotalValue = 0
+  [ 20] pushzero ................................ <0>
+  [ 21] setprop 21 .............................. pLatencyValueCount = 0
+  [ 23] pushzero ................................ <0>
+  [ 24] setprop 22 .............................. pLatencyClearedValue = 0
+  [ 26] pushzero ................................ <0>
+  [ 27] setprop 23 .............................. pLatencyClearedCount = 0
+  [ 29] pushcons 0 .............................. <"latency.test.timeout">
+  [ 31] setprop 24 .............................. pLatencyTestTimeoutID = "latency.test.timeout"
+  [ 33] pushzero ................................ <0>
+  [ 34] setprop 25 .............................. pLatencyTestInterval = 0
+  [ 36] pushzero ................................ <0>
+  [ 37] setprop 26 .............................. pLatencyReportIndex = 0
+  [ 39] pushzero ................................ <0>
+  [ 40] setprop 27 .............................. pLatencyReportDelta = 0
+  [ 42] pushcons 1 .............................. <"latencytest.interval">
+  [ 44] pusharglist 1 ........................... <"latencytest.interval">
+  [ 46] extcall 28 .............................. <variableExists("latencytest.interval")>
+  [ 48] jmpifz [ 59] ............................ if variableExists("latencytest.interval") then
+  [ 51] pushcons 1 .............................. <"latencytest.interval">
+  [ 53] pusharglist 1 ........................... <"latencytest.interval">
+  [ 55] extcall 29 .............................. <getVariable("latencytest.interval")>
+  [ 57] setprop 25 .............................. pLatencyTestInterval = getVariable("latencytest.interval")
+  [ 59] pushcons 2 .............................. <"latencytest.report.index">
+  [ 61] pusharglist 1 ........................... <"latencytest.report.index">
+  [ 63] extcall 28 .............................. <variableExists("latencytest.report.index")>
+  [ 65] jmpifz [ 76] ............................ if variableExists("latencytest.report.index") then
+  [ 68] pushcons 2 .............................. <"latencytest.report.index">
+  [ 70] pusharglist 1 ........................... <"latencytest.report.index">
+  [ 72] extcall 29 .............................. <getVariable("latencytest.report.index")>
+  [ 74] setprop 26 .............................. pLatencyReportIndex = getVariable("latencytest.report.index")
+  [ 76] pushcons 3 .............................. <"latencytest.report.delta">
+  [ 78] pusharglist 1 ........................... <"latencytest.report.delta">
+  [ 80] extcall 28 .............................. <variableExists("latencytest.report.delta")>
+  [ 82] jmpifz [ 93] ............................ if variableExists("latencytest.report.delta") then
+  [ 85] pushcons 3 .............................. <"latencytest.report.delta">
+  [ 87] pusharglist 1 ........................... <"latencytest.report.delta">
+  [ 89] extcall 29 .............................. <getVariable("latencytest.report.delta")>
+  [ 91] setprop 27 .............................. pLatencyReportDelta = getVariable("latencytest.report.delta")
+  [ 93] pushzero ................................ <0>
+  [ 94] setprop 30 .............................. pLatencyReported = 0
+  [ 96] pushcons 4 .............................. <"stats.tracking.javascript">
+  [ 98] pusharglist 1 ........................... <"stats.tracking.javascript">
+  [100] extcall 28 .............................. <variableExists("stats.tracking.javascript")>
+  [102] jmpifz [113] ............................ if variableExists("stats.tracking.javascript") then
+  [105] pushsymb 32 ............................. <#statsBrokerJs>
+  [107] pushcons 5 .............................. <"Statistics Broker Javascript Class">
+  [109] pusharglistnoret 2 ...................... <#statsBrokerJs, "Statistics Broker Javascript Class">
+  [111] extcall 31 .............................. createObject(#statsBrokerJs, "Statistics Broker Javascript Class")
+  [113] pushcons 6 .............................. <"stats.tracking.url">
+  [115] pusharglist 1 ........................... <"stats.tracking.url">
+  [117] extcall 28 .............................. <variableExists("stats.tracking.url")>
+  [119] jmpifz [130] ............................ if variableExists("stats.tracking.url") then
+  [122] pushsymb 33 ............................. <#statsBroker>
+  [124] pushcons 7 .............................. <"Statistics Broker Class">
+  [126] pusharglistnoret 2 ...................... <#statsBroker, "Statistics Broker Class">
+  [128] extcall 31 .............................. createObject(#statsBroker, "Statistics Broker Class")
+  [130] pushsymb 35 ............................. <#dateFormatter>
+  [132] pusharglist 1 ........................... <#dateFormatter>
+  [134] extcall 34 .............................. <objectExists(#dateFormatter)>
+  [136] not ..................................... <not objectExists(#dateFormatter)>
+  [137] jmpifz [151] ............................ if not objectExists(#dateFormatter) then
+  [140] pushsymb 35 ............................. <#dateFormatter>
+  [142] pushcons 8 .............................. <"Date Class">
+  [144] pusharglist 1 ........................... <["Date Class"]>
+  [146] pushlist ................................ <["Date Class"]>
+  [147] pusharglistnoret 2 ...................... <#dateFormatter, ["Date Class"]>
+  [149] extcall 31 .............................. createObject(#dateFormatter, ["Date Class"])
+  [151] pushcons 9 .............................. <"Figure_System">
+  [153] pusharglist 1 ........................... <"Figure_System">
+  [155] extcall 34 .............................. <objectExists("Figure_System")>
+  [157] not ..................................... <not objectExists("Figure_System")>
+  [158] jmpifz [206] ............................ if not objectExists("Figure_System") then
+  [161] pushcons 9 .............................. <"Figure_System">
+  [163] pushcons 10 ............................. <"Figure System Class">
+  [165] pusharglist 1 ........................... <["Figure System Class"]>
+  [167] pushlist ................................ <["Figure System Class"]>
+  [168] pusharglist 2 ........................... <"Figure_System", ["Figure System Class"]>
+  [170] extcall 31 .............................. <createObject("Figure_System", ["Figure System Class"])>
+  [172] pushzero ................................ <0>
+  [173] nteq .................................... <createObject("Figure_System", ["Figure System Class"]) <> 0>
+  [174] jmpifz [206] ............................ if createObject("Figure_System", ["Figure System Class"]) <> 0 then
+  [177] pushcons 11 ............................. <"external.figurepartlist.txt">
+  [179] pusharglist 1 ........................... <"external.figurepartlist.txt">
+  [181] extcall 29 .............................. <getVariable("external.figurepartlist.txt")>
+  [183] setlocal 0 .............................. tURL = getVariable("external.figurepartlist.txt")
+  [185] pushcons 9 .............................. <"Figure_System">
+  [187] pusharglist 1 ........................... <"Figure_System">
+  [189] extcall 36 .............................. <getObject("Figure_System")>
+  [191] pushcons 12 ............................. <"type">
+  [193] pushcons 13 ............................. <"url">
+  [195] pushcons 14 ............................. <"source">
+  [197] getlocal 0 .............................. <tURL>
+  [199] pusharglist 4 ........................... <["type": "url", "source": tURL]>
+  [201] pushproplist ............................ <["type": "url", "source": tURL]>
+  [202] pusharglistnoret 2 ...................... <getObject("Figure_System"), ["type": "url", "source": tURL]>
+  [204] objcall 37 .............................. getObject("Figure_System").define(["type": "url", "source": tURL])
+  [206] pushcons 15 ............................. <"Figure_Preview">
+  [208] pusharglist 1 ........................... <"Figure_Preview">
+  [210] extcall 34 .............................. <objectExists("Figure_Preview")>
+  [212] not ..................................... <not objectExists("Figure_Preview")>
+  [213] jmpifz [227] ............................ if not objectExists("Figure_Preview") then
+  [216] pushcons 15 ............................. <"Figure_Preview">
+  [218] pushcons 16 ............................. <"Figure Preview Class">
+  [220] pusharglist 1 ........................... <["Figure Preview Class"]>
+  [222] pushlist ................................ <["Figure Preview Class"]>
+  [223] pusharglistnoret 2 ...................... <"Figure_Preview", ["Figure Preview Class"]>
+  [225] extcall 31 .............................. createObject("Figure_Preview", ["Figure Preview Class"])
+  [227] pushsymb 38 ............................. <#session>
+  [229] pusharglist 1 ........................... <#session>
+  [231] extcall 36 .............................. <getObject(#session)>
+  [233] pushcons 17 ............................. <"user_rights">
+  [235] pusharglist 0 ........................... <[]>
+  [237] pushlist ................................ <[]>
+  [238] pusharglistnoret 3 ...................... <getObject(#session), "user_rights", []>
+  [240] objcall 39 .............................. getObject(#session).set("user_rights", [])
+  [242] pushsymb 41 ............................. <#Initialize>
+  [244] getparam 0 .............................. <me>
+  [246] pusharglist 1 ........................... <me>
+  [248] objcall 42 .............................. <me.getID()>
+  [250] pushsymb 2 .............................. <#initA>
+  [252] pusharglistnoret 3 ...................... <#Initialize, me.getID(), #initA>
+  [254] extcall 40 .............................. registerMessage(#Initialize, me.getID(), #initA)
+  [256] pushcons 18 ............................. <"Help_Tooltip_Manager">
+  [258] pusharglist 1 ........................... <"Help_Tooltip_Manager">
+  [260] extcall 34 .............................. <objectExists("Help_Tooltip_Manager")>
+  [262] not ..................................... <not objectExists("Help_Tooltip_Manager")>
+  [263] jmpifz [274] ............................ if not objectExists("Help_Tooltip_Manager") then
+  [266] pushcons 18 ............................. <"Help_Tooltip_Manager">
+  [268] pushcons 19 ............................. <"Help Tooltip Manager Class">
+  [270] pusharglistnoret 2 ...................... <"Help_Tooltip_Manager", "Help Tooltip Manager Class">
+  [272] extcall 31 .............................. createObject("Help_Tooltip_Manager", "Help Tooltip Manager Class")
+  [274] pushcons 20 ............................. <"Oneclick_Buy_Window_Manager">
+  [276] pusharglist 1 ........................... <"Oneclick_Buy_Window_Manager">
+  [278] extcall 34 .............................. <objectExists("Oneclick_Buy_Window_Manager")>
+  [280] not ..................................... <not objectExists("Oneclick_Buy_Window_Manager")>
+  [281] jmpifz [292] ............................ if not objectExists("Oneclick_Buy_Window_Manager") then
+  [284] pushcons 20 ............................. <"Oneclick_Buy_Window_Manager">
+  [286] pushcons 21 ............................. <"Game Oneclick Buy Window Manager Class">
+  [288] pusharglistnoret 2 ...................... <"Oneclick_Buy_Window_Manager", "Game Oneclick Buy Window Manager Class">
+  [290] extcall 31 .............................. createObject("Oneclick_Buy_Window_Manager", "Game Oneclick Buy Window Manager Class")
+  [292] pushcons 22 ............................. <"socket_init">
+  [294] setprop 43 .............................. pDisconnectErrorState = "socket_init"
+  [296] pushsymb 5 .............................. <#openConnection>
+  [298] getparam 0 .............................. <me>
+  [300] pusharglist 1 ........................... <me>
+  [302] objcall 42 .............................. <me.getID()>
+  [304] pushsymb 5 .............................. <#openConnection>
+  [306] pusharglistnoret 3 ...................... <#openConnection, me.getID(), #openConnection>
+  [308] extcall 40 .............................. registerMessage(#openConnection, me.getID(), #openConnection)
+  [310] pushsymb 44 ............................. <#closeConnection>
+  [312] getparam 0 .............................. <me>
+  [314] pusharglist 1 ........................... <me>
+  [316] objcall 42 .............................. <me.getID()>
+  [318] pushsymb 7 .............................. <#disconnect>
+  [320] pusharglistnoret 3 ...................... <#closeConnection, me.getID(), #disconnect>
+  [322] extcall 40 .............................. registerMessage(#closeConnection, me.getID(), #disconnect)
+  [324] pushsymb 45 ............................. <#performLogin>
+  [326] getparam 0 .............................. <me>
+  [328] pusharglist 1 ........................... <me>
+  [330] objcall 42 .............................. <me.getID()>
+  [332] pushsymb 4 .............................. <#sendLogin>
+  [334] pusharglistnoret 3 ...................... <#performLogin, me.getID(), #sendLogin>
+  [336] extcall 40 .............................. registerMessage(#performLogin, me.getID(), #sendLogin)
+  [338] pushsymb 46 ............................. <#loginIsOk>
+  [340] getparam 0 .............................. <me>
+  [342] pusharglist 1 ........................... <me>
+  [344] objcall 42 .............................. <me.getID()>
+  [346] pushsymb 47 ............................. <#setLoginOk>
+  [348] pusharglistnoret 3 ...................... <#loginIsOk, me.getID(), #setLoginOk>
+  [350] extcall 40 .............................. registerMessage(#loginIsOk, me.getID(), #setLoginOk)
+  [352] pushint8 1 .............................. <1>
+  [354] pusharglistnoret 1 ...................... <1>
+  [356] extcall 48 .............................. return 1
+  [358] ret
+end
+
+on deconstruct me
+  [  0] pushzero ................................ <0>
+  [  1] setprop 16 .............................. pOkToLogin = 0
+  [  3] pushcons 9 .............................. <"Figure_System">
+  [  5] pusharglist 1 ........................... <"Figure_System">
+  [  7] extcall 34 .............................. <objectExists("Figure_System")>
+  [  9] jmpifz [ 18] ............................ if objectExists("Figure_System") then
+  [ 12] pushcons 9 .............................. <"Figure_System">
+  [ 14] pusharglistnoret 1 ...................... <"Figure_System">
+  [ 16] extcall 51 .............................. removeObject("Figure_System")
+  [ 18] pushcons 15 ............................. <"Figure_Preview">
+  [ 20] pusharglist 1 ........................... <"Figure_Preview">
+  [ 22] extcall 34 .............................. <objectExists("Figure_Preview")>
+  [ 24] jmpifz [ 33] ............................ if objectExists("Figure_Preview") then
+  [ 27] pushcons 15 ............................. <"Figure_Preview">
+  [ 29] pusharglistnoret 1 ...................... <"Figure_Preview">
+  [ 31] extcall 51 .............................. removeObject("Figure_Preview")
+  [ 33] pushcons 23 ............................. <"nav_problem_obj">
+  [ 35] pusharglist 1 ........................... <"nav_problem_obj">
+  [ 37] extcall 34 .............................. <objectExists("nav_problem_obj")>
+  [ 39] jmpifz [ 48] ............................ if objectExists("nav_problem_obj") then
+  [ 42] pushcons 23 ............................. <"nav_problem_obj">
+  [ 44] pusharglistnoret 1 ...................... <"nav_problem_obj">
+  [ 46] extcall 51 .............................. removeObject("nav_problem_obj")
+  [ 48] pushsymb 33 ............................. <#statsBroker>
+  [ 50] pusharglist 1 ........................... <#statsBroker>
+  [ 52] extcall 34 .............................. <objectExists(#statsBroker)>
+  [ 54] jmpifz [ 63] ............................ if objectExists(#statsBroker) then
+  [ 57] pushsymb 33 ............................. <#statsBroker>
+  [ 59] pusharglistnoret 1 ...................... <#statsBroker>
+  [ 61] extcall 51 .............................. removeObject(#statsBroker)
+  [ 63] pushsymb 32 ............................. <#statsBrokerJs>
+  [ 65] pusharglist 1 ........................... <#statsBrokerJs>
+  [ 67] extcall 34 .............................. <objectExists(#statsBrokerJs)>
+  [ 69] jmpifz [ 78] ............................ if objectExists(#statsBrokerJs) then
+  [ 72] pushsymb 32 ............................. <#statsBrokerJs>
+  [ 74] pusharglistnoret 1 ...................... <#statsBrokerJs>
+  [ 76] extcall 51 .............................. removeObject(#statsBrokerJs)
+  [ 78] pushsymb 52 ............................. <#getServerDate>
+  [ 80] pusharglist 1 ........................... <#getServerDate>
+  [ 82] extcall 34 .............................. <objectExists(#getServerDate)>
+  [ 84] jmpifz [ 93] ............................ if objectExists(#getServerDate) then
+  [ 87] pushsymb 52 ............................. <#getServerDate>
+  [ 89] pusharglistnoret 1 ...................... <#getServerDate>
+  [ 91] extcall 51 .............................. removeObject(#getServerDate)
+  [ 93] pushcons 18 ............................. <"Help_Tooltip_Manager">
+  [ 95] pusharglist 1 ........................... <"Help_Tooltip_Manager">
+  [ 97] extcall 34 .............................. <objectExists("Help_Tooltip_Manager")>
+  [ 99] jmpifz [108] ............................ if objectExists("Help_Tooltip_Manager") then
+  [102] pushcons 18 ............................. <"Help_Tooltip_Manager">
+  [104] pusharglistnoret 1 ...................... <"Help_Tooltip_Manager">
+  [106] extcall 51 .............................. removeObject("Help_Tooltip_Manager")
+  [108] pushsymb 5 .............................. <#openConnection>
+  [110] getparam 0 .............................. <me>
+  [112] pusharglist 1 ........................... <me>
+  [114] objcall 42 .............................. <me.getID()>
+  [116] pusharglistnoret 2 ...................... <#openConnection, me.getID()>
+  [118] extcall 53 .............................. unregisterMessage(#openConnection, me.getID())
+  [120] pushsymb 44 ............................. <#closeConnection>
+  [122] getparam 0 .............................. <me>
+  [124] pusharglist 1 ........................... <me>
+  [126] objcall 42 .............................. <me.getID()>
+  [128] pusharglistnoret 2 ...................... <#closeConnection, me.getID()>
+  [130] extcall 53 .............................. unregisterMessage(#closeConnection, me.getID())
+  [132] pushcons 24 ............................. <"connection.info.id">
+  [134] pushsymb 55 ............................. <#Info>
+  [136] pusharglist 2 ........................... <"connection.info.id", #Info>
+  [138] extcall 29 .............................. <getVariable("connection.info.id", #Info)>
+  [140] pusharglist 1 ........................... <getVariable("connection.info.id", #Info)>
+  [142] extcall 54 .............................. <connectionExists(getVariable("connection.info.id", #Info))>
+  [144] jmpifz [160] ............................ if connectionExists(getVariable("connection.info.id", #Info)) then / else
+  [147] getparam 0 .............................. <me>
+  [149] pusharglist 1 ........................... <me>
+  [151] objcall 7 ............................... <me.disconnect()>
+  [153] pusharglistnoret 1 ...................... <me.disconnect()>
+  [155] extcall 48 .............................. return me.disconnect()
+  [157] jmp [166]
+  [160] pushint8 1 .............................. <1>
+  [162] pusharglistnoret 1 ...................... <1>
+  [164] extcall 48 .............................. return 1
+  [166] ret
+end
+
+on initA me
+  [  0] pushcons 25 ............................. <"figurepartlist.loaded">
+  [  2] pushint8 1 .............................. <1>
+  [  4] pusharglist 2 ........................... <"figurepartlist.loaded", 1>
+  [  6] extcall 56 .............................. <getIntVariable("figurepartlist.loaded", 1)>
+  [  8] pushzero ................................ <0>
+  [  9] eq ...................................... <getIntVariable("figurepartlist.loaded", 1) = 0>
+  [ 10] jmpifz [ 28] ............................ if getIntVariable("figurepartlist.loaded", 1) = 0 then
+  [ 13] getparam 0 .............................. <me>
+  [ 15] pushint16 250 ........................... <250>
+  [ 18] pushsymb 2 .............................. <#initA>
+  [ 20] pusharglist 3 ........................... <me, 250, #initA>
+  [ 22] objcall 57 .............................. <me.delay(250, #initA)>
+  [ 24] pusharglistnoret 1 ...................... <me.delay(250, #initA)>
+  [ 26] extcall 48 .............................. return me.delay(250, #initA)
+  [ 28] getparam 0 .............................. <me>
+  [ 30] pushint16 1000 .......................... <1000>
+  [ 33] pushsymb 3 .............................. <#initB>
+  [ 35] pusharglist 3 ........................... <me, 1000, #initB>
+  [ 37] objcall 57 .............................. <me.delay(1000, #initB)>
+  [ 39] pusharglistnoret 1 ...................... <me.delay(1000, #initB)>
+  [ 41] extcall 48 .............................. return me.delay(1000, #initB)
+  [ 43] ret
+end
+
+on initB me
+  [  0] getmovieprop 58 ......................... <the traceScript>
+  [  2] jmpifz [ 10] ............................ if the traceScript then
+  [  5] pushzero ................................ <0>
+  [  6] pusharglistnoret 1 ...................... <0>
+  [  8] extcall 48 .............................. return 0
+  [ 10] pushzero ................................ <0>
+  [ 11] setmovieprop 58 ......................... the traceScript = 0
+  [ 13] gettoplevelprop 59 ...................... <_movie>
+  [ 15] pushzero ................................ <0>
+  [ 16] setobjprop 58 ........................... _movie.traceScript = 0
+  [ 18] gettoplevelprop 60 ...................... <_player>
+  [ 20] pushzero ................................ <0>
+  [ 21] setobjprop 58 ........................... _player.traceScript = 0
+  [ 23] pushzero ................................ <0>
+  [ 24] setlocal 0 .............................. tUseSSO = 0
+  [ 26] pushcons 26 ............................. <"use.sso.ticket">
+  [ 28] pusharglist 1 ........................... <"use.sso.ticket">
+  [ 30] extcall 28 .............................. <variableExists("use.sso.ticket")>
+  [ 32] jmpifz [101] ............................ if variableExists("use.sso.ticket") then
+  [ 35] pushcons 26 ............................. <"use.sso.ticket">
+  [ 37] pusharglist 1 ........................... <"use.sso.ticket">
+  [ 39] extcall 29 .............................. <getVariable("use.sso.ticket")>
+  [ 41] setlocal 0 .............................. tUseSSO = getVariable("use.sso.ticket")
+  [ 43] pushcons 27 ............................. <"sso.ticket">
+  [ 45] pusharglist 1 ........................... <"sso.ticket">
+  [ 47] extcall 28 .............................. <variableExists("sso.ticket")>
+  [ 49] getlocal 0 .............................. <tUseSSO>
+  [ 51] and ..................................... <variableExists("sso.ticket") and tUseSSO>
+  [ 52] jmpifz [101] ............................ if variableExists("sso.ticket") and tUseSSO then
+  [ 55] pushcons 27 ............................. <"sso.ticket">
+  [ 57] pusharglist 1 ........................... <"sso.ticket">
+  [ 59] extcall 29 .............................. <getVariable("sso.ticket")>
+  [ 61] pusharglist 1 ........................... <getVariable("sso.ticket")>
+  [ 63] extcall 61 .............................. <string(getVariable("sso.ticket"))>
+  [ 65] setlocal 1 .............................. tSsoTicket = string(getVariable("sso.ticket"))
+  [ 67] getlocal 1 .............................. <tSsoTicket>
+  [ 69] getobjprop 62 ........................... <tSsoTicket.length>
+  [ 71] pushint8 1 .............................. <1>
+  [ 73] gt ...................................... <tSsoTicket.length > 1>
+  [ 74] jmpifz [101] ............................ if tSsoTicket.length > 1 then
+  [ 77] pushsymb 38 ............................. <#session>
+  [ 79] pusharglist 1 ........................... <#session>
+  [ 81] extcall 36 .............................. <getObject(#session)>
+  [ 83] pushsymb 63 ............................. <#SSO_ticket>
+  [ 85] getlocal 1 .............................. <tSsoTicket>
+  [ 87] pusharglistnoret 3 ...................... <getObject(#session), #SSO_ticket, tSsoTicket>
+  [ 89] objcall 39 .............................. getObject(#session).set(#SSO_ticket, tSsoTicket)
+  [ 91] getparam 0 .............................. <me>
+  [ 93] pusharglist 1 ........................... <me>
+  [ 95] objcall 5 ............................... <me.openConnection()>
+  [ 97] pusharglistnoret 1 ...................... <me.openConnection()>
+  [ 99] extcall 48 .............................. return me.openConnection()
+  [101] getlocal 0 .............................. <tUseSSO>
+  [103] pushzero ................................ <0>
+  [104] eq ...................................... <tUseSSO = 0>
+  [105] jmpifz [125] ............................ if tUseSSO = 0 then / else
+  [108] getparam 0 .............................. <me>
+  [110] pusharglist 1 ........................... <me>
+  [112] objcall 64 .............................. <me.getInterface()>
+  [114] pusharglist 1 ........................... <me.getInterface()>
+  [116] objcall 65 .............................. <me.getInterface().showLogin()>
+  [118] pusharglistnoret 1 ...................... <me.getInterface().showLogin()>
+  [120] extcall 48 .............................. return me.getInterface().showLogin()
+  [122] jmp [138]
+  [125] pushsymb 67 ............................. <#alert>
+  [127] pushsymb 68 ............................. <#Msg>
+  [129] pushcons 28 ............................. <"Alert_generic_login_error">
+  [131] pusharglist 2 ........................... <[#Msg: "Alert_generic_login_error"]>
+  [133] pushproplist ............................ <[#Msg: "Alert_generic_login_error"]>
+  [134] pusharglistnoret 2 ...................... <#alert, [#Msg: "Alert_generic_login_error"]>
+  [136] extcall 66 .............................. executeMessage(#alert, [#Msg: "Alert_generic_login_error"])
+  [138] ret
+end
+
+on sendLogin me, tConnection
+  [  0] getmovieprop 58 ......................... <the traceScript>
+  [  2] jmpifz [ 10] ............................ if the traceScript then
+  [  5] pushzero ................................ <0>
+  [  6] pusharglistnoret 1 ...................... <0>
+  [  8] extcall 48 .............................. return 0
+  [ 10] pushzero ................................ <0>
+  [ 11] setmovieprop 58 ......................... the traceScript = 0
+  [ 13] gettoplevelprop 59 ...................... <_movie>
+  [ 15] pushzero ................................ <0>
+  [ 16] setobjprop 58 ........................... _movie.traceScript = 0
+  [ 18] gettoplevelprop 60 ...................... <_player>
+  [ 20] pushzero ................................ <0>
+  [ 21] setobjprop 58 ........................... _player.traceScript = 0
+  [ 23] getparam 0 .............................. <me>
+  [ 25] pushcons 29 ............................. <"login">
+  [ 27] pusharglistnoret 2 ...................... <me, "login">
+  [ 29] objcall 14 .............................. me.SetDisconnectErrorState("login")
+  [ 31] getparam 1 .............................. <tConnection>
+  [ 33] pusharglist 1 ........................... <tConnection>
+  [ 35] extcall 71 .............................. <voidp(tConnection)>
+  [ 37] jmpifz [ 52] ............................ if voidp(tConnection) then
+  [ 40] pushcons 24 ............................. <"connection.info.id">
+  [ 42] pusharglist 1 ........................... <"connection.info.id">
+  [ 44] extcall 29 .............................. <getVariable("connection.info.id")>
+  [ 46] pusharglist 1 ........................... <getVariable("connection.info.id")>
+  [ 48] extcall 72 .............................. <getConnection(getVariable("connection.info.id"))>
+  [ 50] setparam 1 .............................. tConnection = getConnection(getVariable("connection.info.id"))
+  [ 52] pushcons 23 ............................. <"nav_problem_obj">
+  [ 54] pusharglist 1 ........................... <"nav_problem_obj">
+  [ 56] extcall 34 .............................. <objectExists("nav_problem_obj")>
+  [ 58] jmpifz [ 67] ............................ if objectExists("nav_problem_obj") then
+  [ 61] pushcons 23 ............................. <"nav_problem_obj">
+  [ 63] pusharglistnoret 1 ...................... <"nav_problem_obj">
+  [ 65] extcall 51 .............................. removeObject("nav_problem_obj")
+  [ 67] getparam 0 .............................. <me>
+  [ 69] pusharglist 1 ........................... <me>
+  [ 71] objcall 73 .............................. <me.getComponent()>
+  [ 73] pusharglist 1 ........................... <me.getComponent()>
+  [ 75] objcall 9 ............................... <me.getComponent().isOkToLogin()>
+  [ 77] jmpifz [258] ............................ if me.getComponent().isOkToLogin() then
+  [ 80] pushzero ................................ <0>
+  [ 81] setlocal 0 .............................. tSsoTicket = 0
+  [ 83] pushsymb 38 ............................. <#session>
+  [ 85] pusharglist 1 ........................... <#session>
+  [ 87] extcall 36 .............................. <getObject(#session)>
+  [ 89] pushcons 30 ............................. <"SSO_ticket">
+  [ 91] pusharglist 2 ........................... <getObject(#session), "SSO_ticket">
+  [ 93] objcall 74 .............................. <getObject(#session).exists("SSO_ticket")>
+  [ 95] jmpifz [112] ............................ if getObject(#session).exists("SSO_ticket") then
+  [ 98] pushsymb 38 ............................. <#session>
+  [100] pusharglist 1 ........................... <#session>
+  [102] extcall 36 .............................. <getObject(#session)>
+  [104] pushcons 30 ............................. <"SSO_ticket">
+  [106] pusharglist 2 ........................... <getObject(#session), "SSO_ticket">
+  [108] objcall 75 .............................. <getObject(#session).GET("SSO_ticket")>
+  [110] setlocal 0 .............................. tSsoTicket = getObject(#session).GET("SSO_ticket")
+  [112] getlocal 0 .............................. <tSsoTicket>
+  [114] pushzero ................................ <0>
+  [115] nteq .................................... <tSsoTicket <> 0>
+  [116] jmpifz [147] ............................ if tSsoTicket <> 0 then / else
+  [119] pushint8 15 ............................. <15>
+  [121] pusharglistnoret 1 ...................... <15>
+  [123] extcall 76 .............................. sendProcessTracking(15)
+  [125] getparam 1 .............................. <tConnection>
+  [127] pushcons 31 ............................. <"SSO">
+  [129] pushsymb 61 ............................. <#string>
+  [131] getlocal 0 .............................. <tSsoTicket>
+  [133] pusharglist 2 ........................... <[#string: tSsoTicket]>
+  [135] pushproplist ............................ <[#string: tSsoTicket]>
+  [136] pusharglist 3 ........................... <tConnection, "SSO", [#string: tSsoTicket]>
+  [138] objcall 77 .............................. <tConnection.send("SSO", [#string: tSsoTicket])>
+  [140] pusharglistnoret 1 ...................... <tConnection.send("SSO", [#string: tSsoTicket])>
+  [142] extcall 48 .............................. return tConnection.send("SSO", [#string: tSsoTicket])
+  [144] jmp [258]
+  [147] pushsymb 38 ............................. <#session>
+  [149] pusharglist 1 ........................... <#session>
+  [151] extcall 36 .............................. <getObject(#session)>
+  [153] pushsymb 78 ............................. <#userName>
+  [155] pusharglist 2 ........................... <getObject(#session), #userName>
+  [157] objcall 75 .............................. <getObject(#session).GET(#userName)>
+  [159] setlocal 1 .............................. tUserName = getObject(#session).GET(#userName)
+  [161] pushsymb 38 ............................. <#session>
+  [163] pusharglist 1 ........................... <#session>
+  [165] extcall 36 .............................. <getObject(#session)>
+  [167] pushsymb 79 ............................. <#Password>
+  [169] pusharglist 2 ........................... <getObject(#session), #Password>
+  [171] objcall 75 .............................. <getObject(#session).GET(#Password)>
+  [173] setlocal 2 .............................. tPassword = getObject(#session).GET(#Password)
+  [175] getlocal 1 .............................. <tUserName>
+  [177] pusharglist 1 ........................... <tUserName>
+  [179] extcall 80 .............................. <stringp(tUserName)>
+  [181] not ..................................... <not stringp(tUserName)>
+  [182] getlocal 2 .............................. <tPassword>
+  [184] pusharglist 1 ........................... <tPassword>
+  [186] extcall 80 .............................. <stringp(tPassword)>
+  [188] not ..................................... <not stringp(tPassword)>
+  [189] or ...................................... <not stringp(tUserName) or not stringp(tPassword)>
+  [190] jmpifz [207] ............................ if not stringp(tUserName) or not stringp(tPassword) then
+  [193] getparam 1 .............................. <tConnection>
+  [195] pusharglist 1 ........................... <tConnection>
+  [197] objcall 42 .............................. <tConnection.getID()>
+  [199] pusharglist 1 ........................... <tConnection.getID()>
+  [201] extcall 81 .............................. <removeConnection(tConnection.getID())>
+  [203] pusharglistnoret 1 ...................... <removeConnection(tConnection.getID())>
+  [205] extcall 48 .............................. return removeConnection(tConnection.getID())
+  [207] getlocal 1 .............................. <tUserName>
+  [209] pushcons 32 ............................. <EMPTY>
+  [211] eq ...................................... <tUserName = EMPTY>
+  [212] getlocal 2 .............................. <tPassword>
+  [214] pushcons 32 ............................. <EMPTY>
+  [216] eq ...................................... <tPassword = EMPTY>
+  [217] or ...................................... <(tUserName = EMPTY) or (tPassword = EMPTY)>
+  [218] jmpifz [235] ............................ if (tUserName = EMPTY) or (tPassword = EMPTY) then
+  [221] getparam 1 .............................. <tConnection>
+  [223] pusharglist 1 ........................... <tConnection>
+  [225] objcall 42 .............................. <tConnection.getID()>
+  [227] pusharglist 1 ........................... <tConnection.getID()>
+  [229] extcall 81 .............................. <removeConnection(tConnection.getID())>
+  [231] pusharglistnoret 1 ...................... <removeConnection(tConnection.getID())>
+  [233] extcall 48 .............................. return removeConnection(tConnection.getID())
+  [235] getparam 1 .............................. <tConnection>
+  [237] pushcons 33 ............................. <"TRY_LOGIN">
+  [239] pushsymb 61 ............................. <#string>
+  [241] getlocal 1 .............................. <tUserName>
+  [243] pushsymb 61 ............................. <#string>
+  [245] getlocal 2 .............................. <tPassword>
+  [247] pusharglist 4 ........................... <[#string: tUserName, #string: tPassword]>
+  [249] pushproplist ............................ <[#string: tUserName, #string: tPassword]>
+  [250] pusharglist 3 ........................... <tConnection, "TRY_LOGIN", [#string: tUserName, #string: tPassword]>
+  [252] objcall 77 .............................. <tConnection.send("TRY_LOGIN", [#string: tUserName, #string: tPassword])>
+  [254] pusharglistnoret 1 ...................... <tConnection.send("TRY_LOGIN", [#string: tUserName, #string: tPassword])>
+  [256] extcall 48 .............................. return tConnection.send("TRY_LOGIN", [#string: tUserName, #string: tPassword])
+  [258] pushint8 1 .............................. <1>
+  [260] pusharglistnoret 1 ...................... <1>
+  [262] extcall 48 .............................. return 1
+  [264] ret
+end
+
+on openConnection me
+  [  0] getparam 0 .............................. <me>
+  [  2] pushsymb 16 ............................. <#pOkToLogin>
+  [  4] pushint8 1 .............................. <1>
+  [  6] pusharglistnoret 3 ...................... <me, #pOkToLogin, 1>
+  [  8] objcall 85 .............................. me.setaProp(#pOkToLogin, 1)
+  [ 10] getparam 0 .............................. <me>
+  [ 12] pusharglistnoret 1 ...................... <me>
+  [ 14] objcall 6 ............................... me.connect()
+  [ 16] ret
+end
+
+on connect me
+  [  0] getmovieprop 58 ......................... <the traceScript>
+  [  2] jmpifz [ 10] ............................ if the traceScript then
+  [  5] pushzero ................................ <0>
+  [  6] pusharglistnoret 1 ...................... <0>
+  [  8] extcall 48 .............................. return 0
+  [ 10] pushzero ................................ <0>
+  [ 11] setmovieprop 58 ......................... the traceScript = 0
+  [ 13] gettoplevelprop 59 ...................... <_movie>
+  [ 15] pushzero ................................ <0>
+  [ 16] setobjprop 58 ........................... _movie.traceScript = 0
+  [ 18] gettoplevelprop 60 ...................... <_player>
+  [ 20] pushzero ................................ <0>
+  [ 21] setobjprop 58 ........................... _player.traceScript = 0
+  [ 23] pushcons 34 ............................. <"connection.info.host">
+  [ 25] pusharglist 1 ........................... <"connection.info.host">
+  [ 27] extcall 29 .............................. <getVariable("connection.info.host")>
+  [ 29] setlocal 0 .............................. tHost = getVariable("connection.info.host")
+  [ 31] pushcons 35 ............................. <"connection.info.port">
+  [ 33] pusharglist 1 ........................... <"connection.info.port">
+  [ 35] extcall 56 .............................. <getIntVariable("connection.info.port")>
+  [ 37] setlocal 1 .............................. tPort = getIntVariable("connection.info.port")
+  [ 39] pushcons 24 ............................. <"connection.info.id">
+  [ 41] pushsymb 55 ............................. <#Info>
+  [ 43] pusharglist 2 ........................... <"connection.info.id", #Info>
+  [ 45] extcall 29 .............................. <getVariable("connection.info.id", #Info)>
+  [ 47] setlocal 2 .............................. tConn = getVariable("connection.info.id", #Info)
+  [ 49] getlocal 0 .............................. <tHost>
+  [ 51] pusharglist 1 ........................... <tHost>
+  [ 53] extcall 71 .............................. <voidp(tHost)>
+  [ 55] getlocal 1 .............................. <tPort>
+  [ 57] pusharglist 1 ........................... <tPort>
+  [ 59] extcall 71 .............................. <voidp(tPort)>
+  [ 61] or ...................................... <voidp(tHost) or voidp(tPort)>
+  [ 62] jmpifz [ 81] ............................ if voidp(tHost) or voidp(tPort) then
+  [ 65] getparam 0 .............................. <me>
+  [ 67] pushcons 36 ............................. <"Server port/host data not found!">
+  [ 69] pushsymb 6 .............................. <#connect>
+  [ 71] pushsymb 87 ............................. <#major>
+  [ 73] pusharglist 4 ........................... <me, "Server port/host data not found!", #connect, #major>
+  [ 75] extcall 86 .............................. <error(me, "Server port/host data not found!", #connect, #major)>
+  [ 77] pusharglistnoret 1 ...................... <error(me, "Server port/host data not found!", #connect, #major)>
+  [ 79] extcall 48 .............................. return error(me, "Server port/host data not found!", #connect, #major)
+  [ 81] getlocal 2 .............................. <tConn>
+  [ 83] getlocal 0 .............................. <tHost>
+  [ 85] getlocal 1 .............................. <tPort>
+  [ 87] pusharglist 3 ........................... <tConn, tHost, tPort>
+  [ 89] extcall 88 .............................. <createConnection(tConn, tHost, tPort)>
+  [ 91] not ..................................... <not createConnection(tConn, tHost, tPort)>
+  [ 92] jmpifz [111] ............................ if not createConnection(tConn, tHost, tPort) then
+  [ 95] getparam 0 .............................. <me>
+  [ 97] pushcons 37 ............................. <"Failed to create connection!">
+  [ 99] pushsymb 6 .............................. <#connect>
+  [101] pushsymb 87 ............................. <#major>
+  [103] pusharglist 4 ........................... <me, "Failed to create connection!", #connect, #major>
+  [105] extcall 86 .............................. <error(me, "Failed to create connection!", #connect, #major)>
+  [107] pusharglistnoret 1 ...................... <error(me, "Failed to create connection!", #connect, #major)>
+  [109] extcall 48 .............................. return error(me, "Failed to create connection!", #connect, #major)
+  [111] pushsymb 52 ............................. <#getServerDate>
+  [113] pusharglist 1 ........................... <#getServerDate>
+  [115] extcall 34 .............................. <objectExists(#getServerDate)>
+  [117] not ..................................... <not objectExists(#getServerDate)>
+  [118] jmpifz [129] ............................ if not objectExists(#getServerDate) then
+  [121] pushsymb 52 ............................. <#getServerDate>
+  [123] pushcons 38 ............................. <"Server Date Class">
+  [125] pusharglistnoret 2 ...................... <#getServerDate, "Server Date Class">
+  [127] extcall 31 .............................. createObject(#getServerDate, "Server Date Class")
+  [129] pushcons 23 ............................. <"nav_problem_obj">
+  [131] pusharglist 1 ........................... <"nav_problem_obj">
+  [133] extcall 34 .............................. <objectExists("nav_problem_obj")>
+  [135] not ..................................... <not objectExists("nav_problem_obj")>
+  [136] jmpifz [147] ............................ if not objectExists("nav_problem_obj") then
+  [139] pushcons 23 ............................. <"nav_problem_obj">
+  [141] pushcons 39 ............................. <"Connection Problem Class">
+  [143] pusharglistnoret 2 ...................... <"nav_problem_obj", "Connection Problem Class">
+  [145] extcall 31 .............................. createObject("nav_problem_obj", "Connection Problem Class")
+  [147] pushsymb 90 ............................. <#hobba>
+  [149] pusharglist 1 ........................... <#hobba>
+  [151] extcall 89 .............................. <threadExists(#hobba)>
+  [153] not ..................................... <not threadExists(#hobba)>
+  [154] jmpifz [163] ............................ if not threadExists(#hobba) then
+  [157] pushcons 40 ............................. <"thread.hobba">
+  [159] pusharglistnoret 1 ...................... <"thread.hobba">
+  [161] extcall 91 .............................. initThread("thread.hobba")
+  [163] pushint8 1 .............................. <1>
+  [165] pusharglistnoret 1 ...................... <1>
+  [167] extcall 48 .............................. return 1
+  [169] ret
+end
+
+on disconnect me
+  [  0] pushcons 24 ............................. <"connection.info.id">
+  [  2] pushsymb 55 ............................. <#Info>
+  [  4] pusharglist 2 ........................... <"connection.info.id", #Info>
+  [  6] extcall 29 .............................. <getVariable("connection.info.id", #Info)>
+  [  8] setlocal 0 .............................. tConn = getVariable("connection.info.id", #Info)
+  [ 10] getlocal 0 .............................. <tConn>
+  [ 12] pusharglist 1 ........................... <tConn>
+  [ 14] extcall 54 .............................. <connectionExists(tConn)>
+  [ 16] jmpifz [ 32] ............................ if connectionExists(tConn) then / else
+  [ 19] getlocal 0 .............................. <tConn>
+  [ 21] pusharglist 1 ........................... <tConn>
+  [ 23] extcall 81 .............................. <removeConnection(tConn)>
+  [ 25] pusharglistnoret 1 ...................... <removeConnection(tConn)>
+  [ 27] extcall 48 .............................. return removeConnection(tConn)
+  [ 29] jmp [ 48]
+  [ 32] getparam 0 .............................. <me>
+  [ 34] pushcons 41 ............................. <"Connection not found!">
+  [ 36] pushsymb 7 .............................. <#disconnect>
+  [ 38] pushsymb 95 ............................. <#minor>
+  [ 40] pusharglist 4 ........................... <me, "Connection not found!", #disconnect, #minor>
+  [ 42] extcall 86 .............................. <error(me, "Connection not found!", #disconnect, #minor)>
+  [ 44] pusharglistnoret 1 ...................... <error(me, "Connection not found!", #disconnect, #minor)>
+  [ 46] extcall 48 .............................. return error(me, "Connection not found!", #disconnect, #minor)
+  [ 48] ret
+end
+
+on setAllowLogin me
+  [  0] pushint8 1 .............................. <1>
+  [  2] setprop 16 .............................. pOkToLogin = 1
+  [  4] ret
+end
+
+on isOkToLogin me
+  [  0] getparam 0 .............................. <me>
+  [  2] getobjprop 16 ........................... <me.pOkToLogin>
+  [  4] pusharglistnoret 1 ...................... <me.pOkToLogin>
+  [  6] extcall 48 .............................. return me.pOkToLogin
+  [  8] ret
+end
+
+on initLatencyTest me
+  [  0] getprop 25 .............................. <pLatencyTestInterval>
+  [  2] pushzero ................................ <0>
+  [  3] lteq .................................... <pLatencyTestInterval <= 0>
+  [  4] jmpifz [ 12] ............................ if pLatencyTestInterval <= 0 then
+  [  7] pushzero ................................ <0>
+  [  8] pusharglistnoret 1 ...................... <0>
+  [ 10] extcall 48 .............................. return 0
+  [ 12] getprop 24 .............................. <pLatencyTestTimeoutID>
+  [ 14] pusharglist 1 ........................... <pLatencyTestTimeoutID>
+  [ 16] extcall 96 .............................. <timeoutExists(pLatencyTestTimeoutID)>
+  [ 18] not ..................................... <not timeoutExists(pLatencyTestTimeoutID)>
+  [ 19] jmpifz [ 43] ............................ if not timeoutExists(pLatencyTestTimeoutID) then
+  [ 22] getprop 24 .............................. <pLatencyTestTimeoutID>
+  [ 24] getprop 25 .............................. <pLatencyTestInterval>
+  [ 26] pushsymb 11 ............................. <#sendLatencyTest>
+  [ 28] getparam 0 .............................. <me>
+  [ 30] pusharglist 1 ........................... <me>
+  [ 32] objcall 42 .............................. <me.getID()>
+  [ 34] pusharglist 0 ........................... <>
+  [ 36] extcall 98 .............................. <VOID>
+  [ 38] pushzero ................................ <0>
+  [ 39] pusharglistnoret 6 ...................... <pLatencyTestTimeoutID, pLatencyTestInterval, #sendLatencyTest, me.getID(), VOID, 0>
+  [ 41] extcall 97 .............................. createTimeout(pLatencyTestTimeoutID, pLatencyTestInterval, #sendLatencyTest, me.getID(), VOID, 0)
+  [ 43] pushint8 1 .............................. <1>
+  [ 45] pusharglistnoret 1 ...................... <1>
+  [ 47] extcall 48 .............................. return 1
+  [ 49] ret
+end
+
+on sendLatencyTest me
+  [  0] pushcons 24 ............................. <"connection.info.id">
+  [  2] pusharglist 1 ........................... <"connection.info.id">
+  [  4] extcall 29 .............................. <getVariable("connection.info.id")>
+  [  6] pusharglist 1 ........................... <getVariable("connection.info.id")>
+  [  8] extcall 54 .............................. <connectionExists(getVariable("connection.info.id"))>
+  [ 10] not ..................................... <not connectionExists(getVariable("connection.info.id"))>
+  [ 11] jmpifz [ 19] ............................ if not connectionExists(getVariable("connection.info.id")) then
+  [ 14] pushzero ................................ <0>
+  [ 15] pusharglistnoret 1 ...................... <0>
+  [ 17] extcall 48 .............................. return 0
+  [ 19] pushcons 24 ............................. <"connection.info.id">
+  [ 21] pusharglist 1 ........................... <"connection.info.id">
+  [ 23] extcall 29 .............................. <getVariable("connection.info.id")>
+  [ 25] pusharglist 1 ........................... <getVariable("connection.info.id")>
+  [ 27] extcall 72 .............................. <getConnection(getVariable("connection.info.id"))>
+  [ 29] setlocal 0 .............................. tConnection = getConnection(getVariable("connection.info.id"))
+  [ 31] getlocal 0 .............................. <tConnection>
+  [ 33] pushcons 42 ............................. <"TEST_LATENCY">
+  [ 35] pushsymb 99 ............................. <#integer>
+  [ 37] getprop 17 .............................. <pLatencyTestID>
+  [ 39] pusharglist 2 ........................... <[#integer: pLatencyTestID]>
+  [ 41] pushproplist ............................ <[#integer: pLatencyTestID]>
+  [ 42] pusharglist 3 ........................... <tConnection, "TEST_LATENCY", [#integer: pLatencyTestID]>
+  [ 44] objcall 77 .............................. <tConnection.send("TEST_LATENCY", [#integer: pLatencyTestID])>
+  [ 46] jmpifz [ 76] ............................ if tConnection.send("TEST_LATENCY", [#integer: pLatencyTestID]) then
+  [ 49] getprop 19 .............................. <pLatencyTestTimeStampList>
+  [ 51] getprop 17 .............................. <pLatencyTestID>
+  [ 53] pusharglist 1 ........................... <pLatencyTestID>
+  [ 55] extcall 61 .............................. <string(pLatencyTestID)>
+  [ 57] getmovieprop 100 ........................ <the milliSeconds>
+  [ 59] pusharglistnoret 3 ...................... <pLatencyTestTimeStampList, string(pLatencyTestID), the milliSeconds>
+  [ 61] objcall 101 ............................. pLatencyTestTimeStampList.addProp(string(pLatencyTestID), the milliSeconds)
+  [ 63] getprop 17 .............................. <pLatencyTestID>
+  [ 65] pushint8 1 .............................. <1>
+  [ 67] add ..................................... <pLatencyTestID + 1>
+  [ 68] setprop 17 .............................. pLatencyTestID = pLatencyTestID + 1
+  [ 70] pushint8 1 .............................. <1>
+  [ 72] pusharglistnoret 1 ...................... <1>
+  [ 74] extcall 48 .............................. return 1
+  [ 76] pushzero ................................ <0>
+  [ 77] pusharglistnoret 1 ...................... <0>
+  [ 79] extcall 48 .............................. return 0
+  [ 81] ret
+end
+
+on sendGetBadges me
+  [  0] pushcons 24 ............................. <"connection.info.id">
+  [  2] pusharglist 1 ........................... <"connection.info.id">
+  [  4] extcall 29 .............................. <getVariable("connection.info.id")>
+  [  6] pusharglist 1 ........................... <getVariable("connection.info.id")>
+  [  8] extcall 54 .............................. <connectionExists(getVariable("connection.info.id"))>
+  [ 10] not ..................................... <not connectionExists(getVariable("connection.info.id"))>
+  [ 11] jmpifz [ 19] ............................ if not connectionExists(getVariable("connection.info.id")) then
+  [ 14] pushzero ................................ <0>
+  [ 15] pusharglistnoret 1 ...................... <0>
+  [ 17] extcall 48 .............................. return 0
+  [ 19] pushsymb 38 ............................. <#session>
+  [ 21] pusharglist 1 ........................... <#session>
+  [ 23] extcall 36 .............................. <getObject(#session)>
+  [ 25] pushcons 43 ............................. <"user_user_id">
+  [ 27] pusharglist 2 ........................... <getObject(#session), "user_user_id">
+  [ 29] objcall 75 .............................. <getObject(#session).GET("user_user_id")>
+  [ 31] setlocal 0 .............................. tOwnUserId = getObject(#session).GET("user_user_id")
+  [ 33] pushcons 24 ............................. <"connection.info.id">
+  [ 35] pusharglist 1 ........................... <"connection.info.id">
+  [ 37] extcall 29 .............................. <getVariable("connection.info.id")>
+  [ 39] pusharglist 1 ........................... <getVariable("connection.info.id")>
+  [ 41] extcall 72 .............................. <getConnection(getVariable("connection.info.id"))>
+  [ 43] setlocal 1 .............................. tConnection = getConnection(getVariable("connection.info.id"))
+  [ 45] getlocal 1 .............................. <tConnection>
+  [ 47] pushcons 44 ............................. <"GETSELECTEDBADGES">
+  [ 49] pushsymb 99 ............................. <#integer>
+  [ 51] getlocal 0 .............................. <tOwnUserId>
+  [ 53] pusharglist 1 ........................... <tOwnUserId>
+  [ 55] extcall 99 .............................. <integer(tOwnUserId)>
+  [ 57] pusharglist 2 ........................... <[#integer: integer(tOwnUserId)]>
+  [ 59] pushproplist ............................ <[#integer: integer(tOwnUserId)]>
+  [ 60] pusharglist 3 ........................... <tConnection, "GETSELECTEDBADGES", [#integer: integer(tOwnUserId)]>
+  [ 62] objcall 77 .............................. <tConnection.send("GETSELECTEDBADGES", [#integer: integer(tOwnUserId)])>
+  [ 64] pusharglistnoret 1 ...................... <tConnection.send("GETSELECTEDBADGES", [#integer: integer(tOwnUserId)])>
+  [ 66] extcall 48 .............................. return tConnection.send("GETSELECTEDBADGES", [#integer: integer(tOwnUserId)])
+  [ 68] ret
+end
+
+on handleLatencyTest me, tID
+  [  0] getprop 19 .............................. <pLatencyTestTimeStampList>
+  [  2] getparam 1 .............................. <tID>
+  [  4] pusharglist 1 ........................... <tID>
+  [  6] extcall 61 .............................. <string(tID)>
+  [  8] pusharglist 2 ........................... <pLatencyTestTimeStampList, string(tID)>
+  [ 10] objcall 105 ............................. <pLatencyTestTimeStampList[string(tID)]>
+  [ 12] pusharglist 1 ........................... <pLatencyTestTimeStampList[string(tID)]>
+  [ 14] extcall 71 .............................. <voidp(pLatencyTestTimeStampList[string(tID)])>
+  [ 16] jmpifz [ 24] ............................ if voidp(pLatencyTestTimeStampList[string(tID)]) then
+  [ 19] pushzero ................................ <0>
+  [ 20] pusharglistnoret 1 ...................... <0>
+  [ 22] extcall 48 .............................. return 0
+  [ 24] pushcons 24 ............................. <"connection.info.id">
+  [ 26] pusharglist 1 ........................... <"connection.info.id">
+  [ 28] extcall 29 .............................. <getVariable("connection.info.id")>
+  [ 30] pusharglist 1 ........................... <getVariable("connection.info.id")>
+  [ 32] extcall 54 .............................. <connectionExists(getVariable("connection.info.id"))>
+  [ 34] not ..................................... <not connectionExists(getVariable("connection.info.id"))>
+  [ 35] jmpifz [ 43] ............................ if not connectionExists(getVariable("connection.info.id")) then
+  [ 38] pushzero ................................ <0>
+  [ 39] pusharglistnoret 1 ...................... <0>
+  [ 41] extcall 48 .............................. return 0
+  [ 43] pushcons 24 ............................. <"connection.info.id">
+  [ 45] pusharglist 1 ........................... <"connection.info.id">
+  [ 47] extcall 29 .............................. <getVariable("connection.info.id")>
+  [ 49] pusharglist 1 ........................... <getVariable("connection.info.id")>
+  [ 51] extcall 72 .............................. <getConnection(getVariable("connection.info.id"))>
+  [ 53] setlocal 0 .............................. tConnection = getConnection(getVariable("connection.info.id"))
+  [ 55] getmovieprop 100 ........................ <the milliSeconds>
+  [ 57] getprop 19 .............................. <pLatencyTestTimeStampList>
+  [ 59] getparam 1 .............................. <tID>
+  [ 61] pusharglist 1 ........................... <tID>
+  [ 63] extcall 61 .............................. <string(tID)>
+  [ 65] pusharglist 2 ........................... <pLatencyTestTimeStampList, string(tID)>
+  [ 67] objcall 105 ............................. <pLatencyTestTimeStampList[string(tID)]>
+  [ 69] sub ..................................... <the milliSeconds - pLatencyTestTimeStampList[string(tID)]>
+  [ 70] setlocal 1 .............................. tDelta = the milliSeconds - pLatencyTestTimeStampList[string(tID)]
+  [ 72] getprop 19 .............................. <pLatencyTestTimeStampList>
+  [ 74] getparam 1 .............................. <tID>
+  [ 76] pusharglist 1 ........................... <tID>
+  [ 78] extcall 61 .............................. <string(tID)>
+  [ 80] pusharglistnoret 2 ...................... <pLatencyTestTimeStampList, string(tID)>
+  [ 82] objcall 106 ............................. pLatencyTestTimeStampList.deleteProp(string(tID))
+  [ 84] getprop 18 .............................. <pLatencyValueList>
+  [ 86] getlocal 1 .............................. <tDelta>
+  [ 88] pusharglistnoret 2 ...................... <pLatencyValueList, tDelta>
+  [ 90] objcall 107 ............................. pLatencyValueList.add(tDelta)
+  [ 92] getprop 21 .............................. <pLatencyValueCount>
+  [ 94] pushint8 1 .............................. <1>
+  [ 96] add ..................................... <pLatencyValueCount + 1>
+  [ 97] setprop 21 .............................. pLatencyValueCount = pLatencyValueCount + 1
+  [ 99] getprop 18 .............................. <pLatencyValueList>
+  [101] getobjprop 108 .......................... <pLatencyValueList.count>
+  [103] getprop 26 .............................. <pLatencyReportIndex>
+  [105] eq ...................................... <pLatencyValueList.count = pLatencyReportIndex>
+  [106] getprop 26 .............................. <pLatencyReportIndex>
+  [108] pushzero ................................ <0>
+  [109] gt ...................................... <pLatencyReportIndex > 0>
+  [110] and ..................................... <(pLatencyValueList.count = pLatencyReportIndex) and (pLatencyReportIndex > 0)>
+  [111] jmpifz [276] ............................ if (pLatencyValueList.count = pLatencyReportIndex) and (pLatencyReportIndex > 0) then
+  [114] pushint8 1 .............................. <1>
+  [116] setlocal 2
+  [118] getlocal 2
+  [120] getprop 18 .............................. <pLatencyValueList>
+  [122] getobjprop 108 .......................... <pLatencyValueList.count>
+  [124] lteq
+  [125] jmpifz [150] ............................ repeat with i = 1 to pLatencyValueList.count
+  [128] getprop 20 .............................. <pLatencyTotalValue>
+  [130] getprop 18 .............................. <pLatencyValueList>
+  [132] getlocal 2 .............................. <i>
+  [134] pusharglist 2 ........................... <pLatencyValueList, i>
+  [136] objcall 105 ............................. <pLatencyValueList[i]>
+  [138] add ..................................... <pLatencyTotalValue + pLatencyValueList[i]>
+  [139] setprop 20 .............................. pLatencyTotalValue = pLatencyTotalValue + pLatencyValueList[i]
+  [141] pushint8 1
+  [143] getlocal 2
+  [145] add
+  [146] setlocal 2
+  [148] endrepeat [118]
+  [150] getprop 20 .............................. <pLatencyTotalValue>
+  [152] getprop 21 .............................. <pLatencyValueCount>
+  [154] div ..................................... <pLatencyTotalValue / pLatencyValueCount>
+  [155] setlocal 3 .............................. tLatency = pLatencyTotalValue / pLatencyValueCount
+  [157] pushint8 1 .............................. <1>
+  [159] setlocal 2
+  [161] getlocal 2
+  [163] getprop 18 .............................. <pLatencyValueList>
+  [165] getobjprop 108 .......................... <pLatencyValueList.count>
+  [167] lteq
+  [168] jmpifz [217] ............................ repeat with i = 1 to pLatencyValueList.count
+  [171] getprop 18 .............................. <pLatencyValueList>
+  [173] getlocal 2 .............................. <i>
+  [175] pusharglist 2 ........................... <pLatencyValueList, i>
+  [177] objcall 105 ............................. <pLatencyValueList[i]>
+  [179] getlocal 3 .............................. <tLatency>
+  [181] pushint8 2 .............................. <2>
+  [183] mul ..................................... <tLatency * 2>
+  [184] lt ...................................... <pLatencyValueList[i] < (tLatency * 2)>
+  [185] jmpifz [208] ............................ if pLatencyValueList[i] < (tLatency * 2) then
+  [188] getprop 22 .............................. <pLatencyClearedValue>
+  [190] getprop 18 .............................. <pLatencyValueList>
+  [192] getlocal 2 .............................. <i>
+  [194] pusharglist 2 ........................... <pLatencyValueList, i>
+  [196] objcall 105 ............................. <pLatencyValueList[i]>
+  [198] add ..................................... <pLatencyClearedValue + pLatencyValueList[i]>
+  [199] setprop 22 .............................. pLatencyClearedValue = pLatencyClearedValue + pLatencyValueList[i]
+  [201] getprop 23 .............................. <pLatencyClearedCount>
+  [203] pushint8 1 .............................. <1>
+  [205] add ..................................... <pLatencyClearedCount + 1>
+  [206] setprop 23 .............................. pLatencyClearedCount = pLatencyClearedCount + 1
+  [208] pushint8 1
+  [210] getlocal 2
+  [212] add
+  [213] setlocal 2
+  [215] endrepeat [161]
+  [217] getprop 22 .............................. <pLatencyClearedValue>
+  [219] getprop 23 .............................. <pLatencyClearedCount>
+  [221] div ..................................... <pLatencyClearedValue / pLatencyClearedCount>
+  [222] setlocal 4 .............................. tLatencyCleared = pLatencyClearedValue / pLatencyClearedCount
+  [224] getlocal 3 .............................. <tLatency>
+  [226] getprop 30 .............................. <pLatencyReported>
+  [228] sub ..................................... <tLatency - pLatencyReported>
+  [229] pusharglist 1 ........................... <tLatency - pLatencyReported>
+  [231] extcall 109 ............................. <abs(tLatency - pLatencyReported)>
+  [233] getprop 27 .............................. <pLatencyReportDelta>
+  [235] gt ...................................... <abs(tLatency - pLatencyReported) > pLatencyReportDelta>
+  [236] getprop 30 .............................. <pLatencyReported>
+  [238] pushzero ................................ <0>
+  [239] eq ...................................... <pLatencyReported = 0>
+  [240] or ...................................... <(abs(tLatency - pLatencyReported) > pLatencyReportDelta) or (pLatencyReported = 0)>
+  [241] jmpifz [271] ............................ if (abs(tLatency - pLatencyReported) > pLatencyReportDelta) or (pLatencyReported = 0) then
+  [244] getlocal 3 .............................. <tLatency>
+  [246] setprop 30 .............................. pLatencyReported = tLatency
+  [248] getlocal 0 .............................. <tConnection>
+  [250] pushcons 45 ............................. <"REPORT_LATENCY">
+  [252] pushsymb 99 ............................. <#integer>
+  [254] getlocal 3 .............................. <tLatency>
+  [256] pushsymb 99 ............................. <#integer>
+  [258] getlocal 4 .............................. <tLatencyCleared>
+  [260] pushsymb 99 ............................. <#integer>
+  [262] getprop 21 .............................. <pLatencyValueCount>
+  [264] pusharglist 6 ........................... <[#integer: tLatency, #integer: tLatencyCleared, #integer: pLatencyValueCount]>
+  [266] pushproplist ............................ <[#integer: tLatency, #integer: tLatencyCleared, #integer: pLatencyValueCount]>
+  [267] pusharglistnoret 3 ...................... <tConnection, "REPORT_LATENCY", [#integer: tLatency, #integer: tLatencyCleared, #integer: pLatencyValueCount]>
+  [269] objcall 77 .............................. tConnection.send("REPORT_LATENCY", [#integer: tLatency, #integer: tLatencyCleared, #integer: pLatencyValueCount])
+  [271] pusharglist 0 ........................... <[]>
+  [273] pushlist ................................ <[]>
+  [274] setprop 18 .............................. pLatencyValueList = []
+  [276] pushint8 1 .............................. <1>
+  [278] pusharglistnoret 1 ...................... <1>
+  [280] extcall 48 .............................. return 1
+  [282] ret
+end
+
+on SetDisconnectErrorState me, tError
+  [  0] getparam 1 .............................. <tError>
+  [  2] setprop 43 .............................. pDisconnectErrorState = tError
+  [  4] ret
+end
+
+on GetDisconnectErrorState me
+  [  0] getprop 43 .............................. <pDisconnectErrorState>
+  [  2] pusharglistnoret 1 ...................... <pDisconnectErrorState>
+  [  4] extcall 48 .............................. return pDisconnectErrorState
+  [  6] ret
+end

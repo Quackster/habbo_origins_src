@@ -1,0 +1,80 @@
+property pID, pFacadeId, pFacadeRef
+
+on construct me
+  [  0] pushint8 1 .............................. <1>
+  [  2] pusharglistnoret 1 ...................... <1>
+  [  4] extcall 53 .............................. return 1
+  [  6] ret
+end
+
+on deconstruct me
+  [  0] pusharglist 0 ........................... <>
+  [  2] extcall 61 .............................. <VOID>
+  [  4] setprop 886 ............................. pFacadeRef = VOID
+  [  7] pushint8 1 .............................. <1>
+  [  9] pusharglistnoret 1 ...................... <1>
+  [ 11] extcall 53 .............................. return 1
+  [ 13] ret
+end
+
+on setID me, tID, tFacadeId
+  [  0] getparam 1 .............................. <tID>
+  [  2] setprop 338 ............................. pID = tID
+  [  5] getparam 2 .............................. <tFacadeId>
+  [  7] setprop 337 ............................. pFacadeId = tFacadeId
+  [ 10] getprop 337 ............................. <pFacadeId>
+  [ 13] pusharglist 1 ........................... <pFacadeId>
+  [ 15] extcall 71 .............................. <getObject(pFacadeId)>
+  [ 17] setprop 886 ............................. pFacadeRef = getObject(pFacadeId)
+  [ 20] pushint8 1 .............................. <1>
+  [ 22] pusharglistnoret 1 ...................... <1>
+  [ 24] extcall 53 .............................. return 1
+  [ 26] ret
+end
+
+on handleUpdate me, tTopic, tdata
+  [  0] getparam 0 .............................. <me>
+  [  2] getparam 1 .............................. <tTopic>
+  [  4] getparam 2 .............................. <tdata>
+  [  6] pusharglist 3 ........................... <me, tTopic, tdata>
+  [  8] objcall 350 ............................. <me.Refresh(tTopic, tdata)>
+  [ 11] pusharglistnoret 1 ...................... <me.Refresh(tTopic, tdata)>
+  [ 13] extcall 53 .............................. return me.Refresh(tTopic, tdata)
+  [ 15] ret
+end
+
+on Refresh me, tTopic, tdata
+  [  0] pushint8 1 .............................. <1>
+  [  2] pusharglistnoret 1 ...................... <1>
+  [  4] extcall 53 .............................. return 1
+  [  6] ret
+end
+
+on getGameSystem me
+  [  0] getprop 886 ............................. <pFacadeRef>
+  [  3] pusharglistnoret 1 ...................... <pFacadeRef>
+  [  5] extcall 53 .............................. return pFacadeRef
+  [  7] ret
+end
+
+on sendGameSystemEvent me, tTopic, tdata
+  [  0] getparam 0 .............................. <me>
+  [  2] pusharglist 1 ........................... <me>
+  [  4] objcall 372 ............................. <me.getGameSystem()>
+  [  7] setlocal 0 .............................. tGameSystem = me.getGameSystem()
+  [  9] getlocal 0 .............................. <tGameSystem>
+  [ 11] pushzero ................................ <0>
+  [ 12] eq ...................................... <tGameSystem = 0>
+  [ 13] jmpifz [ 21] ............................ if tGameSystem = 0 then
+  [ 16] pushzero ................................ <0>
+  [ 17] pusharglistnoret 1 ...................... <0>
+  [ 19] extcall 53 .............................. return 0
+  [ 21] getlocal 0 .............................. <tGameSystem>
+  [ 23] getparam 1 .............................. <tTopic>
+  [ 25] getparam 2 .............................. <tdata>
+  [ 27] pusharglist 3 ........................... <tGameSystem, tTopic, tdata>
+  [ 29] objcall 28 .............................. <tGameSystem.sendGameSystemEvent(tTopic, tdata)>
+  [ 31] pusharglistnoret 1 ...................... <tGameSystem.sendGameSystemEvent(tTopic, tdata)>
+  [ 33] extcall 53 .............................. return tGameSystem.sendGameSystemEvent(tTopic, tdata)
+  [ 35] ret
+end

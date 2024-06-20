@@ -1,0 +1,744 @@
+property pState, pGameId, pNewGameId, pScoreIndex, pScoreIndexByRoomIndex, pScoreIndexByName, pOwnPlayerTeamId, pMsecAtNextState
+
+on deconstruct me
+  [  0] pushzero ................................ <0>
+  [  1] setprop 678 ............................. pState = 0
+  [  4] getparam 0 .............................. <me>
+  [  6] getchainedprop 470 ...................... <me.ancestor>
+  [  9] pusharglist 1 ........................... <me.ancestor>
+  [ 11] objcall 1 ............................... <me.ancestor.deconstruct()>
+  [ 13] pusharglistnoret 1 ...................... <me.ancestor.deconstruct()>
+  [ 15] extcall 38 .............................. return me.ancestor.deconstruct()
+  [ 17] ret
+end
+
+on Initialize me
+  [  0] pushcons 0 .............................. <"JoinedGame!">
+  [  2] setprop 613 ............................. pGameId = "JoinedGame!"
+  [  5] getparam 0 .............................. <me>
+  [  7] pushcons 1 .............................. <"IG ItemContainer Base Class">
+  [  9] pushcons 2 .............................. <"IG GameInstanceData Class">
+  [ 11] pusharglist 2 ........................... <["IG ItemContainer Base Class", "IG GameInstanceData Class"]>
+  [ 13] pushlist ................................ <["IG ItemContainer Base Class", "IG GameInstanceData Class"]>
+  [ 14] setobjprop 478 .......................... me.pListItemContainerClass = ["IG ItemContainer Base Class", "IG GameInstanceData Class"]
+  [ 17] pushzero ................................ <0>
+  [ 18] setprop 678 ............................. pState = 0
+  [ 21] pusharglist 0 ........................... <>
+  [ 23] extcall 47 .............................. <VOID>
+  [ 25] setprop 1252 ............................ pNewGameId = VOID
+  [ 28] getparam 0 .............................. <me>
+  [ 30] pushcons 3 .............................. <"GameList">
+  [ 32] pusharglist 2 ........................... <me, "GameList">
+  [ 34] objcall 422 ............................. <me.registerForIGComponentUpdates("GameList")>
+  [ 37] pusharglistnoret 1 ...................... <me.registerForIGComponentUpdates("GameList")>
+  [ 39] extcall 38 .............................. return me.registerForIGComponentUpdates("GameList")
+  [ 41] ret
+end
+
+on handleUpdate me, tUpdateId, tSenderId
+  [  0] getparam 2 .............................. <tSenderId>
+  [  2] peek 0 .................................. case tSenderId of
+  [  4] pushcons 3 .............................. <"GameList">
+  [  6] eq
+  [  7] jmpifz [175] ............................ (case) "GameList":
+  [ 10] getparam 0 .............................. <me>
+  [ 12] pushcons 3 .............................. <"GameList">
+  [ 14] pusharglist 2 ........................... <me, "GameList">
+  [ 16] objcall 52 .............................. <me.getIGComponent("GameList")>
+  [ 18] setlocal 0 .............................. tService = me.getIGComponent("GameList")
+  [ 20] getlocal 0 .............................. <tService>
+  [ 22] pushzero ................................ <0>
+  [ 23] eq ...................................... <tService = 0>
+  [ 24] jmpifz [ 34] ............................ if tService = 0 then
+  [ 27] pop 1
+  [ 29] pushzero ................................ <0>
+  [ 30] pusharglistnoret 1 ...................... <0>
+  [ 32] extcall 38 .............................. return 0
+  [ 34] getlocal 0 .............................. <tService>
+  [ 36] pusharglist 1 ........................... <tService>
+  [ 38] objcall 750 ............................. <tService.getObservedGame()>
+  [ 41] setlocal 1 .............................. tGameRef = tService.getObservedGame()
+  [ 43] getlocal 1 .............................. <tGameRef>
+  [ 45] pushzero ................................ <0>
+  [ 46] eq ...................................... <tGameRef = 0>
+  [ 47] jmpifz [ 57] ............................ if tGameRef = 0 then
+  [ 50] pop 1
+  [ 52] pushzero ................................ <0>
+  [ 53] pusharglistnoret 1 ...................... <0>
+  [ 55] extcall 38 .............................. return 0
+  [ 57] getprop 1252 ............................ <pNewGameId>
+  [ 60] pusharglist 1 ........................... <pNewGameId>
+  [ 62] extcall 103 ............................. <voidp(pNewGameId)>
+  [ 64] jmpifz [175] ............................ if voidp(pNewGameId) then
+  [ 67] getlocal 0 .............................. <tService>
+  [ 69] pusharglist 1 ........................... <tService>
+  [ 71] objcall 198 ............................. <tService.getObservedGameId()>
+  [ 73] setprop 1252 ............................ pNewGameId = tService.getObservedGameId()
+  [ 76] getlocal 1 .............................. <tGameRef>
+  [ 78] pusharglist 1 ........................... <tGameRef>
+  [ 80] objcall 775 ............................. <tGameRef.getAllTeamData()>
+  [ 83] setlocal 2 .............................. tTeamData = tGameRef.getAllTeamData()
+  [ 85] getlocal 2 .............................. <tTeamData>
+  [ 87] peek 0
+  [ 89] pusharglist 1
+  [ 91] extcall 180
+  [ 93] pushint8 1
+  [ 95] peek 0
+  [ 97] peek 2
+  [ 99] lteq
+  [100] jmpifz [173] ............................ repeat with tTeam in tTeamData
+  [103] peek 2
+  [105] peek 1
+  [107] pusharglist 2
+  [109] extcall 181
+  [111] setlocal 3
+  [113] getlocal 3 .............................. <tTeam>
+  [115] pushsymb 226 ............................ <#players>
+  [117] pusharglist 2 ........................... <tTeam, #players>
+  [119] objcall 256 ............................. <tTeam.getaProp(#players)>
+  [122] setlocal 4 .............................. tPlayers = tTeam.getaProp(#players)
+  [124] getlocal 4 .............................. <tPlayers>
+  [126] peek 0
+  [128] pusharglist 1
+  [130] extcall 180
+  [132] pushint8 1
+  [134] peek 0
+  [136] peek 2
+  [138] lteq
+  [139] jmpifz [166] ............................ repeat with tPlayer in tPlayers
+  [142] peek 2
+  [144] peek 1
+  [146] pusharglist 2
+  [148] extcall 181
+  [150] setlocal 5
+  [152] getparam 0 .............................. <me>
+  [154] getlocal 5 .............................. <tPlayer>
+  [156] pusharglistnoret 2 ...................... <me, tPlayer>
+  [158] objcall 1013 ............................ me.displayPlayerRejoined(tPlayer)
+  [161] pushint8 1
+  [163] add
+  [164] endrepeat [134]
+  [166] pop 3
+  [168] pushint8 1
+  [170] add
+  [171] endrepeat [ 95]
+  [173] pop 3
+  [175] pop 1
+  [177] pushint8 1 .............................. <1>
+  [179] pusharglistnoret 1 ...................... <1>
+  [181] extcall 38 .............................. return 1
+  [183] ret
+end
+
+on displayEvent me, ttype, tParam
+  [  0] getparam 1 .............................. <ttype>
+  [  2] peek 0 .................................. case ttype of
+  [  4] pushsymb 308 ............................ <#after_game>
+  [  7] eq
+  [  8] jmpifz [ 29] ............................ (case) #after_game:
+  [ 11] pop 1
+  [ 13] getparam 0 .............................. <me>
+  [ 15] getparam 2 .............................. <tParam>
+  [ 17] pusharglist 2 ........................... <me, tParam>
+  [ 19] objcall 1012 ............................ <me.displayAfterGame(tParam)>
+  [ 22] pusharglistnoret 1 ...................... <me.displayAfterGame(tParam)>
+  [ 24] extcall 38 .............................. return me.displayAfterGame(tParam)
+  [ 26] jmp [105]
+  [ 29] peek 0
+  [ 31] pushsymb 209 ............................ <#user_left_game>
+  [ 33] eq
+  [ 34] jmpifz [ 55] ............................ (case) #user_left_game:
+  [ 37] pop 1
+  [ 39] getparam 0 .............................. <me>
+  [ 41] getparam 2 .............................. <tParam>
+  [ 43] pusharglist 2 ........................... <me, tParam>
+  [ 45] objcall 976 ............................. <me.displayPlayerLeft(tParam)>
+  [ 48] pusharglistnoret 1 ...................... <me.displayPlayerLeft(tParam)>
+  [ 50] extcall 38 .............................. return me.displayPlayerLeft(tParam)
+  [ 52] jmp [105]
+  [ 55] peek 0
+  [ 57] pushsymb 351 ............................ <#user_joined_game>
+  [ 60] eq
+  [ 61] jmpifz [ 82] ............................ (case) #user_joined_game:
+  [ 64] pop 1
+  [ 66] getparam 0 .............................. <me>
+  [ 68] getparam 2 .............................. <tParam>
+  [ 70] pusharglist 2 ........................... <me, tParam>
+  [ 72] objcall 1013 ............................ <me.displayPlayerRejoined(tParam)>
+  [ 75] pusharglistnoret 1 ...................... <me.displayPlayerRejoined(tParam)>
+  [ 77] extcall 38 .............................. return me.displayPlayerRejoined(tParam)
+  [ 79] jmp [105]
+  [ 82] peek 0
+  [ 84] pushsymb 207 ............................ <#time_to_next_state>
+  [ 86] eq
+  [ 87] jmpifz [105] ............................ (case) #time_to_next_state:
+  [ 90] pop 1
+  [ 92] getparam 0 .............................. <me>
+  [ 94] getparam 2 .............................. <tParam>
+  [ 96] pusharglist 2 ........................... <me, tParam>
+  [ 98] objcall 1015 ............................ <me.displayTimeLeft(tParam)>
+  [101] pusharglistnoret 1 ...................... <me.displayTimeLeft(tParam)>
+  [103] extcall 38 .............................. return me.displayTimeLeft(tParam)
+  [105] pop 1 ................................... end case
+  [107] pushzero ................................ <0>
+  [108] pusharglistnoret 1 ...................... <0>
+  [110] extcall 38 .............................. return 0
+  [112] ret
+end
+
+on getMsecAtNextState me
+  [  0] getprop 980 ............................. <pMsecAtNextState>
+  [  3] pusharglistnoret 1 ...................... <pMsecAtNextState>
+  [  5] extcall 38 .............................. return pMsecAtNextState
+  [  7] ret
+end
+
+on getScoreData me
+  [  0] getparam 0 .............................. <me>
+  [  2] getprop 613 ............................. <pGameId>
+  [  5] pusharglist 2 ........................... <me, pGameId>
+  [  7] objcall 460 ............................. <me.getListEntry(pGameId)>
+  [ 10] pusharglistnoret 1 ...................... <me.getListEntry(pGameId)>
+  [ 12] extcall 38 .............................. return me.getListEntry(pGameId)
+  [ 14] ret
+end
+
+on displayAfterGame me, tdata
+  [  0] getparam 0 .............................. <me>
+  [  2] pusharglist 1 ........................... <me>
+  [  4] objcall 43 .............................. <me.getComponent()>
+  [  6] pushsymb 308 ............................ <#after_game>
+  [  9] pusharglistnoret 2 ...................... <me.getComponent(), #after_game>
+  [ 11] objcall 241 ............................. me.getComponent().setSystemState(#after_game)
+  [ 13] pusharglist 0 ........................... <>
+  [ 15] extcall 47 .............................. <VOID>
+  [ 17] setprop 1252 ............................ pNewGameId = VOID
+  [ 20] getparam 1 .............................. <tdata>
+  [ 22] pusharglist 1 ........................... <tdata>
+  [ 24] extcall 377 ............................. <listp(tdata)>
+  [ 27] not ..................................... <not listp(tdata)>
+  [ 28] jmpifz [ 36] ............................ if not listp(tdata) then
+  [ 31] pushzero ................................ <0>
+  [ 32] pusharglistnoret 1 ...................... <0>
+  [ 34] extcall 38 .............................. return 0
+  [ 36] getparam 0 .............................. <me>
+  [ 38] getparam 1 .............................. <tdata>
+  [ 40] pusharglistnoret 2 ...................... <me, tdata>
+  [ 42] objcall 1255 ............................ me.storePlayerIndex(tdata)
+  [ 45] getparam 1 .............................. <tdata>
+  [ 47] pushsymb 214 ............................ <#id>
+  [ 49] getprop 613 ............................. <pGameId>
+  [ 52] pusharglistnoret 3 ...................... <tdata, #id, pGameId>
+  [ 54] objcall 220 ............................. tdata.setaProp(#id, pGameId)
+  [ 56] getparam 0 .............................. <me>
+  [ 58] getparam 1 .............................. <tdata>
+  [ 60] pusharglistnoret 2 ...................... <me, tdata>
+  [ 62] objcall 229 ............................. me.updateEntry(tdata)
+  [ 64] getmovieprop 457 ........................ <the milliSeconds>
+  [ 67] getparam 1 .............................. <tdata>
+  [ 69] pushsymb 207 ............................ <#time_to_next_state>
+  [ 71] pusharglist 2 ........................... <tdata, #time_to_next_state>
+  [ 73] objcall 256 ............................. <tdata.getaProp(#time_to_next_state)>
+  [ 76] pushint16 1000 .......................... <1000>
+  [ 79] mul ..................................... <tdata.getaProp(#time_to_next_state) * 1000>
+  [ 80] add ..................................... <the milliSeconds + (tdata.getaProp(#time_to_next_state) * 1000)>
+  [ 81] setprop 980 ............................. pMsecAtNextState = the milliSeconds + (tdata.getaProp(#time_to_next_state) * 1000)
+  [ 84] pushint8 1 .............................. <1>
+  [ 86] setprop 678 ............................. pState = 1
+  [ 89] getparam 0 .............................. <me>
+  [ 91] pusharglist 1 ........................... <me>
+  [ 93] objcall 64 .............................. <me.getRenderer()>
+  [ 95] setlocal 0 .............................. tRenderObj = me.getRenderer()
+  [ 97] getlocal 0 .............................. <tRenderObj>
+  [ 99] pusharglist 1 ........................... <tRenderObj>
+  [101] extcall 97 .............................. <objectp(tRenderObj)>
+  [103] jmpifz [112] ............................ if objectp(tRenderObj) then
+  [106] getlocal 0 .............................. <tRenderObj>
+  [108] pushzero ................................ <0>
+  [109] setobjprop 1017 ......................... tRenderObj.pGameOverShown = 0
+  [112] pushsymb 33 ............................. <#show_ig>
+  [114] pushcons 4 .............................. <"AfterGame">
+  [116] pusharglistnoret 2 ...................... <#show_ig, "AfterGame">
+  [118] extcall 79 .............................. executeMessage(#show_ig, "AfterGame")
+  [120] getparam 0 .............................. <me>
+  [122] getparam 1 .............................. <tdata>
+  [124] pusharglistnoret 2 ...................... <me, tdata>
+  [126] objcall 1014 ............................ me.displayWinningTeam(tdata)
+  [129] pushint8 1 .............................. <1>
+  [131] pusharglistnoret 1 ...................... <1>
+  [133] extcall 38 .............................. return 1
+  [135] ret
+end
+
+on displayPlayerLeft me, tUserID
+  [  0] getparam 0 .............................. <me>
+  [  2] pushcons 3 .............................. <"GameList">
+  [  4] pusharglist 2 ........................... <me, "GameList">
+  [  6] objcall 52 .............................. <me.getIGComponent("GameList")>
+  [  8] setlocal 0 .............................. tService = me.getIGComponent("GameList")
+  [ 10] getlocal 0 .............................. <tService>
+  [ 12] pushzero ................................ <0>
+  [ 13] eq ...................................... <tService = 0>
+  [ 14] jmpifz [ 22] ............................ if tService = 0 then
+  [ 17] pushzero ................................ <0>
+  [ 18] pusharglistnoret 1 ...................... <0>
+  [ 20] extcall 38 .............................. return 0
+  [ 22] getparam 1 .............................. <tUserID>
+  [ 24] pushint8 1 .............................. <1>
+  [ 26] inv ..................................... <-1>
+  [ 27] eq ...................................... <tUserID = -1>
+  [ 28] jmpifz [ 36] ............................ if tUserID = -1 then
+  [ 31] pushzero ................................ <0>
+  [ 32] pusharglistnoret 1 ...................... <0>
+  [ 34] extcall 38 .............................. return 0
+  [ 36] getparam 0 .............................. <me>
+  [ 38] getparam 1 .............................. <tUserID>
+  [ 40] pusharglist 2 ........................... <me, tUserID>
+  [ 42] objcall 936 ............................. <me.getPlayerInfo(tUserID)>
+  [ 45] setlocal 1 .............................. tPlayerInfo = me.getPlayerInfo(tUserID)
+  [ 47] getlocal 1 .............................. <tPlayerInfo>
+  [ 49] pushzero ................................ <0>
+  [ 50] eq ...................................... <tPlayerInfo = 0>
+  [ 51] jmpifz [ 59] ............................ if tPlayerInfo = 0 then
+  [ 54] pushzero ................................ <0>
+  [ 55] pusharglistnoret 1 ...................... <0>
+  [ 57] extcall 38 .............................. return 0
+  [ 59] getlocal 1 .............................. <tPlayerInfo>
+  [ 61] pushsymb 307 ............................ <#disconnected>
+  [ 64] pushint8 1 .............................. <1>
+  [ 66] pusharglistnoret 3 ...................... <tPlayerInfo, #disconnected, 1>
+  [ 68] objcall 220 ............................. tPlayerInfo.setaProp(#disconnected, 1)
+  [ 70] getlocal 1 .............................. <tPlayerInfo>
+  [ 72] pushsymb 254 ............................ <#team_id>
+  [ 74] pusharglist 2 ........................... <tPlayerInfo, #team_id>
+  [ 76] objcall 256 ............................. <tPlayerInfo.getaProp(#team_id)>
+  [ 79] setlocal 2 .............................. tTeamId = tPlayerInfo.getaProp(#team_id)
+  [ 81] getlocal 1 .............................. <tPlayerInfo>
+  [ 83] pushsymb 221 ............................ <#name>
+  [ 85] pusharglist 2 ........................... <tPlayerInfo, #name>
+  [ 87] objcall 256 ............................. <tPlayerInfo.getaProp(#name)>
+  [ 90] setlocal 3 .............................. tName = tPlayerInfo.getaProp(#name)
+  [ 92] pushcons 5 .............................. <"ig_bubble_ag_userleft">
+  [ 94] pusharglist 1 ........................... <"ig_bubble_ag_userleft">
+  [ 96] extcall 82 .............................. <getText("ig_bubble_ag_userleft")>
+  [ 98] pushcons 6 .............................. <"\\x">
+  [100] getlocal 3 .............................. <tName>
+  [102] pusharglist 3 ........................... <getText("ig_bubble_ag_userleft"), "\\x", tName>
+  [104] extcall 929 ............................. <replaceChunks(getText("ig_bubble_ag_userleft"), "\\x", tName)>
+  [107] setlocal 4 .............................. tText = replaceChunks(getText("ig_bubble_ag_userleft"), "\\x", tName)
+  [109] pushsymb 930 ............................ <#showCustomMessage>
+  [112] pushsymb 306 ............................ <#class>
+  [115] pushcons 7 .............................. <"IG Chat Bubble Info">
+  [117] pushsymb 248 ............................ <#message>
+  [119] getlocal 4 .............................. <tText>
+  [121] pushsymb 618 ............................ <#loc>
+  [124] pushint16 450 ........................... <450>
+  [127] pushint16 500 ........................... <500>
+  [130] pusharglist 2 ........................... <450, 500>
+  [132] extcall 617 ............................. <point(450, 500)>
+  [135] pushsymb 950 ............................ <#color>
+  [138] getparam 0 .............................. <me>
+  [140] getlocal 2 .............................. <tTeamId>
+  [142] pusharglist 2 ........................... <me, tTeamId>
+  [144] objcall 965 ............................. <me.getTeamColorDark(tTeamId)>
+  [147] pusharglist 8 ........................... <[#class: "IG Chat Bubble Info", #message: tText, #loc: point(450, 500), #color: me.getTeamColorDark(tTeamId)]>
+  [149] pushproplist ............................ <[#class: "IG Chat Bubble Info", #message: tText, #loc: point(450, 500), #color: me.getTeamColorDark(tTeamId)]>
+  [150] pusharglistnoret 2 ...................... <#showCustomMessage, [#class: "IG Chat Bubble Info", #message: tText, #loc: point(450, 500), #color: me.getTeamColorDark(tTeamId)]>
+  [152] extcall 79 .............................. executeMessage(#showCustomMessage, [#class: "IG Chat Bubble Info", #message: tText, #loc: point(450, 500), #color: me.getTeamColorDark(tTeamId)])
+  [154] getparam 0 .............................. <me>
+  [156] pusharglist 1 ........................... <me>
+  [158] objcall 64 .............................. <me.getRenderer()>
+  [160] setlocal 5 .............................. tRenderObj = me.getRenderer()
+  [162] getlocal 5 .............................. <tRenderObj>
+  [164] pushzero ................................ <0>
+  [165] eq ...................................... <tRenderObj = 0>
+  [166] jmpifz [174] ............................ if tRenderObj = 0 then
+  [169] pushzero ................................ <0>
+  [170] pusharglistnoret 1 ...................... <0>
+  [172] extcall 38 .............................. return 0
+  [174] getlocal 5 .............................. <tRenderObj>
+  [176] getlocal 1 .............................. <tPlayerInfo>
+  [178] pushsymb 1260 ........................... <#team_pos>
+  [181] pusharglist 2 ........................... <tPlayerInfo, #team_pos>
+  [183] objcall 256 ............................. <tPlayerInfo.getaProp(#team_pos)>
+  [186] getlocal 1 .............................. <tPlayerInfo>
+  [188] pushsymb 298 ............................ <#pos>
+  [191] pusharglist 2 ........................... <tPlayerInfo, #pos>
+  [193] objcall 256 ............................. <tPlayerInfo.getaProp(#pos)>
+  [196] pusharglistnoret 3 ...................... <tRenderObj, tPlayerInfo.getaProp(#team_pos), tPlayerInfo.getaProp(#pos)>
+  [198] objcall 976 ............................. tRenderObj.displayPlayerLeft(tPlayerInfo.getaProp(#team_pos), tPlayerInfo.getaProp(#pos))
+  [201] pushint8 1 .............................. <1>
+  [203] pusharglistnoret 1 ...................... <1>
+  [205] extcall 38 .............................. return 1
+  [207] ret
+end
+
+on displayPlayerRejoined me, tdata
+  [  0] getparam 1 .............................. <tdata>
+  [  2] pushsymb 214 ............................ <#id>
+  [  4] pusharglist 2 ........................... <tdata, #id>
+  [  6] objcall 256 ............................. <tdata.getaProp(#id)>
+  [  9] setlocal 0 .............................. tUserID = tdata.getaProp(#id)
+  [ 11] getparam 0 .............................. <me>
+  [ 13] getparam 1 .............................. <tdata>
+  [ 15] pushsymb 221 ............................ <#name>
+  [ 17] pusharglist 2 ........................... <tdata, #name>
+  [ 19] objcall 256 ............................. <tdata.getaProp(#name)>
+  [ 22] pusharglist 2 ........................... <me, tdata.getaProp(#name)>
+  [ 24] objcall 1261 ............................ <me.getPlayerInfoByName(tdata.getaProp(#name))>
+  [ 27] setlocal 1 .............................. tPlayerInfo = me.getPlayerInfoByName(tdata.getaProp(#name))
+  [ 29] getlocal 1 .............................. <tPlayerInfo>
+  [ 31] pushzero ................................ <0>
+  [ 32] eq ...................................... <tPlayerInfo = 0>
+  [ 33] jmpifz [ 41] ............................ if tPlayerInfo = 0 then
+  [ 36] pushzero ................................ <0>
+  [ 37] pusharglistnoret 1 ...................... <0>
+  [ 39] extcall 38 .............................. return 0
+  [ 41] getlocal 1 .............................. <tPlayerInfo>
+  [ 43] pushsymb 1263 ........................... <#rejoined>
+  [ 46] pushint8 1 .............................. <1>
+  [ 48] pusharglistnoret 3 ...................... <tPlayerInfo, #rejoined, 1>
+  [ 50] objcall 220 ............................. tPlayerInfo.setaProp(#rejoined, 1)
+  [ 52] getparam 1 .............................. <tdata>
+  [ 54] pushsymb 254 ............................ <#team_id>
+  [ 56] pusharglist 2 ........................... <tdata, #team_id>
+  [ 58] objcall 256 ............................. <tdata.getaProp(#team_id)>
+  [ 61] setlocal 2 .............................. tTeamId = tdata.getaProp(#team_id)
+  [ 63] getparam 1 .............................. <tdata>
+  [ 65] pushsymb 221 ............................ <#name>
+  [ 67] pusharglist 2 ........................... <tdata, #name>
+  [ 69] objcall 256 ............................. <tdata.getaProp(#name)>
+  [ 72] setlocal 3 .............................. tName = tdata.getaProp(#name)
+  [ 74] pushcons 8 .............................. <"ig_bubble_ag_userrejoined">
+  [ 76] pusharglist 1 ........................... <"ig_bubble_ag_userrejoined">
+  [ 78] extcall 82 .............................. <getText("ig_bubble_ag_userrejoined")>
+  [ 80] pushcons 6 .............................. <"\\x">
+  [ 82] getlocal 3 .............................. <tName>
+  [ 84] pusharglist 3 ........................... <getText("ig_bubble_ag_userrejoined"), "\\x", tName>
+  [ 86] extcall 929 ............................. <replaceChunks(getText("ig_bubble_ag_userrejoined"), "\\x", tName)>
+  [ 89] setlocal 4 .............................. tText = replaceChunks(getText("ig_bubble_ag_userrejoined"), "\\x", tName)
+  [ 91] pushsymb 930 ............................ <#showCustomMessage>
+  [ 94] pushsymb 306 ............................ <#class>
+  [ 97] pushcons 7 .............................. <"IG Chat Bubble Info">
+  [ 99] pushsymb 248 ............................ <#message>
+  [101] getlocal 4 .............................. <tText>
+  [103] pushsymb 618 ............................ <#loc>
+  [106] pushint16 450 ........................... <450>
+  [109] pushint16 500 ........................... <500>
+  [112] pusharglist 2 ........................... <450, 500>
+  [114] extcall 617 ............................. <point(450, 500)>
+  [117] pushsymb 950 ............................ <#color>
+  [120] getparam 0 .............................. <me>
+  [122] getlocal 2 .............................. <tTeamId>
+  [124] pusharglist 2 ........................... <me, tTeamId>
+  [126] objcall 965 ............................. <me.getTeamColorDark(tTeamId)>
+  [129] pusharglist 8 ........................... <[#class: "IG Chat Bubble Info", #message: tText, #loc: point(450, 500), #color: me.getTeamColorDark(tTeamId)]>
+  [131] pushproplist ............................ <[#class: "IG Chat Bubble Info", #message: tText, #loc: point(450, 500), #color: me.getTeamColorDark(tTeamId)]>
+  [132] pusharglistnoret 2 ...................... <#showCustomMessage, [#class: "IG Chat Bubble Info", #message: tText, #loc: point(450, 500), #color: me.getTeamColorDark(tTeamId)]>
+  [134] extcall 79 .............................. executeMessage(#showCustomMessage, [#class: "IG Chat Bubble Info", #message: tText, #loc: point(450, 500), #color: me.getTeamColorDark(tTeamId)])
+  [136] getparam 0 .............................. <me>
+  [138] pusharglist 1 ........................... <me>
+  [140] objcall 64 .............................. <me.getRenderer()>
+  [142] setlocal 5 .............................. tRenderObj = me.getRenderer()
+  [144] getlocal 5 .............................. <tRenderObj>
+  [146] pushzero ................................ <0>
+  [147] eq ...................................... <tRenderObj = 0>
+  [148] jmpifz [156] ............................ if tRenderObj = 0 then
+  [151] pushzero ................................ <0>
+  [152] pusharglistnoret 1 ...................... <0>
+  [154] extcall 38 .............................. return 0
+  [156] getlocal 5 .............................. <tRenderObj>
+  [158] getlocal 1 .............................. <tPlayerInfo>
+  [160] pushsymb 1260 ........................... <#team_pos>
+  [163] pusharglist 2 ........................... <tPlayerInfo, #team_pos>
+  [165] objcall 256 ............................. <tPlayerInfo.getaProp(#team_pos)>
+  [168] getlocal 1 .............................. <tPlayerInfo>
+  [170] pushsymb 298 ............................ <#pos>
+  [173] pusharglist 2 ........................... <tPlayerInfo, #pos>
+  [175] objcall 256 ............................. <tPlayerInfo.getaProp(#pos)>
+  [178] pusharglistnoret 3 ...................... <tRenderObj, tPlayerInfo.getaProp(#team_pos), tPlayerInfo.getaProp(#pos)>
+  [180] objcall 1013 ............................ tRenderObj.displayPlayerRejoined(tPlayerInfo.getaProp(#team_pos), tPlayerInfo.getaProp(#pos))
+  [183] pushint8 1 .............................. <1>
+  [185] pusharglistnoret 1 ...................... <1>
+  [187] extcall 38 .............................. return 1
+  [189] ret
+end
+
+on displayWinningTeam me, tdata
+  [  0] getparam 1 .............................. <tdata>
+  [  2] pushsymb 258 ............................ <#teams>
+  [  5] pusharglist 2 ........................... <tdata, #teams>
+  [  7] objcall 256 ............................. <tdata.getaProp(#teams)>
+  [ 10] setlocal 0 .............................. tTeams = tdata.getaProp(#teams)
+  [ 12] getlocal 0 .............................. <tTeams>
+  [ 14] pusharglist 1 ........................... <tTeams>
+  [ 16] extcall 377 ............................. <listp(tTeams)>
+  [ 19] not ..................................... <not listp(tTeams)>
+  [ 20] jmpifz [ 28] ............................ if not listp(tTeams) then
+  [ 23] pushzero ................................ <0>
+  [ 24] pusharglistnoret 1 ...................... <0>
+  [ 26] extcall 38 .............................. return 0
+  [ 28] getlocal 0 .............................. <tTeams>
+  [ 30] pushint8 1 .............................. <1>
+  [ 32] pusharglist 2 ........................... <tTeams, 1>
+  [ 34] objcall 181 ............................. <tTeams[1]>
+  [ 36] setlocal 1 .............................. tWinningTeam = tTeams[1]
+  [ 38] getlocal 1 .............................. <tWinningTeam>
+  [ 40] pushsymb 214 ............................ <#id>
+  [ 42] pusharglist 2 ........................... <tWinningTeam, #id>
+  [ 44] objcall 256 ............................. <tWinningTeam.getaProp(#id)>
+  [ 47] setlocal 2 .............................. tTeamId = tWinningTeam.getaProp(#id)
+  [ 49] pushcons 9 .............................. <"ig_bubble_ag_winner_">
+  [ 51] getlocal 2 .............................. <tTeamId>
+  [ 53] joinstr ................................. <"ig_bubble_ag_winner_" & tTeamId>
+  [ 54] pusharglist 1 ........................... <"ig_bubble_ag_winner_" & tTeamId>
+  [ 56] extcall 82 .............................. <getText("ig_bubble_ag_winner_" & tTeamId)>
+  [ 58] setlocal 3 .............................. tText = getText("ig_bubble_ag_winner_" & tTeamId)
+  [ 60] pushsymb 930 ............................ <#showCustomMessage>
+  [ 63] pushsymb 306 ............................ <#class>
+  [ 66] pushcons 7 .............................. <"IG Chat Bubble Info">
+  [ 68] pushsymb 248 ............................ <#message>
+  [ 70] getlocal 3 .............................. <tText>
+  [ 72] pushsymb 618 ............................ <#loc>
+  [ 75] pushint16 450 ........................... <450>
+  [ 78] pushint16 500 ........................... <500>
+  [ 81] pusharglist 2 ........................... <450, 500>
+  [ 83] extcall 617 ............................. <point(450, 500)>
+  [ 86] pushsymb 950 ............................ <#color>
+  [ 89] getparam 0 .............................. <me>
+  [ 91] getlocal 2 .............................. <tTeamId>
+  [ 93] pusharglist 2 ........................... <me, tTeamId>
+  [ 95] objcall 965 ............................. <me.getTeamColorDark(tTeamId)>
+  [ 98] pusharglist 8 ........................... <[#class: "IG Chat Bubble Info", #message: tText, #loc: point(450, 500), #color: me.getTeamColorDark(tTeamId)]>
+  [100] pushproplist ............................ <[#class: "IG Chat Bubble Info", #message: tText, #loc: point(450, 500), #color: me.getTeamColorDark(tTeamId)]>
+  [101] pusharglistnoret 2 ...................... <#showCustomMessage, [#class: "IG Chat Bubble Info", #message: tText, #loc: point(450, 500), #color: me.getTeamColorDark(tTeamId)]>
+  [103] extcall 79 .............................. executeMessage(#showCustomMessage, [#class: "IG Chat Bubble Info", #message: tText, #loc: point(450, 500), #color: me.getTeamColorDark(tTeamId)])
+  [105] getlocal 2 .............................. <tTeamId>
+  [107] getprop 1258 ............................ <pOwnPlayerTeamId>
+  [110] eq ...................................... <tTeamId = pOwnPlayerTeamId>
+  [111] jmpifz [124] ............................ if tTeamId = pOwnPlayerTeamId then / else
+  [114] pushcons 10 ............................. <"ig-winning">
+  [116] pusharglistnoret 1 ...................... <"ig-winning">
+  [118] extcall 1277 ............................ playSound("ig-winning")
+  [121] jmp [131]
+  [124] pushcons 11 ............................. <"ig-losing">
+  [126] pusharglistnoret 1 ...................... <"ig-losing">
+  [128] extcall 1277 ............................ playSound("ig-losing")
+  [131] pushint8 1 .............................. <1>
+  [133] pusharglistnoret 1 ...................... <1>
+  [135] extcall 38 .............................. return 1
+  [137] ret
+end
+
+on displayTimeLeft me, tTime
+  [  0] getparam 0 .............................. <me>
+  [  2] pusharglist 1 ........................... <me>
+  [  4] objcall 64 .............................. <me.getRenderer()>
+  [  6] setlocal 0 .............................. tRenderObj = me.getRenderer()
+  [  8] getlocal 0 .............................. <tRenderObj>
+  [ 10] pushzero ................................ <0>
+  [ 11] eq ...................................... <tRenderObj = 0>
+  [ 12] jmpifz [ 20] ............................ if tRenderObj = 0 then
+  [ 15] pushzero ................................ <0>
+  [ 16] pusharglistnoret 1 ...................... <0>
+  [ 18] extcall 38 .............................. return 0
+  [ 20] getlocal 0 .............................. <tRenderObj>
+  [ 22] getparam 1 .............................. <tTime>
+  [ 24] pusharglist 2 ........................... <tRenderObj, tTime>
+  [ 26] objcall 1015 ............................ <tRenderObj.displayTimeLeft(tTime)>
+  [ 29] pusharglistnoret 1 ...................... <tRenderObj.displayTimeLeft(tTime)>
+  [ 31] extcall 38 .............................. return tRenderObj.displayTimeLeft(tTime)
+  [ 33] ret
+end
+
+on getTeamColorDark me, tTeamIndex
+  [  0] getparam 1 .............................. <tTeamIndex>
+  [  2] peek 0 .................................. case tTeamIndex of
+  [  4] pushint8 1 .............................. <1>
+  [  6] eq
+  [  7] jmpifz [ 26] ............................ (case) 1:
+  [ 10] pop 1
+  [ 12] pushcons 12 ............................. <"#c64000">
+  [ 14] pusharglist 1 ........................... <"#c64000">
+  [ 16] extcall 951 ............................. <rgb("#c64000")>
+  [ 19] pusharglistnoret 1 ...................... <rgb("#c64000")>
+  [ 21] extcall 38 .............................. return rgb("#c64000")
+  [ 23] jmp [ 95]
+  [ 26] peek 0
+  [ 28] pushint8 2 .............................. <2>
+  [ 30] eq
+  [ 31] jmpifz [ 50] ............................ (case) 2:
+  [ 34] pop 1
+  [ 36] pushcons 13 ............................. <"#1971c3">
+  [ 38] pusharglist 1 ........................... <"#1971c3">
+  [ 40] extcall 951 ............................. <rgb("#1971c3")>
+  [ 43] pusharglistnoret 1 ...................... <rgb("#1971c3")>
+  [ 45] extcall 38 .............................. return rgb("#1971c3")
+  [ 47] jmp [ 95]
+  [ 50] peek 0
+  [ 52] pushint8 3 .............................. <3>
+  [ 54] eq
+  [ 55] jmpifz [ 74] ............................ (case) 3:
+  [ 58] pop 1
+  [ 60] pushcons 14 ............................. <"#659217">
+  [ 62] pusharglist 1 ........................... <"#659217">
+  [ 64] extcall 951 ............................. <rgb("#659217")>
+  [ 67] pusharglistnoret 1 ...................... <rgb("#659217")>
+  [ 69] extcall 38 .............................. return rgb("#659217")
+  [ 71] jmp [ 95]
+  [ 74] peek 0
+  [ 76] pushint8 4 .............................. <4>
+  [ 78] eq
+  [ 79] jmpifz [ 95] ............................ (case) 4:
+  [ 82] pop 1
+  [ 84] pushcons 15 ............................. <"#e19f00">
+  [ 86] pusharglist 1 ........................... <"#e19f00">
+  [ 88] extcall 951 ............................. <rgb("#e19f00")>
+  [ 91] pusharglistnoret 1 ...................... <rgb("#e19f00")>
+  [ 93] extcall 38 .............................. return rgb("#e19f00")
+  [ 95] pop 1 ................................... end case
+  [ 97] ret
+end
+
+on storePlayerIndex me, tdata
+  [  0] pusharglist 0 ........................... <[:]>
+  [  2] pushproplist ............................ <[:]>
+  [  3] setprop 1254 ............................ pScoreIndex = [:]
+  [  6] pusharglist 0 ........................... <[:]>
+  [  8] pushproplist ............................ <[:]>
+  [  9] setprop 1257 ............................ pScoreIndexByRoomIndex = [:]
+  [ 12] pusharglist 0 ........................... <[:]>
+  [ 14] pushproplist ............................ <[:]>
+  [ 15] setprop 1262 ............................ pScoreIndexByName = [:]
+  [ 18] getparam 1 .............................. <tdata>
+  [ 20] pushsymb 258 ............................ <#teams>
+  [ 23] pusharglist 2 ........................... <tdata, #teams>
+  [ 25] objcall 256 ............................. <tdata.getaProp(#teams)>
+  [ 28] setlocal 0 .............................. tTeams = tdata.getaProp(#teams)
+  [ 30] getparam 0 .............................. <me>
+  [ 32] pusharglist 1 ........................... <me>
+  [ 34] objcall 171 ............................. <me.getOwnPlayerName()>
+  [ 36] setlocal 1 .............................. tOwnName = me.getOwnPlayerName()
+  [ 38] getlocal 0 .............................. <tTeams>
+  [ 40] peek 0
+  [ 42] pusharglist 1
+  [ 44] extcall 180
+  [ 46] pushint8 1
+  [ 48] peek 0
+  [ 50] peek 2
+  [ 52] lteq
+  [ 53] jmpifz [223] ............................ repeat with tTeam in tTeams
+  [ 56] peek 2
+  [ 58] peek 1
+  [ 60] pusharglist 2
+  [ 62] extcall 181
+  [ 64] setlocal 2
+  [ 66] getlocal 2 .............................. <tTeam>
+  [ 68] pushsymb 298 ............................ <#pos>
+  [ 71] pusharglist 2 ........................... <tTeam, #pos>
+  [ 73] objcall 256 ............................. <tTeam.getaProp(#pos)>
+  [ 76] setlocal 3 .............................. tTeamPos = tTeam.getaProp(#pos)
+  [ 78] getlocal 2 .............................. <tTeam>
+  [ 80] pushsymb 226 ............................ <#players>
+  [ 82] pusharglist 2 ........................... <tTeam, #players>
+  [ 84] objcall 256 ............................. <tTeam.getaProp(#players)>
+  [ 87] setlocal 4 .............................. tPlayers = tTeam.getaProp(#players)
+  [ 89] getlocal 4 .............................. <tPlayers>
+  [ 91] peek 0
+  [ 93] pusharglist 1
+  [ 95] extcall 180
+  [ 97] pushint8 1
+  [ 99] peek 0
+  [101] peek 2
+  [103] lteq
+  [104] jmpifz [216] ............................ repeat with tPlayer in tPlayers
+  [107] peek 2
+  [109] peek 1
+  [111] pusharglist 2
+  [113] extcall 181
+  [115] setlocal 5
+  [117] getlocal 1 .............................. <tOwnName>
+  [119] getlocal 5 .............................. <tPlayer>
+  [121] pushsymb 221 ............................ <#name>
+  [123] pusharglist 2 ........................... <tPlayer, #name>
+  [125] objcall 256 ............................. <tPlayer.getaProp(#name)>
+  [128] eq ...................................... <tOwnName = tPlayer.getaProp(#name)>
+  [129] jmpifz [144] ............................ if tOwnName = tPlayer.getaProp(#name) then
+  [132] getlocal 5 .............................. <tPlayer>
+  [134] pushsymb 254 ............................ <#team_id>
+  [136] pusharglist 2 ........................... <tPlayer, #team_id>
+  [138] objcall 256 ............................. <tPlayer.getaProp(#team_id)>
+  [141] setprop 1258 ............................ pOwnPlayerTeamId = tPlayer.getaProp(#team_id)
+  [144] getlocal 5 .............................. <tPlayer>
+  [146] pushsymb 221 ............................ <#name>
+  [148] pusharglist 2 ........................... <tPlayer, #name>
+  [150] objcall 256 ............................. <tPlayer.getaProp(#name)>
+  [153] setlocal 6 .............................. tName = tPlayer.getaProp(#name)
+  [155] getprop 1262 ............................ <pScoreIndexByName>
+  [158] getlocal 6 .............................. <tName>
+  [160] getlocal 5 .............................. <tPlayer>
+  [162] pusharglistnoret 3 ...................... <pScoreIndexByName, tName, tPlayer>
+  [164] objcall 220 ............................. pScoreIndexByName.setaProp(tName, tPlayer)
+  [166] getlocal 5 .............................. <tPlayer>
+  [168] pushsymb 214 ............................ <#id>
+  [170] pusharglist 2 ........................... <tPlayer, #id>
+  [172] objcall 256 ............................. <tPlayer.getaProp(#id)>
+  [175] setlocal 7 .............................. tID = tPlayer.getaProp(#id)
+  [177] getprop 1254 ............................ <pScoreIndex>
+  [180] getlocal 7 .............................. <tID>
+  [182] getlocal 5 .............................. <tPlayer>
+  [184] pusharglistnoret 3 ...................... <pScoreIndex, tID, tPlayer>
+  [186] objcall 220 ............................. pScoreIndex.setaProp(tID, tPlayer)
+  [188] getlocal 5 .............................. <tPlayer>
+  [190] pushsymb 300 ............................ <#room_index>
+  [193] pusharglist 2 ........................... <tPlayer, #room_index>
+  [195] objcall 256 ............................. <tPlayer.getaProp(#room_index)>
+  [198] setlocal 8 .............................. tRoomIndex = tPlayer.getaProp(#room_index)
+  [200] getprop 1257 ............................ <pScoreIndexByRoomIndex>
+  [203] getlocal 8 .............................. <tRoomIndex>
+  [205] getlocal 5 .............................. <tPlayer>
+  [207] pusharglistnoret 3 ...................... <pScoreIndexByRoomIndex, tRoomIndex, tPlayer>
+  [209] objcall 220 ............................. pScoreIndexByRoomIndex.setaProp(tRoomIndex, tPlayer)
+  [211] pushint8 1
+  [213] add
+  [214] endrepeat [ 99]
+  [216] pop 3
+  [218] pushint8 1
+  [220] add
+  [221] endrepeat [ 48]
+  [223] pop 3
+  [225] pushint8 1 .............................. <1>
+  [227] pusharglistnoret 1 ...................... <1>
+  [229] extcall 38 .............................. return 1
+  [231] ret
+end
+
+on getPlayerInfoByRoomIndex me, tRoomIndex
+  [  0] getprop 1257 ............................ <pScoreIndexByRoomIndex>
+  [  3] getparam 1 .............................. <tRoomIndex>
+  [  5] pusharglist 2 ........................... <pScoreIndexByRoomIndex, tRoomIndex>
+  [  7] objcall 256 ............................. <pScoreIndexByRoomIndex.getaProp(tRoomIndex)>
+  [ 10] pusharglistnoret 1 ...................... <pScoreIndexByRoomIndex.getaProp(tRoomIndex)>
+  [ 12] extcall 38 .............................. return pScoreIndexByRoomIndex.getaProp(tRoomIndex)
+  [ 14] ret
+end
+
+on getPlayerInfo me, tID
+  [  0] getprop 1254 ............................ <pScoreIndex>
+  [  3] getparam 1 .............................. <tID>
+  [  5] pusharglist 2 ........................... <pScoreIndex, tID>
+  [  7] objcall 256 ............................. <pScoreIndex.getaProp(tID)>
+  [ 10] pusharglistnoret 1 ...................... <pScoreIndex.getaProp(tID)>
+  [ 12] extcall 38 .............................. return pScoreIndex.getaProp(tID)
+  [ 14] ret
+end
+
+on getPlayerInfoByName me, tName
+  [  0] getprop 1262 ............................ <pScoreIndexByName>
+  [  3] getparam 1 .............................. <tName>
+  [  5] pusharglist 2 ........................... <pScoreIndexByName, tName>
+  [  7] objcall 256 ............................. <pScoreIndexByName.getaProp(tName)>
+  [ 10] pusharglistnoret 1 ...................... <pScoreIndexByName.getaProp(tName)>
+  [ 12] extcall 38 .............................. return pScoreIndexByName.getaProp(tName)
+  [ 14] ret
+end

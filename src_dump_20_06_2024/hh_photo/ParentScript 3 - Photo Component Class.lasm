@@ -1,0 +1,854 @@
+property pInfoConnID, pPhotoCache, pPhotoWindow, pWindowID, pItemId, pPhotoId, pLastPhotoData, pLocX, pLocY, pPhotoMember, pFilm, pPhotoTime, pPhotoText
+
+on construct me
+  [  0] pushcons 0 .............................. <"connection.info.id">
+  [  2] pusharglist 1 ........................... <"connection.info.id">
+  [  4] extcall 55 .............................. <getVariable("connection.info.id")>
+  [  6] setprop 161 ............................. pInfoConnID = getVariable("connection.info.id")
+  [  8] pushsymb 162 ............................ <#photo_window>
+  [ 10] setprop 23 .............................. pWindowID = #photo_window
+  [ 12] pusharglist 0 ........................... <[:]>
+  [ 14] pushproplist ............................ <[:]>
+  [ 15] setprop 163 ............................. pPhotoCache = [:]
+  [ 17] pusharglist 0 ........................... <>
+  [ 19] extcall 92 .............................. <VOID>
+  [ 21] setprop 164 ............................. pPhotoMember = VOID
+  [ 23] pushsymb 166 ............................ <#photo_timestamp_writer_black>
+  [ 25] pushsymb 87 ............................. <#color>
+  [ 27] pushzero ................................ <0>
+  [ 28] pushzero ................................ <0>
+  [ 29] pushzero ................................ <0>
+  [ 30] pusharglist 3 ........................... <0, 0, 0>
+  [ 32] extcall 88 .............................. <rgb(0, 0, 0)>
+  [ 34] pusharglist 2 ........................... <[#color: rgb(0, 0, 0)]>
+  [ 36] pushproplist ............................ <[#color: rgb(0, 0, 0)]>
+  [ 37] pusharglistnoret 2 ...................... <#photo_timestamp_writer_black, [#color: rgb(0, 0, 0)]>
+  [ 39] extcall 165 ............................. createWriter(#photo_timestamp_writer_black, [#color: rgb(0, 0, 0)])
+  [ 41] pushsymb 167 ............................ <#photo_timestamp_writer_white>
+  [ 43] pushsymb 87 ............................. <#color>
+  [ 45] pushint16 255 ........................... <255>
+  [ 48] pushint16 255 ........................... <255>
+  [ 51] pushint16 240 ........................... <240>
+  [ 54] pusharglist 3 ........................... <255, 255, 240>
+  [ 56] extcall 88 .............................. <rgb(255, 255, 240)>
+  [ 58] pusharglist 2 ........................... <[#color: rgb(255, 255, 240)]>
+  [ 60] pushproplist ............................ <[#color: rgb(255, 255, 240)]>
+  [ 61] pusharglistnoret 2 ...................... <#photo_timestamp_writer_white, [#color: rgb(255, 255, 240)]>
+  [ 63] extcall 165 ............................. createWriter(#photo_timestamp_writer_white, [#color: rgb(255, 255, 240)])
+  [ 65] pushint8 1 .............................. <1>
+  [ 67] pusharglistnoret 1 ...................... <1>
+  [ 69] extcall 27 .............................. return 1
+  [ 71] ret
+end
+
+on deconstruct me
+  [  0] getprop 164 ............................. <pPhotoMember>
+  [  2] getobjprop 168 .......................... <pPhotoMember.ilk>
+  [  4] pushsymb 20 ............................. <#member>
+  [  6] eq ...................................... <pPhotoMember.ilk = #member>
+  [  7] jmpifz [ 24] ............................ if pPhotoMember.ilk = #member then
+  [ 10] getprop 164 ............................. <pPhotoMember>
+  [ 12] getobjprop 169 .......................... <pPhotoMember.name>
+  [ 14] pusharglistnoret 1 ...................... <pPhotoMember.name>
+  [ 16] extcall 36 .............................. removeMember(pPhotoMember.name)
+  [ 18] pusharglist 0 ........................... <>
+  [ 20] extcall 92 .............................. <VOID>
+  [ 22] setprop 164 ............................. pPhotoMember = VOID
+  [ 24] getprop 23 .............................. <pWindowID>
+  [ 26] pusharglist 1 ........................... <pWindowID>
+  [ 28] extcall 33 .............................. <windowExists(pWindowID)>
+  [ 30] jmpifz [ 39] ............................ if windowExists(pWindowID) then
+  [ 33] getprop 23 .............................. <pWindowID>
+  [ 35] pusharglistnoret 1 ...................... <pWindowID>
+  [ 37] extcall 34 .............................. removeWindow(pWindowID)
+  [ 39] pushsymb 166 ............................ <#photo_timestamp_writer_black>
+  [ 41] pusharglistnoret 1 ...................... <#photo_timestamp_writer_black>
+  [ 43] extcall 170 ............................. removeWriter(#photo_timestamp_writer_black)
+  [ 45] pushsymb 167 ............................ <#photo_timestamp_writer_white>
+  [ 47] pusharglistnoret 1 ...................... <#photo_timestamp_writer_white>
+  [ 49] extcall 170 ............................. removeWriter(#photo_timestamp_writer_white)
+  [ 51] pushint8 1 .............................. <1>
+  [ 53] pusharglistnoret 1 ...................... <1>
+  [ 55] extcall 27 .............................. return 1
+  [ 57] ret
+end
+
+on storePicture me, tmember, tText
+  [  0] getparam 2 .............................. <tText>
+  [  2] pusharglist 1 ........................... <tText>
+  [  4] extcall 171 ............................. <voidp(tText)>
+  [  6] not ..................................... <not voidp(tText)>
+  [  7] jmpifz [ 24] ............................ if not voidp(tText) then
+  [ 10] pusharglist 0 ........................... <>
+  [ 12] extcall 172 ............................. <getStringServices()>
+  [ 14] getparam 2 .............................. <tText>
+  [ 16] pushint8 1 .............................. <1>
+  [ 18] pusharglist 3 ........................... <getStringServices(), tText, 1>
+  [ 20] objcall 173 ............................. <getStringServices().convertSpecialChars(tText, 1)>
+  [ 22] setparam 2 .............................. tText = getStringServices().convertSpecialChars(tText, 1)
+  [ 24] getparam 0 .............................. <me>
+  [ 26] getparam 1 .............................. <tmember>
+  [ 28] getobjprop 111 .......................... <tmember.image>
+  [ 30] pusharglist 2 ........................... <me, tmember.image>
+  [ 32] objcall 156 ............................. <me.countCS(tmember.image)>
+  [ 34] setlocal 0 .............................. tCS = me.countCS(tmember.image)
+  [ 36] pushsymb 111 ............................ <#image>
+  [ 38] getparam 1 .............................. <tmember>
+  [ 40] getobjprop 186 .......................... <tmember.media>
+  [ 42] pushsymb 174 ............................ <#time>
+  [ 44] pusharglist 0 ........................... <>
+  [ 46] thebuiltin 175 .......................... <the date>
+  [ 48] pusharglist 0 ........................... <>
+  [ 50] thebuiltin 174 .......................... <the time>
+  [ 52] joinpadstr .............................. <the date && the time>
+  [ 53] pushsymb 176 ............................ <#cs>
+  [ 55] getlocal 0 .............................. <tCS>
+  [ 57] pusharglist 6 ........................... <[#image: tmember.media, #time: the date && the time, #cs: tCS]>
+  [ 59] pushproplist ............................ <[#image: tmember.media, #time: the date && the time, #cs: tCS]>
+  [ 60] setlocal 1 .............................. tdata = [#image: tmember.media, #time: the date && the time, #cs: tCS]
+  [ 62] pushcons 1 .............................. <"PHOTOTXT /">
+  [ 64] getparam 2 .............................. <tText>
+  [ 66] joinstr ................................. <"PHOTOTXT /" & tText>
+  [ 67] pusharglistnoret 1 ...................... <"PHOTOTXT /" & tText>
+  [ 69] extcall 177 ............................. addMessageToBinaryQueue("PHOTOTXT /" & tText)
+  [ 71] getlocal 1 .............................. <tdata>
+  [ 73] getparam 0 .............................. <me>
+  [ 75] pusharglist 1 ........................... <me>
+  [ 77] objcall 31 .............................. <me.getID()>
+  [ 79] pusharglistnoret 2 ...................... <tdata, me.getID()>
+  [ 81] extcall 178 ............................. storeBinaryData(tdata, me.getID())
+  [ 83] getlocal 1 .............................. <tdata>
+  [ 85] setprop 179 ............................. pLastPhotoData = tdata
+  [ 87] ret
+end
+
+on binaryDataStored me, tid
+  [  0] getparam 0 .............................. <me>
+  [  2] pusharglist 1 ........................... <me>
+  [  4] objcall 100 ............................. <me.getInterface()>
+  [  6] pusharglistnoret 1 ...................... <me.getInterface()>
+  [  8] objcall 11 .............................. me.getInterface().saveOk()
+  [ 10] getprop 163 ............................. <pPhotoCache>
+  [ 12] getparam 1 .............................. <tid>
+  [ 14] getprop 179 ............................. <pLastPhotoData>
+  [ 16] pusharglistnoret 3 ...................... <pPhotoCache, tid, pLastPhotoData>
+  [ 18] objcall 182 ............................. pPhotoCache.setaProp(tid, pLastPhotoData)
+  [ 20] pusharglist 0 ........................... <>
+  [ 22] extcall 92 .............................. <VOID>
+  [ 24] setprop 179 ............................. pLastPhotoData = VOID
+  [ 26] ret
+end
+
+on binaryDataReceived me, tdata, tid
+  [  0] getparam 1 .............................. <tdata>
+  [  2] pusharglist 1 ........................... <tdata>
+  [  4] extcall 168 ............................. <ilk(tdata)>
+  [  6] pushsymb 183 ............................ <#propList>
+  [  8] nteq .................................... <ilk(tdata) <> #propList>
+  [  9] jmpifz [ 17] ............................ if ilk(tdata) <> #propList then
+  [ 12] pushzero ................................ <0>
+  [ 13] pusharglistnoret 1 ...................... <0>
+  [ 15] extcall 27 .............................. return 0
+  [ 17] getparam 1 .............................. <tdata>
+  [ 19] pushsymb 111 ............................ <#image>
+  [ 21] pusharglist 2 ........................... <tdata, #image>
+  [ 23] objcall 137 ............................. <tdata[#image]>
+  [ 25] pusharglist 0 ........................... <>
+  [ 27] extcall 92 .............................. <VOID>
+  [ 29] eq ...................................... <tdata[#image] = VOID>
+  [ 30] jmpifz [ 38] ............................ if tdata[#image] = VOID then
+  [ 33] pushzero ................................ <0>
+  [ 34] pusharglistnoret 1 ...................... <0>
+  [ 36] extcall 27 .............................. return 0
+  [ 38] getprop 184 ............................. <pPhotoText>
+  [ 40] setlocal 0 .............................. tText = pPhotoText
+  [ 42] getprop 163 ............................. <pPhotoCache>
+  [ 44] getparam 2 .............................. <tid>
+  [ 46] getparam 1 .............................. <tdata>
+  [ 48] pusharglistnoret 3 ...................... <pPhotoCache, tid, tdata>
+  [ 50] objcall 182 ............................. pPhotoCache.setaProp(tid, tdata)
+  [ 52] getprop 23 .............................. <pWindowID>
+  [ 54] pusharglist 1 ........................... <pWindowID>
+  [ 56] extcall 33 .............................. <windowExists(pWindowID)>
+  [ 58] not ..................................... <not windowExists(pWindowID)>
+  [ 59] jmpifz [ 67] ............................ if not windowExists(pWindowID) then
+  [ 62] pushzero ................................ <0>
+  [ 63] pusharglistnoret 1 ...................... <0>
+  [ 65] extcall 27 .............................. return 0
+  [ 67] getprop 23 .............................. <pWindowID>
+  [ 69] pusharglist 1 ........................... <pWindowID>
+  [ 71] extcall 39 .............................. <getWindow(pWindowID)>
+  [ 73] pushcons 2 .............................. <"photo_text">
+  [ 75] pusharglist 2 ........................... <getWindow(pWindowID), "photo_text">
+  [ 77] objcall 49 .............................. <getWindow(pWindowID).getElement("photo_text")>
+  [ 79] getlocal 0 .............................. <tText>
+  [ 81] pusharglistnoret 2 ...................... <getWindow(pWindowID).getElement("photo_text"), tText>
+  [ 83] objcall 64 .............................. getWindow(pWindowID).getElement("photo_text").setText(tText)
+  [ 85] getprop 164 ............................. <pPhotoMember>
+  [ 87] getobjprop 168 .......................... <pPhotoMember.ilk>
+  [ 89] pushsymb 20 ............................. <#member>
+  [ 91] nteq .................................... <pPhotoMember.ilk <> #member>
+  [ 92] jmpifz [111] ............................ if pPhotoMember.ilk <> #member then
+  [ 95] pusharglist 0 ........................... <>
+  [ 97] extcall 185 ............................. <getUniqueID()>
+  [ 99] pushsymb 22 ............................. <#bitmap>
+  [101] pusharglist 2 ........................... <getUniqueID(), #bitmap>
+  [103] extcall 21 .............................. <createMember(getUniqueID(), #bitmap)>
+  [105] pusharglist 1 ........................... <createMember(getUniqueID(), #bitmap)>
+  [107] extcall 20 .............................. <member(createMember(getUniqueID(), #bitmap))>
+  [109] setprop 164 ............................. pPhotoMember = member(createMember(getUniqueID(), #bitmap))
+  [111] getprop 164 ............................. <pPhotoMember>
+  [113] getparam 1 .............................. <tdata>
+  [115] pushsymb 111 ............................ <#image>
+  [117] pusharglist 2 ........................... <tdata, #image>
+  [119] objcall 137 ............................. <tdata[#image]>
+  [121] setobjprop 186 .......................... pPhotoMember.media = tdata[#image]
+  [123] getprop 164 ............................. <pPhotoMember>
+  [125] getobjprop 263 .......................... <pPhotoMember.type>
+  [128] pushsymb 22 ............................. <#bitmap>
+  [130] nteq .................................... <pPhotoMember.type <> #bitmap>
+  [131] getprop 164 ............................. <pPhotoMember>
+  [133] getobjprop 264 .......................... <pPhotoMember.scriptText>
+  [136] pushcons 3 .............................. <EMPTY>
+  [138] nteq .................................... <pPhotoMember.scriptText <> EMPTY>
+  [139] or ...................................... <(pPhotoMember.type <> #bitmap) or (pPhotoMember.scriptText <> EMPTY)>
+  [140] jmpifz [155] ............................ if (pPhotoMember.type <> #bitmap) or (pPhotoMember.scriptText <> EMPTY) then
+  [143] getprop 164 ............................. <pPhotoMember>
+  [145] pusharglistnoret 1 ...................... <pPhotoMember>
+  [147] objcall 265 ............................. pPhotoMember.erase()
+  [150] pushzero ................................ <0>
+  [151] pusharglistnoret 1 ...................... <0>
+  [153] extcall 27 .............................. return 0
+  [155] getparam 1 .............................. <tdata>
+  [157] pushsymb 176 ............................ <#cs>
+  [159] pusharglist 2 ........................... <tdata, #cs>
+  [161] objcall 137 ............................. <tdata[#cs]>
+  [163] pusharglist 0 ........................... <>
+  [165] extcall 92 .............................. <VOID>
+  [167] nteq .................................... <tdata[#cs] <> VOID>
+  [168] jmpifz [195] ............................ if tdata[#cs] <> VOID then / else
+  [171] getparam 0 .............................. <me>
+  [173] getprop 164 ............................. <pPhotoMember>
+  [175] getobjprop 111 .......................... <pPhotoMember.image>
+  [177] pusharglist 2 ........................... <me, pPhotoMember.image>
+  [179] objcall 156 ............................. <me.countCS(pPhotoMember.image)>
+  [181] getparam 1 .............................. <tdata>
+  [183] pushsymb 176 ............................ <#cs>
+  [185] pusharglist 2 ........................... <tdata, #cs>
+  [187] objcall 137 ............................. <tdata[#cs]>
+  [189] eq ...................................... <me.countCS(pPhotoMember.image) = tdata[#cs]>
+  [190] setlocal 1 .............................. tCheckSumOk = me.countCS(pPhotoMember.image) = tdata[#cs]
+  [192] jmp [198]
+  [195] pushzero ................................ <0>
+  [196] setlocal 1 .............................. tCheckSumOk = 0
+  [198] getlocal 1 .............................. <tCheckSumOk>
+  [200] pushzero ................................ <0>
+  [201] eq ...................................... <tCheckSumOk = 0>
+  [202] jmpifz [224] ............................ if tCheckSumOk = 0 then / else
+  [205] getprop 164 ............................. <pPhotoMember>
+  [207] pushcons 4 .............................. <"photo_invalid">
+  [209] pusharglist 1 ........................... <"photo_invalid">
+  [211] extcall 138 ............................. <getmemnum("photo_invalid")>
+  [213] pusharglist 1 ........................... <getmemnum("photo_invalid")>
+  [215] extcall 20 .............................. <member(getmemnum("photo_invalid"))>
+  [217] getobjprop 186 .......................... <member(getmemnum("photo_invalid")).media>
+  [219] setobjprop 186 .......................... pPhotoMember.media = member(getmemnum("photo_invalid")).media
+  [221] jmp [491]
+  [224] getprop 187 ............................. <pPhotoTime>
+  [226] pusharglist 0 ........................... <>
+  [228] extcall 92 .............................. <VOID>
+  [230] nteq .................................... <pPhotoTime <> VOID>
+  [231] getprop 187 ............................. <pPhotoTime>
+  [233] pusharglist 1 ........................... <pPhotoTime>
+  [235] extcall 188 ............................. <length(pPhotoTime)>
+  [237] pushint8 5 .............................. <5>
+  [239] gt ...................................... <length(pPhotoTime) > 5>
+  [240] and ..................................... <(pPhotoTime <> VOID) and (length(pPhotoTime) > 5)>
+  [241] jmpifz [491] ............................ if (pPhotoTime <> VOID) and (length(pPhotoTime) > 5) then
+  [244] pushsymb 166 ............................ <#photo_timestamp_writer_black>
+  [246] pusharglist 1 ........................... <#photo_timestamp_writer_black>
+  [248] extcall 189 ............................. <getWriter(#photo_timestamp_writer_black)>
+  [250] getprop 187 ............................. <pPhotoTime>
+  [252] pusharglist 2 ........................... <getWriter(#photo_timestamp_writer_black), pPhotoTime>
+  [254] objcall 190 ............................. <getWriter(#photo_timestamp_writer_black).render(pPhotoTime)>
+  [256] setlocal 2 .............................. tBlackImg = getWriter(#photo_timestamp_writer_black).render(pPhotoTime)
+  [258] pushsymb 167 ............................ <#photo_timestamp_writer_white>
+  [260] pusharglist 1 ........................... <#photo_timestamp_writer_white>
+  [262] extcall 189 ............................. <getWriter(#photo_timestamp_writer_white)>
+  [264] getprop 187 ............................. <pPhotoTime>
+  [266] pusharglist 2 ........................... <getWriter(#photo_timestamp_writer_white), pPhotoTime>
+  [268] objcall 190 ............................. <getWriter(#photo_timestamp_writer_white).render(pPhotoTime)>
+  [270] setlocal 3 .............................. tWhiteImg = getWriter(#photo_timestamp_writer_white).render(pPhotoTime)
+  [272] getprop 164 ............................. <pPhotoMember>
+  [274] getchainedprop 111 ...................... <pPhotoMember.image>
+  [276] getobjprop 65 ........................... <pPhotoMember.image.width>
+  [278] pushint8 3 .............................. <3>
+  [280] sub ..................................... <pPhotoMember.image.width - 3>
+  [281] getlocal 2 .............................. <tBlackImg>
+  [283] getobjprop 65 ........................... <tBlackImg.width>
+  [285] sub ..................................... <pPhotoMember.image.width - 3 - tBlackImg.width>
+  [286] setlocal 4 .............................. tL = pPhotoMember.image.width - 3 - tBlackImg.width
+  [288] getprop 164 ............................. <pPhotoMember>
+  [290] getchainedprop 111 ...................... <pPhotoMember.image>
+  [292] getobjprop 66 ........................... <pPhotoMember.image.height>
+  [294] pushint8 3 .............................. <3>
+  [296] sub ..................................... <pPhotoMember.image.height - 3>
+  [297] getlocal 2 .............................. <tBlackImg>
+  [299] getobjprop 66 ........................... <tBlackImg.height>
+  [301] sub ..................................... <pPhotoMember.image.height - 3 - tBlackImg.height>
+  [302] setlocal 5 .............................. tt = pPhotoMember.image.height - 3 - tBlackImg.height
+  [304] getlocal 4 .............................. <tL>
+  [306] getlocal 5 .............................. <tt>
+  [308] getlocal 4 .............................. <tL>
+  [310] getlocal 2 .............................. <tBlackImg>
+  [312] getobjprop 65 ........................... <tBlackImg.width>
+  [314] add ..................................... <tL + tBlackImg.width>
+  [315] getlocal 5 .............................. <tt>
+  [317] getlocal 2 .............................. <tBlackImg>
+  [319] getobjprop 66 ........................... <tBlackImg.height>
+  [321] add ..................................... <tt + tBlackImg.height>
+  [322] pusharglist 4 ........................... <tL, tt, tL + tBlackImg.width, tt + tBlackImg.height>
+  [324] extcall 109 ............................. <rect(tL, tt, tL + tBlackImg.width, tt + tBlackImg.height)>
+  [326] setlocal 6 .............................. tR = rect(tL, tt, tL + tBlackImg.width, tt + tBlackImg.height)
+  [328] getprop 164 ............................. <pPhotoMember>
+  [330] getchainedprop 111 ...................... <pPhotoMember.image>
+  [332] getlocal 2 .............................. <tBlackImg>
+  [334] getlocal 6 .............................. <tR>
+  [336] pushint8 1 .............................. <1>
+  [338] inv ..................................... <-1>
+  [339] pushzero ................................ <0>
+  [340] pushint8 1 .............................. <1>
+  [342] inv ..................................... <-1>
+  [343] pushzero ................................ <0>
+  [344] pusharglist 4 ........................... <-1, 0, -1, 0>
+  [346] extcall 109 ............................. <rect(-1, 0, -1, 0)>
+  [348] add ..................................... <tR + rect(-1, 0, -1, 0)>
+  [349] getlocal 2 .............................. <tBlackImg>
+  [351] getobjprop 109 .......................... <tBlackImg.rect>
+  [353] pushsymb 86 ............................. <#ink>
+  [355] pushint8 36 ............................. <36>
+  [357] pusharglist 2 ........................... <[#ink: 36]>
+  [359] pushproplist ............................ <[#ink: 36]>
+  [360] pusharglistnoret 5 ...................... <pPhotoMember.image, tBlackImg, tR + rect(-1, 0, -1, 0), tBlackImg.rect, [#ink: 36]>
+  [362] objcall 118 ............................. pPhotoMember.image.copyPixels(tBlackImg, tR + rect(-1, 0, -1, 0), tBlackImg.rect, [#ink: 36])
+  [364] getprop 164 ............................. <pPhotoMember>
+  [366] getchainedprop 111 ...................... <pPhotoMember.image>
+  [368] getlocal 2 .............................. <tBlackImg>
+  [370] getlocal 6 .............................. <tR>
+  [372] pushint8 1 .............................. <1>
+  [374] pushzero ................................ <0>
+  [375] pushint8 1 .............................. <1>
+  [377] pushzero ................................ <0>
+  [378] pusharglist 4 ........................... <1, 0, 1, 0>
+  [380] extcall 109 ............................. <rect(1, 0, 1, 0)>
+  [382] add ..................................... <tR + rect(1, 0, 1, 0)>
+  [383] getlocal 2 .............................. <tBlackImg>
+  [385] getobjprop 109 .......................... <tBlackImg.rect>
+  [387] pushsymb 86 ............................. <#ink>
+  [389] pushint8 36 ............................. <36>
+  [391] pusharglist 2 ........................... <[#ink: 36]>
+  [393] pushproplist ............................ <[#ink: 36]>
+  [394] pusharglistnoret 5 ...................... <pPhotoMember.image, tBlackImg, tR + rect(1, 0, 1, 0), tBlackImg.rect, [#ink: 36]>
+  [396] objcall 118 ............................. pPhotoMember.image.copyPixels(tBlackImg, tR + rect(1, 0, 1, 0), tBlackImg.rect, [#ink: 36])
+  [398] getprop 164 ............................. <pPhotoMember>
+  [400] getchainedprop 111 ...................... <pPhotoMember.image>
+  [402] getlocal 2 .............................. <tBlackImg>
+  [404] getlocal 6 .............................. <tR>
+  [406] pushzero ................................ <0>
+  [407] pushint8 1 .............................. <1>
+  [409] pushzero ................................ <0>
+  [410] pushint8 1 .............................. <1>
+  [412] pusharglist 4 ........................... <0, 1, 0, 1>
+  [414] extcall 109 ............................. <rect(0, 1, 0, 1)>
+  [416] add ..................................... <tR + rect(0, 1, 0, 1)>
+  [417] getlocal 2 .............................. <tBlackImg>
+  [419] getobjprop 109 .......................... <tBlackImg.rect>
+  [421] pushsymb 86 ............................. <#ink>
+  [423] pushint8 36 ............................. <36>
+  [425] pusharglist 2 ........................... <[#ink: 36]>
+  [427] pushproplist ............................ <[#ink: 36]>
+  [428] pusharglistnoret 5 ...................... <pPhotoMember.image, tBlackImg, tR + rect(0, 1, 0, 1), tBlackImg.rect, [#ink: 36]>
+  [430] objcall 118 ............................. pPhotoMember.image.copyPixels(tBlackImg, tR + rect(0, 1, 0, 1), tBlackImg.rect, [#ink: 36])
+  [432] getprop 164 ............................. <pPhotoMember>
+  [434] getchainedprop 111 ...................... <pPhotoMember.image>
+  [436] getlocal 2 .............................. <tBlackImg>
+  [438] getlocal 6 .............................. <tR>
+  [440] pushzero ................................ <0>
+  [441] pushint8 1 .............................. <1>
+  [443] inv ..................................... <-1>
+  [444] pushzero ................................ <0>
+  [445] pushint8 1 .............................. <1>
+  [447] inv ..................................... <-1>
+  [448] pusharglist 4 ........................... <0, -1, 0, -1>
+  [450] extcall 109 ............................. <rect(0, -1, 0, -1)>
+  [452] add ..................................... <tR + rect(0, -1, 0, -1)>
+  [453] getlocal 2 .............................. <tBlackImg>
+  [455] getobjprop 109 .......................... <tBlackImg.rect>
+  [457] pushsymb 86 ............................. <#ink>
+  [459] pushint8 36 ............................. <36>
+  [461] pusharglist 2 ........................... <[#ink: 36]>
+  [463] pushproplist ............................ <[#ink: 36]>
+  [464] pusharglistnoret 5 ...................... <pPhotoMember.image, tBlackImg, tR + rect(0, -1, 0, -1), tBlackImg.rect, [#ink: 36]>
+  [466] objcall 118 ............................. pPhotoMember.image.copyPixels(tBlackImg, tR + rect(0, -1, 0, -1), tBlackImg.rect, [#ink: 36])
+  [468] getprop 164 ............................. <pPhotoMember>
+  [470] getchainedprop 111 ...................... <pPhotoMember.image>
+  [472] getlocal 3 .............................. <tWhiteImg>
+  [474] getlocal 6 .............................. <tR>
+  [476] getlocal 2 .............................. <tBlackImg>
+  [478] getobjprop 109 .......................... <tBlackImg.rect>
+  [480] pushsymb 86 ............................. <#ink>
+  [482] pushint8 36 ............................. <36>
+  [484] pusharglist 2 ........................... <[#ink: 36]>
+  [486] pushproplist ............................ <[#ink: 36]>
+  [487] pusharglistnoret 5 ...................... <pPhotoMember.image, tWhiteImg, tR, tBlackImg.rect, [#ink: 36]>
+  [489] objcall 118 ............................. pPhotoMember.image.copyPixels(tWhiteImg, tR, tBlackImg.rect, [#ink: 36])
+  [491] getprop 23 .............................. <pWindowID>
+  [493] pusharglist 1 ........................... <pWindowID>
+  [495] extcall 39 .............................. <getWindow(pWindowID)>
+  [497] pushcons 5 .............................. <"photo_picture">
+  [499] pusharglist 2 ........................... <getWindow(pWindowID), "photo_picture">
+  [501] objcall 49 .............................. <getWindow(pWindowID).getElement("photo_picture")>
+  [503] pushsymb 50 ............................. <#buffer>
+  [505] getprop 164 ............................. <pPhotoMember>
+  [507] pusharglistnoret 3 ...................... <getWindow(pWindowID).getElement("photo_picture"), #buffer, pPhotoMember>
+  [509] objcall 53 .............................. getWindow(pWindowID).getElement("photo_picture").setProperty(#buffer, pPhotoMember)
+  [511] ret
+end
+
+on openPhoto me, tItemID, tLocX, tLocY
+  [  0] getprop 23 .............................. <pWindowID>
+  [  2] pusharglist 1 ........................... <pWindowID>
+  [  4] extcall 33 .............................. <windowExists(pWindowID)>
+  [  6] jmpifz [ 15] ............................ if windowExists(pWindowID) then
+  [  9] getprop 23 .............................. <pWindowID>
+  [ 11] pusharglistnoret 1 ...................... <pWindowID>
+  [ 13] extcall 34 .............................. removeWindow(pWindowID)
+  [ 15] getparam 2 .............................. <tLocX>
+  [ 17] setprop 197 ............................. pLocX = tLocX
+  [ 19] getparam 3 .............................. <tLocY>
+  [ 21] setprop 198 ............................. pLocY = tLocY
+  [ 23] pushcons 6 .............................. <"itemdata_received">
+  [ 25] getparam 1 .............................. <tItemID>
+  [ 27] pusharglist 1 ........................... <tItemID>
+  [ 29] extcall 200 ............................. <integer(tItemID)>
+  [ 31] joinstr ................................. <"itemdata_received" & integer(tItemID)>
+  [ 32] pusharglist 1 ........................... <"itemdata_received" & integer(tItemID)>
+  [ 34] extcall 199 ............................. <symbol("itemdata_received" & integer(tItemID))>
+  [ 36] getparam 0 .............................. <me>
+  [ 38] pusharglist 1 ........................... <me>
+  [ 40] objcall 31 .............................. <me.getID()>
+  [ 42] pushsymb 158 ............................ <#setItemData>
+  [ 44] pusharglistnoret 3 ...................... <symbol("itemdata_received" & integer(tItemID)), me.getID(), #setItemData>
+  [ 46] extcall 57 .............................. registerMessage(symbol("itemdata_received" & integer(tItemID)), me.getID(), #setItemData)
+  [ 48] pushcons 7 .............................. <"connection.room.id">
+  [ 50] pusharglist 1 ........................... <"connection.room.id">
+  [ 52] extcall 55 .............................. <getVariable("connection.room.id")>
+  [ 54] pusharglist 1 ........................... <getVariable("connection.room.id")>
+  [ 56] extcall 54 .............................. <getConnection(getVariable("connection.room.id"))>
+  [ 58] pushcons 8 .............................. <"G_IDATA">
+  [ 60] pushsymb 200 ............................ <#integer>
+  [ 62] getparam 1 .............................. <tItemID>
+  [ 64] pusharglist 1 ........................... <tItemID>
+  [ 66] extcall 200 ............................. <integer(tItemID)>
+  [ 68] pusharglist 2 ........................... <[#integer: integer(tItemID)]>
+  [ 70] pushproplist ............................ <[#integer: integer(tItemID)]>
+  [ 71] pusharglistnoret 3 ...................... <getConnection(getVariable("connection.room.id")), "G_IDATA", [#integer: integer(tItemID)]>
+  [ 73] objcall 56 .............................. getConnection(getVariable("connection.room.id")).send("G_IDATA", [#integer: integer(tItemID)])
+  [ 75] ret
+end
+
+on countCS me, tImg
+  [  0] pushint8 3 .............................. <3>
+  [  2] pushint8 2 .............................. <2>
+  [  4] pushint8 73 ............................. <73>
+  [  6] pushint8 28 ............................. <28>
+  [  8] pushint8 83 ............................. <83>
+  [ 10] pushint8 21 ............................. <21>
+  [ 12] pushint8 43 ............................. <43>
+  [ 14] pushint8 90 ............................. <90>
+  [ 16] pushint8 92 ............................. <92>
+  [ 18] pushint8 91 ............................. <91>
+  [ 20] pushint8 37 ............................. <37>
+  [ 22] pushint8 4 .............................. <4>
+  [ 24] pushint8 3 .............................. <3>
+  [ 26] pushint8 84 ............................. <84>
+  [ 28] pushint8 12 ............................. <12>
+  [ 30] pushint8 102 ............................ <102>
+  [ 32] pushint8 103 ............................ <103>
+  [ 34] pushint8 108 ............................ <108>
+  [ 36] pushint8 97 ............................. <97>
+  [ 38] pushint8 43 ............................. <43>
+  [ 40] pushint8 44 ............................. <44>
+  [ 42] pushint8 89 ............................. <89>
+  [ 44] pushint8 109 ............................ <109>
+  [ 46] pushint8 65 ............................. <65>
+  [ 48] pushint8 61 ............................. <61>
+  [ 50] pushint8 4 .............................. <4>
+  [ 52] inv ..................................... <-4>
+  [ 53] pushint8 76 ............................. <76>
+  [ 55] pusharglist 27 .......................... <[3, 2, 73, 28, 83, 21, 43, 90, 92, 91, 37, 4, 3, 84, 12, 102, 103, 108, 97, 43, 44, 89, 109, 65, 61, -4, 76]>
+  [ 57] pushlist ................................ <[3, 2, 73, 28, 83, 21, 43, 90, 92, 91, 37, 4, 3, 84, 12, 102, 103, 108, 97, 43, 44, 89, 109, 65, 61, -4, 76]>
+  [ 58] setlocal 0 .............................. tL = [3, 2, 73, 28, 83, 21, 43, 90, 92, 91, 37, 4, 3, 84, 12, 102, 103, 108, 97, 43, 44, 89, 109, 65, 61, -4, 76]
+  [ 60] pushzero ................................ <0>
+  [ 61] setlocal 1 .............................. tA = 0
+  [ 63] getparam 1 .............................. <tImg>
+  [ 65] getobjprop 65 ........................... <tImg.width>
+  [ 67] setlocal 2 .............................. tW = tImg.width
+  [ 69] getparam 1 .............................. <tImg>
+  [ 71] getobjprop 66 ........................... <tImg.height>
+  [ 73] setlocal 3 .............................. tH = tImg.height
+  [ 75] pushint8 1 .............................. <1>
+  [ 77] setlocal 4
+  [ 79] getlocal 4
+  [ 81] pushint8 100 ............................ <100>
+  [ 83] lteq
+  [ 84] jmpifz [145] ............................ repeat with i = 1 to 100
+  [ 87] getlocal 1 .............................. <tA>
+  [ 89] getparam 1 .............................. <tImg>
+  [ 91] getlocal 4 .............................. <i>
+  [ 93] getlocal 2 .............................. <tW>
+  [ 95] mod ..................................... <i mod tW>
+  [ 96] getlocal 4 .............................. <i>
+  [ 98] getlocal 4 .............................. <i>
+  [100] mul ..................................... <i * i>
+  [101] getlocal 3 .............................. <tH>
+  [103] mod ..................................... <i * i mod tH>
+  [104] pusharglist 3 ........................... <tImg, i mod tW, i * i mod tH>
+  [106] objcall 202 ............................. <tImg.getPixel(i mod tW, i * i mod tH)>
+  [108] getobjprop 203 .......................... <tImg.getPixel(i mod tW, i * i mod tH).paletteIndex>
+  [110] getlocal 0 .............................. <tL>
+  [112] getlocal 4 .............................. <i>
+  [114] getlocal 0 .............................. <tL>
+  [116] getobjprop 136 .......................... <tL.count>
+  [118] mod ..................................... <i mod tL.count>
+  [119] pushint8 1 .............................. <1>
+  [121] add ..................................... <(i mod tL.count) + 1>
+  [122] pusharglist 2 ........................... <tL, (i mod tL.count) + 1>
+  [124] objcall 137 ............................. <tL[(i mod tL.count) + 1]>
+  [126] mul ..................................... <tImg.getPixel(i mod tW, i * i mod tH).paletteIndex * tL[(i mod tL.count) + 1]>
+  [127] add ..................................... <tA + (tImg.getPixel(i mod tW, i * i mod tH).paletteIndex * tL[(i mod tL.count) + 1])>
+  [128] pushint32 85000 ......................... <85000>
+  [133] mod ..................................... <(tA + (tImg.getPixel(i mod tW, i * i mod tH).paletteIndex * tL[(i mod tL.count) + 1])) mod 85000>
+  [134] setlocal 1 .............................. tA = (tA + (tImg.getPixel(i mod tW, i * i mod tH).paletteIndex * tL[(i mod tL.count) + 1])) mod 85000
+  [136] pushint8 1
+  [138] getlocal 4
+  [140] add
+  [141] setlocal 4
+  [143] endrepeat [ 79]
+  [145] getlocal 1 .............................. <tA>
+  [147] pusharglistnoret 1 ...................... <tA>
+  [149] extcall 27 .............................. return tA
+  [151] ret
+end
+
+on setFilm me, tFilm
+  [  0] getparam 1 .............................. <tFilm>
+  [  2] setprop 207 ............................. pFilm = tFilm
+  [  4] getparam 0 .............................. <me>
+  [  6] pusharglist 1 ........................... <me>
+  [  8] objcall 100 ............................. <me.getInterface()>
+  [ 10] pusharglistnoret 1 ...................... <me.getInterface()>
+  [ 12] objcall 10 .............................. me.getInterface().setButtonHilites()
+  [ 14] getparam 0 .............................. <me>
+  [ 16] pusharglist 1 ........................... <me>
+  [ 18] objcall 100 ............................. <me.getInterface()>
+  [ 20] pusharglistnoret 1 ...................... <me.getInterface()>
+  [ 22] objcall 4 ............................... me.getInterface().updateFilm()
+  [ 24] ret
+end
+
+on getFilm me
+  [  0] getprop 207 ............................. <pFilm>
+  [  2] pusharglistnoret 1 ...................... <pFilm>
+  [  4] extcall 27 .............................. return pFilm
+  [  6] ret
+end
+
+on setItemData me, tMsg
+  [  0] getparam 1 .............................. <tMsg>
+  [  2] pushsymb 210 ............................ <#id>
+  [  4] pusharglist 2 ........................... <tMsg, #id>
+  [  6] objcall 137 ............................. <tMsg[#id]>
+  [  8] setprop 209 ............................. pItemId = tMsg[#id]
+  [ 10] getprop 209 ............................. <pItemId>
+  [ 12] setprop 211 ............................. pPhotoId = pItemId
+  [ 14] getparam 1 .............................. <tMsg>
+  [ 16] pushsymb 212 ............................ <#text>
+  [ 18] pusharglist 2 ........................... <tMsg, #text>
+  [ 20] objcall 137 ............................. <tMsg[#text]>
+  [ 22] pushsymb 213 ............................ <#line>
+  [ 24] pushint8 1 .............................. <1>
+  [ 26] pusharglist 3 ........................... <tMsg[#text], #line, 1>
+  [ 28] objcall 214 ............................. <tMsg[#text].line[1]>
+  [ 30] pushsymb 215 ............................ <#word>
+  [ 32] pushint8 1 .............................. <1>
+  [ 34] pusharglist 3 ........................... <tMsg[#text].line[1], #word, 1>
+  [ 36] objcall 216 ............................. <tMsg[#text].line[1].word[1]>
+  [ 38] setlocal 0 .............................. tAuthId = tMsg[#text].line[1].word[1]
+  [ 40] getparam 1 .............................. <tMsg>
+  [ 42] pushsymb 212 ............................ <#text>
+  [ 44] pusharglist 2 ........................... <tMsg, #text>
+  [ 46] objcall 137 ............................. <tMsg[#text]>
+  [ 48] pushsymb 213 ............................ <#line>
+  [ 50] pushint8 1 .............................. <1>
+  [ 52] pusharglist 3 ........................... <tMsg[#text], #line, 1>
+  [ 54] objcall 214 ............................. <tMsg[#text].line[1]>
+  [ 56] pushsymb 215 ............................ <#word>
+  [ 58] pushint8 2 .............................. <2>
+  [ 60] pushint8 3 .............................. <3>
+  [ 62] pusharglist 4 ........................... <tMsg[#text].line[1], #word, 2, 3>
+  [ 64] objcall 216 ............................. <tMsg[#text].line[1].word[2..3]>
+  [ 66] setprop 187 ............................. pPhotoTime = tMsg[#text].line[1].word[2..3]
+  [ 68] getparam 1 .............................. <tMsg>
+  [ 70] pushsymb 212 ............................ <#text>
+  [ 72] pusharglist 2 ........................... <tMsg, #text>
+  [ 74] objcall 137 ............................. <tMsg[#text]>
+  [ 76] pushsymb 213 ............................ <#line>
+  [ 78] pushint8 2 .............................. <2>
+  [ 80] getparam 1 .............................. <tMsg>
+  [ 82] pushsymb 212 ............................ <#text>
+  [ 84] pusharglist 2 ........................... <tMsg, #text>
+  [ 86] objcall 137 ............................. <tMsg[#text]>
+  [ 88] pushsymb 213 ............................ <#line>
+  [ 90] pusharglist 2 ........................... <tMsg[#text], #line>
+  [ 92] objcall 136 ............................. <tMsg[#text].line.count>
+  [ 94] pusharglist 4 ........................... <tMsg[#text], #line, 2, tMsg[#text].line.count>
+  [ 96] objcall 216 ............................. <tMsg[#text].line[2..tMsg[#text].line.count]>
+  [ 98] setprop 184 ............................. pPhotoText = tMsg[#text].line[2..tMsg[#text].line.count]
+  [100] getparam 0 .............................. <me>
+  [102] getprop 184 ............................. <pPhotoText>
+  [104] pusharglist 2 ........................... <me, pPhotoText>
+  [106] objcall 159 ............................. <me.convertScandinavian(pPhotoText)>
+  [108] setprop 184 ............................. pPhotoText = me.convertScandinavian(pPhotoText)
+  [110] pushcons 6 .............................. <"itemdata_received">
+  [112] getprop 209 ............................. <pItemId>
+  [114] joinstr ................................. <"itemdata_received" & pItemId>
+  [115] pusharglist 1 ........................... <"itemdata_received" & pItemId>
+  [117] extcall 199 ............................. <symbol("itemdata_received" & pItemId)>
+  [119] getparam 0 .............................. <me>
+  [121] pusharglist 1 ........................... <me>
+  [123] objcall 31 .............................. <me.getID()>
+  [125] pusharglistnoret 2 ...................... <symbol("itemdata_received" & pItemId), me.getID()>
+  [127] extcall 29 .............................. unregisterMessage(symbol("itemdata_received" & pItemId), me.getID())
+  [129] getprop 197 ............................. <pLocX>
+  [131] pushint16 500 ........................... <500>
+  [134] gt ...................................... <pLocX > 500>
+  [135] jmpifz [143] ............................ if pLocX > 500 then
+  [138] pushint16 500 ........................... <500>
+  [141] setprop 197 ............................. pLocX = 500
+  [143] getprop 198 ............................. <pLocY>
+  [145] pushint8 100 ............................ <100>
+  [147] lt ...................................... <pLocY < 100>
+  [148] jmpifz [155] ............................ if pLocY < 100 then
+  [151] pushint8 100 ............................ <100>
+  [153] setprop 198 ............................. pLocY = 100
+  [155] getprop 23 .............................. <pWindowID>
+  [157] pusharglist 1 ........................... <pWindowID>
+  [159] extcall 33 .............................. <windowExists(pWindowID)>
+  [161] jmpifz [170] ............................ if windowExists(pWindowID) then
+  [164] getprop 23 .............................. <pWindowID>
+  [166] pusharglistnoret 1 ...................... <pWindowID>
+  [168] extcall 34 .............................. removeWindow(pWindowID)
+  [170] getprop 23 .............................. <pWindowID>
+  [172] pusharglist 1 ........................... <pWindowID>
+  [174] extcall 38 .............................. <createWindow(pWindowID)>
+  [176] not ..................................... <not createWindow(pWindowID)>
+  [177] jmpifz [185] ............................ if not createWindow(pWindowID) then
+  [180] pushzero ................................ <0>
+  [181] pusharglistnoret 1 ...................... <0>
+  [183] extcall 27 .............................. return 0
+  [185] getprop 23 .............................. <pWindowID>
+  [187] pusharglist 1 ........................... <pWindowID>
+  [189] extcall 39 .............................. <getWindow(pWindowID)>
+  [191] setlocal 1 .............................. tWndObj = getWindow(pWindowID)
+  [193] getlocal 1 .............................. <tWndObj>
+  [195] pushcons 9 .............................. <"photo_window.window">
+  [197] pusharglistnoret 2 ...................... <tWndObj, "photo_window.window">
+  [199] objcall 40 .............................. tWndObj.merge("photo_window.window")
+  [201] getlocal 1 .............................. <tWndObj>
+  [203] getprop 197 ............................. <pLocX>
+  [205] getprop 198 ............................. <pLocY>
+  [207] pusharglistnoret 3 ...................... <tWndObj, pLocX, pLocY>
+  [209] objcall 41 .............................. tWndObj.moveTo(pLocX, pLocY)
+  [211] getlocal 1 .............................. <tWndObj>
+  [213] pushsymb 160 ............................ <#eventProcPhotoMouseDown>
+  [215] getparam 0 .............................. <me>
+  [217] pusharglist 1 ........................... <me>
+  [219] objcall 31 .............................. <me.getID()>
+  [221] pushsymb 42 ............................. <#mouseDown>
+  [223] pusharglistnoret 4 ...................... <tWndObj, #eventProcPhotoMouseDown, me.getID(), #mouseDown>
+  [225] objcall 43 .............................. tWndObj.registerProcedure(#eventProcPhotoMouseDown, me.getID(), #mouseDown)
+  [227] getprop 163 ............................. <pPhotoCache>
+  [229] getprop 211 ............................. <pPhotoId>
+  [231] pusharglist 2 ........................... <pPhotoCache, pPhotoId>
+  [233] objcall 217 ............................. <pPhotoCache.getaProp(pPhotoId)>
+  [235] pusharglist 0 ........................... <>
+  [237] extcall 92 .............................. <VOID>
+  [239] eq ...................................... <pPhotoCache.getaProp(pPhotoId) = VOID>
+  [240] jmpifz [260] ............................ if pPhotoCache.getaProp(pPhotoId) = VOID then / else
+  [243] getprop 211 ............................. <pPhotoId>
+  [245] getlocal 0 .............................. <tAuthId>
+  [247] getparam 0 .............................. <me>
+  [249] pusharglist 1 ........................... <me>
+  [251] objcall 31 .............................. <me.getID()>
+  [253] pusharglistnoret 3 ...................... <pPhotoId, tAuthId, me.getID()>
+  [255] extcall 218 ............................. retrieveBinaryData(pPhotoId, tAuthId, me.getID())
+  [257] jmp [276]
+  [260] getparam 0 .............................. <me>
+  [262] getprop 163 ............................. <pPhotoCache>
+  [264] getprop 211 ............................. <pPhotoId>
+  [266] pusharglist 2 ........................... <pPhotoCache, pPhotoId>
+  [268] objcall 217 ............................. <pPhotoCache.getaProp(pPhotoId)>
+  [270] getprop 211 ............................. <pPhotoId>
+  [272] pusharglistnoret 3 ...................... <me, pPhotoCache.getaProp(pPhotoId), pPhotoId>
+  [274] objcall 154 ............................. me.binaryDataReceived(pPhotoCache.getaProp(pPhotoId), pPhotoId)
+  [276] pushsymb 220 ............................ <#session>
+  [278] pusharglist 1 ........................... <#session>
+  [280] extcall 219 ............................. <getObject(#session)>
+  [282] pushcons 10 ............................. <"room_owner">
+  [284] pusharglist 2 ........................... <getObject(#session), "room_owner">
+  [286] objcall 221 ............................. <getObject(#session).get("room_owner")>
+  [288] setlocal 2 .............................. tOwner = getObject(#session).get("room_owner")
+  [290] pushsymb 220 ............................ <#session>
+  [292] pusharglist 1 ........................... <#session>
+  [294] extcall 219 ............................. <getObject(#session)>
+  [296] pushcons 11 ............................. <"user_rights">
+  [298] pusharglist 2 ........................... <getObject(#session), "user_rights">
+  [300] objcall 221 ............................. <getObject(#session).get("user_rights")>
+  [302] pushcons 12 ............................. <"fuse_remove_photos">
+  [304] pusharglist 2 ........................... <getObject(#session).get("user_rights"), "fuse_remove_photos">
+  [306] objcall 222 ............................. <getObject(#session).get("user_rights").getOne("fuse_remove_photos")>
+  [308] setlocal 3 .............................. tCanRemovePhotos = getObject(#session).get("user_rights").getOne("fuse_remove_photos")
+  [310] getlocal 2 .............................. <tOwner>
+  [312] not ..................................... <not tOwner>
+  [313] getlocal 3 .............................. <tCanRemovePhotos>
+  [315] not ..................................... <not tCanRemovePhotos>
+  [316] and ..................................... <not tOwner and not tCanRemovePhotos>
+  [317] jmpifz [335] ............................ if not tOwner and not tCanRemovePhotos then
+  [320] getlocal 1 .............................. <tWndObj>
+  [322] pushcons 13 ............................. <"photo_remove">
+  [324] pusharglist 2 ........................... <tWndObj, "photo_remove">
+  [326] objcall 49 .............................. <tWndObj.getElement("photo_remove")>
+  [328] pushsymb 52 ............................. <#visible>
+  [330] pushzero ................................ <0>
+  [331] pusharglistnoret 3 ...................... <tWndObj.getElement("photo_remove"), #visible, 0>
+  [333] objcall 53 .............................. tWndObj.getElement("photo_remove").setProperty(#visible, 0)
+  [335] ret
+end
+
+on convertScandinavian me, tString
+  [  0] getparam 1 .............................. <tString>
+  [  2] getobjprop 188 .......................... <tString.length>
+  [  4] pushint8 6 .............................. <6>
+  [  6] lt ...................................... <tString.length < 6>
+  [  7] jmpifz [ 16] ............................ if tString.length < 6 then
+  [ 10] getparam 1 .............................. <tString>
+  [ 12] pusharglistnoret 1 ...................... <tString>
+  [ 14] extcall 27 .............................. return tString
+  [ 16] pushcons 14 ............................. <"&AUML;">
+  [ 18] pushcons 15 ............................. <"\xC4">
+  [ 20] pushcons 16 ............................. <"&OUML;">
+  [ 22] pushcons 17 ............................. <"\x85">
+  [ 24] pushcons 18 ............................. <"&auml;">
+  [ 26] pushcons 19 ............................. <"\x8A">
+  [ 28] pushcons 20 ............................. <"&ouml;">
+  [ 30] pushcons 21 ............................. <"\x9A">
+  [ 32] pusharglist 8 ........................... <["&AUML;": "\xC4", "&OUML;": "\x85", "&auml;": "\x8A", "&ouml;": "\x9A"]>
+  [ 34] pushproplist ............................ <["&AUML;": "\xC4", "&OUML;": "\x85", "&auml;": "\x8A", "&ouml;": "\x9A"]>
+  [ 35] setlocal 0 .............................. tEncArray = ["&AUML;": "\xC4", "&OUML;": "\x85", "&auml;": "\x8A", "&ouml;": "\x9A"]
+  [ 37] pushcons 3 .............................. <EMPTY>
+  [ 39] setlocal 1 .............................. tOutputStr = EMPTY
+  [ 41] pushint8 1 .............................. <1>
+  [ 43] setlocal 2
+  [ 45] getlocal 2
+  [ 47] getparam 1 .............................. <tString>
+  [ 49] getobjprop 188 .......................... <tString.length>
+  [ 51] lteq
+  [ 52] jmpifz [151] ............................ repeat with i = 1 to tString.length
+  [ 55] getparam 1 .............................. <tString>
+  [ 57] pushsymb 227 ............................ <#char>
+  [ 59] getlocal 2 .............................. <i>
+  [ 61] pusharglist 3 ........................... <tString, #char, i>
+  [ 63] objcall 216 ............................. <tString.char[i]>
+  [ 65] setlocal 3 .............................. tChar = tString.char[i]
+  [ 67] getlocal 3 .............................. <tChar>
+  [ 69] pushcons 22 ............................. <"&">
+  [ 71] eq ...................................... <tChar = "&">
+  [ 72] not ..................................... <not (tChar = "&")>
+  [ 73] jmpifz [ 85] ............................ if not (tChar = "&") then
+  [ 76] getlocal 3 .............................. <tChar>
+  [ 78] pushint8 1 .............................. <1>
+  [ 80] put 37 .................................. put tChar after tOutputStr
+  [ 82] jmp [142] ............................... next repeat
+  [ 85] getparam 1 .............................. <tString>
+  [ 87] getlocal 2 .............................. <i>
+  [ 89] getlocal 2 .............................. <i>
+  [ 91] pushint8 5 .............................. <5>
+  [ 93] add ..................................... <i + 5>
+  [ 94] pusharglist 3 ........................... <tString, i, i + 5>
+  [ 96] extcall 228 ............................. <chars(tString, i, i + 5)>
+  [ 98] setlocal 4 .............................. tChunkArr = chars(tString, i, i + 5)
+  [100] getlocal 0 .............................. <tEncArray>
+  [102] getlocal 4 .............................. <tChunkArr>
+  [104] pusharglist 2 ........................... <tEncArray, tChunkArr>
+  [106] extcall 217 ............................. <getaProp(tEncArray, tChunkArr)>
+  [108] setlocal 5 .............................. tChunkScan = getaProp(tEncArray, tChunkArr)
+  [110] getlocal 5 .............................. <tChunkScan>
+  [112] pusharglist 0 ........................... <>
+  [114] extcall 92 .............................. <VOID>
+  [116] nteq .................................... <tChunkScan <> VOID>
+  [117] jmpifz [136] ............................ if tChunkScan <> VOID then
+  [120] getlocal 5 .............................. <tChunkScan>
+  [122] pushint8 1 .............................. <1>
+  [124] put 37 .................................. put tChunkScan after tOutputStr
+  [126] getlocal 2 .............................. <i>
+  [128] pushint8 5 .............................. <5>
+  [130] add ..................................... <i + 5>
+  [131] setlocal 2 .............................. i = i + 5
+  [133] jmp [142] ............................... next repeat
+  [136] pushcons 22 ............................. <"&">
+  [138] pushint8 1 .............................. <1>
+  [140] put 37 .................................. put "&" after tOutputStr
+  [142] pushint8 1
+  [144] getlocal 2
+  [146] add
+  [147] setlocal 2
+  [149] endrepeat [ 45]
+  [151] getlocal 1 .............................. <tOutputStr>
+  [153] pusharglistnoret 1 ...................... <tOutputStr>
+  [155] extcall 27 .............................. return tOutputStr
+  [157] ret
+end
+
+on eventProcPhotoMouseDown me, tEvent, tElemID, tParam
+  [  0] getparam 2 .............................. <tElemID>
+  [  2] peek 0 .................................. case tElemID of
+  [  4] pushcons 23 ............................. <"photo_close">
+  [  6] eq
+  [  7] jmpifz [ 19] ............................ (case) "photo_close":
+  [ 10] getprop 23 .............................. <pWindowID>
+  [ 12] pusharglistnoret 1 ...................... <pWindowID>
+  [ 14] extcall 34 .............................. removeWindow(pWindowID)
+  [ 16] jmp [ 58]
+  [ 19] peek 0
+  [ 21] pushcons 13 ............................. <"photo_remove">
+  [ 23] eq
+  [ 24] jmpifz [ 58] ............................ (case) "photo_remove":
+  [ 27] pushcons 24 ............................. <"room">
+  [ 29] pusharglist 1 ........................... <"room">
+  [ 31] extcall 90 .............................. <getThread("room")>
+  [ 33] pusharglist 1 ........................... <getThread("room")>
+  [ 35] objcall 62 .............................. <getThread("room").getComponent()>
+  [ 37] pusharglist 1 ........................... <getThread("room").getComponent()>
+  [ 39] objcall 235 ............................. <getThread("room").getComponent().getRoomConnection()>
+  [ 41] pushcons 25 ............................. <"REMOVEITEM">
+  [ 43] getprop 209 ............................. <pItemId>
+  [ 45] pusharglist 3 ........................... <getThread("room").getComponent().getRoomConnection(), "REMOVEITEM", pItemId>
+  [ 47] objcall 56 .............................. <getThread("room").getComponent().getRoomConnection().send("REMOVEITEM", pItemId)>
+  [ 49] jmpifz [ 58] ............................ if getThread("room").getComponent().getRoomConnection().send("REMOVEITEM", pItemId) then
+  [ 52] getprop 23 .............................. <pWindowID>
+  [ 54] pusharglistnoret 1 ...................... <pWindowID>
+  [ 56] extcall 34 .............................. removeWindow(pWindowID)
+  [ 58] pop 1 ................................... end case
+  [ 60] ret
+end

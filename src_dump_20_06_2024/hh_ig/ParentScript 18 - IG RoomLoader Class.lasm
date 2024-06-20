@@ -1,0 +1,273 @@
+on construct me
+  [  0] pushint8 1 .............................. <1>
+  [  2] pusharglistnoret 1 ...................... <1>
+  [  4] extcall 38 .............................. return 1
+  [  6] ret
+end
+
+on deconstruct me
+  [  0] getparam 0 .............................. <me>
+  [  2] getchainedprop 470 ...................... <me.ancestor>
+  [  5] pusharglist 1 ........................... <me.ancestor>
+  [  7] objcall 1 ............................... <me.ancestor.deconstruct()>
+  [  9] pusharglistnoret 1 ...................... <me.ancestor.deconstruct()>
+  [ 11] extcall 38 .............................. return me.ancestor.deconstruct()
+  [ 13] ret
+end
+
+on constructArena me, tdata, tMsg
+  [  0] getparam 2 .............................. <tMsg>
+  [  2] getobjprop 202 .......................... <tMsg.connection>
+  [  4] setlocal 0 .............................. tConn = tMsg.connection
+  [  6] getparam 0 .............................. <me>
+  [  8] pusharglist 1 ........................... <me>
+  [ 10] objcall 419 ............................. <me.getMainThread()>
+  [ 13] setlocal 1 .............................. tMainThread = me.getMainThread()
+  [ 15] getlocal 1 .............................. <tMainThread>
+  [ 17] pushzero ................................ <0>
+  [ 18] eq ...................................... <tMainThread = 0>
+  [ 19] jmpifz [ 27] ............................ if tMainThread = 0 then
+  [ 22] pushzero ................................ <0>
+  [ 23] pusharglistnoret 1 ...................... <0>
+  [ 25] extcall 38 .............................. return 0
+  [ 27] pushsymb 608 ............................ <#room>
+  [ 30] pusharglist 1 ........................... <#room>
+  [ 32] extcall 265 ............................. <getThread(#room)>
+  [ 35] setlocal 2 .............................. tRoomThread = getThread(#room)
+  [ 37] getlocal 2 .............................. <tRoomThread>
+  [ 39] pushzero ................................ <0>
+  [ 40] eq ...................................... <tRoomThread = 0>
+  [ 41] jmpifz [ 49] ............................ if tRoomThread = 0 then
+  [ 44] pushzero ................................ <0>
+  [ 45] pusharglistnoret 1 ...................... <0>
+  [ 47] extcall 38 .............................. return 0
+  [ 49] getlocal 2 .............................. <tRoomThread>
+  [ 51] pusharglist 1 ........................... <tRoomThread>
+  [ 53] objcall 43 .............................. <tRoomThread.getComponent()>
+  [ 55] setlocal 3 .............................. tRoomComponent = tRoomThread.getComponent()
+  [ 57] pushsymb 269 ............................ <#hide_navigator>
+  [ 60] pushsymb 637 ............................ <#Remove>
+  [ 63] pusharglistnoret 2 ...................... <#hide_navigator, #Remove>
+  [ 65] extcall 79 .............................. executeMessage(#hide_navigator, #Remove)
+  [ 67] getparam 1 .............................. <tdata>
+  [ 69] pushsymb 280 ............................ <#room_marker>
+  [ 72] pusharglist 2 ........................... <tdata, #room_marker>
+  [ 74] objcall 256 ............................. <tdata.getaProp(#room_marker)>
+  [ 77] setlocal 4 .............................. tMarker = tdata.getaProp(#room_marker)
+  [ 79] getlocal 3 .............................. <tRoomComponent>
+  [ 81] pushsymb 638 ............................ <#game>
+  [ 84] setobjprop 639 .......................... tRoomComponent.pRoomId = #game
+  [ 87] pusharglist 0 ........................... <[:]>
+  [ 89] pushproplist ............................ <[:]>
+  [ 90] setlocal 5 .............................. tSaveData = [:]
+  [ 92] getlocal 5 .............................. <tSaveData>
+  [ 94] pushsymb 640 ............................ <#type>
+  [ 97] pushsymb 638 ............................ <#game>
+  [100] pusharglistnoret 3 ...................... <tSaveData, #type, #game>
+  [102] objcall 220 ............................. tSaveData.setaProp(#type, #game)
+  [104] getlocal 5 .............................. <tSaveData>
+  [106] pushsymb 214 ............................ <#id>
+  [108] getlocal 4 .............................. <tMarker>
+  [110] pusharglistnoret 3 ...................... <tSaveData, #id, tMarker>
+  [112] objcall 220 ............................. tSaveData.setaProp(#id, tMarker)
+  [114] getlocal 5 .............................. <tSaveData>
+  [116] pushsymb 641 ............................ <#marker>
+  [119] getlocal 4 .............................. <tMarker>
+  [121] pusharglistnoret 3 ...................... <tSaveData, #marker, tMarker>
+  [123] objcall 220 ............................. tSaveData.setaProp(#marker, tMarker)
+  [125] getlocal 3 .............................. <tRoomComponent>
+  [127] getlocal 5 .............................. <tSaveData>
+  [129] setobjprop 642 .......................... tRoomComponent.pSaveData = tSaveData
+  [132] pushsymb 267 ............................ <#session>
+  [135] pusharglist 1 ........................... <#session>
+  [137] extcall 85 .............................. <getObject(#session)>
+  [139] pushcons 0 .............................. <"lastroom">
+  [141] getlocal 5 .............................. <tSaveData>
+  [143] pusharglist 1 ........................... <tSaveData>
+  [145] objcall 471 ............................. <tSaveData.duplicate()>
+  [148] pusharglistnoret 3 ...................... <getObject(#session), "lastroom", tSaveData.duplicate()>
+  [150] objcall 268 ............................. getObject(#session).set("lastroom", tSaveData.duplicate())
+  [153] getparam 0 .............................. <me>
+  [155] getparam 1 .............................. <tdata>
+  [157] pushsymb 283 ............................ <#room_program_class>
+  [160] pusharglist 2 ........................... <tdata, #room_program_class>
+  [162] objcall 256 ............................. <tdata.getaProp(#room_program_class)>
+  [165] getlocal 4 .............................. <tMarker>
+  [167] pusharglistnoret 3 ...................... <me, tdata.getaProp(#room_program_class), tMarker>
+  [169] objcall 635 ............................. me.roomConnected(tdata.getaProp(#room_program_class), tMarker)
+  [172] pushsymb 212 ............................ <#gamesystem_sendevent>
+  [174] pushsymb 643 ............................ <#msgstruct_gamereset>
+  [177] getparam 2 .............................. <tMsg>
+  [179] pusharglistnoret 3 ...................... <#gamesystem_sendevent, #msgstruct_gamereset, tMsg>
+  [181] extcall 79 .............................. executeMessage(#gamesystem_sendevent, #msgstruct_gamereset, tMsg)
+  [183] getparam 0 .............................. <me>
+  [185] pusharglistnoret 1 ...................... <me>
+  [187] objcall 636 ............................. me.updateProcess()
+  [190] pushint8 1 .............................. <1>
+  [192] pusharglistnoret 1 ...................... <1>
+  [194] extcall 38 .............................. return 1
+  [196] ret
+end
+
+on exitArena me
+  [  0] pushsymb 608 ............................ <#room>
+  [  3] pusharglist 1 ........................... <#room>
+  [  5] extcall 265 ............................. <getThread(#room)>
+  [  8] setlocal 0 .............................. tRoomThread = getThread(#room)
+  [ 10] getlocal 0 .............................. <tRoomThread>
+  [ 12] pushzero ................................ <0>
+  [ 13] eq ...................................... <tRoomThread = 0>
+  [ 14] jmpifz [ 22] ............................ if tRoomThread = 0 then
+  [ 17] pushzero ................................ <0>
+  [ 18] pusharglistnoret 1 ...................... <0>
+  [ 20] extcall 38 .............................. return 0
+  [ 22] getlocal 0 .............................. <tRoomThread>
+  [ 24] pusharglist 1 ........................... <tRoomThread>
+  [ 26] objcall 43 .............................. <tRoomThread.getComponent()>
+  [ 28] setlocal 1 .............................. tComponent = tRoomThread.getComponent()
+  [ 30] getlocal 1 .............................. <tComponent>
+  [ 32] pusharglistnoret 1 ...................... <tComponent>
+  [ 34] objcall 648 ............................. tComponent.roomDisconnected()
+  [ 37] pushint8 1 .............................. <1>
+  [ 39] pusharglistnoret 1 ...................... <1>
+  [ 41] extcall 38 .............................. return 1
+  [ 43] ret
+end
+
+on roomConnected me, tClass, tMarker, tstate
+  [  0] pushsymb 608 ............................ <#room>
+  [  3] pusharglist 1 ........................... <#room>
+  [  5] extcall 265 ............................. <getThread(#room)>
+  [  8] setlocal 0 .............................. tRoomThread = getThread(#room)
+  [ 10] getlocal 0 .............................. <tRoomThread>
+  [ 12] pushzero ................................ <0>
+  [ 13] eq ...................................... <tRoomThread = 0>
+  [ 14] jmpifz [ 22] ............................ if tRoomThread = 0 then
+  [ 17] pushzero ................................ <0>
+  [ 18] pusharglistnoret 1 ...................... <0>
+  [ 20] extcall 38 .............................. return 0
+  [ 22] getlocal 0 .............................. <tRoomThread>
+  [ 24] pusharglist 1 ........................... <tRoomThread>
+  [ 26] objcall 43 .............................. <tRoomThread.getComponent()>
+  [ 28] setlocal 1 .............................. tComponent = tRoomThread.getComponent()
+  [ 30] getparam 2 .............................. <tMarker>
+  [ 32] pusharglist 1 ........................... <tMarker>
+  [ 34] extcall 103 ............................. <voidp(tMarker)>
+  [ 36] jmpifz [ 53] ............................ if voidp(tMarker) then
+  [ 39] getparam 0 .............................. <me>
+  [ 41] pushcons 1 .............................. <"Missing room marker!!!">
+  [ 43] pushsymb 635 ............................ <#roomConnected>
+  [ 46] pushsymb 649 ............................ <#major>
+  [ 49] pusharglistnoret 4 ...................... <me, "Missing room marker!!!", #roomConnected, #major>
+  [ 51] extcall 210 ............................. error(me, "Missing room marker!!!", #roomConnected, #major)
+  [ 53] getlocal 1 .............................. <tComponent>
+  [ 55] pushsymb 642 ............................ <#pSaveData>
+  [ 58] pushsymb 641 ............................ <#marker>
+  [ 61] getparam 2 .............................. <tMarker>
+  [ 63] pusharglistnoret 4 ...................... <tComponent, #pSaveData, #marker, tMarker>
+  [ 65] objcall 650 ............................. tComponent.pSaveData[#marker] = tMarker
+  [ 68] getlocal 1 .............................. <tComponent>
+  [ 70] pushint8 1 .............................. <1>
+  [ 72] pusharglistnoret 2 ...................... <tComponent, 1>
+  [ 74] objcall 368 ............................. tComponent.leaveRoom(1)
+  [ 77] getlocal 1 .............................. <tComponent>
+  [ 79] pusharglist 1 ........................... <tComponent>
+  [ 81] objcall 204 ............................. <tComponent.getInterface()>
+  [ 83] getparam 2 .............................. <tMarker>
+  [ 85] pusharglist 2 ........................... <tComponent.getInterface(), tMarker>
+  [ 87] objcall 651 ............................. <tComponent.getInterface().showRoom(tMarker)>
+  [ 90] not ..................................... <not tComponent.getInterface().showRoom(tMarker)>
+  [ 91] jmpifz [119] ............................ if not tComponent.getInterface().showRoom(tMarker) then
+  [ 94] getparam 0 .............................. <me>
+  [ 96] pushcons 2 .............................. <"Cannot showRoom:">
+  [ 98] getparam 2 .............................. <tMarker>
+  [100] joinpadstr .............................. <"Cannot showRoom:" && tMarker>
+  [101] pushsymb 635 ............................ <#roomConnected>
+  [104] pusharglistnoret 3 ...................... <me, "Cannot showRoom:" && tMarker, #roomConnected>
+  [106] extcall 210 ............................. error(me, "Cannot showRoom:" && tMarker, #roomConnected)
+  [108] pushsymb 368 ............................ <#leaveRoom>
+  [111] pusharglist 1 ........................... <#leaveRoom>
+  [113] extcall 79 .............................. <executeMessage(#leaveRoom)>
+  [115] pusharglistnoret 1 ...................... <executeMessage(#leaveRoom)>
+  [117] extcall 38 .............................. return executeMessage(#leaveRoom)
+  [119] getparam 1 .............................. <tClass>
+  [121] pusharglist 1 ........................... <tClass>
+  [123] extcall 390 ............................. <memberExists(tClass)>
+  [126] jmpifz [140] ............................ if memberExists(tClass) then
+  [129] getlocal 1 .............................. <tComponent>
+  [131] getobjprop 652 .......................... <tComponent.pRoomPrgID>
+  [134] getparam 1 .............................. <tClass>
+  [136] pusharglistnoret 2 ...................... <tComponent.pRoomPrgID, tClass>
+  [138] extcall 89 .............................. createObject(tComponent.pRoomPrgID, tClass)
+  [140] getlocal 1 .............................. <tComponent>
+  [142] pusharglist 1 ........................... <tComponent>
+  [144] objcall 653 ............................. <tComponent.getShadowManager()>
+  [147] setlocal 2 .............................. tShadowManager = tComponent.getShadowManager()
+  [149] getlocal 2 .............................. <tShadowManager>
+  [151] pushcons 3 .............................. <"roomShadow">
+  [153] pusharglistnoret 2 ...................... <tShadowManager, "roomShadow">
+  [155] objcall 450 ............................. tShadowManager.define("roomShadow")
+  [158] pushint8 1 .............................. <1>
+  [160] pusharglistnoret 1 ...................... <1>
+  [162] extcall 38 .............................. return 1
+  [164] ret
+end
+
+on updateProcess me, tKey, tValue
+  [  0] pushsymb 608 ............................ <#room>
+  [  3] pusharglist 1 ........................... <#room>
+  [  5] extcall 265 ............................. <getThread(#room)>
+  [  8] setlocal 0 .............................. tRoomThread = getThread(#room)
+  [ 10] getlocal 0 .............................. <tRoomThread>
+  [ 12] pushzero ................................ <0>
+  [ 13] eq ...................................... <tRoomThread = 0>
+  [ 14] jmpifz [ 22] ............................ if tRoomThread = 0 then
+  [ 17] pushzero ................................ <0>
+  [ 18] pusharglistnoret 1 ...................... <0>
+  [ 20] extcall 38 .............................. return 0
+  [ 22] getlocal 0 .............................. <tRoomThread>
+  [ 24] pusharglist 1 ........................... <tRoomThread>
+  [ 26] objcall 43 .............................. <tRoomThread.getComponent()>
+  [ 28] setlocal 1 .............................. tComponent = tRoomThread.getComponent()
+  [ 30] getlocal 1 .............................. <tComponent>
+  [ 32] pusharglist 1 ........................... <tComponent>
+  [ 34] objcall 204 ............................. <tComponent.getInterface()>
+  [ 36] pusharglistnoret 1 ...................... <tComponent.getInterface()>
+  [ 38] objcall 655 ............................. tComponent.getInterface().hideLoaderBar()
+  [ 41] getlocal 1 .............................. <tComponent>
+  [ 43] pusharglist 1 ........................... <tComponent>
+  [ 45] objcall 204 ............................. <tComponent.getInterface()>
+  [ 47] pusharglistnoret 1 ...................... <tComponent.getInterface()>
+  [ 49] objcall 656 ............................. tComponent.getInterface().hideTrashCover()
+  [ 52] getlocal 1 .............................. <tComponent>
+  [ 54] pushint8 1 .............................. <1>
+  [ 56] setobjprop 434 .......................... tComponent.pActiveFlag = 1
+  [ 59] getlocal 1 .............................. <tComponent>
+  [ 61] pushsymb 657 ............................ <#pChatProps>
+  [ 64] pushcons 4 .............................. <"mode">
+  [ 66] pushcons 5 .............................. <"CHAT">
+  [ 68] pusharglistnoret 4 ...................... <tComponent, #pChatProps, "mode", "CHAT">
+  [ 70] objcall 650 ............................. tComponent.pChatProps["mode"] = "CHAT"
+  [ 73] pushsymb 659 ............................ <#arrow>
+  [ 76] pusharglistnoret 1 ...................... <#arrow>
+  [ 78] extcall 658 ............................. setcursor(#arrow)
+  [ 81] pushsymb 660 ............................ <#prepare>
+  [ 84] getlocal 1 .............................. <tComponent>
+  [ 86] pusharglist 1 ........................... <tComponent>
+  [ 88] objcall 661 ............................. <tComponent.getRoomPrg()>
+  [ 91] pusharglist 1 ........................... <[tComponent.getRoomPrg()]>
+  [ 93] pushlist ................................ <[tComponent.getRoomPrg()]>
+  [ 94] pusharglistnoret 2 ...................... <#prepare, [tComponent.getRoomPrg()]>
+  [ 96] extcall 109 ............................. call(#prepare, [tComponent.getRoomPrg()])
+  [ 98] pushsymb 374 ............................ <#roomReady>
+  [101] pusharglistnoret 1 ...................... <#roomReady>
+  [103] extcall 79 .............................. executeMessage(#roomReady)
+  [105] getlocal 1 .............................. <tComponent>
+  [107] pusharglist 1 ........................... <tComponent>
+  [109] objcall 31 .............................. <tComponent.getID()>
+  [111] pusharglist 1 ........................... <tComponent.getID()>
+  [113] extcall 662 ............................. <receivePrepare(tComponent.getID())>
+  [116] pusharglistnoret 1 ...................... <receivePrepare(tComponent.getID())>
+  [118] extcall 38 .............................. return receivePrepare(tComponent.getID())
+  [120] ret
+end

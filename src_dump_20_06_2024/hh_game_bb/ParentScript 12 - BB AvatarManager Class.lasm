@@ -1,0 +1,66 @@
+on construct me
+  [  0] pushint8 1 .............................. <1>
+  [  2] pusharglistnoret 1 ...................... <1>
+  [  4] extcall 28 .............................. return 1
+  [  6] ret
+end
+
+on deconstruct me
+  [  0] pushint8 1 .............................. <1>
+  [  2] pusharglistnoret 1 ...................... <1>
+  [  4] extcall 28 .............................. return 1
+  [  6] ret
+end
+
+on Refresh me, tTopic, tdata
+  [  0] getparam 1 .............................. <tTopic>
+  [  2] peek 0 .................................. case tTopic of
+  [  4] pushsymb 223 ............................ <#bb_event_2>
+  [  6] eq
+  [  7] jmpifz [ 18] ............................ (case) #bb_event_2:
+  [ 10] getparam 0 .............................. <me>
+  [ 12] getparam 2 .............................. <tdata>
+  [ 14] pusharglistnoret 2 ...................... <me, tdata>
+  [ 16] objcall 222 ............................. me.updatePlayerObjectGoal(tdata)
+  [ 18] pop 1
+  [ 20] pushint8 1 .............................. <1>
+  [ 22] pusharglistnoret 1 ...................... <1>
+  [ 24] extcall 28 .............................. return 1
+  [ 26] ret
+end
+
+on updatePlayerObjectGoal me, tdata
+  [  0] getparam 0 .............................. <me>
+  [  2] pusharglist 1 ........................... <me>
+  [  4] objcall 201 ............................. <me.getGameSystem()>
+  [  6] setlocal 0 .............................. tGameSystem = me.getGameSystem()
+  [  8] getlocal 0 .............................. <tGameSystem>
+  [ 10] pushzero ................................ <0>
+  [ 11] eq ...................................... <tGameSystem = 0>
+  [ 12] jmpifz [ 20] ............................ if tGameSystem = 0 then
+  [ 15] pushzero ................................ <0>
+  [ 16] pusharglistnoret 1 ...................... <0>
+  [ 18] extcall 28 .............................. return 0
+  [ 20] getparam 1 .............................. <tdata>
+  [ 22] pusharglist 1 ........................... <tdata>
+  [ 24] extcall 224 ............................. <listp(tdata)>
+  [ 26] not ..................................... <not listp(tdata)>
+  [ 27] jmpifz [ 35] ............................ if not listp(tdata) then
+  [ 30] pushzero ................................ <0>
+  [ 31] pusharglistnoret 1 ...................... <0>
+  [ 33] extcall 28 .............................. return 0
+  [ 35] getparam 1 .............................. <tdata>
+  [ 37] pushsymb 197 ............................ <#id>
+  [ 39] pusharglist 2 ........................... <tdata, #id>
+  [ 41] objcall 31 .............................. <tdata[#id]>
+  [ 43] setlocal 1 .............................. tID = tdata[#id]
+  [ 45] getlocal 0 .............................. <tGameSystem>
+  [ 47] getlocal 1 .............................. <tID>
+  [ 49] pushsymb 225 ............................ <#set_target_custom>
+  [ 51] getparam 1 .............................. <tdata>
+  [ 53] pusharglist 4 ........................... <tGameSystem, tID, #set_target_custom, tdata>
+  [ 55] objcall 204 ............................. <tGameSystem.executeGameObjectEvent(tID, #set_target_custom, tdata)>
+  [ 57] pusharglistnoret 1 ...................... <tGameSystem.executeGameObjectEvent(tID, #set_target_custom, tdata)>
+  [ 59] extcall 28 .............................. return tGameSystem.executeGameObjectEvent(tID, #set_target_custom, tdata)
+  [ 61] ret
+end

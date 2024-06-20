@@ -1,0 +1,252 @@
+property pChanges, pActive
+
+on prepare me, tdata
+  [  0] getparam 1 .............................. <tdata>
+  [  2] pushsymb 804 ............................ <#stuffdata>
+  [  5] pusharglist 2 ........................... <tdata, #stuffdata>
+  [  7] objcall 138 ............................. <tdata[#stuffdata]>
+  [  9] pushcons 0 .............................. <"O">
+  [ 11] eq ...................................... <tdata[#stuffdata] = "O">
+  [ 12] jmpifz [ 30] ............................ if tdata[#stuffdata] = "O" then / else
+  [ 15] getparam 0 .............................. <me>
+  [ 17] pusharglistnoret 1 ...................... <me>
+  [ 19] objcall 1715 ............................ me.setOn()
+  [ 22] pushint8 1 .............................. <1>
+  [ 24] setprop 1222 ............................ pChanges = 1
+  [ 27] jmp [ 41]
+  [ 30] getparam 0 .............................. <me>
+  [ 32] pusharglistnoret 1 ...................... <me>
+  [ 34] objcall 1716 ............................ me.setOff()
+  [ 37] pushzero ................................ <0>
+  [ 38] setprop 1222 ............................ pChanges = 0
+  [ 41] pushint8 1 .............................. <1>
+  [ 43] pusharglistnoret 1 ...................... <1>
+  [ 45] extcall 116 ............................. return 1
+  [ 47] ret
+end
+
+on updateStuffdata me, tValue
+  [  0] getparam 1 .............................. <tValue>
+  [  2] pushcons 0 .............................. <"O">
+  [  4] eq ...................................... <tValue = "O">
+  [  5] jmpifz [ 18] ............................ if tValue = "O" then / else
+  [  8] getparam 0 .............................. <me>
+  [ 10] pusharglistnoret 1 ...................... <me>
+  [ 12] objcall 1715 ............................ me.setOn()
+  [ 15] jmp [ 25]
+  [ 18] getparam 0 .............................. <me>
+  [ 20] pusharglistnoret 1 ...................... <me>
+  [ 22] objcall 1716 ............................ me.setOff()
+  [ 25] pushint8 1 .............................. <1>
+  [ 27] setprop 1222 ............................ pChanges = 1
+  [ 30] ret
+end
+
+on update me
+  [  0] getprop 1222 ............................ <pChanges>
+  [  3] not ..................................... <not pChanges>
+  [  4] jmpifz [ 11] ............................ if not pChanges then
+  [  7] pusharglistnoret 0 ...................... <>
+  [  9] extcall 116 ............................. return 
+  [ 11] getparam 0 .............................. <me>
+  [ 13] pushsymb 993 ............................ <#pSprList>
+  [ 16] pusharglist 2 ........................... <me, #pSprList>
+  [ 18] objcall 149 ............................. <me.pSprList.count>
+  [ 20] pushint8 2 .............................. <2>
+  [ 22] lt ...................................... <me.pSprList.count < 2>
+  [ 23] jmpifz [ 30] ............................ if me.pSprList.count < 2 then
+  [ 26] pusharglistnoret 0 ...................... <>
+  [ 28] extcall 116 ............................. return 
+  [ 30] getparam 0 .............................. <me>
+  [ 32] pushsymb 993 ............................ <#pSprList>
+  [ 35] pushint8 2 .............................. <2>
+  [ 37] pusharglist 3 ........................... <me, #pSprList, 2>
+  [ 39] objcall 641 ............................. <me.pSprList[2]>
+  [ 42] getchainedprop 263 ...................... <me.pSprList[2].member>
+  [ 45] getobjprop 187 .......................... <me.pSprList[2].member.name>
+  [ 47] setlocal 0 .............................. tCurName = me.pSprList[2].member.name
+  [ 49] getlocal 0 .............................. <tCurName>
+  [ 51] pushsymb 425 ............................ <#char>
+  [ 54] pushint8 1 .............................. <1>
+  [ 56] getlocal 0 .............................. <tCurName>
+  [ 58] pusharglist 1 ........................... <tCurName>
+  [ 60] extcall 595 ............................. <length(tCurName)>
+  [ 63] pushint8 1 .............................. <1>
+  [ 65] sub ..................................... <length(tCurName) - 1>
+  [ 66] pusharglist 4 ........................... <tCurName, #char, 1, length(tCurName) - 1>
+  [ 68] objcall 134 ............................. <tCurName.char[1..length(tCurName) - 1]>
+  [ 70] getprop 988 ............................. <pActive>
+  [ 73] joinstr ................................. <tCurName.char[1..length(tCurName) - 1] & pActive>
+  [ 74] setlocal 1 .............................. tNewName = tCurName.char[1..length(tCurName) - 1] & pActive
+  [ 76] getlocal 1 .............................. <tNewName>
+  [ 78] pusharglist 1 ........................... <tNewName>
+  [ 80] extcall 330 ............................. <getmemnum(tNewName)>
+  [ 83] setlocal 2 .............................. tMemNum = getmemnum(tNewName)
+  [ 85] getprop 988 ............................. <pActive>
+  [ 88] jmpifz [239] ............................ if pActive then / else
+  [ 91] getmovieprop 654 ........................ <the itemDelimiter>
+  [ 94] setlocal 3 .............................. tDelim = the itemDelimiter
+  [ 96] pushcons 1 .............................. <"_">
+  [ 98] setmovieprop 654 ........................ the itemDelimiter = "_"
+  [101] getlocal 1 .............................. <tNewName>
+  [103] pushsymb 655 ............................ <#item>
+  [106] pushint8 6 .............................. <6>
+  [108] pusharglist 3 ........................... <tNewName, #item, 6>
+  [110] objcall 134 ............................. <tNewName.item[6]>
+  [112] pushcons 2 .............................. <"0">
+  [114] eq ...................................... <tNewName.item[6] = "0">
+  [115] getlocal 1 .............................. <tNewName>
+  [117] pushsymb 655 ............................ <#item>
+  [120] pushint8 6 .............................. <6>
+  [122] pusharglist 3 ........................... <tNewName, #item, 6>
+  [124] objcall 134 ............................. <tNewName.item[6]>
+  [126] pushcons 3 .............................. <"6">
+  [128] eq ...................................... <tNewName.item[6] = "6">
+  [129] or ...................................... <(tNewName.item[6] = "0") or (tNewName.item[6] = "6")>
+  [130] jmpifz [168] ............................ if (tNewName.item[6] = "0") or (tNewName.item[6] = "6") then / else
+  [133] getparam 0 .............................. <me>
+  [135] pushsymb 993 ............................ <#pSprList>
+  [138] pushint8 2 .............................. <2>
+  [140] pusharglist 3 ........................... <me, #pSprList, 2>
+  [142] objcall 641 ............................. <me.pSprList[2]>
+  [145] getparam 0 .............................. <me>
+  [147] pushsymb 993 ............................ <#pSprList>
+  [150] pushint8 1 .............................. <1>
+  [152] pusharglist 3 ........................... <me, #pSprList, 1>
+  [154] objcall 641 ............................. <me.pSprList[1]>
+  [157] getobjprop 130 .......................... <me.pSprList[1].locZ>
+  [159] pushint16 502 ........................... <502>
+  [162] add ..................................... <me.pSprList[1].locZ + 502>
+  [163] setobjprop 130 .......................... me.pSprList[2].locZ = me.pSprList[1].locZ + 502
+  [165] jmp [231]
+  [168] getlocal 1 .............................. <tNewName>
+  [170] pushsymb 655 ............................ <#item>
+  [173] pushint8 6 .............................. <6>
+  [175] pusharglist 3 ........................... <tNewName, #item, 6>
+  [177] objcall 134 ............................. <tNewName.item[6]>
+  [179] pushcons 2 .............................. <"0">
+  [181] nteq .................................... <tNewName.item[6] <> "0">
+  [182] getlocal 1 .............................. <tNewName>
+  [184] pushsymb 655 ............................ <#item>
+  [187] pushint8 6 .............................. <6>
+  [189] pusharglist 3 ........................... <tNewName, #item, 6>
+  [191] objcall 134 ............................. <tNewName.item[6]>
+  [193] pushcons 3 .............................. <"6">
+  [195] nteq .................................... <tNewName.item[6] <> "6">
+  [196] and ..................................... <(tNewName.item[6] <> "0") and (tNewName.item[6] <> "6")>
+  [197] jmpifz [231] ............................ if (tNewName.item[6] <> "0") and (tNewName.item[6] <> "6") then
+  [200] getparam 0 .............................. <me>
+  [202] pushsymb 993 ............................ <#pSprList>
+  [205] pushint8 2 .............................. <2>
+  [207] pusharglist 3 ........................... <me, #pSprList, 2>
+  [209] objcall 641 ............................. <me.pSprList[2]>
+  [212] getparam 0 .............................. <me>
+  [214] pushsymb 993 ............................ <#pSprList>
+  [217] pushint8 1 .............................. <1>
+  [219] pusharglist 3 ........................... <me, #pSprList, 1>
+  [221] objcall 641 ............................. <me.pSprList[1]>
+  [224] getobjprop 130 .......................... <me.pSprList[1].locZ>
+  [226] pushint8 2 .............................. <2>
+  [228] add ..................................... <me.pSprList[1].locZ + 2>
+  [229] setobjprop 130 .......................... me.pSprList[2].locZ = me.pSprList[1].locZ + 2
+  [231] getlocal 3 .............................. <tDelim>
+  [233] setmovieprop 654 ........................ the itemDelimiter = tDelim
+  [236] jmp [270]
+  [239] getparam 0 .............................. <me>
+  [241] pushsymb 993 ............................ <#pSprList>
+  [244] pushint8 2 .............................. <2>
+  [246] pusharglist 3 ........................... <me, #pSprList, 2>
+  [248] objcall 641 ............................. <me.pSprList[2]>
+  [251] getparam 0 .............................. <me>
+  [253] pushsymb 993 ............................ <#pSprList>
+  [256] pushint8 1 .............................. <1>
+  [258] pusharglist 3 ........................... <me, #pSprList, 1>
+  [260] objcall 641 ............................. <me.pSprList[1]>
+  [263] getobjprop 130 .......................... <me.pSprList[1].locZ>
+  [265] pushint8 1 .............................. <1>
+  [267] add ..................................... <me.pSprList[1].locZ + 1>
+  [268] setobjprop 130 .......................... me.pSprList[2].locZ = me.pSprList[1].locZ + 1
+  [270] getlocal 2 .............................. <tMemNum>
+  [272] pushzero ................................ <0>
+  [273] gt ...................................... <tMemNum > 0>
+  [274] jmpifz [341] ............................ if tMemNum > 0 then
+  [277] getlocal 2 .............................. <tMemNum>
+  [279] pusharglist 1 ........................... <tMemNum>
+  [281] extcall 263 ............................. <member(tMemNum)>
+  [284] setlocal 4 .............................. tmember = member(tMemNum)
+  [286] getparam 0 .............................. <me>
+  [288] pushsymb 993 ............................ <#pSprList>
+  [291] pushint8 2 .............................. <2>
+  [293] pusharglist 3 ........................... <me, #pSprList, 2>
+  [295] objcall 641 ............................. <me.pSprList[2]>
+  [298] getlocal 2 .............................. <tMemNum>
+  [300] setobjprop 1036 ......................... me.pSprList[2].castNum = tMemNum
+  [303] getparam 0 .............................. <me>
+  [305] pushsymb 993 ............................ <#pSprList>
+  [308] pushint8 2 .............................. <2>
+  [310] pusharglist 3 ........................... <me, #pSprList, 2>
+  [312] objcall 641 ............................. <me.pSprList[2]>
+  [315] getlocal 4 .............................. <tmember>
+  [317] getobjprop 219 .......................... <tmember.width>
+  [319] setobjprop 219 .......................... me.pSprList[2].width = tmember.width
+  [321] getparam 0 .............................. <me>
+  [323] pushsymb 993 ............................ <#pSprList>
+  [326] pushint8 2 .............................. <2>
+  [328] pusharglist 3 ........................... <me, #pSprList, 2>
+  [330] objcall 641 ............................. <me.pSprList[2]>
+  [333] getlocal 4 .............................. <tmember>
+  [335] getobjprop 261 .......................... <tmember.height>
+  [338] setobjprop 261 .......................... me.pSprList[2].height = tmember.height
+  [341] pushzero ................................ <0>
+  [342] setprop 1222 ............................ pChanges = 0
+  [345] ret
+end
+
+on setOn me
+  [  0] pushint8 1 .............................. <1>
+  [  2] setprop 988 ............................. pActive = 1
+  [  5] ret
+end
+
+on setOff me
+  [  0] pushzero ................................ <0>
+  [  1] setprop 988 ............................. pActive = 0
+  [  4] ret
+end
+
+on select me
+  [  0] pusharglist 0 ........................... <>
+  [  2] thebuiltin 1622 ......................... <the doubleClick>
+  [  5] jmpifz [ 70] ............................ if the doubleClick then
+  [  8] getprop 988 ............................. <pActive>
+  [ 11] jmpifz [ 21] ............................ if pActive then / else
+  [ 14] pushcons 4 .............................. <"C">
+  [ 16] setlocal 0 .............................. tStr = "C"
+  [ 18] jmp [ 25]
+  [ 21] pushcons 0 .............................. <"O">
+  [ 23] setlocal 0 .............................. tStr = "O"
+  [ 25] pushsymb 931 ............................ <#room>
+  [ 28] pusharglist 1 ........................... <#room>
+  [ 30] extcall 227 ............................. <getThread(#room)>
+  [ 32] pusharglist 1 ........................... <getThread(#room)>
+  [ 34] objcall 173 ............................. <getThread(#room).getComponent()>
+  [ 36] pusharglist 1 ........................... <getThread(#room).getComponent()>
+  [ 38] objcall 368 ............................. <getThread(#room).getComponent().getRoomConnection()>
+  [ 41] pushcons 5 .............................. <"SETSTUFFDATA">
+  [ 43] pushsymb 596 ............................ <#string>
+  [ 46] getparam 0 .............................. <me>
+  [ 48] pusharglist 1 ........................... <me>
+  [ 50] objcall 115 ............................. <me.getID()>
+  [ 52] pusharglist 1 ........................... <me.getID()>
+  [ 54] extcall 596 ............................. <string(me.getID())>
+  [ 57] pushsymb 596 ............................ <#string>
+  [ 60] getlocal 0 .............................. <tStr>
+  [ 62] pusharglist 4 ........................... <[#string: string(me.getID()), #string: tStr]>
+  [ 64] pushproplist ............................ <[#string: string(me.getID()), #string: tStr]>
+  [ 65] pusharglistnoret 3 ...................... <getThread(#room).getComponent().getRoomConnection(), "SETSTUFFDATA", [#string: string(me.getID()), #string: tStr]>
+  [ 67] objcall 369 ............................. getThread(#room).getComponent().getRoomConnection().send("SETSTUFFDATA", [#string: string(me.getID()), #string: tStr])
+  [ 70] pushint8 1 .............................. <1>
+  [ 72] pusharglistnoret 1 ...................... <1>
+  [ 74] extcall 116 ............................. return 1
+  [ 76] ret
+end

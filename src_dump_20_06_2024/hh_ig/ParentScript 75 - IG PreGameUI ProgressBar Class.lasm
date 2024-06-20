@@ -1,0 +1,227 @@
+property pBarHeight, pBarMaxWidth, pBarOrigX, pBarOrigY, pUpdateCounter, pCacheProgress
+
+on addWindows me
+  [  0] getparam 0 .............................. <me>
+  [  2] pushcons 0 .............................. <"pb">
+  [  4] setobjprop 399 .......................... me.pWindowID = "pb"
+  [  7] getparam 0 .............................. <me>
+  [  9] pusharglist 1 ........................... <me>
+  [ 11] objcall 485 ............................. <me.getWindowWrapper()>
+  [ 14] setlocal 0 .............................. tWrapObjRef = me.getWindowWrapper()
+  [ 16] getlocal 0 .............................. <tWrapObjRef>
+  [ 18] pushzero ................................ <0>
+  [ 19] eq ...................................... <tWrapObjRef = 0>
+  [ 20] jmpifz [ 28] ............................ if tWrapObjRef = 0 then
+  [ 23] pushzero ................................ <0>
+  [ 24] pusharglistnoret 1 ...................... <0>
+  [ 26] extcall 38 .............................. return 0
+  [ 28] getlocal 0 .............................. <tWrapObjRef>
+  [ 30] pushint8 10 ............................. <10>
+  [ 32] pushint8 10 ............................. <10>
+  [ 34] pusharglistnoret 3 ...................... <tWrapObjRef, 10, 10>
+  [ 36] objcall 86 .............................. tWrapObjRef.moveTo(10, 10)
+  [ 38] getlocal 0 .............................. <tWrapObjRef>
+  [ 40] getparam 0 .............................. <me>
+  [ 42] pusharglist 1 ........................... <me>
+  [ 44] objcall 541 ............................. <me.getWindowId()>
+  [ 47] pushcons 1 .............................. <"ig_pg_loadbar.window">
+  [ 49] getparam 0 .............................. <me>
+  [ 51] getobjprop 501 .......................... <me.pWindowSetId>
+  [ 54] pusharglistnoret 4 ...................... <tWrapObjRef, me.getWindowId(), "ig_pg_loadbar.window", me.pWindowSetId>
+  [ 56] objcall 823 ............................. tWrapObjRef.addOneWindow(me.getWindowId(), "ig_pg_loadbar.window", me.pWindowSetId)
+  [ 59] getparam 0 .............................. <me>
+  [ 61] pusharglist 1 ........................... <me>
+  [ 63] objcall 541 ............................. <me.getWindowId()>
+  [ 66] pusharglist 1 ........................... <me.getWindowId()>
+  [ 68] extcall 400 ............................. <getWindow(me.getWindowId())>
+  [ 71] setlocal 1 .............................. tWndObj = getWindow(me.getWindowId())
+  [ 73] getlocal 1 .............................. <tWndObj>
+  [ 75] pushzero ................................ <0>
+  [ 76] eq ...................................... <tWndObj = 0>
+  [ 77] jmpifz [ 85] ............................ if tWndObj = 0 then
+  [ 80] pushzero ................................ <0>
+  [ 81] pusharglistnoret 1 ...................... <0>
+  [ 83] extcall 38 .............................. return 0
+  [ 85] getlocal 1 .............................. <tWndObj>
+  [ 87] pushcons 2 .............................. <"ig_loadbar">
+  [ 89] pusharglist 2 ........................... <tWndObj, "ig_loadbar">
+  [ 91] objcall 401 ............................. <tWndObj.getElement("ig_loadbar")>
+  [ 94] setlocal 2 .............................. tElem = tWndObj.getElement("ig_loadbar")
+  [ 96] getlocal 2 .............................. <tElem>
+  [ 98] pushzero ................................ <0>
+  [ 99] eq ...................................... <tElem = 0>
+  [100] jmpifz [108] ............................ if tElem = 0 then
+  [103] pushzero ................................ <0>
+  [104] pusharglistnoret 1 ...................... <0>
+  [106] extcall 38 .............................. return 0
+  [108] getlocal 2 .............................. <tElem>
+  [110] pushsymb 994 ............................ <#locX>
+  [113] pusharglist 2 ........................... <tElem, #locX>
+  [115] objcall 63 .............................. <tElem.getProperty(#locX)>
+  [117] setprop 993 ............................. pBarOrigX = tElem.getProperty(#locX)
+  [120] getlocal 2 .............................. <tElem>
+  [122] pushsymb 952 ............................ <#locY>
+  [125] pusharglist 2 ........................... <tElem, #locY>
+  [127] objcall 63 .............................. <tElem.getProperty(#locY)>
+  [129] setprop 995 ............................. pBarOrigY = tElem.getProperty(#locY)
+  [132] getlocal 2 .............................. <tElem>
+  [134] pushsymb 404 ............................ <#width>
+  [137] pusharglist 2 ........................... <tElem, #width>
+  [139] objcall 63 .............................. <tElem.getProperty(#width)>
+  [141] setprop 996 ............................. pBarMaxWidth = tElem.getProperty(#width)
+  [144] getlocal 2 .............................. <tElem>
+  [146] pushsymb 416 ............................ <#height>
+  [149] pusharglist 2 ........................... <tElem, #height>
+  [151] objcall 63 .............................. <tElem.getProperty(#height)>
+  [153] setprop 997 ............................. pBarHeight = tElem.getProperty(#height)
+  [156] pushint8 1 .............................. <1>
+  [158] pusharglistnoret 1 ...................... <1>
+  [160] extcall 38 .............................. return 1
+  [162] ret
+end
+
+on render me, tProgress
+  [  0] getparam 1 .............................. <tProgress>
+  [  2] pusharglist 1 ........................... <tProgress>
+  [  4] extcall 103 ............................. <voidp(tProgress)>
+  [  6] jmpifz [ 12] ............................ if voidp(tProgress) then
+  [  9] pushzero ................................ <0>
+  [ 10] setparam 1 .............................. tProgress = 0
+  [ 12] getparam 0 .............................. <me>
+  [ 14] pusharglist 1 ........................... <me>
+  [ 16] objcall 541 ............................. <me.getWindowId()>
+  [ 19] pusharglist 1 ........................... <me.getWindowId()>
+  [ 21] extcall 400 ............................. <getWindow(me.getWindowId())>
+  [ 24] setlocal 0 .............................. tWndObj = getWindow(me.getWindowId())
+  [ 26] getlocal 0 .............................. <tWndObj>
+  [ 28] pushzero ................................ <0>
+  [ 29] eq ...................................... <tWndObj = 0>
+  [ 30] jmpifz [ 38] ............................ if tWndObj = 0 then
+  [ 33] pushzero ................................ <0>
+  [ 34] pusharglistnoret 1 ...................... <0>
+  [ 36] extcall 38 .............................. return 0
+  [ 38] getlocal 0 .............................. <tWndObj>
+  [ 40] pushcons 3 .............................. <"ig_loadmask">
+  [ 42] pusharglist 2 ........................... <tWndObj, "ig_loadmask">
+  [ 44] objcall 401 ............................. <tWndObj.getElement("ig_loadmask")>
+  [ 47] setlocal 1 .............................. tElem = tWndObj.getElement("ig_loadmask")
+  [ 49] getlocal 1 .............................. <tElem>
+  [ 51] pushzero ................................ <0>
+  [ 52] eq ...................................... <tElem = 0>
+  [ 53] jmpifz [ 61] ............................ if tElem = 0 then
+  [ 56] pushzero ................................ <0>
+  [ 57] pusharglistnoret 1 ...................... <0>
+  [ 59] extcall 38 .............................. return 0
+  [ 61] getparam 1 .............................. <tProgress>
+  [ 63] setprop 998 ............................. pCacheProgress = tProgress
+  [ 66] getprop 996 ............................. <pBarMaxWidth>
+  [ 69] pushint8 100 ............................ <100>
+  [ 71] getparam 1 .............................. <tProgress>
+  [ 73] sub ..................................... <100 - tProgress>
+  [ 74] pushfloat32 100.0 ....................... <100.0>
+  [ 79] div ..................................... <(100 - tProgress) / 100.0>
+  [ 80] mul ..................................... <pBarMaxWidth * ((100 - tProgress) / 100.0)>
+  [ 81] pusharglist 1 ........................... <pBarMaxWidth * ((100 - tProgress) / 100.0)>
+  [ 83] extcall 114 ............................. <integer(pBarMaxWidth * ((100 - tProgress) / 100.0))>
+  [ 85] setlocal 2 .............................. tNewWidth = integer(pBarMaxWidth * ((100 - tProgress) / 100.0))
+  [ 87] getlocal 1 .............................. <tElem>
+  [ 89] getlocal 2 .............................. <tNewWidth>
+  [ 91] getlocal 1 .............................. <tElem>
+  [ 93] pushsymb 416 ............................ <#height>
+  [ 96] pusharglist 2 ........................... <tElem, #height>
+  [ 98] objcall 63 .............................. <tElem.getProperty(#height)>
+  [100] pusharglistnoret 3 ...................... <tElem, tNewWidth, tElem.getProperty(#height)>
+  [102] objcall 871 ............................. tElem.resizeTo(tNewWidth, tElem.getProperty(#height))
+  [105] getlocal 1 .............................. <tElem>
+  [107] getprop 993 ............................. <pBarOrigX>
+  [110] getprop 996 ............................. <pBarMaxWidth>
+  [113] getlocal 2 .............................. <tNewWidth>
+  [115] sub ..................................... <pBarMaxWidth - tNewWidth>
+  [116] add ..................................... <pBarOrigX + (pBarMaxWidth - tNewWidth)>
+  [117] getprop 995 ............................. <pBarOrigY>
+  [120] pusharglistnoret 3 ...................... <tElem, pBarOrigX + (pBarMaxWidth - tNewWidth), pBarOrigY>
+  [122] objcall 86 .............................. tElem.moveTo(pBarOrigX + (pBarMaxWidth - tNewWidth), pBarOrigY)
+  [124] pushint8 1 .............................. <1>
+  [126] pusharglistnoret 1 ...................... <1>
+  [128] extcall 38 .............................. return 1
+  [130] ret
+end
+
+on update me
+  [  0] getprop 679 ............................. <pUpdateCounter>
+  [  3] pushint8 1 .............................. <1>
+  [  5] add ..................................... <pUpdateCounter + 1>
+  [  6] setprop 679 ............................. pUpdateCounter = pUpdateCounter + 1
+  [  9] getprop 679 ............................. <pUpdateCounter>
+  [ 12] pushint8 5 .............................. <5>
+  [ 14] mod ..................................... <pUpdateCounter mod 5>
+  [ 15] pushzero ................................ <0>
+  [ 16] gt ...................................... <(pUpdateCounter mod 5) > 0>
+  [ 17] jmpifz [ 26] ............................ if (pUpdateCounter mod 5) > 0 then
+  [ 20] pushint8 1 .............................. <1>
+  [ 22] pusharglistnoret 1 ...................... <1>
+  [ 24] extcall 38 .............................. return 1
+  [ 26] getprop 679 ............................. <pUpdateCounter>
+  [ 29] pushint8 25 ............................. <25>
+  [ 31] gteq .................................... <pUpdateCounter >= 25>
+  [ 32] jmpifz [ 39] ............................ if pUpdateCounter >= 25 then
+  [ 35] pushzero ................................ <0>
+  [ 36] setprop 679 ............................. pUpdateCounter = 0
+  [ 39] getprop 679 ............................. <pUpdateCounter>
+  [ 42] pushint8 5 .............................. <5>
+  [ 44] div ..................................... <pUpdateCounter / 5>
+  [ 45] setlocal 0 .............................. tPhase = pUpdateCounter / 5
+  [ 47] getparam 0 .............................. <me>
+  [ 49] pusharglist 1 ........................... <me>
+  [ 51] objcall 541 ............................. <me.getWindowId()>
+  [ 54] pusharglist 1 ........................... <me.getWindowId()>
+  [ 56] extcall 400 ............................. <getWindow(me.getWindowId())>
+  [ 59] setlocal 1 .............................. tWndObj = getWindow(me.getWindowId())
+  [ 61] getlocal 1 .............................. <tWndObj>
+  [ 63] pushzero ................................ <0>
+  [ 64] eq ...................................... <tWndObj = 0>
+  [ 65] jmpifz [ 73] ............................ if tWndObj = 0 then
+  [ 68] pushzero ................................ <0>
+  [ 69] pusharglistnoret 1 ...................... <0>
+  [ 71] extcall 38 .............................. return 0
+  [ 73] getlocal 1 .............................. <tWndObj>
+  [ 75] pushcons 2 .............................. <"ig_loadbar">
+  [ 77] pusharglist 2 ........................... <tWndObj, "ig_loadbar">
+  [ 79] objcall 401 ............................. <tWndObj.getElement("ig_loadbar")>
+  [ 82] setlocal 2 .............................. tElem = tWndObj.getElement("ig_loadbar")
+  [ 84] getlocal 2 .............................. <tElem>
+  [ 86] pushzero ................................ <0>
+  [ 87] eq ...................................... <tElem = 0>
+  [ 88] jmpifz [ 96] ............................ if tElem = 0 then
+  [ 91] pushzero ................................ <0>
+  [ 92] pusharglistnoret 1 ...................... <0>
+  [ 94] extcall 38 .............................. return 0
+  [ 96] pushcons 4 .............................. <"ig_icon_loadbar_">
+  [ 98] getlocal 0 .............................. <tPhase>
+  [100] joinstr ................................. <"ig_icon_loadbar_" & tPhase>
+  [101] pusharglist 1 ........................... <"ig_icon_loadbar_" & tPhase>
+  [103] extcall 526 ............................. <getmemnum("ig_icon_loadbar_" & tPhase)>
+  [106] setlocal 3 .............................. tMemNum = getmemnum("ig_icon_loadbar_" & tPhase)
+  [108] getlocal 3 .............................. <tMemNum>
+  [110] pushzero ................................ <0>
+  [111] eq ...................................... <tMemNum = 0>
+  [112] jmpifz [120] ............................ if tMemNum = 0 then
+  [115] pushzero ................................ <0>
+  [116] pusharglistnoret 1 ...................... <0>
+  [118] extcall 38 .............................. return 0
+  [120] getlocal 2 .............................. <tElem>
+  [122] pushsymb 525 ............................ <#member>
+  [125] getlocal 3 .............................. <tMemNum>
+  [127] pusharglist 1 ........................... <tMemNum>
+  [129] extcall 525 ............................. <member(tMemNum)>
+  [132] pusharglistnoret 3 ...................... <tElem, #member, member(tMemNum)>
+  [134] objcall 479 ............................. tElem.setProperty(#member, member(tMemNum))
+  [137] getparam 0 .............................. <me>
+  [139] getprop 998 ............................. <pCacheProgress>
+  [142] pusharglistnoret 2 ...................... <me, pCacheProgress>
+  [144] objcall 69 .............................. me.render(pCacheProgress)
+  [146] pushint8 1 .............................. <1>
+  [148] pusharglistnoret 1 ...................... <1>
+  [150] extcall 38 .............................. return 1
+  [152] ret
+end

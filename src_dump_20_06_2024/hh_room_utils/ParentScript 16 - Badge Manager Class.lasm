@@ -1,0 +1,1938 @@
+property pChosenBadge, pChosenVisibility, pImageLibraryURL, pActiveDownloads, pUpdatedBadges, pBadgeListRenderer, pBadgeWindowID, pActiveBadgeID, pActiveSlot, pSelectedBadges, pNewBadges, pNewBadgeDownloads
+
+on construct me
+  [  0] pushint8 1 .............................. <1>
+  [  2] setprop 756 ............................. pChosenBadge = 1
+  [  5] pushint8 1 .............................. <1>
+  [  7] setprop 757 ............................. pChosenVisibility = 1
+  [ 10] pushcons 0 .............................. <"image.library.url">
+  [ 12] pusharglist 1 ........................... <"image.library.url">
+  [ 14] extcall 267 ............................. <getVariable("image.library.url")>
+  [ 17] setprop 758 ............................. pImageLibraryURL = getVariable("image.library.url")
+  [ 20] pusharglist 0 ........................... <[]>
+  [ 22] pushlist ................................ <[]>
+  [ 23] setprop 759 ............................. pActiveDownloads = []
+  [ 26] pushcons 1 .............................. <"badgeSelectionWindowID">
+  [ 28] setprop 760 ............................. pBadgeWindowID = "badgeSelectionWindowID"
+  [ 31] pusharglist 0 ........................... <[:]>
+  [ 33] pushproplist ............................ <[:]>
+  [ 34] setprop 761 ............................. pUpdatedBadges = [:]
+  [ 37] pushzero ................................ <0>
+  [ 38] setprop 762 ............................. pActiveBadgeID = 0
+  [ 41] pushzero ................................ <0>
+  [ 42] setprop 763 ............................. pActiveSlot = 0
+  [ 45] pusharglist 0 ........................... <[]>
+  [ 47] pushlist ................................ <[]>
+  [ 48] setprop 764 ............................. pSelectedBadges = []
+  [ 51] pusharglist 0 ........................... <[]>
+  [ 53] pushlist ................................ <[]>
+  [ 54] setprop 765 ............................. pNewBadges = []
+  [ 57] pusharglist 0 ........................... <[]>
+  [ 59] pushlist ................................ <[]>
+  [ 60] setprop 766 ............................. pNewBadgeDownloads = []
+  [ 63] getprop 764 ............................. <pSelectedBadges>
+  [ 66] pushint8 5 .............................. <5>
+  [ 68] pushzero ................................ <0>
+  [ 69] pusharglistnoret 3 ...................... <pSelectedBadges, 5, 0>
+  [ 71] objcall 73 .............................. pSelectedBadges[5] = 0
+  [ 73] pusharglist 0 ........................... <>
+  [ 75] extcall 768 ............................. <getUniqueID()>
+  [ 78] pushcons 2 .............................. <"Badge List Class">
+  [ 80] pusharglist 2 ........................... <getUniqueID(), "Badge List Class">
+  [ 82] extcall 228 ............................. <createObject(getUniqueID(), "Badge List Class")>
+  [ 84] setprop 767 ............................. pBadgeListRenderer = createObject(getUniqueID(), "Badge List Class")
+  [ 87] pushsymb 769 ............................ <#achievementsUpdated>
+  [ 90] getparam 0 .............................. <me>
+  [ 92] pusharglist 1 ........................... <me>
+  [ 94] objcall 89 .............................. <me.getID()>
+  [ 96] pushsymb 736 ............................ <#updateAchievements>
+  [ 99] pusharglistnoret 3 ...................... <#achievementsUpdated, me.getID(), #updateAchievements>
+  [101] extcall 374 ............................. registerMessage(#achievementsUpdated, me.getID(), #updateAchievements)
+  [104] pushsymb 770 ............................ <#badgeReceived>
+  [107] getparam 0 .............................. <me>
+  [109] pusharglist 1 ........................... <me>
+  [111] objcall 89 .............................. <me.getID()>
+  [113] pushsymb 742 ............................ <#addNewBadge>
+  [116] pusharglistnoret 3 ...................... <#badgeReceived, me.getID(), #addNewBadge>
+  [118] extcall 374 ............................. registerMessage(#badgeReceived, me.getID(), #addNewBadge)
+  [121] pushsymb 771 ............................ <#badgeRemoved>
+  [124] getparam 0 .............................. <me>
+  [126] pusharglist 1 ........................... <me>
+  [128] objcall 89 .............................. <me.getID()>
+  [130] pushsymb 743 ............................ <#handleBadgeRemove>
+  [133] pusharglistnoret 3 ...................... <#badgeRemoved, me.getID(), #handleBadgeRemove>
+  [135] extcall 374 ............................. registerMessage(#badgeRemoved, me.getID(), #handleBadgeRemove)
+  [138] pushsymb 733 ............................ <#openBadgeWindow>
+  [141] getparam 0 .............................. <me>
+  [143] pusharglist 1 ........................... <me>
+  [145] objcall 89 .............................. <me.getID()>
+  [147] pushsymb 733 ............................ <#openBadgeWindow>
+  [150] pusharglistnoret 3 ...................... <#openBadgeWindow, me.getID(), #openBadgeWindow>
+  [152] extcall 374 ............................. registerMessage(#openBadgeWindow, me.getID(), #openBadgeWindow)
+  [155] pushsymb 735 ............................ <#openAchievementsWindow>
+  [158] getparam 0 .............................. <me>
+  [160] pusharglist 1 ........................... <me>
+  [162] objcall 89 .............................. <me.getID()>
+  [164] pushsymb 735 ............................ <#openAchievementsWindow>
+  [167] pusharglistnoret 3 ...................... <#openAchievementsWindow, me.getID(), #openAchievementsWindow>
+  [169] extcall 374 ............................. registerMessage(#openAchievementsWindow, me.getID(), #openAchievementsWindow)
+  [172] pushint8 1 .............................. <1>
+  [174] pusharglistnoret 1 ...................... <1>
+  [176] extcall 50 .............................. return 1
+  [178] ret
+end
+
+on deconstruct me
+  [  0] getprop 760 ............................. <pBadgeWindowID>
+  [  3] pusharglist 1 ........................... <pBadgeWindowID>
+  [  5] extcall 72 .............................. <windowExists(pBadgeWindowID)>
+  [  7] jmpifz [ 17] ............................ if windowExists(pBadgeWindowID) then
+  [ 10] getprop 760 ............................. <pBadgeWindowID>
+  [ 13] pusharglistnoret 1 ...................... <pBadgeWindowID>
+  [ 15] extcall 129 ............................. removeWindow(pBadgeWindowID)
+  [ 17] getprop 767 ............................. <pBadgeListRenderer>
+  [ 20] pusharglist 1 ........................... <pBadgeListRenderer>
+  [ 22] extcall 232 ............................. <objectp(pBadgeListRenderer)>
+  [ 24] jmpifz [ 39] ............................ if objectp(pBadgeListRenderer) then
+  [ 27] getprop 767 ............................. <pBadgeListRenderer>
+  [ 30] pusharglist 1 ........................... <pBadgeListRenderer>
+  [ 32] objcall 89 .............................. <pBadgeListRenderer.getID()>
+  [ 34] pusharglistnoret 1 ...................... <pBadgeListRenderer.getID()>
+  [ 36] extcall 262 ............................. removeObject(pBadgeListRenderer.getID())
+  [ 39] pushint8 1 .............................. <1>
+  [ 41] setlocal 0
+  [ 43] getlocal 0
+  [ 45] getprop 759 ............................. <pActiveDownloads>
+  [ 48] getobjprop 105 .......................... <pActiveDownloads.count>
+  [ 50] lteq
+  [ 51] jmpifz [ 77] ............................ repeat with i = 1 to pActiveDownloads.count
+  [ 54] getprop 759 ............................. <pActiveDownloads>
+  [ 57] getlocal 0 .............................. <i>
+  [ 59] pusharglist 2 ........................... <pActiveDownloads, i>
+  [ 61] objcall 75 .............................. <pActiveDownloads[i]>
+  [ 63] pusharglistnoret 1 ...................... <pActiveDownloads[i]>
+  [ 65] extcall 772 ............................. abortDownLoad(pActiveDownloads[i])
+  [ 68] pushint8 1
+  [ 70] getlocal 0
+  [ 72] add
+  [ 73] setlocal 0
+  [ 75] endrepeat [ 43]
+  [ 77] pushsymb 733 ............................ <#openBadgeWindow>
+  [ 80] getparam 0 .............................. <me>
+  [ 82] pusharglist 1 ........................... <me>
+  [ 84] objcall 89 .............................. <me.getID()>
+  [ 86] pusharglistnoret 2 ...................... <#openBadgeWindow, me.getID()>
+  [ 88] extcall 386 ............................. unregisterMessage(#openBadgeWindow, me.getID())
+  [ 91] pushsymb 735 ............................ <#openAchievementsWindow>
+  [ 94] getparam 0 .............................. <me>
+  [ 96] pusharglist 1 ........................... <me>
+  [ 98] objcall 89 .............................. <me.getID()>
+  [100] pusharglistnoret 2 ...................... <#openAchievementsWindow, me.getID()>
+  [102] extcall 386 ............................. unregisterMessage(#openAchievementsWindow, me.getID())
+  [105] pushsymb 769 ............................ <#achievementsUpdated>
+  [108] getparam 0 .............................. <me>
+  [110] pusharglist 1 ........................... <me>
+  [112] objcall 89 .............................. <me.getID()>
+  [114] pusharglistnoret 2 ...................... <#achievementsUpdated, me.getID()>
+  [116] extcall 386 ............................. unregisterMessage(#achievementsUpdated, me.getID())
+  [119] pushsymb 770 ............................ <#badgeReceived>
+  [122] getparam 0 .............................. <me>
+  [124] pusharglist 1 ........................... <me>
+  [126] objcall 89 .............................. <me.getID()>
+  [128] pusharglistnoret 2 ...................... <#badgeReceived, me.getID()>
+  [130] extcall 386 ............................. unregisterMessage(#badgeReceived, me.getID())
+  [133] pushsymb 771 ............................ <#badgeRemoved>
+  [136] getparam 0 .............................. <me>
+  [138] pusharglist 1 ........................... <me>
+  [140] objcall 89 .............................. <me.getID()>
+  [142] pusharglistnoret 2 ...................... <#badgeRemoved, me.getID()>
+  [144] extcall 386 ............................. unregisterMessage(#badgeRemoved, me.getID())
+  [147] pusharglist 0 ........................... <[]>
+  [149] pushlist ................................ <[]>
+  [150] setprop 764 ............................. pSelectedBadges = []
+  [153] pusharglist 0 ........................... <[]>
+  [155] pushlist ................................ <[]>
+  [156] setprop 765 ............................. pNewBadges = []
+  [159] pusharglist 0 ........................... <[]>
+  [161] pushlist ................................ <[]>
+  [162] setprop 766 ............................. pNewBadgeDownloads = []
+  [165] pushint8 1 .............................. <1>
+  [167] pusharglistnoret 1 ...................... <1>
+  [169] extcall 50 .............................. return 1
+  [171] ret
+end
+
+on openBadgeWindow me
+  [  0] getparam 0 .............................. <me>
+  [  2] pusharglistnoret 1 ...................... <me>
+  [  4] objcall 734 ............................. me.closeBadgeWindow()
+  [  7] pushsymb 61 ............................. <#session>
+  [  9] pusharglist 1 ........................... <#session>
+  [ 11] extcall 60 .............................. <getObject(#session)>
+  [ 13] pushcons 3 .............................. <"user_index">
+  [ 15] pusharglist 2 ........................... <getObject(#session), "user_index">
+  [ 17] objcall 62 .............................. <getObject(#session).GET("user_index")>
+  [ 19] setlocal 0 .............................. tOwnUser = getObject(#session).GET("user_index")
+  [ 21] pushsymb 77 ............................. <#room>
+  [ 23] pusharglist 1 ........................... <#room>
+  [ 25] extcall 76 .............................. <getThread(#room)>
+  [ 27] pusharglist 1 ........................... <getThread(#room)>
+  [ 29] objcall 82 .............................. <getThread(#room).getComponent()>
+  [ 31] getlocal 0 .............................. <tOwnUser>
+  [ 33] pusharglist 2 ........................... <getThread(#room).getComponent(), tOwnUser>
+  [ 35] objcall 335 ............................. <getThread(#room).getComponent().getUserObject(tOwnUser)>
+  [ 38] setlocal 1 .............................. tSelectedObj = getThread(#room).getComponent().getUserObject(tOwnUser)
+  [ 40] getlocal 1 .............................. <tSelectedObj>
+  [ 42] not ..................................... <not tSelectedObj>
+  [ 43] jmpifz [ 51] ............................ if not tSelectedObj then
+  [ 46] pushzero ................................ <0>
+  [ 47] pusharglistnoret 1 ...................... <0>
+  [ 49] extcall 50 .............................. return 0
+  [ 51] getlocal 1 .............................. <tSelectedObj>
+  [ 53] pushsymb 773 ............................ <#badges>
+  [ 56] pusharglist 2 ........................... <tSelectedObj, #badges>
+  [ 58] objcall 96 .............................. <tSelectedObj.getProperty(#badges)>
+  [ 60] setlocal 2 .............................. tBadges = tSelectedObj.getProperty(#badges)
+  [ 62] getlocal 2 .............................. <tBadges>
+  [ 64] getobjprop 146 .......................... <tBadges.ilk>
+  [ 66] pushsymb 147 ............................ <#propList>
+  [ 68] nteq .................................... <tBadges.ilk <> #propList>
+  [ 69] jmpifz [ 77] ............................ if tBadges.ilk <> #propList then
+  [ 72] pusharglist 0 ........................... <[:]>
+  [ 74] pushproplist ............................ <[:]>
+  [ 75] setlocal 2 .............................. tBadges = [:]
+  [ 77] pushzero ................................ <0>
+  [ 78] pushzero ................................ <0>
+  [ 79] pushzero ................................ <0>
+  [ 80] pushzero ................................ <0>
+  [ 81] pushzero ................................ <0>
+  [ 82] pusharglist 5 ........................... <[0, 0, 0, 0, 0]>
+  [ 84] pushlist ................................ <[0, 0, 0, 0, 0]>
+  [ 85] setprop 764 ............................. pSelectedBadges = [0, 0, 0, 0, 0]
+  [ 88] pushint8 1 .............................. <1>
+  [ 90] setlocal 3
+  [ 92] getlocal 3
+  [ 94] getlocal 2 .............................. <tBadges>
+  [ 96] getobjprop 105 .......................... <tBadges.count>
+  [ 98] lteq
+  [ 99] jmpifz [134] ............................ repeat with i = 1 to tBadges.count
+  [102] getprop 764 ............................. <pSelectedBadges>
+  [105] getlocal 2 .............................. <tBadges>
+  [107] getlocal 3 .............................. <i>
+  [109] pusharglist 2 ........................... <tBadges, i>
+  [111] objcall 177 ............................. <tBadges.getPropAt(i)>
+  [113] getlocal 2 .............................. <tBadges>
+  [115] getlocal 3 .............................. <i>
+  [117] pusharglist 2 ........................... <tBadges, i>
+  [119] objcall 75 .............................. <tBadges[i]>
+  [121] pusharglistnoret 3 ...................... <pSelectedBadges, tBadges.getPropAt(i), tBadges[i]>
+  [123] objcall 73 .............................. pSelectedBadges[tBadges.getPropAt(i)] = tBadges[i]
+  [125] pushint8 1
+  [127] getlocal 3
+  [129] add
+  [130] setlocal 3
+  [132] endrepeat [ 92]
+  [134] pushcons 4 .............................. <"session">
+  [136] pusharglist 1 ........................... <"session">
+  [138] extcall 60 .............................. <getObject("session")>
+  [140] pushcons 5 .............................. <"available_badges">
+  [142] pusharglist 0 ........................... <[]>
+  [144] pushlist ................................ <[]>
+  [145] pusharglist 3 ........................... <getObject("session"), "available_badges", []>
+  [147] objcall 62 .............................. <getObject("session").GET("available_badges", [])>
+  [149] setlocal 4 .............................. tAllBadges = getObject("session").GET("available_badges", [])
+  [151] getparam 0 .............................. <me>
+  [153] getlocal 4 .............................. <tAllBadges>
+  [155] pusharglistnoret 2 ...................... <me, tAllBadges>
+  [157] objcall 754 ............................. me.loadBadgeImages(tAllBadges)
+  [160] getprop 760 ............................. <pBadgeWindowID>
+  [163] pusharglist 1 ........................... <pBadgeWindowID>
+  [165] extcall 86 .............................. <createWindow(pBadgeWindowID)>
+  [167] not ..................................... <not createWindow(pBadgeWindowID)>
+  [168] jmpifz [188] ............................ if not createWindow(pBadgeWindowID) then
+  [171] getparam 0 .............................. <me>
+  [173] pushcons 6 .............................. <"Badge choice window not created!">
+  [175] pushsymb 733 ............................ <#openBadgeWindow>
+  [178] pushsymb 124 ............................ <#major>
+  [180] pusharglist 4 ........................... <me, "Badge choice window not created!", #openBadgeWindow, #major>
+  [182] extcall 123 ............................. <error(me, "Badge choice window not created!", #openBadgeWindow, #major)>
+  [184] pusharglistnoret 1 ...................... <error(me, "Badge choice window not created!", #openBadgeWindow, #major)>
+  [186] extcall 50 .............................. return error(me, "Badge choice window not created!", #openBadgeWindow, #major)
+  [188] getprop 760 ............................. <pBadgeWindowID>
+  [191] pusharglist 1 ........................... <pBadgeWindowID>
+  [193] extcall 87 .............................. <getWindow(pBadgeWindowID)>
+  [195] setlocal 5 .............................. tWndObj = getWindow(pBadgeWindowID)
+  [197] getlocal 5 .............................. <tWndObj>
+  [199] pushsymb 273 ............................ <#title>
+  [202] pushcons 7 .............................. <"badges_window_title">
+  [204] pusharglist 1 ........................... <"badges_window_title">
+  [206] extcall 31 .............................. <getText("badges_window_title")>
+  [208] pusharglistnoret 3 ...................... <tWndObj, #title, getText("badges_window_title")>
+  [210] objcall 81 .............................. tWndObj.setProperty(#title, getText("badges_window_title"))
+  [212] getlocal 5 .............................. <tWndObj>
+  [214] pushcons 8 .............................. <"habbo_basic.window">
+  [216] pusharglist 2 ........................... <tWndObj, "habbo_basic.window">
+  [218] objcall 88 .............................. <tWndObj.merge("habbo_basic.window")>
+  [220] setlocal 6 .............................. tMerged = tWndObj.merge("habbo_basic.window")
+  [222] getlocal 6 .............................. <tMerged>
+  [224] jmpifz [237] ............................ if tMerged then
+  [227] getlocal 5 .............................. <tWndObj>
+  [229] pushcons 9 .............................. <"badge_select.window">
+  [231] pusharglist 2 ........................... <tWndObj, "badge_select.window">
+  [233] objcall 88 .............................. <tWndObj.merge("badge_select.window")>
+  [235] setlocal 6 .............................. tMerged = tWndObj.merge("badge_select.window")
+  [237] getlocal 6 .............................. <tMerged>
+  [239] not ..................................... <not tMerged>
+  [240] jmpifz [267] ............................ if not tMerged then
+  [243] getprop 760 ............................. <pBadgeWindowID>
+  [246] pusharglistnoret 1 ...................... <pBadgeWindowID>
+  [248] extcall 129 ............................. removeWindow(pBadgeWindowID)
+  [250] getparam 0 .............................. <me>
+  [252] pushcons 10 ............................. <"Badge selection window not merged!">
+  [254] pushsymb 733 ............................ <#openBadgeWindow>
+  [257] pushsymb 124 ............................ <#major>
+  [259] pusharglist 4 ........................... <me, "Badge selection window not merged!", #openBadgeWindow, #major>
+  [261] extcall 123 ............................. <error(me, "Badge selection window not merged!", #openBadgeWindow, #major)>
+  [263] pusharglistnoret 1 ...................... <error(me, "Badge selection window not merged!", #openBadgeWindow, #major)>
+  [265] extcall 50 .............................. return error(me, "Badge selection window not merged!", #openBadgeWindow, #major)
+  [267] pushsymb 509 ............................ <#leaveRoom>
+  [270] getlocal 5 .............................. <tWndObj>
+  [272] pusharglist 1 ........................... <tWndObj>
+  [274] objcall 89 .............................. <tWndObj.getID()>
+  [276] pushsymb 8 .............................. <#close>
+  [278] pusharglistnoret 3 ...................... <#leaveRoom, tWndObj.getID(), #close>
+  [280] extcall 374 ............................. registerMessage(#leaveRoom, tWndObj.getID(), #close)
+  [283] pushsymb 510 ............................ <#changeRoom>
+  [286] getlocal 5 .............................. <tWndObj>
+  [288] pusharglist 1 ........................... <tWndObj>
+  [290] objcall 89 .............................. <tWndObj.getID()>
+  [292] pushsymb 8 .............................. <#close>
+  [294] pusharglistnoret 3 ...................... <#changeRoom, tWndObj.getID(), #close>
+  [296] extcall 374 ............................. registerMessage(#changeRoom, tWndObj.getID(), #close)
+  [299] getlocal 5 .............................. <tWndObj>
+  [301] pushsymb 739 ............................ <#eventProcBadgeChooser>
+  [304] getparam 0 .............................. <me>
+  [306] pusharglist 1 ........................... <me>
+  [308] objcall 89 .............................. <me.getID()>
+  [310] pushsymb 119 ............................ <#mouseUp>
+  [312] pusharglistnoret 4 ...................... <tWndObj, #eventProcBadgeChooser, me.getID(), #mouseUp>
+  [314] objcall 91 .............................. tWndObj.registerProcedure(#eventProcBadgeChooser, me.getID(), #mouseUp)
+  [316] getprop 762 ............................. <pActiveBadgeID>
+  [319] pushzero ................................ <0>
+  [320] eq ...................................... <pActiveBadgeID = 0>
+  [321] getlocal 4 .............................. <tAllBadges>
+  [323] getobjprop 105 .......................... <tAllBadges.count>
+  [325] pushzero ................................ <0>
+  [326] gt ...................................... <tAllBadges.count > 0>
+  [327] and ..................................... <(pActiveBadgeID = 0) and (tAllBadges.count > 0)>
+  [328] jmpifz [349] ............................ if (pActiveBadgeID = 0) and (tAllBadges.count > 0) then / else
+  [331] getparam 0 .............................. <me>
+  [333] getlocal 4 .............................. <tAllBadges>
+  [335] pushint8 1 .............................. <1>
+  [337] pusharglist 2 ........................... <tAllBadges, 1>
+  [339] objcall 75 .............................. <tAllBadges[1]>
+  [341] pusharglistnoret 2 ...................... <me, tAllBadges[1]>
+  [343] objcall 749 ............................. me.selectBadge(tAllBadges[1])
+  [346] jmp [359]
+  [349] getparam 0 .............................. <me>
+  [351] getprop 762 ............................. <pActiveBadgeID>
+  [354] pusharglistnoret 2 ...................... <me, pActiveBadgeID>
+  [356] objcall 749 ............................. me.selectBadge(pActiveBadgeID)
+  [359] getparam 0 .............................. <me>
+  [361] pusharglistnoret 1 ...................... <me>
+  [363] objcall 744 ............................. me.updateBadgeView()
+  [366] ret
+end
+
+on closeBadgeWindow me
+  [  0] getprop 760 ............................. <pBadgeWindowID>
+  [  3] pusharglist 1 ........................... <pBadgeWindowID>
+  [  5] extcall 72 .............................. <windowExists(pBadgeWindowID)>
+  [  7] jmpifz [ 53] ............................ if windowExists(pBadgeWindowID) then
+  [ 10] getprop 760 ............................. <pBadgeWindowID>
+  [ 13] pusharglist 1 ........................... <pBadgeWindowID>
+  [ 15] extcall 87 .............................. <getWindow(pBadgeWindowID)>
+  [ 17] setlocal 0 .............................. tWndObj = getWindow(pBadgeWindowID)
+  [ 19] pushsymb 509 ............................ <#leaveRoom>
+  [ 22] getlocal 0 .............................. <tWndObj>
+  [ 24] pusharglist 1 ........................... <tWndObj>
+  [ 26] objcall 89 .............................. <tWndObj.getID()>
+  [ 28] pusharglistnoret 2 ...................... <#leaveRoom, tWndObj.getID()>
+  [ 30] extcall 386 ............................. unregisterMessage(#leaveRoom, tWndObj.getID())
+  [ 33] pushsymb 510 ............................ <#changeRoom>
+  [ 36] getlocal 0 .............................. <tWndObj>
+  [ 38] pusharglist 1 ........................... <tWndObj>
+  [ 40] objcall 89 .............................. <tWndObj.getID()>
+  [ 42] pusharglistnoret 2 ...................... <#changeRoom, tWndObj.getID()>
+  [ 44] extcall 386 ............................. unregisterMessage(#changeRoom, tWndObj.getID())
+  [ 47] getlocal 0 .............................. <tWndObj>
+  [ 49] pusharglistnoret 1 ...................... <tWndObj>
+  [ 51] objcall 8 ............................... tWndObj.close()
+  [ 53] ret
+end
+
+on openAchievementsWindow me
+  [  0] getprop 760 ............................. <pBadgeWindowID>
+  [  3] pusharglist 1 ........................... <pBadgeWindowID>
+  [  5] extcall 72 .............................. <windowExists(pBadgeWindowID)>
+  [  7] jmpifz [ 17] ............................ if windowExists(pBadgeWindowID) then
+  [ 10] getprop 760 ............................. <pBadgeWindowID>
+  [ 13] pusharglistnoret 1 ...................... <pBadgeWindowID>
+  [ 15] extcall 129 ............................. removeWindow(pBadgeWindowID)
+  [ 17] getprop 760 ............................. <pBadgeWindowID>
+  [ 20] pusharglist 1 ........................... <pBadgeWindowID>
+  [ 22] extcall 86 .............................. <createWindow(pBadgeWindowID)>
+  [ 24] not ..................................... <not createWindow(pBadgeWindowID)>
+  [ 25] jmpifz [ 45] ............................ if not createWindow(pBadgeWindowID) then
+  [ 28] getparam 0 .............................. <me>
+  [ 30] pushcons 11 ............................. <"Achievements window not created!">
+  [ 32] pushsymb 733 ............................ <#openBadgeWindow>
+  [ 35] pushsymb 124 ............................ <#major>
+  [ 37] pusharglist 4 ........................... <me, "Achievements window not created!", #openBadgeWindow, #major>
+  [ 39] extcall 123 ............................. <error(me, "Achievements window not created!", #openBadgeWindow, #major)>
+  [ 41] pusharglistnoret 1 ...................... <error(me, "Achievements window not created!", #openBadgeWindow, #major)>
+  [ 43] extcall 50 .............................. return error(me, "Achievements window not created!", #openBadgeWindow, #major)
+  [ 45] getprop 760 ............................. <pBadgeWindowID>
+  [ 48] pusharglist 1 ........................... <pBadgeWindowID>
+  [ 50] extcall 87 .............................. <getWindow(pBadgeWindowID)>
+  [ 52] setlocal 0 .............................. tWndObj = getWindow(pBadgeWindowID)
+  [ 54] getlocal 0 .............................. <tWndObj>
+  [ 56] pushsymb 273 ............................ <#title>
+  [ 59] pushcons 7 .............................. <"badges_window_title">
+  [ 61] pusharglist 1 ........................... <"badges_window_title">
+  [ 63] extcall 31 .............................. <getText("badges_window_title")>
+  [ 65] pusharglistnoret 3 ...................... <tWndObj, #title, getText("badges_window_title")>
+  [ 67] objcall 81 .............................. tWndObj.setProperty(#title, getText("badges_window_title"))
+  [ 69] getlocal 0 .............................. <tWndObj>
+  [ 71] pushcons 8 .............................. <"habbo_basic.window">
+  [ 73] pusharglist 2 ........................... <tWndObj, "habbo_basic.window">
+  [ 75] objcall 88 .............................. <tWndObj.merge("habbo_basic.window")>
+  [ 77] setlocal 1 .............................. tMerged = tWndObj.merge("habbo_basic.window")
+  [ 79] getlocal 1 .............................. <tMerged>
+  [ 81] jmpifz [ 94] ............................ if tMerged then
+  [ 84] getlocal 0 .............................. <tWndObj>
+  [ 86] pushcons 12 ............................. <"achievements.window">
+  [ 88] pusharglist 2 ........................... <tWndObj, "achievements.window">
+  [ 90] objcall 88 .............................. <tWndObj.merge("achievements.window")>
+  [ 92] setlocal 1 .............................. tMerged = tWndObj.merge("achievements.window")
+  [ 94] getlocal 1 .............................. <tMerged>
+  [ 96] not ..................................... <not tMerged>
+  [ 97] jmpifz [124] ............................ if not tMerged then
+  [100] getprop 760 ............................. <pBadgeWindowID>
+  [103] pusharglistnoret 1 ...................... <pBadgeWindowID>
+  [105] extcall 129 ............................. removeWindow(pBadgeWindowID)
+  [107] getparam 0 .............................. <me>
+  [109] pushcons 10 ............................. <"Badge selection window not merged!">
+  [111] pushsymb 733 ............................ <#openBadgeWindow>
+  [114] pushsymb 124 ............................ <#major>
+  [116] pusharglist 4 ........................... <me, "Badge selection window not merged!", #openBadgeWindow, #major>
+  [118] extcall 123 ............................. <error(me, "Badge selection window not merged!", #openBadgeWindow, #major)>
+  [120] pusharglistnoret 1 ...................... <error(me, "Badge selection window not merged!", #openBadgeWindow, #major)>
+  [122] extcall 50 .............................. return error(me, "Badge selection window not merged!", #openBadgeWindow, #major)
+  [124] pushsymb 509 ............................ <#leaveRoom>
+  [127] getlocal 0 .............................. <tWndObj>
+  [129] pusharglist 1 ........................... <tWndObj>
+  [131] objcall 89 .............................. <tWndObj.getID()>
+  [133] pushsymb 8 .............................. <#close>
+  [135] pusharglistnoret 3 ...................... <#leaveRoom, tWndObj.getID(), #close>
+  [137] extcall 374 ............................. registerMessage(#leaveRoom, tWndObj.getID(), #close)
+  [140] pushsymb 510 ............................ <#changeRoom>
+  [143] getlocal 0 .............................. <tWndObj>
+  [145] pusharglist 1 ........................... <tWndObj>
+  [147] objcall 89 .............................. <tWndObj.getID()>
+  [149] pushsymb 8 .............................. <#close>
+  [151] pusharglistnoret 3 ...................... <#changeRoom, tWndObj.getID(), #close>
+  [153] extcall 374 ............................. registerMessage(#changeRoom, tWndObj.getID(), #close)
+  [156] getlocal 0 .............................. <tWndObj>
+  [158] pushsymb 739 ............................ <#eventProcBadgeChooser>
+  [161] getparam 0 .............................. <me>
+  [163] pusharglist 1 ........................... <me>
+  [165] objcall 89 .............................. <me.getID()>
+  [167] pushsymb 119 ............................ <#mouseUp>
+  [169] pusharglistnoret 4 ...................... <tWndObj, #eventProcBadgeChooser, me.getID(), #mouseUp>
+  [171] objcall 91 .............................. tWndObj.registerProcedure(#eventProcBadgeChooser, me.getID(), #mouseUp)
+  [173] getparam 0 .............................. <me>
+  [175] pusharglistnoret 1 ...................... <me>
+  [177] objcall 736 ............................. me.updateAchievements()
+  [180] ret
+end
+
+on updateAchievements me
+  [  0] getprop 760 ............................. <pBadgeWindowID>
+  [  3] pusharglist 1 ........................... <pBadgeWindowID>
+  [  5] extcall 72 .............................. <windowExists(pBadgeWindowID)>
+  [  7] not ..................................... <not windowExists(pBadgeWindowID)>
+  [  8] jmpifz [ 16] ............................ if not windowExists(pBadgeWindowID) then
+  [ 11] pushzero ................................ <0>
+  [ 12] pusharglistnoret 1 ...................... <0>
+  [ 14] extcall 50 .............................. return 0
+  [ 16] getprop 760 ............................. <pBadgeWindowID>
+  [ 19] pusharglist 1 ........................... <pBadgeWindowID>
+  [ 21] extcall 87 .............................. <getWindow(pBadgeWindowID)>
+  [ 23] setlocal 0 .............................. tWindow = getWindow(pBadgeWindowID)
+  [ 25] getlocal 0 .............................. <tWindow>
+  [ 27] pushcons 13 ............................. <"achievement_list">
+  [ 29] pusharglist 2 ........................... <tWindow, "achievement_list">
+  [ 31] objcall 94 .............................. <tWindow.elementExists("achievement_list")>
+  [ 33] pushsymb 77 ............................. <#room>
+  [ 35] pusharglist 1 ........................... <#room>
+  [ 37] extcall 126 ............................. <threadExists(#room)>
+  [ 39] and ..................................... <tWindow.elementExists("achievement_list") and threadExists(#room)>
+  [ 40] jmpifz [147] ............................ if tWindow.elementExists("achievement_list") and threadExists(#room) then
+  [ 43] pushsymb 61 ............................. <#session>
+  [ 45] pusharglist 1 ........................... <#session>
+  [ 47] extcall 60 .............................. <getObject(#session)>
+  [ 49] pushcons 14 ............................. <"possible_achievements">
+  [ 51] pusharglist 2 ........................... <getObject(#session), "possible_achievements">
+  [ 53] objcall 62 .............................. <getObject(#session).GET("possible_achievements")>
+  [ 55] setlocal 1 .............................. tAchievements = getObject(#session).GET("possible_achievements")
+  [ 57] getlocal 1 .............................. <tAchievements>
+  [ 59] pusharglist 1 ........................... <tAchievements>
+  [ 61] extcall 150 ............................. <listp(tAchievements)>
+  [ 63] jmpifz [147] ............................ if listp(tAchievements) then
+  [ 66] pusharglist 0 ........................... <[]>
+  [ 68] pushlist ................................ <[]>
+  [ 69] setlocal 2 .............................. tBadgeIDs = []
+  [ 71] pushint8 1 .............................. <1>
+  [ 73] setlocal 3
+  [ 75] getlocal 3
+  [ 77] getlocal 1 .............................. <tAchievements>
+  [ 79] getobjprop 105 .......................... <tAchievements.count>
+  [ 81] lteq
+  [ 82] jmpifz [108] ............................ repeat with tPropNum = 1 to tAchievements.count
+  [ 85] getlocal 2 .............................. <tBadgeIDs>
+  [ 87] getlocal 1 .............................. <tAchievements>
+  [ 89] getlocal 3 .............................. <tPropNum>
+  [ 91] pusharglist 2 ........................... <tAchievements, tPropNum>
+  [ 93] objcall 177 ............................. <tAchievements.getPropAt(tPropNum)>
+  [ 95] pusharglistnoret 2 ...................... <tBadgeIDs, tAchievements.getPropAt(tPropNum)>
+  [ 97] objcall 104 ............................. tBadgeIDs.add(tAchievements.getPropAt(tPropNum))
+  [ 99] pushint8 1
+  [101] getlocal 3
+  [103] add
+  [104] setlocal 3
+  [106] endrepeat [ 75]
+  [108] getparam 0 .............................. <me>
+  [110] getlocal 2 .............................. <tBadgeIDs>
+  [112] pusharglistnoret 2 ...................... <me, tBadgeIDs>
+  [114] objcall 754 ............................. me.loadBadgeImages(tBadgeIDs)
+  [117] getlocal 0 .............................. <tWindow>
+  [119] pushcons 13 ............................. <"achievement_list">
+  [121] pusharglist 2 ........................... <tWindow, "achievement_list">
+  [123] objcall 92 .............................. <tWindow.getElement("achievement_list")>
+  [125] setlocal 4 .............................. tElem = tWindow.getElement("achievement_list")
+  [127] getprop 767 ............................. <pBadgeListRenderer>
+  [130] getlocal 2 .............................. <tBadgeIDs>
+  [132] pusharglist 2 ........................... <pBadgeListRenderer, tBadgeIDs>
+  [134] objcall 779 ............................. <pBadgeListRenderer.renderAchievements(tBadgeIDs)>
+  [137] setlocal 5 .............................. tAchievementsImage = pBadgeListRenderer.renderAchievements(tBadgeIDs)
+  [139] getlocal 4 .............................. <tElem>
+  [141] getlocal 5 .............................. <tAchievementsImage>
+  [143] pusharglistnoret 2 ...................... <tElem, tAchievementsImage>
+  [145] objcall 170 ............................. tElem.feedImage(tAchievementsImage)
+  [147] ret
+end
+
+on updateBadgeImage me
+  [  0] getprop 760 ............................. <pBadgeWindowID>
+  [  3] pusharglist 1 ........................... <pBadgeWindowID>
+  [  5] extcall 72 .............................. <windowExists(pBadgeWindowID)>
+  [  7] not ..................................... <not windowExists(pBadgeWindowID)>
+  [  8] jmpifz [ 16] ............................ if not windowExists(pBadgeWindowID) then
+  [ 11] pushzero ................................ <0>
+  [ 12] pusharglistnoret 1 ...................... <0>
+  [ 14] extcall 50 .............................. return 0
+  [ 16] getprop 760 ............................. <pBadgeWindowID>
+  [ 19] pusharglist 1 ........................... <pBadgeWindowID>
+  [ 21] extcall 87 .............................. <getWindow(pBadgeWindowID)>
+  [ 23] setlocal 0 .............................. tWndObj = getWindow(pBadgeWindowID)
+  [ 25] pushcons 4 .............................. <"session">
+  [ 27] pusharglist 1 ........................... <"session">
+  [ 29] extcall 60 .............................. <getObject("session")>
+  [ 31] pushcons 5 .............................. <"available_badges">
+  [ 33] pusharglist 0 ........................... <[]>
+  [ 35] pushlist ................................ <[]>
+  [ 36] pusharglist 3 ........................... <getObject("session"), "available_badges", []>
+  [ 38] objcall 62 .............................. <getObject("session").GET("available_badges", [])>
+  [ 40] setlocal 1 .............................. tBadgeList = getObject("session").GET("available_badges", [])
+  [ 42] getprop 756 ............................. <pChosenBadge>
+  [ 45] getlocal 1 .............................. <tBadgeList>
+  [ 47] getobjprop 105 .......................... <tBadgeList.count>
+  [ 49] gt ...................................... <pChosenBadge > tBadgeList.count>
+  [ 50] getprop 756 ............................. <pChosenBadge>
+  [ 53] pushint8 1 .............................. <1>
+  [ 55] lt ...................................... <pChosenBadge < 1>
+  [ 56] or ...................................... <(pChosenBadge > tBadgeList.count) or (pChosenBadge < 1)>
+  [ 57] jmpifz [ 65] ............................ if (pChosenBadge > tBadgeList.count) or (pChosenBadge < 1) then
+  [ 60] pushzero ................................ <0>
+  [ 61] pusharglistnoret 1 ...................... <0>
+  [ 63] extcall 50 .............................. return 0
+  [ 65] getlocal 1 .............................. <tBadgeList>
+  [ 67] getprop 756 ............................. <pChosenBadge>
+  [ 70] pusharglist 2 ........................... <tBadgeList, pChosenBadge>
+  [ 72] objcall 75 .............................. <tBadgeList[pChosenBadge]>
+  [ 74] setlocal 2 .............................. tBadgeName = tBadgeList[pChosenBadge]
+  [ 76] pushcons 15 ............................. <"badge">
+  [ 78] getlocal 2 .............................. <tBadgeName>
+  [ 80] joinpadstr .............................. <"badge" && tBadgeName>
+  [ 81] pusharglist 1 ........................... <"badge" && tBadgeName>
+  [ 83] extcall 305 ............................. <getmemnum("badge" && tBadgeName)>
+  [ 86] setlocal 3 .............................. tMemNum = getmemnum("badge" && tBadgeName)
+  [ 88] getlocal 3 .............................. <tMemNum>
+  [ 90] pushint8 1 .............................. <1>
+  [ 92] lt ...................................... <tMemNum < 1>
+  [ 93] getprop 761 ............................. <pUpdatedBadges>
+  [ 96] getlocal 2 .............................. <tBadgeName>
+  [ 98] pusharglist 2 ........................... <pUpdatedBadges, tBadgeName>
+  [100] objcall 75 .............................. <pUpdatedBadges[tBadgeName]>
+  [102] pushzero ................................ <0>
+  [103] eq ...................................... <pUpdatedBadges[tBadgeName] = 0>
+  [104] or ...................................... <(tMemNum < 1) or (pUpdatedBadges[tBadgeName] = 0)>
+  [105] jmpifz [134] ............................ if (tMemNum < 1) or (pUpdatedBadges[tBadgeName] = 0) then
+  [108] getlocal 0 .............................. <tWndObj>
+  [110] pushcons 16 ............................. <"badge_preview">
+  [112] pusharglist 2 ........................... <tWndObj, "badge_preview">
+  [114] objcall 92 .............................. <tWndObj.getElement("badge_preview")>
+  [116] pusharglistnoret 1 ...................... <tWndObj.getElement("badge_preview")>
+  [118] objcall 140 ............................. tWndObj.getElement("badge_preview").clearImage()
+  [120] getparam 0 .............................. <me>
+  [122] getlocal 2 .............................. <tBadgeName>
+  [124] pusharglistnoret 2 ...................... <me, tBadgeName>
+  [126] objcall 740 ............................. me.startBadgeDownload(tBadgeName)
+  [129] pushzero ................................ <0>
+  [130] pusharglistnoret 1 ...................... <0>
+  [132] extcall 50 .............................. return 0
+  [134] getlocal 0 .............................. <tWndObj>
+  [136] pushcons 16 ............................. <"badge_preview">
+  [138] pusharglist 2 ........................... <tWndObj, "badge_preview">
+  [140] objcall 92 .............................. <tWndObj.getElement("badge_preview")>
+  [142] pushsymb 95 ............................. <#width>
+  [144] pusharglist 2 ........................... <tWndObj.getElement("badge_preview"), #width>
+  [146] objcall 96 .............................. <tWndObj.getElement("badge_preview").getProperty(#width)>
+  [148] setlocal 4 .............................. tWidth = tWndObj.getElement("badge_preview").getProperty(#width)
+  [150] getlocal 0 .............................. <tWndObj>
+  [152] pushcons 16 ............................. <"badge_preview">
+  [154] pusharglist 2 ........................... <tWndObj, "badge_preview">
+  [156] objcall 92 .............................. <tWndObj.getElement("badge_preview")>
+  [158] pushsymb 97 ............................. <#height>
+  [160] pusharglist 2 ........................... <tWndObj.getElement("badge_preview"), #height>
+  [162] objcall 96 .............................. <tWndObj.getElement("badge_preview").getProperty(#height)>
+  [164] setlocal 5 .............................. tHeight = tWndObj.getElement("badge_preview").getProperty(#height)
+  [166] getlocal 3 .............................. <tMemNum>
+  [168] pusharglist 1 ........................... <tMemNum>
+  [170] extcall 134 ............................. <member(tMemNum)>
+  [172] getobjprop 175 .......................... <member(tMemNum).image>
+  [174] setlocal 6 .............................. tBadgeImage = member(tMemNum).image
+  [176] getlocal 4 .............................. <tWidth>
+  [178] getlocal 5 .............................. <tHeight>
+  [180] pushint8 32 ............................. <32>
+  [182] pusharglist 3 ........................... <tWidth, tHeight, 32>
+  [184] extcall 175 ............................. <image(tWidth, tHeight, 32)>
+  [186] setlocal 7 .............................. tCenteredImage = image(tWidth, tHeight, 32)
+  [188] getlocal 7 .............................. <tCenteredImage>
+  [190] getobjprop 95 ........................... <tCenteredImage.width>
+  [192] getlocal 6 .............................. <tBadgeImage>
+  [194] getobjprop 95 ........................... <tBadgeImage.width>
+  [196] sub ..................................... <tCenteredImage.width - tBadgeImage.width>
+  [197] pushint8 2 .............................. <2>
+  [199] div ..................................... <(tCenteredImage.width - tBadgeImage.width) / 2>
+  [200] setlocal 8 .............................. tXchange = (tCenteredImage.width - tBadgeImage.width) / 2
+  [202] getlocal 7 .............................. <tCenteredImage>
+  [204] getobjprop 97 ........................... <tCenteredImage.height>
+  [206] getlocal 6 .............................. <tBadgeImage>
+  [208] getobjprop 97 ........................... <tBadgeImage.height>
+  [210] sub ..................................... <tCenteredImage.height - tBadgeImage.height>
+  [211] pushint8 2 .............................. <2>
+  [213] div ..................................... <(tCenteredImage.height - tBadgeImage.height) / 2>
+  [214] setlocal 9 .............................. tYchange = (tCenteredImage.height - tBadgeImage.height) / 2
+  [216] getlocal 6 .............................. <tBadgeImage>
+  [218] getobjprop 39 ........................... <tBadgeImage.rect>
+  [220] getlocal 8 .............................. <tXchange>
+  [222] getlocal 9 .............................. <tYchange>
+  [224] getlocal 8 .............................. <tXchange>
+  [226] getlocal 9 .............................. <tYchange>
+  [228] pusharglist 4 ........................... <tXchange, tYchange, tXchange, tYchange>
+  [230] extcall 39 .............................. <rect(tXchange, tYchange, tXchange, tYchange)>
+  [232] add ..................................... <tBadgeImage.rect + rect(tXchange, tYchange, tXchange, tYchange)>
+  [233] setlocal 10 ............................. tRect1 = tBadgeImage.rect + rect(tXchange, tYchange, tXchange, tYchange)
+  [235] getlocal 7 .............................. <tCenteredImage>
+  [237] getlocal 6 .............................. <tBadgeImage>
+  [239] getlocal 10 ............................. <tRect1>
+  [241] getlocal 6 .............................. <tBadgeImage>
+  [243] getobjprop 39 ........................... <tBadgeImage.rect>
+  [245] pusharglistnoret 4 ...................... <tCenteredImage, tBadgeImage, tRect1, tBadgeImage.rect>
+  [247] objcall 209 ............................. tCenteredImage.copyPixels(tBadgeImage, tRect1, tBadgeImage.rect)
+  [249] getlocal 0 .............................. <tWndObj>
+  [251] pushcons 16 ............................. <"badge_preview">
+  [253] pusharglist 2 ........................... <tWndObj, "badge_preview">
+  [255] objcall 92 .............................. <tWndObj.getElement("badge_preview")>
+  [257] getlocal 7 .............................. <tCenteredImage>
+  [259] pusharglistnoret 2 ...................... <tWndObj.getElement("badge_preview"), tCenteredImage>
+  [261] objcall 170 ............................. tWndObj.getElement("badge_preview").feedImage(tCenteredImage)
+  [263] pushint8 1 .............................. <1>
+  [265] pusharglistnoret 1 ...................... <1>
+  [267] extcall 50 .............................. return 1
+  [269] ret
+end
+
+on sendSetBadges me
+  [  0] pusharglist 0 ........................... <[:]>
+  [  2] pushproplist ............................ <[:]>
+  [  3] setlocal 0 .............................. tMsg = [:]
+  [  5] pushint8 1 .............................. <1>
+  [  7] setlocal 1
+  [  9] getlocal 1
+  [ 11] pushint8 5 .............................. <5>
+  [ 13] lteq
+  [ 14] jmpifz [ 83] ............................ repeat with i = 1 to 5
+  [ 17] getlocal 0 .............................. <tMsg>
+  [ 19] pushsymb 172 ............................ <#integer>
+  [ 21] getlocal 1 .............................. <i>
+  [ 23] pusharglistnoret 3 ...................... <tMsg, #integer, i>
+  [ 25] objcall 169 ............................. tMsg.addProp(#integer, i)
+  [ 27] getprop 764 ............................. <pSelectedBadges>
+  [ 30] getlocal 1 .............................. <i>
+  [ 32] pusharglist 2 ........................... <pSelectedBadges, i>
+  [ 34] objcall 75 .............................. <pSelectedBadges[i]>
+  [ 36] getobjprop 146 .......................... <pSelectedBadges[i].ilk>
+  [ 38] pushsymb 192 ............................ <#string>
+  [ 40] eq ...................................... <pSelectedBadges[i].ilk = #string>
+  [ 41] jmpifz [ 64] ............................ if pSelectedBadges[i].ilk = #string then
+  [ 44] getlocal 0 .............................. <tMsg>
+  [ 46] pushsymb 192 ............................ <#string>
+  [ 48] getprop 764 ............................. <pSelectedBadges>
+  [ 51] getlocal 1 .............................. <i>
+  [ 53] pusharglist 2 ........................... <pSelectedBadges, i>
+  [ 55] objcall 75 .............................. <pSelectedBadges[i]>
+  [ 57] pusharglistnoret 3 ...................... <tMsg, #string, pSelectedBadges[i]>
+  [ 59] objcall 169 ............................. tMsg.addProp(#string, pSelectedBadges[i])
+  [ 61] jmp [ 74] ............................... next repeat
+  [ 64] getlocal 0 .............................. <tMsg>
+  [ 66] pushsymb 192 ............................ <#string>
+  [ 68] pushcons 17 ............................. <EMPTY>
+  [ 70] pusharglistnoret 3 ...................... <tMsg, #string, EMPTY>
+  [ 72] objcall 169 ............................. tMsg.addProp(#string, EMPTY)
+  [ 74] pushint8 1
+  [ 76] getlocal 1
+  [ 78] add
+  [ 79] setlocal 1
+  [ 81] endrepeat [  9]
+  [ 83] pushsymb 77 ............................. <#room>
+  [ 85] pusharglist 1 ........................... <#room>
+  [ 87] extcall 76 .............................. <getThread(#room)>
+  [ 89] pusharglist 1 ........................... <getThread(#room)>
+  [ 91] objcall 82 .............................. <getThread(#room).getComponent()>
+  [ 93] pusharglist 1 ........................... <getThread(#room).getComponent()>
+  [ 95] objcall 791 ............................. <getThread(#room).getComponent().getRoomConnection()>
+  [ 98] pushcons 18 ............................. <"SETBADGE">
+  [100] getlocal 0 .............................. <tMsg>
+  [102] pusharglistnoret 3 ...................... <getThread(#room).getComponent().getRoomConnection(), "SETBADGE", tMsg>
+  [104] objcall 268 ............................. getThread(#room).getComponent().getRoomConnection().send("SETBADGE", tMsg)
+  [107] ret
+end
+
+on eventProcBadgeChooser me, tEvent, tSprID, tParam
+  [  0] getparam 2 .............................. <tSprID>
+  [  2] pushcons 19 ............................. <"badge_slot">
+  [  4] containsstr ............................. <tSprID contains "badge_slot">
+  [  5] jmpifz [ 38] ............................ if tSprID contains "badge_slot" then
+  [  8] getparam 2 .............................. <tSprID>
+  [ 10] pushsymb 197 ............................ <#char>
+  [ 12] getparam 2 .............................. <tSprID>
+  [ 14] getobjprop 277 .......................... <tSprID.length>
+  [ 17] pusharglist 3 ........................... <tSprID, #char, tSprID.length>
+  [ 19] objcall 199 ............................. <tSprID.char[tSprID.length]>
+  [ 21] setlocal 0 .............................. tSlotNum = tSprID.char[tSprID.length]
+  [ 23] getparam 0 .............................. <me>
+  [ 25] getlocal 0 .............................. <tSlotNum>
+  [ 27] pusharglistnoret 2 ...................... <me, tSlotNum>
+  [ 29] objcall 751 ............................. me.selectSlot(tSlotNum)
+  [ 32] pushint8 1 .............................. <1>
+  [ 34] pusharglistnoret 1 ...................... <1>
+  [ 36] extcall 50 .............................. return 1
+  [ 38] getparam 2 .............................. <tSprID>
+  [ 40] peek 0 .................................. case tSprID of
+  [ 42] pushcons 20 ............................. <"badge_list">
+  [ 44] eq
+  [ 45] jmpifz [103] ............................ (case) "badge_list":
+  [ 48] getparam 3 .............................. <tParam>
+  [ 50] getobjprop 146 .......................... <tParam.ilk>
+  [ 52] pushsymb 330 ............................ <#point>
+  [ 55] nteq .................................... <tParam.ilk <> #point>
+  [ 56] jmpifz [ 66] ............................ if tParam.ilk <> #point then
+  [ 59] pop 1
+  [ 61] pushzero ................................ <0>
+  [ 62] pusharglistnoret 1 ...................... <0>
+  [ 64] extcall 50 .............................. return 0
+  [ 66] getprop 767 ............................. <pBadgeListRenderer>
+  [ 69] getparam 3 .............................. <tParam>
+  [ 71] pusharglist 2 ........................... <pBadgeListRenderer, tParam>
+  [ 73] objcall 792 ............................. <pBadgeListRenderer.getBadgeAt(tParam)>
+  [ 76] setlocal 1 .............................. tBadgeID = pBadgeListRenderer.getBadgeAt(tParam)
+  [ 78] getlocal 1 .............................. <tBadgeID>
+  [ 80] not ..................................... <not tBadgeID>
+  [ 81] jmpifz [ 91] ............................ if not tBadgeID then
+  [ 84] pop 1
+  [ 86] pushzero ................................ <0>
+  [ 87] pusharglistnoret 1 ...................... <0>
+  [ 89] extcall 50 .............................. return 0
+  [ 91] getparam 0 .............................. <me>
+  [ 93] getlocal 1 .............................. <tBadgeID>
+  [ 95] pusharglistnoret 2 ...................... <me, tBadgeID>
+  [ 97] objcall 749 ............................. me.selectBadge(tBadgeID)
+  [100] jmp [266]
+  [103] peek 0
+  [105] pushcons 21 ............................. <"selected_badge_button">
+  [107] eq
+  [108] jmpifz [166] ............................ (case) "selected_badge_button":
+  [111] getprop 764 ............................. <pSelectedBadges>
+  [114] getprop 762 ............................. <pActiveBadgeID>
+  [117] pusharglist 2 ........................... <pSelectedBadges, pActiveBadgeID>
+  [119] objcall 793 ............................. <pSelectedBadges.findPos(pActiveBadgeID)>
+  [122] pushzero ................................ <0>
+  [123] gt ...................................... <pSelectedBadges.findPos(pActiveBadgeID) > 0>
+  [124] jmpifz [137] ............................ if pSelectedBadges.findPos(pActiveBadgeID) > 0 then / else
+  [127] getparam 0 .............................. <me>
+  [129] pusharglistnoret 1 ...................... <me>
+  [131] objcall 752 ............................. me.clearActiveSlot()
+  [134] jmp [163]
+  [137] getprop 764 ............................. <pSelectedBadges>
+  [140] pushzero ................................ <0>
+  [141] pusharglist 2 ........................... <pSelectedBadges, 0>
+  [143] objcall 194 ............................. <pSelectedBadges.getPos(0)>
+  [145] setlocal 2 .............................. tFreeSlot = pSelectedBadges.getPos(0)
+  [147] getlocal 2 .............................. <tFreeSlot>
+  [149] pushzero ................................ <0>
+  [150] gt ...................................... <tFreeSlot > 0>
+  [151] jmpifz [163] ............................ if tFreeSlot > 0 then
+  [154] getparam 0 .............................. <me>
+  [156] getlocal 2 .............................. <tFreeSlot>
+  [158] pusharglistnoret 2 ...................... <me, tFreeSlot>
+  [160] objcall 751 ............................. me.selectSlot(tFreeSlot)
+  [163] jmp [266]
+  [166] peek 0
+  [168] pushcons 22 ............................. <"badges_tab">
+  [170] eq
+  [171] jmpifz [184] ............................ (case) "badges_tab":
+  [174] getparam 0 .............................. <me>
+  [176] pusharglistnoret 1 ...................... <me>
+  [178] objcall 733 ............................. me.openBadgeWindow()
+  [181] jmp [266]
+  [184] peek 0
+  [186] pushcons 23 ............................. <"achievements_tab">
+  [188] eq
+  [189] jmpifz [202] ............................ (case) "achievements_tab":
+  [192] getparam 0 .............................. <me>
+  [194] pusharglistnoret 1 ...................... <me>
+  [196] objcall 735 ............................. me.openAchievementsWindow()
+  [199] jmp [266]
+  [202] peek 0
+  [204] pushcons 24 ............................. <"fx_tab">
+  [206] eq
+  [207] jmpifz [226] ............................ (case) "fx_tab":
+  [210] pop 1
+  [212] pushsymb 794 ............................ <#openFxWindow>
+  [215] pusharglist 1 ........................... <#openFxWindow>
+  [217] extcall 55 .............................. <executeMessage(#openFxWindow)>
+  [219] pusharglistnoret 1 ...................... <executeMessage(#openFxWindow)>
+  [221] extcall 50 .............................. return executeMessage(#openFxWindow)
+  [223] jmp [266]
+  [226] peek 0
+  [228] pushcons 25 ............................. <"button_ok">
+  [230] eq
+  [231] jmpifz [251] ............................ (case) "button_ok":
+  [234] getparam 0 .............................. <me>
+  [236] pusharglistnoret 1 ...................... <me>
+  [238] objcall 738 ............................. me.sendSetBadges()
+  [241] getparam 0 .............................. <me>
+  [243] pusharglistnoret 1 ...................... <me>
+  [245] objcall 734 ............................. me.closeBadgeWindow()
+  [248] jmp [266]
+  [251] peek 0
+  [253] pushcons 26 ............................. <"button_cancel">
+  [255] eq
+  [256] jmpifz [266] ............................ (case) "button_cancel":
+  [259] getparam 0 .............................. <me>
+  [261] pusharglistnoret 1 ...................... <me>
+  [263] objcall 734 ............................. me.closeBadgeWindow()
+  [266] pop 1 ................................... end case
+  [268] ret
+end
+
+on startBadgeDownload me, tBadgeName
+  [  0] getparam 1 .............................. <tBadgeName>
+  [  2] pushcons 17 ............................. <EMPTY>
+  [  4] eq ...................................... <tBadgeName = EMPTY>
+  [  5] getparam 1 .............................. <tBadgeName>
+  [  7] pushcons 27 ............................. <" ">
+  [  9] eq ...................................... <tBadgeName = " ">
+  [ 10] or ...................................... <(tBadgeName = EMPTY) or (tBadgeName = " ")>
+  [ 11] getparam 1 .............................. <tBadgeName>
+  [ 13] pusharglist 1 ........................... <tBadgeName>
+  [ 15] extcall 54 .............................. <voidp(tBadgeName)>
+  [ 17] or ...................................... <(tBadgeName = EMPTY) or (tBadgeName = " ") or voidp(tBadgeName)>
+  [ 18] jmpifz [ 26] ............................ if (tBadgeName = EMPTY) or (tBadgeName = " ") or voidp(tBadgeName) then
+  [ 21] pushzero ................................ <0>
+  [ 22] pusharglistnoret 1 ...................... <0>
+  [ 24] extcall 50 .............................. return 0
+  [ 26] pushcons 15 ............................. <"badge">
+  [ 28] getparam 1 .............................. <tBadgeName>
+  [ 30] joinpadstr .............................. <"badge" && tBadgeName>
+  [ 31] pusharglist 1 ........................... <"badge" && tBadgeName>
+  [ 33] extcall 797 ............................. <downloadExists("badge" && tBadgeName)>
+  [ 36] jmpifz [ 44] ............................ if downloadExists("badge" && tBadgeName) then
+  [ 39] pushzero ................................ <0>
+  [ 40] pusharglistnoret 1 ...................... <0>
+  [ 42] extcall 50 .............................. return 0
+  [ 44] pushcons 28 ............................. <"badge localized">
+  [ 46] getparam 1 .............................. <tBadgeName>
+  [ 48] joinpadstr .............................. <"badge localized" && tBadgeName>
+  [ 49] pusharglist 1 ........................... <"badge localized" && tBadgeName>
+  [ 51] extcall 797 ............................. <downloadExists("badge localized" && tBadgeName)>
+  [ 54] jmpifz [ 62] ............................ if downloadExists("badge localized" && tBadgeName) then
+  [ 57] pushzero ................................ <0>
+  [ 58] pusharglistnoret 1 ...................... <0>
+  [ 60] extcall 50 .............................. return 0
+  [ 62] getprop 758 ............................. <pImageLibraryURL>
+  [ 65] pushcons 29 ............................. <"Badges/">
+  [ 67] joinstr ................................. <pImageLibraryURL & "Badges/">
+  [ 68] getparam 1 .............................. <tBadgeName>
+  [ 70] joinstr ................................. <pImageLibraryURL & "Badges/" & tBadgeName>
+  [ 71] pushcons 30 ............................. <".gif">
+  [ 73] joinstr ................................. <pImageLibraryURL & "Badges/" & tBadgeName & ".gif">
+  [ 74] setlocal 0 .............................. tSourceURL = pImageLibraryURL & "Badges/" & tBadgeName & ".gif"
+  [ 76] pushcons 15 ............................. <"badge">
+  [ 78] getparam 1 .............................. <tBadgeName>
+  [ 80] joinpadstr .............................. <"badge" && tBadgeName>
+  [ 81] pusharglist 1 ........................... <"badge" && tBadgeName>
+  [ 83] extcall 305 ............................. <getmemnum("badge" && tBadgeName)>
+  [ 86] pushzero ................................ <0>
+  [ 87] nteq .................................... <getmemnum("badge" && tBadgeName) <> 0>
+  [ 88] jmpifz [113] ............................ if getmemnum("badge" && tBadgeName) <> 0 then / else
+  [ 91] getlocal 0 .............................. <tSourceURL>
+  [ 93] pushcons 28 ............................. <"badge localized">
+  [ 95] getparam 1 .............................. <tBadgeName>
+  [ 97] joinpadstr .............................. <"badge localized" && tBadgeName>
+  [ 98] pushsymb 455 ............................ <#bitmap>
+  [101] pushint8 1 .............................. <1>
+  [103] pusharglist 4 ........................... <tSourceURL, "badge localized" && tBadgeName, #bitmap, 1>
+  [105] extcall 572 ............................. <queueDownload(tSourceURL, "badge localized" && tBadgeName, #bitmap, 1)>
+  [108] setlocal 1 .............................. tBadgeMemNum = queueDownload(tSourceURL, "badge localized" && tBadgeName, #bitmap, 1)
+  [110] jmp [132]
+  [113] getlocal 0 .............................. <tSourceURL>
+  [115] pushcons 15 ............................. <"badge">
+  [117] getparam 1 .............................. <tBadgeName>
+  [119] joinpadstr .............................. <"badge" && tBadgeName>
+  [120] pushsymb 455 ............................ <#bitmap>
+  [123] pushint8 1 .............................. <1>
+  [125] pusharglist 4 ........................... <tSourceURL, "badge" && tBadgeName, #bitmap, 1>
+  [127] extcall 572 ............................. <queueDownload(tSourceURL, "badge" && tBadgeName, #bitmap, 1)>
+  [130] setlocal 1 .............................. tBadgeMemNum = queueDownload(tSourceURL, "badge" && tBadgeName, #bitmap, 1)
+  [132] getlocal 1 .............................. <tBadgeMemNum>
+  [134] pushzero ................................ <0>
+  [135] eq ...................................... <tBadgeMemNum = 0>
+  [136] jmpifz [144] ............................ if tBadgeMemNum = 0 then
+  [139] pushzero ................................ <0>
+  [140] pusharglistnoret 1 ...................... <0>
+  [142] extcall 50 .............................. return 0
+  [144] getlocal 1 .............................. <tBadgeMemNum>
+  [146] pusharglist 1 ........................... <tBadgeMemNum>
+  [148] extcall 134 ............................. <member(tBadgeMemNum)>
+  [150] pushint8 1 .............................. <1>
+  [152] pushint8 1 .............................. <1>
+  [154] pushint8 32 ............................. <32>
+  [156] pusharglist 3 ........................... <1, 1, 32>
+  [158] extcall 175 ............................. <image(1, 1, 32)>
+  [160] setobjprop 175 .......................... member(tBadgeMemNum).image = image(1, 1, 32)
+  [162] getlocal 1 .............................. <tBadgeMemNum>
+  [164] pusharglist 1 ........................... <tBadgeMemNum>
+  [166] extcall 134 ............................. <member(tBadgeMemNum)>
+  [168] pushzero ................................ <0>
+  [169] setobjprop 627 .......................... member(tBadgeMemNum).trimWhiteSpace = 0
+  [172] getlocal 1 .............................. <tBadgeMemNum>
+  [174] pushsymb 741 ............................ <#badgeLoaded>
+  [177] getparam 0 .............................. <me>
+  [179] pusharglist 1 ........................... <me>
+  [181] objcall 89 .............................. <me.getID()>
+  [183] getparam 1 .............................. <tBadgeName>
+  [185] pusharglistnoret 4 ...................... <tBadgeMemNum, #badgeLoaded, me.getID(), tBadgeName>
+  [187] extcall 573 ............................. registerDownloadCallback(tBadgeMemNum, #badgeLoaded, me.getID(), tBadgeName)
+  [190] getprop 759 ............................. <pActiveDownloads>
+  [193] pushcons 15 ............................. <"badge">
+  [195] getparam 1 .............................. <tBadgeName>
+  [197] joinpadstr .............................. <"badge" && tBadgeName>
+  [198] pusharglistnoret 2 ...................... <pActiveDownloads, "badge" && tBadgeName>
+  [200] objcall 104 ............................. pActiveDownloads.add("badge" && tBadgeName)
+  [202] pushint8 1 .............................. <1>
+  [204] pusharglistnoret 1 ...................... <1>
+  [206] extcall 50 .............................. return 1
+  [208] ret
+end
+
+on badgeLoaded me, tBadgeName
+  [  0] getprop 761 ............................. <pUpdatedBadges>
+  [  3] getparam 1 .............................. <tBadgeName>
+  [  5] pushint8 1 .............................. <1>
+  [  7] pusharglistnoret 3 ...................... <pUpdatedBadges, tBadgeName, 1>
+  [  9] objcall 73 .............................. pUpdatedBadges[tBadgeName] = 1
+  [ 11] pushcons 28 ............................. <"badge localized">
+  [ 13] getparam 1 .............................. <tBadgeName>
+  [ 15] joinpadstr .............................. <"badge localized" && tBadgeName>
+  [ 16] pusharglist 1 ........................... <"badge localized" && tBadgeName>
+  [ 18] extcall 305 ............................. <getmemnum("badge localized" && tBadgeName)>
+  [ 21] setlocal 0 .............................. tLoadedBadgeNum = getmemnum("badge localized" && tBadgeName)
+  [ 23] getlocal 0 .............................. <tLoadedBadgeNum>
+  [ 25] pushzero ................................ <0>
+  [ 26] nteq .................................... <tLoadedBadgeNum <> 0>
+  [ 27] jmpifz [ 89] ............................ if tLoadedBadgeNum <> 0 then
+  [ 30] getlocal 0 .............................. <tLoadedBadgeNum>
+  [ 32] pusharglist 1 ........................... <tLoadedBadgeNum>
+  [ 34] extcall 134 ............................. <member(tLoadedBadgeNum)>
+  [ 36] getchainedprop 175 ...................... <member(tLoadedBadgeNum).image>
+  [ 38] getobjprop 39 ........................... <member(tLoadedBadgeNum).image.rect>
+  [ 40] pushzero ................................ <0>
+  [ 41] pushzero ................................ <0>
+  [ 42] pushint8 1 .............................. <1>
+  [ 44] pushint8 1 .............................. <1>
+  [ 46] pusharglist 4 ........................... <0, 0, 1, 1>
+  [ 48] extcall 39 .............................. <rect(0, 0, 1, 1)>
+  [ 50] nteq .................................... <member(tLoadedBadgeNum).image.rect <> rect(0, 0, 1, 1)>
+  [ 51] jmpifz [ 89] ............................ if member(tLoadedBadgeNum).image.rect <> rect(0, 0, 1, 1) then
+  [ 54] pushcons 15 ............................. <"badge">
+  [ 56] getparam 1 .............................. <tBadgeName>
+  [ 58] joinpadstr .............................. <"badge" && tBadgeName>
+  [ 59] pusharglist 1 ........................... <"badge" && tBadgeName>
+  [ 61] extcall 305 ............................. <getmemnum("badge" && tBadgeName)>
+  [ 64] setlocal 1 .............................. tBadgeNum = getmemnum("badge" && tBadgeName)
+  [ 66] getlocal 1 .............................. <tBadgeNum>
+  [ 68] pushzero ................................ <0>
+  [ 69] nteq .................................... <tBadgeNum <> 0>
+  [ 70] jmpifz [ 89] ............................ if tBadgeNum <> 0 then
+  [ 73] getlocal 1 .............................. <tBadgeNum>
+  [ 75] pusharglist 1 ........................... <tBadgeNum>
+  [ 77] extcall 134 ............................. <member(tBadgeNum)>
+  [ 79] getlocal 0 .............................. <tLoadedBadgeNum>
+  [ 81] pusharglist 1 ........................... <tLoadedBadgeNum>
+  [ 83] extcall 134 ............................. <member(tLoadedBadgeNum)>
+  [ 85] getobjprop 175 .......................... <member(tLoadedBadgeNum).image>
+  [ 87] setobjprop 175 .......................... member(tBadgeNum).image = member(tLoadedBadgeNum).image
+  [ 89] getprop 766 ............................. <pNewBadgeDownloads>
+  [ 92] getparam 1 .............................. <tBadgeName>
+  [ 94] pusharglist 2 ........................... <pNewBadgeDownloads, tBadgeName>
+  [ 96] objcall 793 ............................. <pNewBadgeDownloads.findPos(tBadgeName)>
+  [ 99] pushzero ................................ <0>
+  [100] gt ...................................... <pNewBadgeDownloads.findPos(tBadgeName) > 0>
+  [101] jmpifz [165] ............................ if pNewBadgeDownloads.findPos(tBadgeName) > 0 then
+  [104] getparam 0 .............................. <me>
+  [106] getparam 1 .............................. <tBadgeName>
+  [108] pusharglist 2 ........................... <me, tBadgeName>
+  [110] objcall 755 ............................. <me.getBadgeMember(tBadgeName)>
+  [113] setlocal 2 .............................. tmember = me.getBadgeMember(tBadgeName)
+  [115] getlocal 2 .............................. <tmember>
+  [117] pushzero ................................ <0>
+  [118] eq ...................................... <tmember = 0>
+  [119] jmpifz [127] ............................ if tmember = 0 then
+  [122] pushzero ................................ <0>
+  [123] pusharglistnoret 1 ...................... <0>
+  [125] extcall 50 .............................. return 0
+  [127] getlocal 2 .............................. <tmember>
+  [129] getchainedprop 175 ...................... <tmember.image>
+  [131] getobjprop 39 ........................... <tmember.image.rect>
+  [133] pushzero ................................ <0>
+  [134] pushzero ................................ <0>
+  [135] pushint8 1 .............................. <1>
+  [137] pushint8 1 .............................. <1>
+  [139] pusharglist 4 ........................... <0, 0, 1, 1>
+  [141] extcall 39 .............................. <rect(0, 0, 1, 1)>
+  [143] nteq .................................... <tmember.image.rect <> rect(0, 0, 1, 1)>
+  [144] jmpifz [165] ............................ if tmember.image.rect <> rect(0, 0, 1, 1) then
+  [147] getprop 766 ............................. <pNewBadgeDownloads>
+  [150] getparam 1 .............................. <tBadgeName>
+  [152] pusharglistnoret 2 ...................... <pNewBadgeDownloads, tBadgeName>
+  [154] objcall 220 ............................. pNewBadgeDownloads.deleteOne(tBadgeName)
+  [156] pushsymb 799 ............................ <#badgeReceivedAndReady>
+  [159] getparam 1 .............................. <tBadgeName>
+  [161] pusharglistnoret 2 ...................... <#badgeReceivedAndReady, tBadgeName>
+  [163] extcall 55 .............................. executeMessage(#badgeReceivedAndReady, tBadgeName)
+  [165] pushsymb 746 ............................ <#updateInfoStandBadge>
+  [168] getparam 1 .............................. <tBadgeName>
+  [170] pusharglistnoret 2 ...................... <#updateInfoStandBadge, tBadgeName>
+  [172] extcall 55 .............................. executeMessage(#updateInfoStandBadge, tBadgeName)
+  [174] getprop 759 ............................. <pActiveDownloads>
+  [177] pushcons 15 ............................. <"badge">
+  [179] getparam 1 .............................. <tBadgeName>
+  [181] joinpadstr .............................. <"badge" && tBadgeName>
+  [182] pusharglistnoret 2 ...................... <pActiveDownloads, "badge" && tBadgeName>
+  [184] objcall 220 ............................. pActiveDownloads.deleteOne("badge" && tBadgeName)
+  [186] getprop 762 ............................. <pActiveBadgeID>
+  [189] getparam 1 .............................. <tBadgeName>
+  [191] eq ...................................... <pActiveBadgeID = tBadgeName>
+  [192] jmpifz [204] ............................ if pActiveBadgeID = tBadgeName then
+  [195] getparam 0 .............................. <me>
+  [197] getparam 1 .............................. <tBadgeName>
+  [199] pusharglistnoret 2 ...................... <me, tBadgeName>
+  [201] objcall 749 ............................. me.selectBadge(tBadgeName)
+  [204] getparam 0 .............................. <me>
+  [206] pusharglistnoret 1 ...................... <me>
+  [208] objcall 744 ............................. me.updateBadgeView()
+  [211] getparam 0 .............................. <me>
+  [213] pusharglistnoret 1 ...................... <me>
+  [215] objcall 736 ............................. me.updateAchievements()
+  [218] ret
+end
+
+on addNewBadge me, tBadgeID
+  [  0] getprop 766 ............................. <pNewBadgeDownloads>
+  [  3] getparam 1 .............................. <tBadgeID>
+  [  5] pusharglist 2 ........................... <pNewBadgeDownloads, tBadgeID>
+  [  7] objcall 793 ............................. <pNewBadgeDownloads.findPos(tBadgeID)>
+  [ 10] pushzero ................................ <0>
+  [ 11] eq ...................................... <pNewBadgeDownloads.findPos(tBadgeID) = 0>
+  [ 12] jmpifz [ 24] ............................ if pNewBadgeDownloads.findPos(tBadgeID) = 0 then
+  [ 15] getprop 766 ............................. <pNewBadgeDownloads>
+  [ 18] getparam 1 .............................. <tBadgeID>
+  [ 20] pusharglistnoret 2 ...................... <pNewBadgeDownloads, tBadgeID>
+  [ 22] objcall 104 ............................. pNewBadgeDownloads.add(tBadgeID)
+  [ 24] getparam 0 .............................. <me>
+  [ 26] getparam 1 .............................. <tBadgeID>
+  [ 28] pusharglist 2 ........................... <me, tBadgeID>
+  [ 30] objcall 755 ............................. <me.getBadgeMember(tBadgeID)>
+  [ 33] pushzero ................................ <0>
+  [ 34] eq ...................................... <me.getBadgeMember(tBadgeID) = 0>
+  [ 35] jmpifz [ 53] ............................ if me.getBadgeMember(tBadgeID) = 0 then / else
+  [ 38] getparam 0 .............................. <me>
+  [ 40] getparam 1 .............................. <tBadgeID>
+  [ 42] pusharglist 1 ........................... <[tBadgeID]>
+  [ 44] pushlist ................................ <[tBadgeID]>
+  [ 45] pusharglistnoret 2 ...................... <me, [tBadgeID]>
+  [ 47] objcall 754 ............................. me.loadBadgeImages([tBadgeID])
+  [ 50] jmp [ 62]
+  [ 53] getparam 0 .............................. <me>
+  [ 55] getparam 1 .............................. <tBadgeID>
+  [ 57] pusharglistnoret 2 ...................... <me, tBadgeID>
+  [ 59] objcall 741 ............................. me.badgeLoaded(tBadgeID)
+  [ 62] getprop 765 ............................. <pNewBadges>
+  [ 65] getparam 1 .............................. <tBadgeID>
+  [ 67] pusharglist 2 ........................... <pNewBadges, tBadgeID>
+  [ 69] objcall 194 ............................. <pNewBadges.getPos(tBadgeID)>
+  [ 71] pushzero ................................ <0>
+  [ 72] gt ...................................... <pNewBadges.getPos(tBadgeID) > 0>
+  [ 73] jmpifz [ 81] ............................ if pNewBadges.getPos(tBadgeID) > 0 then
+  [ 76] pushzero ................................ <0>
+  [ 77] pusharglistnoret 1 ...................... <0>
+  [ 79] extcall 50 .............................. return 0
+  [ 81] getprop 765 ............................. <pNewBadges>
+  [ 84] getparam 1 .............................. <tBadgeID>
+  [ 86] pusharglistnoret 2 ...................... <pNewBadges, tBadgeID>
+  [ 88] objcall 104 ............................. pNewBadges.add(tBadgeID)
+  [ 90] getparam 0 .............................. <me>
+  [ 92] pusharglistnoret 1 ...................... <me>
+  [ 94] objcall 744 ............................. me.updateBadgeView()
+  [ 97] ret
+end
+
+on handleBadgeRemove me, tBadgeID
+  [  0] getprop 764 ............................. <pSelectedBadges>
+  [  3] getparam 1 .............................. <tBadgeID>
+  [  5] pusharglist 2 ........................... <pSelectedBadges, tBadgeID>
+  [  7] objcall 194 ............................. <pSelectedBadges.getPos(tBadgeID)>
+  [  9] setlocal 0 .............................. tPos = pSelectedBadges.getPos(tBadgeID)
+  [ 11] getlocal 0 .............................. <tPos>
+  [ 13] pushzero ................................ <0>
+  [ 14] gt ...................................... <tPos > 0>
+  [ 15] jmpifz [ 28] ............................ if tPos > 0 then
+  [ 18] getprop 764 ............................. <pSelectedBadges>
+  [ 21] getlocal 0 .............................. <tPos>
+  [ 23] pushzero ................................ <0>
+  [ 24] pusharglistnoret 3 ...................... <pSelectedBadges, tPos, 0>
+  [ 26] objcall 73 .............................. pSelectedBadges[tPos] = 0
+  [ 28] getprop 762 ............................. <pActiveBadgeID>
+  [ 31] getparam 1 .............................. <tBadgeID>
+  [ 33] eq ...................................... <pActiveBadgeID = tBadgeID>
+  [ 34] jmpifz [ 41] ............................ if pActiveBadgeID = tBadgeID then
+  [ 37] pushzero ................................ <0>
+  [ 38] setprop 762 ............................. pActiveBadgeID = 0
+  [ 41] getparam 0 .............................. <me>
+  [ 43] pusharglistnoret 1 ...................... <me>
+  [ 45] objcall 744 ............................. me.updateBadgeView()
+  [ 48] ret
+end
+
+on updateBadgeView me
+  [  0] getparam 0 .............................. <me>
+  [  2] pusharglistnoret 1 ...................... <me>
+  [  4] objcall 745 ............................. me.updateBadgeListImage()
+  [  7] getparam 0 .............................. <me>
+  [  9] pusharglistnoret 1 ...................... <me>
+  [ 11] objcall 750 ............................. me.updatePreview()
+  [ 14] getparam 0 .............................. <me>
+  [ 16] pusharglistnoret 1 ...................... <me>
+  [ 18] objcall 753 ............................. me.updateSlots()
+  [ 21] ret
+end
+
+on updateBadgeListImage me
+  [  0] getprop 760 ............................. <pBadgeWindowID>
+  [  3] pusharglist 1 ........................... <pBadgeWindowID>
+  [  5] extcall 72 .............................. <windowExists(pBadgeWindowID)>
+  [  7] not ..................................... <not windowExists(pBadgeWindowID)>
+  [  8] jmpifz [ 16] ............................ if not windowExists(pBadgeWindowID) then
+  [ 11] pushzero ................................ <0>
+  [ 12] pusharglistnoret 1 ...................... <0>
+  [ 14] extcall 50 .............................. return 0
+  [ 16] getprop 760 ............................. <pBadgeWindowID>
+  [ 19] pusharglist 1 ........................... <pBadgeWindowID>
+  [ 21] extcall 87 .............................. <getWindow(pBadgeWindowID)>
+  [ 23] setlocal 0 .............................. tWindow = getWindow(pBadgeWindowID)
+  [ 25] getlocal 0 .............................. <tWindow>
+  [ 27] pushcons 20 ............................. <"badge_list">
+  [ 29] pusharglist 2 ........................... <tWindow, "badge_list">
+  [ 31] objcall 94 .............................. <tWindow.elementExists("badge_list")>
+  [ 33] not ..................................... <not tWindow.elementExists("badge_list")>
+  [ 34] jmpifz [ 42] ............................ if not tWindow.elementExists("badge_list") then
+  [ 37] pushzero ................................ <0>
+  [ 38] pusharglistnoret 1 ...................... <0>
+  [ 40] extcall 50 .............................. return 0
+  [ 42] pushsymb 61 ............................. <#session>
+  [ 44] pusharglist 1 ........................... <#session>
+  [ 46] extcall 60 .............................. <getObject(#session)>
+  [ 48] pushcons 5 .............................. <"available_badges">
+  [ 50] pusharglist 0 ........................... <[]>
+  [ 52] pushlist ................................ <[]>
+  [ 53] pusharglist 3 ........................... <getObject(#session), "available_badges", []>
+  [ 55] objcall 62 .............................. <getObject(#session).GET("available_badges", [])>
+  [ 57] setlocal 1 .............................. tBadges = getObject(#session).GET("available_badges", [])
+  [ 59] getlocal 0 .............................. <tWindow>
+  [ 61] pushcons 20 ............................. <"badge_list">
+  [ 63] pusharglist 2 ........................... <tWindow, "badge_list">
+  [ 65] objcall 92 .............................. <tWindow.getElement("badge_list")>
+  [ 67] setlocal 2 .............................. tListElem = tWindow.getElement("badge_list")
+  [ 69] getlocal 2 .............................. <tListElem>
+  [ 71] getprop 767 ............................. <pBadgeListRenderer>
+  [ 74] getlocal 1 .............................. <tBadges>
+  [ 76] getprop 764 ............................. <pSelectedBadges>
+  [ 79] getprop 765 ............................. <pNewBadges>
+  [ 82] getprop 762 ............................. <pActiveBadgeID>
+  [ 85] pusharglist 5 ........................... <pBadgeListRenderer, tBadges, pSelectedBadges, pNewBadges, pActiveBadgeID>
+  [ 87] objcall 394 ............................. <pBadgeListRenderer.render(tBadges, pSelectedBadges, pNewBadges, pActiveBadgeID)>
+  [ 90] pusharglistnoret 2 ...................... <tListElem, pBadgeListRenderer.render(tBadges, pSelectedBadges, pNewBadges, pActiveBadgeID)>
+  [ 92] objcall 170 ............................. tListElem.feedImage(pBadgeListRenderer.render(tBadges, pSelectedBadges, pNewBadges, pActiveBadgeID))
+  [ 94] ret
+end
+
+on updateInfoStandBadge me, tInfoStandID, tSelectedObjID, tBadges
+  [  0] getparam 1 .............................. <tInfoStandID>
+  [  2] pusharglist 1 ........................... <tInfoStandID>
+  [  4] extcall 87 .............................. <getWindow(tInfoStandID)>
+  [  6] setlocal 0 .............................. tWndObj = getWindow(tInfoStandID)
+  [  8] getlocal 0 .............................. <tWndObj>
+  [ 10] not ..................................... <not tWndObj>
+  [ 11] jmpifz [ 19] ............................ if not tWndObj then
+  [ 14] pushzero ................................ <0>
+  [ 15] pusharglistnoret 1 ...................... <0>
+  [ 17] extcall 50 .............................. return 0
+  [ 19] pushsymb 77 ............................. <#room>
+  [ 21] pusharglist 1 ........................... <#room>
+  [ 23] extcall 76 .............................. <getThread(#room)>
+  [ 25] pusharglist 1 ........................... <getThread(#room)>
+  [ 27] objcall 82 .............................. <getThread(#room).getComponent()>
+  [ 29] getparam 2 .............................. <tSelectedObjID>
+  [ 31] pusharglist 2 ........................... <getThread(#room).getComponent(), tSelectedObjID>
+  [ 33] objcall 335 ............................. <getThread(#room).getComponent().getUserObject(tSelectedObjID)>
+  [ 36] setlocal 1 .............................. tUserObj = getThread(#room).getComponent().getUserObject(tSelectedObjID)
+  [ 38] getlocal 1 .............................. <tUserObj>
+  [ 40] pusharglist 1 ........................... <tUserObj>
+  [ 42] extcall 232 ............................. <objectp(tUserObj)>
+  [ 44] not ..................................... <not objectp(tUserObj)>
+  [ 45] jmpifz [ 53] ............................ if not objectp(tUserObj) then
+  [ 48] pushzero ................................ <0>
+  [ 49] pusharglistnoret 1 ...................... <0>
+  [ 51] extcall 50 .............................. return 0
+  [ 53] getparam 3 .............................. <tBadges>
+  [ 55] getobjprop 146 .......................... <tBadges.ilk>
+  [ 57] pushsymb 147 ............................ <#propList>
+  [ 59] nteq .................................... <tBadges.ilk <> #propList>
+  [ 60] jmpifz [ 68] ............................ if tBadges.ilk <> #propList then
+  [ 63] pushzero ................................ <0>
+  [ 64] pusharglistnoret 1 ...................... <0>
+  [ 66] extcall 50 .............................. return 0
+  [ 68] getparam 2 .............................. <tSelectedObjID>
+  [ 70] pushcons 4 .............................. <"session">
+  [ 72] pusharglist 1 ........................... <"session">
+  [ 74] extcall 60 .............................. <getObject("session")>
+  [ 76] pushcons 3 .............................. <"user_index">
+  [ 78] pusharglist 2 ........................... <getObject("session"), "user_index">
+  [ 80] objcall 62 .............................. <getObject("session").GET("user_index")>
+  [ 82] eq ...................................... <tSelectedObjID = getObject("session").GET("user_index")>
+  [ 83] setlocal 2 .............................. tOwnCharacter = tSelectedObjID = getObject("session").GET("user_index")
+  [ 85] getlocal 1 .............................. <tUserObj>
+  [ 87] getobjprop 804 .......................... <tUserObj.pBadges>
+  [ 90] getparam 3 .............................. <tBadges>
+  [ 92] nteq .................................... <tUserObj.pBadges <> tBadges>
+  [ 93] jmpifz [101] ............................ if tUserObj.pBadges <> tBadges then
+  [ 96] pushzero ................................ <0>
+  [ 97] pusharglistnoret 1 ...................... <0>
+  [ 99] extcall 50 .............................. return 0
+  [101] pushint8 1 .............................. <1>
+  [103] setlocal 3
+  [105] getlocal 3
+  [107] pushint8 5 .............................. <5>
+  [109] lteq
+  [110] jmpifz [323] ............................ repeat with tBadgeIndex = 1 to 5
+  [113] getlocal 0 .............................. <tWndObj>
+  [115] pushcons 31 ............................. <"info_badge_">
+  [117] getlocal 3 .............................. <tBadgeIndex>
+  [119] joinstr ................................. <"info_badge_" & tBadgeIndex>
+  [120] pusharglist 2 ........................... <tWndObj, "info_badge_" & tBadgeIndex>
+  [122] objcall 94 .............................. <tWndObj.elementExists("info_badge_" & tBadgeIndex)>
+  [124] not ..................................... <not tWndObj.elementExists("info_badge_" & tBadgeIndex)>
+  [125] jmpifz [131] ............................ if not tWndObj.elementExists("info_badge_" & tBadgeIndex) then
+  [128] jmp [314] ............................... next repeat
+  [131] getlocal 0 .............................. <tWndObj>
+  [133] pushcons 31 ............................. <"info_badge_">
+  [135] getlocal 3 .............................. <tBadgeIndex>
+  [137] joinstr ................................. <"info_badge_" & tBadgeIndex>
+  [138] pusharglist 2 ........................... <tWndObj, "info_badge_" & tBadgeIndex>
+  [140] objcall 92 .............................. <tWndObj.getElement("info_badge_" & tBadgeIndex)>
+  [142] setlocal 4 .............................. tElem = tWndObj.getElement("info_badge_" & tBadgeIndex)
+  [144] getlocal 4 .............................. <tElem>
+  [146] pusharglistnoret 1 ...................... <tElem>
+  [148] objcall 140 ............................. tElem.clearImage()
+  [150] getparam 3 .............................. <tBadges>
+  [152] getlocal 3 .............................. <tBadgeIndex>
+  [154] pusharglist 2 ........................... <tBadges, tBadgeIndex>
+  [156] objcall 149 ............................. <tBadges.getaProp(tBadgeIndex)>
+  [158] setlocal 5 .............................. tBadgeID = tBadges.getaProp(tBadgeIndex)
+  [160] getlocal 5 .............................. <tBadgeID>
+  [162] pusharglist 1 ........................... <tBadgeID>
+  [164] extcall 54 .............................. <voidp(tBadgeID)>
+  [166] jmpifz [172] ............................ if voidp(tBadgeID) then
+  [169] jmp [314] ............................... next repeat
+  [172] getlocal 2 .............................. <tOwnCharacter>
+  [174] jmpifz [188] ............................ if tOwnCharacter then
+  [177] getlocal 4 .............................. <tElem>
+  [179] pushsymb 805 ............................ <#cursor>
+  [182] pushcons 32 ............................. <"cursor.finger">
+  [184] pusharglistnoret 3 ...................... <tElem, #cursor, "cursor.finger">
+  [186] objcall 81 .............................. tElem.setProperty(#cursor, "cursor.finger")
+  [188] pushcons 15 ............................. <"badge">
+  [190] getlocal 5 .............................. <tBadgeID>
+  [192] joinpadstr .............................. <"badge" && tBadgeID>
+  [193] pushcons 33 ............................. <"localized">
+  [195] joinpadstr .............................. <"badge" && tBadgeID && "localized">
+  [196] pusharglist 1 ........................... <"badge" && tBadgeID && "localized">
+  [198] extcall 204 ............................. <memberExists("badge" && tBadgeID && "localized")>
+  [200] jmpifz [247] ............................ if memberExists("badge" && tBadgeID && "localized") then
+  [203] pushcons 15 ............................. <"badge">
+  [205] getlocal 5 .............................. <tBadgeID>
+  [207] joinpadstr .............................. <"badge" && tBadgeID>
+  [208] pushcons 33 ............................. <"localized">
+  [210] joinpadstr .............................. <"badge" && tBadgeID && "localized">
+  [211] pusharglist 1 ........................... <"badge" && tBadgeID && "localized">
+  [213] extcall 305 ............................. <getmemnum("badge" && tBadgeID && "localized")>
+  [216] pusharglist 1 ........................... <getmemnum("badge" && tBadgeID && "localized")>
+  [218] extcall 134 ............................. <member(getmemnum("badge" && tBadgeID && "localized"))>
+  [220] setlocal 6 .............................. tBadgeMember = member(getmemnum("badge" && tBadgeID && "localized"))
+  [222] getlocal 6 .............................. <tBadgeMember>
+  [224] getobjprop 454 .......................... <tBadgeMember.type>
+  [227] pushsymb 455 ............................ <#bitmap>
+  [230] eq ...................................... <tBadgeMember.type = #bitmap>
+  [231] jmpifz [244] ............................ if tBadgeMember.type = #bitmap then
+  [234] getlocal 4 .............................. <tElem>
+  [236] getlocal 6 .............................. <tBadgeMember>
+  [238] getobjprop 175 .......................... <tBadgeMember.image>
+  [240] pusharglistnoret 2 ...................... <tElem, tBadgeMember.image>
+  [242] objcall 170 ............................. tElem.feedImage(tBadgeMember.image)
+  [244] jmp [314] ............................... next repeat
+  [247] pushcons 15 ............................. <"badge">
+  [249] getlocal 5 .............................. <tBadgeID>
+  [251] joinpadstr .............................. <"badge" && tBadgeID>
+  [252] pusharglist 1 ........................... <"badge" && tBadgeID>
+  [254] extcall 204 ............................. <memberExists("badge" && tBadgeID)>
+  [256] jmpifz [300] ............................ if memberExists("badge" && tBadgeID) then
+  [259] pushcons 15 ............................. <"badge">
+  [261] getlocal 5 .............................. <tBadgeID>
+  [263] joinpadstr .............................. <"badge" && tBadgeID>
+  [264] pusharglist 1 ........................... <"badge" && tBadgeID>
+  [266] extcall 305 ............................. <getmemnum("badge" && tBadgeID)>
+  [269] pusharglist 1 ........................... <getmemnum("badge" && tBadgeID)>
+  [271] extcall 134 ............................. <member(getmemnum("badge" && tBadgeID))>
+  [273] setlocal 6 .............................. tBadgeMember = member(getmemnum("badge" && tBadgeID))
+  [275] getlocal 6 .............................. <tBadgeMember>
+  [277] getobjprop 454 .......................... <tBadgeMember.type>
+  [280] pushsymb 455 ............................ <#bitmap>
+  [283] eq ...................................... <tBadgeMember.type = #bitmap>
+  [284] jmpifz [297] ............................ if tBadgeMember.type = #bitmap then
+  [287] getlocal 4 .............................. <tElem>
+  [289] getlocal 6 .............................. <tBadgeMember>
+  [291] getobjprop 175 .......................... <tBadgeMember.image>
+  [293] pusharglistnoret 2 ...................... <tElem, tBadgeMember.image>
+  [295] objcall 170 ............................. tElem.feedImage(tBadgeMember.image)
+  [297] jmp [314] ............................... next repeat
+  [300] getparam 0 .............................. <me>
+  [302] getlocal 5 .............................. <tBadgeID>
+  [304] pusharglistnoret 2 ...................... <me, tBadgeID>
+  [306] objcall 740 ............................. me.startBadgeDownload(tBadgeID)
+  [309] pushzero ................................ <0>
+  [310] pusharglistnoret 1 ...................... <0>
+  [312] extcall 50 .............................. return 0
+  [314] pushint8 1
+  [316] getlocal 3
+  [318] add
+  [319] setlocal 3
+  [321] endrepeat [105]
+  [323] ret
+end
+
+on createBadgeEffect me, tElem
+  [  0] pushcons 34 ............................. <"BadgeEffect">
+  [  2] pusharglist 1 ........................... <"BadgeEffect">
+  [  4] extcall 158 ............................. <objectExists("BadgeEffect")>
+  [  6] jmpifz [ 14] ............................ if objectExists("BadgeEffect") then
+  [  9] pushzero ................................ <0>
+  [ 10] pusharglistnoret 1 ...................... <0>
+  [ 12] extcall 50 .............................. return 0
+  [ 14] pushcons 34 ............................. <"BadgeEffect">
+  [ 16] pushcons 35 ............................. <"Badge Effect Class">
+  [ 18] pusharglist 2 ........................... <"BadgeEffect", "Badge Effect Class">
+  [ 20] extcall 228 ............................. <createObject("BadgeEffect", "Badge Effect Class")>
+  [ 22] pushzero ................................ <0>
+  [ 23] nteq .................................... <createObject("BadgeEffect", "Badge Effect Class") <> 0>
+  [ 24] jmpifz [ 44] ............................ if createObject("BadgeEffect", "Badge Effect Class") <> 0 then
+  [ 27] pushcons 34 ............................. <"BadgeEffect">
+  [ 29] pusharglist 1 ........................... <"BadgeEffect">
+  [ 31] extcall 60 .............................. <getObject("BadgeEffect")>
+  [ 33] getparam 1 .............................. <tElem>
+  [ 35] pusharglist 2 ........................... <getObject("BadgeEffect"), tElem>
+  [ 37] objcall 313 ............................. <getObject("BadgeEffect").Init(tElem)>
+  [ 40] pusharglistnoret 1 ...................... <getObject("BadgeEffect").Init(tElem)>
+  [ 42] extcall 50 .............................. return getObject("BadgeEffect").Init(tElem)
+  [ 44] ret
+end
+
+on removeBadgeEffect me
+  [  0] pushcons 34 ............................. <"BadgeEffect">
+  [  2] pusharglist 1 ........................... <"BadgeEffect">
+  [  4] extcall 158 ............................. <objectExists("BadgeEffect")>
+  [  6] jmpifz [ 20] ............................ if objectExists("BadgeEffect") then
+  [  9] pushcons 34 ............................. <"BadgeEffect">
+  [ 11] pusharglist 1 ........................... <"BadgeEffect">
+  [ 13] extcall 262 ............................. <removeObject("BadgeEffect")>
+  [ 16] pusharglistnoret 1 ...................... <removeObject("BadgeEffect")>
+  [ 18] extcall 50 .............................. return removeObject("BadgeEffect")
+  [ 20] ret
+end
+
+on selectBadge me, tBadgeID
+  [  0] getprop 765 ............................. <pNewBadges>
+  [  3] getparam 1 .............................. <tBadgeID>
+  [  5] pusharglist 2 ........................... <pNewBadges, tBadgeID>
+  [  7] objcall 194 ............................. <pNewBadges.getPos(tBadgeID)>
+  [  9] setlocal 0 .............................. tPos = pNewBadges.getPos(tBadgeID)
+  [ 11] getlocal 0 .............................. <tPos>
+  [ 13] pushzero ................................ <0>
+  [ 14] gt ...................................... <tPos > 0>
+  [ 15] jmpifz [ 28] ............................ if tPos > 0 then
+  [ 18] getprop 765 ............................. <pNewBadges>
+  [ 21] getlocal 0 .............................. <tPos>
+  [ 23] pusharglistnoret 2 ...................... <pNewBadges, tPos>
+  [ 25] objcall 812 ............................. pNewBadges.deleteAt(tPos)
+  [ 28] getparam 1 .............................. <tBadgeID>
+  [ 30] setprop 762 ............................. pActiveBadgeID = tBadgeID
+  [ 33] getparam 0 .............................. <me>
+  [ 35] pusharglistnoret 1 ...................... <me>
+  [ 37] objcall 744 ............................. me.updateBadgeView()
+  [ 40] ret
+end
+
+on updatePreview me
+  [  0] getprop 760 ............................. <pBadgeWindowID>
+  [  3] pusharglist 1 ........................... <pBadgeWindowID>
+  [  5] extcall 72 .............................. <windowExists(pBadgeWindowID)>
+  [  7] not ..................................... <not windowExists(pBadgeWindowID)>
+  [  8] jmpifz [ 16] ............................ if not windowExists(pBadgeWindowID) then
+  [ 11] pushzero ................................ <0>
+  [ 12] pusharglistnoret 1 ...................... <0>
+  [ 14] extcall 50 .............................. return 0
+  [ 16] getprop 760 ............................. <pBadgeWindowID>
+  [ 19] pusharglist 1 ........................... <pBadgeWindowID>
+  [ 21] extcall 87 .............................. <getWindow(pBadgeWindowID)>
+  [ 23] setlocal 0 .............................. tWindow = getWindow(pBadgeWindowID)
+  [ 25] getlocal 0 .............................. <tWindow>
+  [ 27] pushcons 36 ............................. <"selected_badge">
+  [ 29] pusharglist 2 ........................... <tWindow, "selected_badge">
+  [ 31] objcall 94 .............................. <tWindow.elementExists("selected_badge")>
+  [ 33] jmpifz [173] ............................ if tWindow.elementExists("selected_badge") then
+  [ 36] getlocal 0 .............................. <tWindow>
+  [ 38] pushcons 36 ............................. <"selected_badge">
+  [ 40] pusharglist 2 ........................... <tWindow, "selected_badge">
+  [ 42] objcall 92 .............................. <tWindow.getElement("selected_badge")>
+  [ 44] setlocal 1 .............................. tBadgeElem = tWindow.getElement("selected_badge")
+  [ 46] getprop 762 ............................. <pActiveBadgeID>
+  [ 49] pushzero ................................ <0>
+  [ 50] nteq .................................... <pActiveBadgeID <> 0>
+  [ 51] pushcons 15 ............................. <"badge">
+  [ 53] getprop 762 ............................. <pActiveBadgeID>
+  [ 56] joinpadstr .............................. <"badge" && pActiveBadgeID>
+  [ 57] pusharglist 1 ........................... <"badge" && pActiveBadgeID>
+  [ 59] extcall 204 ............................. <memberExists("badge" && pActiveBadgeID)>
+  [ 61] and ..................................... <(pActiveBadgeID <> 0) and memberExists("badge" && pActiveBadgeID)>
+  [ 62] jmpifz [ 87] ............................ if (pActiveBadgeID <> 0) and memberExists("badge" && pActiveBadgeID) then / else
+  [ 65] pushcons 15 ............................. <"badge">
+  [ 67] getprop 762 ............................. <pActiveBadgeID>
+  [ 70] joinpadstr .............................. <"badge" && pActiveBadgeID>
+  [ 71] pusharglist 1 ........................... <"badge" && pActiveBadgeID>
+  [ 73] extcall 305 ............................. <getmemnum("badge" && pActiveBadgeID)>
+  [ 76] pusharglist 1 ........................... <getmemnum("badge" && pActiveBadgeID)>
+  [ 78] extcall 134 ............................. <member(getmemnum("badge" && pActiveBadgeID))>
+  [ 80] getobjprop 175 .......................... <member(getmemnum("badge" && pActiveBadgeID)).image>
+  [ 82] setlocal 2 .............................. tBadgeImage = member(getmemnum("badge" && pActiveBadgeID)).image
+  [ 84] jmp [ 99]
+  [ 87] pushint8 1 .............................. <1>
+  [ 89] pushint8 1 .............................. <1>
+  [ 91] pushint8 8 .............................. <8>
+  [ 93] pusharglist 3 ........................... <1, 1, 8>
+  [ 95] extcall 175 ............................. <image(1, 1, 8)>
+  [ 97] setlocal 2 .............................. tBadgeImage = image(1, 1, 8)
+  [ 99] getlocal 2 .............................. <tBadgeImage>
+  [101] getobjprop 95 ........................... <tBadgeImage.width>
+  [103] pushint8 2 .............................. <2>
+  [105] mul ..................................... <tBadgeImage.width * 2>
+  [106] getlocal 2 .............................. <tBadgeImage>
+  [108] getobjprop 97 ........................... <tBadgeImage.height>
+  [110] pushint8 2 .............................. <2>
+  [112] mul ..................................... <tBadgeImage.height * 2>
+  [113] getlocal 2 .............................. <tBadgeImage>
+  [115] getobjprop 710 .......................... <tBadgeImage.depth>
+  [118] pusharglist 3 ........................... <tBadgeImage.width * 2, tBadgeImage.height * 2, tBadgeImage.depth>
+  [120] extcall 175 ............................. <image(tBadgeImage.width * 2, tBadgeImage.height * 2, tBadgeImage.depth)>
+  [122] setlocal 3 .............................. tDouble = image(tBadgeImage.width * 2, tBadgeImage.height * 2, tBadgeImage.depth)
+  [124] getlocal 3 .............................. <tDouble>
+  [126] getlocal 2 .............................. <tBadgeImage>
+  [128] getlocal 2 .............................. <tBadgeImage>
+  [130] getobjprop 39 ........................... <tBadgeImage.rect>
+  [132] pushint8 2 .............................. <2>
+  [134] mul ..................................... <tBadgeImage.rect * 2>
+  [135] getlocal 2 .............................. <tBadgeImage>
+  [137] getobjprop 39 ........................... <tBadgeImage.rect>
+  [139] pusharglistnoret 4 ...................... <tDouble, tBadgeImage, tBadgeImage.rect * 2, tBadgeImage.rect>
+  [141] objcall 209 ............................. tDouble.copyPixels(tBadgeImage, tBadgeImage.rect * 2, tBadgeImage.rect)
+  [143] getprop 767 ............................. <pBadgeListRenderer>
+  [146] getlocal 3 .............................. <tDouble>
+  [148] pushzero ................................ <0>
+  [149] pushzero ................................ <0>
+  [150] pushint8 94 ............................. <94>
+  [152] pushint8 94 ............................. <94>
+  [154] pusharglist 4 ........................... <0, 0, 94, 94>
+  [156] extcall 39 .............................. <rect(0, 0, 94, 94)>
+  [158] pusharglist 3 ........................... <pBadgeListRenderer, tDouble, rect(0, 0, 94, 94)>
+  [160] objcall 813 ............................. <pBadgeListRenderer.centerImage(tDouble, rect(0, 0, 94, 94))>
+  [163] setlocal 3 .............................. tDouble = pBadgeListRenderer.centerImage(tDouble, rect(0, 0, 94, 94))
+  [165] getlocal 1 .............................. <tBadgeElem>
+  [167] getlocal 3 .............................. <tDouble>
+  [169] pusharglistnoret 2 ...................... <tBadgeElem, tDouble>
+  [171] objcall 170 ............................. tBadgeElem.feedImage(tDouble)
+  [173] getlocal 0 .............................. <tWindow>
+  [175] pushcons 37 ............................. <"selected_badge_name">
+  [177] pusharglist 2 ........................... <tWindow, "selected_badge_name">
+  [179] objcall 94 .............................. <tWindow.elementExists("selected_badge_name")>
+  [181] jmpifz [228] ............................ if tWindow.elementExists("selected_badge_name") then
+  [184] getlocal 0 .............................. <tWindow>
+  [186] pushcons 37 ............................. <"selected_badge_name">
+  [188] pusharglist 2 ........................... <tWindow, "selected_badge_name">
+  [190] objcall 92 .............................. <tWindow.getElement("selected_badge_name")>
+  [192] setlocal 4 .............................. tNameElem = tWindow.getElement("selected_badge_name")
+  [194] getprop 762 ............................. <pActiveBadgeID>
+  [197] pushzero ................................ <0>
+  [198] nteq .................................... <pActiveBadgeID <> 0>
+  [199] jmpifz [221] ............................ if pActiveBadgeID <> 0 then / else
+  [202] getlocal 4 .............................. <tNameElem>
+  [204] pushcons 38 ............................. <"badge_name_">
+  [206] getprop 762 ............................. <pActiveBadgeID>
+  [209] joinstr ................................. <"badge_name_" & pActiveBadgeID>
+  [210] pusharglist 1 ........................... <"badge_name_" & pActiveBadgeID>
+  [212] extcall 31 .............................. <getText("badge_name_" & pActiveBadgeID)>
+  [214] pusharglistnoret 2 ...................... <tNameElem, getText("badge_name_" & pActiveBadgeID)>
+  [216] objcall 93 .............................. tNameElem.setText(getText("badge_name_" & pActiveBadgeID))
+  [218] jmp [228]
+  [221] getlocal 4 .............................. <tNameElem>
+  [223] pusharglistnoret 1 ...................... <tNameElem>
+  [225] objcall 315 ............................. tNameElem.hide()
+  [228] getlocal 0 .............................. <tWindow>
+  [230] pushcons 37 ............................. <"selected_badge_name">
+  [232] pusharglist 2 ........................... <tWindow, "selected_badge_name">
+  [234] objcall 94 .............................. <tWindow.elementExists("selected_badge_name")>
+  [236] jmpifz [283] ............................ if tWindow.elementExists("selected_badge_name") then
+  [239] getlocal 0 .............................. <tWindow>
+  [241] pushcons 39 ............................. <"selected_badge_desc">
+  [243] pusharglist 2 ........................... <tWindow, "selected_badge_desc">
+  [245] objcall 92 .............................. <tWindow.getElement("selected_badge_desc")>
+  [247] setlocal 5 .............................. tDescElem = tWindow.getElement("selected_badge_desc")
+  [249] getprop 762 ............................. <pActiveBadgeID>
+  [252] pushzero ................................ <0>
+  [253] nteq .................................... <pActiveBadgeID <> 0>
+  [254] jmpifz [276] ............................ if pActiveBadgeID <> 0 then / else
+  [257] getlocal 5 .............................. <tDescElem>
+  [259] pushcons 40 ............................. <"badge_desc_">
+  [261] getprop 762 ............................. <pActiveBadgeID>
+  [264] joinstr ................................. <"badge_desc_" & pActiveBadgeID>
+  [265] pusharglist 1 ........................... <"badge_desc_" & pActiveBadgeID>
+  [267] extcall 31 .............................. <getText("badge_desc_" & pActiveBadgeID)>
+  [269] pusharglistnoret 2 ...................... <tDescElem, getText("badge_desc_" & pActiveBadgeID)>
+  [271] objcall 93 .............................. tDescElem.setText(getText("badge_desc_" & pActiveBadgeID))
+  [273] jmp [283]
+  [276] getlocal 5 .............................. <tDescElem>
+  [278] pusharglistnoret 1 ...................... <tDescElem>
+  [280] objcall 315 ............................. tDescElem.hide()
+  [283] getlocal 0 .............................. <tWindow>
+  [285] pushcons 21 ............................. <"selected_badge_button">
+  [287] pusharglist 2 ........................... <tWindow, "selected_badge_button">
+  [289] objcall 94 .............................. <tWindow.elementExists("selected_badge_button")>
+  [291] getlocal 0 .............................. <tWindow>
+  [293] pushcons 41 ............................. <"slots_full_text">
+  [295] pusharglist 2 ........................... <tWindow, "slots_full_text">
+  [297] objcall 94 .............................. <tWindow.elementExists("slots_full_text")>
+  [299] and ..................................... <tWindow.elementExists("selected_badge_button") and tWindow.elementExists("slots_full_text")>
+  [300] jmpifz [440] ............................ if tWindow.elementExists("selected_badge_button") and tWindow.elementExists("slots_full_text") then
+  [303] getlocal 0 .............................. <tWindow>
+  [305] pushcons 21 ............................. <"selected_badge_button">
+  [307] pusharglist 2 ........................... <tWindow, "selected_badge_button">
+  [309] objcall 92 .............................. <tWindow.getElement("selected_badge_button")>
+  [311] setlocal 6 .............................. tButton = tWindow.getElement("selected_badge_button")
+  [313] getlocal 0 .............................. <tWindow>
+  [315] pushcons 41 ............................. <"slots_full_text">
+  [317] pusharglist 2 ........................... <tWindow, "slots_full_text">
+  [319] objcall 92 .............................. <tWindow.getElement("slots_full_text")>
+  [321] setlocal 7 .............................. tTextElem = tWindow.getElement("slots_full_text")
+  [323] getprop 764 ............................. <pSelectedBadges>
+  [326] getprop 762 ............................. <pActiveBadgeID>
+  [329] pusharglist 2 ........................... <pSelectedBadges, pActiveBadgeID>
+  [331] objcall 194 ............................. <pSelectedBadges.getPos(pActiveBadgeID)>
+  [333] pushzero ................................ <0>
+  [334] eq ...................................... <pSelectedBadges.getPos(pActiveBadgeID) = 0>
+  [335] jmpifz [397] ............................ if pSelectedBadges.getPos(pActiveBadgeID) = 0 then / else
+  [338] pushcons 42 ............................. <"badge_wear">
+  [340] pusharglist 1 ........................... <"badge_wear">
+  [342] extcall 31 .............................. <getText("badge_wear")>
+  [344] setlocal 8 .............................. tButtonText = getText("badge_wear")
+  [346] pushzero ................................ <0>
+  [347] setprop 763 ............................. pActiveSlot = 0
+  [350] getprop 764 ............................. <pSelectedBadges>
+  [353] pushzero ................................ <0>
+  [354] pusharglist 2 ........................... <pSelectedBadges, 0>
+  [356] objcall 194 ............................. <pSelectedBadges.getPos(0)>
+  [358] pushzero ................................ <0>
+  [359] eq ...................................... <pSelectedBadges.getPos(0) = 0>
+  [360] jmpifz [380] ............................ if pSelectedBadges.getPos(0) = 0 then / else
+  [363] getlocal 6 .............................. <tButton>
+  [365] pusharglistnoret 1 ...................... <tButton>
+  [367] objcall 315 ............................. tButton.hide()
+  [370] getlocal 7 .............................. <tTextElem>
+  [372] pusharglistnoret 1 ...................... <tTextElem>
+  [374] objcall 314 ............................. tTextElem.show()
+  [377] jmp [394]
+  [380] getlocal 6 .............................. <tButton>
+  [382] pusharglistnoret 1 ...................... <tButton>
+  [384] objcall 314 ............................. tButton.show()
+  [387] getlocal 7 .............................. <tTextElem>
+  [389] pusharglistnoret 1 ...................... <tTextElem>
+  [391] objcall 315 ............................. tTextElem.hide()
+  [394] jmp [432]
+  [397] pushcons 43 ............................. <"badge_remove">
+  [399] pusharglist 1 ........................... <"badge_remove">
+  [401] extcall 31 .............................. <getText("badge_remove")>
+  [403] setlocal 8 .............................. tButtonText = getText("badge_remove")
+  [405] getprop 764 ............................. <pSelectedBadges>
+  [408] getprop 762 ............................. <pActiveBadgeID>
+  [411] pusharglist 2 ........................... <pSelectedBadges, pActiveBadgeID>
+  [413] objcall 194 ............................. <pSelectedBadges.getPos(pActiveBadgeID)>
+  [415] setprop 763 ............................. pActiveSlot = pSelectedBadges.getPos(pActiveBadgeID)
+  [418] getlocal 6 .............................. <tButton>
+  [420] pusharglistnoret 1 ...................... <tButton>
+  [422] objcall 314 ............................. tButton.show()
+  [425] getlocal 7 .............................. <tTextElem>
+  [427] pusharglistnoret 1 ...................... <tTextElem>
+  [429] objcall 315 ............................. tTextElem.hide()
+  [432] getlocal 6 .............................. <tButton>
+  [434] getlocal 8 .............................. <tButtonText>
+  [436] pusharglistnoret 2 ...................... <tButton, tButtonText>
+  [438] objcall 93 .............................. tButton.setText(tButtonText)
+  [440] ret
+end
+
+on selectSlot me, tSlotIndex
+  [  0] getparam 1 .............................. <tSlotIndex>
+  [  2] pusharglist 1 ........................... <tSlotIndex>
+  [  4] extcall 172 ............................. <integer(tSlotIndex)>
+  [  6] setparam 1 .............................. tSlotIndex = integer(tSlotIndex)
+  [  8] getparam 1 .............................. <tSlotIndex>
+  [ 10] pushint8 1 .............................. <1>
+  [ 12] lt ...................................... <tSlotIndex < 1>
+  [ 13] getparam 1 .............................. <tSlotIndex>
+  [ 15] getprop 764 ............................. <pSelectedBadges>
+  [ 18] getobjprop 105 .......................... <pSelectedBadges.count>
+  [ 20] gt ...................................... <tSlotIndex > pSelectedBadges.count>
+  [ 21] or ...................................... <(tSlotIndex < 1) or (tSlotIndex > pSelectedBadges.count)>
+  [ 22] jmpifz [ 42] ............................ if (tSlotIndex < 1) or (tSlotIndex > pSelectedBadges.count) then
+  [ 25] getparam 0 .............................. <me>
+  [ 27] pushcons 44 ............................. <"Slot index out of range">
+  [ 29] pushsymb 751 ............................ <#selectSlot>
+  [ 32] pushsymb 124 ............................ <#major>
+  [ 34] pusharglist 4 ........................... <me, "Slot index out of range", #selectSlot, #major>
+  [ 36] extcall 123 ............................. <error(me, "Slot index out of range", #selectSlot, #major)>
+  [ 38] pusharglistnoret 1 ...................... <error(me, "Slot index out of range", #selectSlot, #major)>
+  [ 40] extcall 50 .............................. return error(me, "Slot index out of range", #selectSlot, #major)
+  [ 42] getprop 764 ............................. <pSelectedBadges>
+  [ 45] getparam 1 .............................. <tSlotIndex>
+  [ 47] pusharglist 2 ........................... <pSelectedBadges, tSlotIndex>
+  [ 49] objcall 75 .............................. <pSelectedBadges[tSlotIndex]>
+  [ 51] setlocal 0 .............................. tBadgeID = pSelectedBadges[tSlotIndex]
+  [ 53] getlocal 0 .............................. <tBadgeID>
+  [ 55] pushzero ................................ <0>
+  [ 56] nteq .................................... <tBadgeID <> 0>
+  [ 57] jmpifz [ 72] ............................ if tBadgeID <> 0 then / else
+  [ 60] getparam 0 .............................. <me>
+  [ 62] getlocal 0 .............................. <tBadgeID>
+  [ 64] pusharglistnoret 2 ...................... <me, tBadgeID>
+  [ 66] objcall 749 ............................. me.selectBadge(tBadgeID)
+  [ 69] jmp [112]
+  [ 72] getprop 762 ............................. <pActiveBadgeID>
+  [ 75] pushzero ................................ <0>
+  [ 76] nteq .................................... <pActiveBadgeID <> 0>
+  [ 77] getprop 764 ............................. <pSelectedBadges>
+  [ 80] getprop 762 ............................. <pActiveBadgeID>
+  [ 83] pusharglist 2 ........................... <pSelectedBadges, pActiveBadgeID>
+  [ 85] objcall 194 ............................. <pSelectedBadges.getPos(pActiveBadgeID)>
+  [ 87] pushzero ................................ <0>
+  [ 88] eq ...................................... <pSelectedBadges.getPos(pActiveBadgeID) = 0>
+  [ 89] and ..................................... <(pActiveBadgeID <> 0) and (pSelectedBadges.getPos(pActiveBadgeID) = 0)>
+  [ 90] jmpifz [112] ............................ if (pActiveBadgeID <> 0) and (pSelectedBadges.getPos(pActiveBadgeID) = 0) then
+  [ 93] getprop 764 ............................. <pSelectedBadges>
+  [ 96] getparam 1 .............................. <tSlotIndex>
+  [ 98] getprop 762 ............................. <pActiveBadgeID>
+  [101] pusharglistnoret 3 ...................... <pSelectedBadges, tSlotIndex, pActiveBadgeID>
+  [103] objcall 73 .............................. pSelectedBadges[tSlotIndex] = pActiveBadgeID
+  [105] getparam 0 .............................. <me>
+  [107] pusharglistnoret 1 ...................... <me>
+  [109] objcall 744 ............................. me.updateBadgeView()
+  [112] ret
+end
+
+on clearActiveSlot me
+  [  0] getprop 763 ............................. <pActiveSlot>
+  [  3] pushzero ................................ <0>
+  [  4] eq ...................................... <pActiveSlot = 0>
+  [  5] jmpifz [ 13] ............................ if pActiveSlot = 0 then
+  [  8] pushzero ................................ <0>
+  [  9] pusharglistnoret 1 ...................... <0>
+  [ 11] extcall 50 .............................. return 0
+  [ 13] getprop 764 ............................. <pSelectedBadges>
+  [ 16] getprop 763 ............................. <pActiveSlot>
+  [ 19] pushzero ................................ <0>
+  [ 20] pusharglistnoret 3 ...................... <pSelectedBadges, pActiveSlot, 0>
+  [ 22] objcall 73 .............................. pSelectedBadges[pActiveSlot] = 0
+  [ 24] getparam 0 .............................. <me>
+  [ 26] pusharglistnoret 1 ...................... <me>
+  [ 28] objcall 744 ............................. me.updateBadgeView()
+  [ 31] ret
+end
+
+on updateSlots me
+  [  0] getprop 760 ............................. <pBadgeWindowID>
+  [  3] pusharglist 1 ........................... <pBadgeWindowID>
+  [  5] extcall 72 .............................. <windowExists(pBadgeWindowID)>
+  [  7] not ..................................... <not windowExists(pBadgeWindowID)>
+  [  8] jmpifz [ 16] ............................ if not windowExists(pBadgeWindowID) then
+  [ 11] pushzero ................................ <0>
+  [ 12] pusharglistnoret 1 ...................... <0>
+  [ 14] extcall 50 .............................. return 0
+  [ 16] getprop 760 ............................. <pBadgeWindowID>
+  [ 19] pusharglist 1 ........................... <pBadgeWindowID>
+  [ 21] extcall 87 .............................. <getWindow(pBadgeWindowID)>
+  [ 23] setlocal 0 .............................. tWindow = getWindow(pBadgeWindowID)
+  [ 25] pushint8 1 .............................. <1>
+  [ 27] setlocal 1
+  [ 29] getlocal 1
+  [ 31] pushint8 5 .............................. <5>
+  [ 33] lteq
+  [ 34] jmpifz [246] ............................ repeat with tSlot = 1 to 5
+  [ 37] getlocal 0 .............................. <tWindow>
+  [ 39] pushcons 45 ............................. <"badge_slot_">
+  [ 41] getlocal 1 .............................. <tSlot>
+  [ 43] joinstr ................................. <"badge_slot_" & tSlot>
+  [ 44] pusharglist 2 ........................... <tWindow, "badge_slot_" & tSlot>
+  [ 46] objcall 94 .............................. <tWindow.elementExists("badge_slot_" & tSlot)>
+  [ 48] not ..................................... <not tWindow.elementExists("badge_slot_" & tSlot)>
+  [ 49] jmpifz [ 55] ............................ if not tWindow.elementExists("badge_slot_" & tSlot) then
+  [ 52] jmp [237] ............................... next repeat
+  [ 55] getprop 764 ............................. <pSelectedBadges>
+  [ 58] getlocal 1 .............................. <tSlot>
+  [ 60] pusharglist 2 ........................... <pSelectedBadges, tSlot>
+  [ 62] objcall 75 .............................. <pSelectedBadges[tSlot]>
+  [ 64] setlocal 2 .............................. tBadgeID = pSelectedBadges[tSlot]
+  [ 66] getlocal 0 .............................. <tWindow>
+  [ 68] pushcons 45 ............................. <"badge_slot_">
+  [ 70] getlocal 1 .............................. <tSlot>
+  [ 72] joinstr ................................. <"badge_slot_" & tSlot>
+  [ 73] pusharglist 2 ........................... <tWindow, "badge_slot_" & tSlot>
+  [ 75] objcall 92 .............................. <tWindow.getElement("badge_slot_" & tSlot)>
+  [ 77] setlocal 3 .............................. tElem = tWindow.getElement("badge_slot_" & tSlot)
+  [ 79] pushcons 15 ............................. <"badge">
+  [ 81] getlocal 2 .............................. <tBadgeID>
+  [ 83] joinpadstr .............................. <"badge" && tBadgeID>
+  [ 84] pusharglist 1 ........................... <"badge" && tBadgeID>
+  [ 86] extcall 305 ............................. <getmemnum("badge" && tBadgeID)>
+  [ 89] setlocal 4 .............................. tMemNum = getmemnum("badge" && tBadgeID)
+  [ 91] getlocal 2 .............................. <tBadgeID>
+  [ 93] pushzero ................................ <0>
+  [ 94] eq ...................................... <tBadgeID = 0>
+  [ 95] getlocal 4 .............................. <tMemNum>
+  [ 97] pushzero ................................ <0>
+  [ 98] eq ...................................... <tMemNum = 0>
+  [ 99] or ...................................... <(tBadgeID = 0) or (tMemNum = 0)>
+  [100] jmpifz [118] ............................ if (tBadgeID = 0) or (tMemNum = 0) then / else
+  [103] pushint8 1 .............................. <1>
+  [105] pushint8 1 .............................. <1>
+  [107] pushint8 8 .............................. <8>
+  [109] pusharglist 3 ........................... <1, 1, 8>
+  [111] extcall 175 ............................. <image(1, 1, 8)>
+  [113] setlocal 5 .............................. tBadgeImage = image(1, 1, 8)
+  [115] jmp [128]
+  [118] getlocal 4 .............................. <tMemNum>
+  [120] pusharglist 1 ........................... <tMemNum>
+  [122] extcall 134 ............................. <member(tMemNum)>
+  [124] getobjprop 175 .......................... <member(tMemNum).image>
+  [126] setlocal 5 .............................. tBadgeImage = member(tMemNum).image
+  [128] getlocal 3 .............................. <tElem>
+  [130] pushsymb 95 ............................. <#width>
+  [132] pusharglist 2 ........................... <tElem, #width>
+  [134] objcall 96 .............................. <tElem.getProperty(#width)>
+  [136] setlocal 6 .............................. tWidth = tElem.getProperty(#width)
+  [138] getlocal 3 .............................. <tElem>
+  [140] pushsymb 97 ............................. <#height>
+  [142] pusharglist 2 ........................... <tElem, #height>
+  [144] objcall 96 .............................. <tElem.getProperty(#height)>
+  [146] setlocal 7 .............................. tHeight = tElem.getProperty(#height)
+  [148] getprop 767 ............................. <pBadgeListRenderer>
+  [151] getlocal 5 .............................. <tBadgeImage>
+  [153] pushzero ................................ <0>
+  [154] pushzero ................................ <0>
+  [155] getlocal 6 .............................. <tWidth>
+  [157] getlocal 7 .............................. <tHeight>
+  [159] pusharglist 4 ........................... <0, 0, tWidth, tHeight>
+  [161] extcall 39 .............................. <rect(0, 0, tWidth, tHeight)>
+  [163] pusharglist 3 ........................... <pBadgeListRenderer, tBadgeImage, rect(0, 0, tWidth, tHeight)>
+  [165] objcall 813 ............................. <pBadgeListRenderer.centerImage(tBadgeImage, rect(0, 0, tWidth, tHeight))>
+  [168] setlocal 8 .............................. tCenteredImage = pBadgeListRenderer.centerImage(tBadgeImage, rect(0, 0, tWidth, tHeight))
+  [170] getlocal 3 .............................. <tElem>
+  [172] getlocal 8 .............................. <tCenteredImage>
+  [174] pusharglistnoret 2 ...................... <tElem, tCenteredImage>
+  [176] objcall 170 ............................. tElem.feedImage(tCenteredImage)
+  [178] getlocal 0 .............................. <tWindow>
+  [180] pushcons 46 ............................. <"slot_bg_">
+  [182] getlocal 1 .............................. <tSlot>
+  [184] joinstr ................................. <"slot_bg_" & tSlot>
+  [185] pusharglist 2 ........................... <tWindow, "slot_bg_" & tSlot>
+  [187] objcall 94 .............................. <tWindow.elementExists("slot_bg_" & tSlot)>
+  [189] jmpifz [237] ............................ if tWindow.elementExists("slot_bg_" & tSlot) then
+  [192] getlocal 0 .............................. <tWindow>
+  [194] pushcons 46 ............................. <"slot_bg_">
+  [196] getlocal 1 .............................. <tSlot>
+  [198] joinstr ................................. <"slot_bg_" & tSlot>
+  [199] pusharglist 2 ........................... <tWindow, "slot_bg_" & tSlot>
+  [201] objcall 92 .............................. <tWindow.getElement("slot_bg_" & tSlot)>
+  [203] setlocal 9 .............................. tSlotElem = tWindow.getElement("slot_bg_" & tSlot)
+  [205] getlocal 2 .............................. <tBadgeID>
+  [207] getprop 762 ............................. <pActiveBadgeID>
+  [210] eq ...................................... <tBadgeID = pActiveBadgeID>
+  [211] jmpifz [227] ............................ if tBadgeID = pActiveBadgeID then
+  [214] getlocal 9 .............................. <tSlotElem>
+  [216] pushsymb 134 ............................ <#member>
+  [218] pushcons 47 ............................. <"slot_hilite">
+  [220] pusharglistnoret 3 ...................... <tSlotElem, #member, "slot_hilite">
+  [222] objcall 81 .............................. tSlotElem.setProperty(#member, "slot_hilite")
+  [224] jmp [237] ............................... next repeat
+  [227] getlocal 9 .............................. <tSlotElem>
+  [229] pushsymb 134 ............................ <#member>
+  [231] pushcons 48 ............................. <"slot">
+  [233] pusharglistnoret 3 ...................... <tSlotElem, #member, "slot">
+  [235] objcall 81 .............................. tSlotElem.setProperty(#member, "slot")
+  [237] pushint8 1
+  [239] getlocal 1
+  [241] add
+  [242] setlocal 1
+  [244] endrepeat [ 29]
+  [246] ret
+end
+
+on loadBadgeImages me, tBadgeList
+  [  0] getparam 1 .............................. <tBadgeList>
+  [  2] peek 0
+  [  4] pusharglist 1
+  [  6] extcall 105
+  [  8] pushint8 1
+  [ 10] peek 0
+  [ 12] peek 2
+  [ 14] lteq
+  [ 15] jmpifz [ 55] ............................ repeat with tBadgeID in tBadgeList
+  [ 18] peek 2
+  [ 20] peek 1
+  [ 22] pusharglist 2
+  [ 24] extcall 75
+  [ 26] setlocal 0
+  [ 28] pushcons 15 ............................. <"badge">
+  [ 30] getlocal 0 .............................. <tBadgeID>
+  [ 32] joinpadstr .............................. <"badge" && tBadgeID>
+  [ 33] pusharglist 1 ........................... <"badge" && tBadgeID>
+  [ 35] extcall 204 ............................. <memberExists("badge" && tBadgeID)>
+  [ 37] not ..................................... <not memberExists("badge" && tBadgeID)>
+  [ 38] jmpifz [ 50] ............................ if not memberExists("badge" && tBadgeID) then
+  [ 41] getparam 0 .............................. <me>
+  [ 43] getlocal 0 .............................. <tBadgeID>
+  [ 45] pusharglistnoret 2 ...................... <me, tBadgeID>
+  [ 47] objcall 740 ............................. me.startBadgeDownload(tBadgeID)
+  [ 50] pushint8 1
+  [ 52] add
+  [ 53] endrepeat [ 10]
+  [ 55] pop 3
+  [ 57] ret
+end
+
+on getBadgeMember me, tBadgeID
+  [  0] pushcons 15 ............................. <"badge">
+  [  2] getparam 1 .............................. <tBadgeID>
+  [  4] joinpadstr .............................. <"badge" && tBadgeID>
+  [  5] pushcons 33 ............................. <"localized">
+  [  7] joinpadstr .............................. <"badge" && tBadgeID && "localized">
+  [  8] pusharglist 1 ........................... <"badge" && tBadgeID && "localized">
+  [ 10] extcall 305 ............................. <getmemnum("badge" && tBadgeID && "localized")>
+  [ 13] setlocal 0 .............................. tMemNum = getmemnum("badge" && tBadgeID && "localized")
+  [ 15] getlocal 0 .............................. <tMemNum>
+  [ 17] pushzero ................................ <0>
+  [ 18] nteq .................................... <tMemNum <> 0>
+  [ 19] jmpifz [ 32] ............................ if tMemNum <> 0 then
+  [ 22] getlocal 0 .............................. <tMemNum>
+  [ 24] pusharglist 1 ........................... <tMemNum>
+  [ 26] extcall 134 ............................. <member(tMemNum)>
+  [ 28] pusharglistnoret 1 ...................... <member(tMemNum)>
+  [ 30] extcall 50 .............................. return member(tMemNum)
+  [ 32] pushcons 15 ............................. <"badge">
+  [ 34] getparam 1 .............................. <tBadgeID>
+  [ 36] joinpadstr .............................. <"badge" && tBadgeID>
+  [ 37] pusharglist 1 ........................... <"badge" && tBadgeID>
+  [ 39] extcall 305 ............................. <getmemnum("badge" && tBadgeID)>
+  [ 42] setlocal 0 .............................. tMemNum = getmemnum("badge" && tBadgeID)
+  [ 44] getlocal 0 .............................. <tMemNum>
+  [ 46] pushzero ................................ <0>
+  [ 47] nteq .................................... <tMemNum <> 0>
+  [ 48] jmpifz [ 61] ............................ if tMemNum <> 0 then
+  [ 51] getlocal 0 .............................. <tMemNum>
+  [ 53] pusharglist 1 ........................... <tMemNum>
+  [ 55] extcall 134 ............................. <member(tMemNum)>
+  [ 57] pusharglistnoret 1 ...................... <member(tMemNum)>
+  [ 59] extcall 50 .............................. return member(tMemNum)
+  [ 61] pushzero ................................ <0>
+  [ 62] pusharglistnoret 1 ...................... <0>
+  [ 64] extcall 50 .............................. return 0
+  [ 66] ret
+end

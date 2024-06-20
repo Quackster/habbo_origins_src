@@ -1,0 +1,361 @@
+property pTotalAnimTime, pAnimStartTime, pScreenStartLoc, pSpriteData, pItemTravelDist, pMemberPrefix, pTimePerPhase, pFrameAmount, pPhaseAmount, pCurrentPhase, pCurrentFrame, pRunAnimation, pHostSpriteData
+
+on construct me
+  [  0] pushint16 700 ........................... <700>
+  [  3] setprop 791 ............................. pTotalAnimTime = 700
+  [  6] pushint8 3 .............................. <3>
+  [  8] setprop 792 ............................. pPhaseAmount = 3
+  [ 11] pushint8 2 .............................. <2>
+  [ 13] setprop 793 ............................. pFrameAmount = 2
+  [ 16] pushint8 1 .............................. <1>
+  [ 18] setprop 794 ............................. pCurrentPhase = 1
+  [ 21] getprop 793 ............................. <pFrameAmount>
+  [ 24] pusharglist 1 ........................... <pFrameAmount>
+  [ 26] extcall 369 ............................. <random(pFrameAmount)>
+  [ 29] setprop 795 ............................. pCurrentFrame = random(pFrameAmount)
+  [ 32] getprop 791 ............................. <pTotalAnimTime>
+  [ 35] getprop 792 ............................. <pPhaseAmount>
+  [ 38] div ..................................... <pTotalAnimTime / pPhaseAmount>
+  [ 39] setprop 796 ............................. pTimePerPhase = pTotalAnimTime / pPhaseAmount
+  [ 42] pusharglist 0 ........................... <[]>
+  [ 44] pushlist ................................ <[]>
+  [ 45] setprop 797 ............................. pSpriteData = []
+  [ 48] pushzero ................................ <0>
+  [ 49] setprop 798 ............................. pRunAnimation = 0
+  [ 52] pusharglist 0 ........................... <[:]>
+  [ 54] pushproplist ............................ <[:]>
+  [ 55] setprop 799 ............................. pHostSpriteData = [:]
+  [ 58] ret
+end
+
+on deconstruct me
+  [  0] getparam 0 .............................. <me>
+  [  2] pusharglist 1 ........................... <me>
+  [  4] objcall 207 ............................. <me.getID()>
+  [  6] pusharglistnoret 1 ...................... <me.getID()>
+  [  8] extcall 800 ............................. removeUpdate(me.getID())
+  [ 11] getprop 797 ............................. <pSpriteData>
+  [ 14] peek 0
+  [ 16] pusharglist 1
+  [ 18] extcall 172
+  [ 20] pushint8 1
+  [ 22] peek 0
+  [ 24] peek 2
+  [ 26] lteq
+  [ 27] jmpifz [ 59] ............................ repeat with tSpriteData in pSpriteData
+  [ 30] peek 2
+  [ 32] peek 1
+  [ 34] pusharglist 2
+  [ 36] extcall 173
+  [ 38] setlocal 0
+  [ 40] getlocal 0 .............................. <tSpriteData>
+  [ 42] pushsymb 221 ............................ <#sprite>
+  [ 44] pusharglist 2 ........................... <tSpriteData, #sprite>
+  [ 46] objcall 173 ............................. <tSpriteData[#sprite]>
+  [ 48] getobjprop 197 .......................... <tSpriteData[#sprite].spriteNum>
+  [ 50] pusharglistnoret 1 ...................... <tSpriteData[#sprite].spriteNum>
+  [ 52] extcall 196 ............................. releaseSprite(tSpriteData[#sprite].spriteNum)
+  [ 54] pushint8 1
+  [ 56] add
+  [ 57] endrepeat [ 22]
+  [ 59] pop 3
+  [ 61] getprop 799 ............................. <pHostSpriteData>
+  [ 64] pushsymb 221 ............................ <#sprite>
+  [ 66] pusharglist 2 ........................... <pHostSpriteData, #sprite>
+  [ 68] objcall 173 ............................. <pHostSpriteData[#sprite]>
+  [ 70] pusharglist 0 ........................... <>
+  [ 72] extcall 101 ............................. <VOID>
+  [ 74] nteq .................................... <pHostSpriteData[#sprite] <> VOID>
+  [ 75] jmpifz [122] ............................ if pHostSpriteData[#sprite] <> VOID then
+  [ 78] getprop 799 ............................. <pHostSpriteData>
+  [ 81] pushsymb 221 ............................ <#sprite>
+  [ 83] pusharglist 2 ........................... <pHostSpriteData, #sprite>
+  [ 85] objcall 173 ............................. <pHostSpriteData[#sprite]>
+  [ 87] getprop 799 ............................. <pHostSpriteData>
+  [ 90] pushsymb 801 ............................ <#previousfcolor>
+  [ 93] pusharglist 2 ........................... <pHostSpriteData, #previousfcolor>
+  [ 95] objcall 173 ............................. <pHostSpriteData[#previousfcolor]>
+  [ 97] setobjprop 366 .......................... pHostSpriteData[#sprite].color = pHostSpriteData[#previousfcolor]
+  [100] getprop 799 ............................. <pHostSpriteData>
+  [103] pushsymb 221 ............................ <#sprite>
+  [105] pusharglist 2 ........................... <pHostSpriteData, #sprite>
+  [107] objcall 173 ............................. <pHostSpriteData[#sprite]>
+  [109] getprop 799 ............................. <pHostSpriteData>
+  [112] pushsymb 802 ............................ <#previousink>
+  [115] pusharglist 2 ........................... <pHostSpriteData, #previousink>
+  [117] objcall 173 ............................. <pHostSpriteData[#previousink]>
+  [119] setobjprop 285 .......................... pHostSpriteData[#sprite].ink = pHostSpriteData[#previousink]
+  [122] pusharglist 0 ........................... <[]>
+  [124] pushlist ................................ <[]>
+  [125] setprop 797 ............................. pSpriteData = []
+  [128] pusharglist 0 ........................... <[:]>
+  [130] pushproplist ............................ <[:]>
+  [131] setprop 799 ............................. pHostSpriteData = [:]
+  [134] ret
+end
+
+on removeFromObjectManager me
+  [  0] getparam 0 .............................. <me>
+  [  2] pusharglist 1 ........................... <me>
+  [  4] objcall 207 ............................. <me.getID()>
+  [  6] pusharglist 1 ........................... <me.getID()>
+  [  8] extcall 513 ............................. <objectExists(me.getID())>
+  [ 11] jmpifz [ 25] ............................ if objectExists(me.getID()) then
+  [ 14] getparam 0 .............................. <me>
+  [ 16] pusharglist 1 ........................... <me>
+  [ 18] objcall 207 ............................. <me.getID()>
+  [ 20] pusharglistnoret 1 ...................... <me.getID()>
+  [ 22] extcall 764 ............................. removeObject(me.getID())
+  [ 25] ret
+end
+
+on defineWithSprite me, tsprite, tSize
+  [  0] getparam 1 .............................. <tsprite>
+  [  2] pusharglist 1 ........................... <tsprite>
+  [  4] extcall 180 ............................. <ilk(tsprite)>
+  [  6] pushsymb 221 ............................ <#sprite>
+  [  8] nteq .................................... <ilk(tsprite) <> #sprite>
+  [  9] jmpifz [ 17] ............................ if ilk(tsprite) <> #sprite then
+  [ 12] pushzero ................................ <0>
+  [ 13] pusharglistnoret 1 ...................... <0>
+  [ 15] extcall 189 ............................. return 0
+  [ 17] getparam 2 .............................. <tSize>
+  [ 19] pusharglist 1 ........................... <tSize>
+  [ 21] extcall 194 ............................. <voidp(tSize)>
+  [ 23] jmpifz [ 31] ............................ if voidp(tSize) then
+  [ 26] pushsymb 804 ............................ <#large>
+  [ 29] setparam 2 .............................. tSize = #large
+  [ 31] getparam 1 .............................. <tsprite>
+  [ 33] getobjprop 225 .......................... <tsprite.width>
+  [ 35] setlocal 0 .............................. tWidth = tsprite.width
+  [ 37] getparam 1 .............................. <tsprite>
+  [ 39] getobjprop 217 .......................... <tsprite.height>
+  [ 41] setlocal 1 .............................. tHeight = tsprite.height
+  [ 43] getparam 1 .............................. <tsprite>
+  [ 45] getobjprop 377 .......................... <tsprite.locH>
+  [ 48] getlocal 0 .............................. <tWidth>
+  [ 50] pushint8 2 .............................. <2>
+  [ 52] div ..................................... <tWidth / 2>
+  [ 53] add ..................................... <tsprite.locH + (tWidth / 2)>
+  [ 54] getparam 1 .............................. <tsprite>
+  [ 56] getobjprop 378 .......................... <tsprite.locV>
+  [ 59] getlocal 1 .............................. <tHeight>
+  [ 61] pushint8 2 .............................. <2>
+  [ 63] div ..................................... <tHeight / 2>
+  [ 64] sub ..................................... <tsprite.locV - (tHeight / 2)>
+  [ 65] pusharglist 2 ........................... <tsprite.locH + (tWidth / 2), tsprite.locV - (tHeight / 2)>
+  [ 67] extcall 107 ............................. <point(tsprite.locH + (tWidth / 2), tsprite.locV - (tHeight / 2))>
+  [ 69] setlocal 2 .............................. tloc = point(tsprite.locH + (tWidth / 2), tsprite.locV - (tHeight / 2))
+  [ 71] getparam 1 .............................. <tsprite>
+  [ 73] getobjprop 247 .......................... <tsprite.locZ>
+  [ 75] setlocal 3 .............................. tlocz = tsprite.locZ
+  [ 77] getparam 1 .............................. <tsprite>
+  [ 79] getobjprop 109 .......................... <tsprite.rect>
+  [ 81] setlocal 4 .............................. tRect = tsprite.rect
+  [ 83] getprop 799 ............................. <pHostSpriteData>
+  [ 86] pushsymb 221 ............................ <#sprite>
+  [ 88] getparam 1 .............................. <tsprite>
+  [ 90] pusharglistnoret 3 ...................... <pHostSpriteData, #sprite, tsprite>
+  [ 92] objcall 175 ............................. pHostSpriteData[#sprite] = tsprite
+  [ 94] getprop 799 ............................. <pHostSpriteData>
+  [ 97] pushsymb 802 ............................ <#previousink>
+  [100] getparam 1 .............................. <tsprite>
+  [102] getobjprop 285 .......................... <tsprite.ink>
+  [105] pusharglistnoret 3 ...................... <pHostSpriteData, #previousink, tsprite.ink>
+  [107] objcall 175 ............................. pHostSpriteData[#previousink] = tsprite.ink
+  [109] getprop 799 ............................. <pHostSpriteData>
+  [112] pushsymb 801 ............................ <#previousfcolor>
+  [115] pushsymb 136 ............................ <#rgb>
+  [117] pushzero ................................ <0>
+  [118] pushzero ................................ <0>
+  [119] pushzero ................................ <0>
+  [120] pusharglist 4 ........................... <#rgb, 0, 0, 0>
+  [122] extcall 366 ............................. <color(#rgb, 0, 0, 0)>
+  [125] pusharglistnoret 3 ...................... <pHostSpriteData, #previousfcolor, color(#rgb, 0, 0, 0)>
+  [127] objcall 175 ............................. pHostSpriteData[#previousfcolor] = color(#rgb, 0, 0, 0)
+  [129] getparam 1 .............................. <tsprite>
+  [131] pushsymb 136 ............................ <#rgb>
+  [133] pushint16 150 ........................... <150>
+  [136] pushint16 150 ........................... <150>
+  [139] pushint16 150 ........................... <150>
+  [142] pusharglist 4 ........................... <#rgb, 150, 150, 150>
+  [144] extcall 366 ............................. <color(#rgb, 150, 150, 150)>
+  [147] setobjprop 366 .......................... tsprite.color = color(#rgb, 150, 150, 150)
+  [150] getparam 1 .............................. <tsprite>
+  [152] pushint8 41 ............................. <41>
+  [154] setobjprop 285 .......................... tsprite.ink = 41
+  [157] getparam 0 .............................. <me>
+  [159] getlocal 2 .............................. <tloc>
+  [161] getlocal 3 .............................. <tlocz>
+  [163] getparam 2 .............................. <tSize>
+  [165] pusharglistnoret 4 ...................... <me, tloc, tlocz, tSize>
+  [167] objcall 2 ............................... me.define(tloc, tlocz, tSize)
+  [169] ret
+end
+
+on define me, tloc, tlocz, tSize
+  [  0] getparam 1 .............................. <tloc>
+  [  2] pusharglist 1 ........................... <tloc>
+  [  4] extcall 194 ............................. <voidp(tloc)>
+  [  6] jmpifz [ 14] ............................ if voidp(tloc) then
+  [  9] pushzero ................................ <0>
+  [ 10] pusharglistnoret 1 ...................... <0>
+  [ 12] extcall 189 ............................. return 0
+  [ 14] getparam 1 .............................. <tloc>
+  [ 16] pusharglist 1 ........................... <tloc>
+  [ 18] extcall 180 ............................. <ilk(tloc)>
+  [ 20] pushsymb 107 ............................ <#point>
+  [ 22] nteq .................................... <ilk(tloc) <> #point>
+  [ 23] jmpifz [ 31] ............................ if ilk(tloc) <> #point then
+  [ 26] pushzero ................................ <0>
+  [ 27] pusharglistnoret 1 ...................... <0>
+  [ 29] extcall 189 ............................. return 0
+  [ 31] getparam 2 .............................. <tlocz>
+  [ 33] pusharglist 1 ........................... <tlocz>
+  [ 35] extcall 194 ............................. <voidp(tlocz)>
+  [ 37] jmpifz [ 45] ............................ if voidp(tlocz) then
+  [ 40] pushzero ................................ <0>
+  [ 41] pusharglistnoret 1 ...................... <0>
+  [ 43] extcall 189 ............................. return 0
+  [ 45] getparam 3 .............................. <tSize>
+  [ 47] pusharglist 1 ........................... <tSize>
+  [ 49] extcall 194 ............................. <voidp(tSize)>
+  [ 51] jmpifz [ 59] ............................ if voidp(tSize) then
+  [ 54] pushsymb 804 ............................ <#large>
+  [ 57] setparam 3 .............................. tSize = #large
+  [ 59] getparam 1 .............................. <tloc>
+  [ 61] setprop 808 ............................. pScreenStartLoc = tloc
+  [ 64] getmovieprop 345 ........................ <the milliSeconds>
+  [ 67] setprop 809 ............................. pAnimStartTime = the milliSeconds
+  [ 70] pushint8 1 .............................. <1>
+  [ 72] setprop 798 ............................. pRunAnimation = 1
+  [ 75] getparam 0 .............................. <me>
+  [ 77] pusharglist 1 ........................... <me>
+  [ 79] objcall 207 ............................. <me.getID()>
+  [ 81] pusharglistnoret 1 ...................... <me.getID()>
+  [ 83] extcall 810 ............................. receiveUpdate(me.getID())
+  [ 86] ret
+end
+
+on update me
+  [  0] getprop 798 ............................. <pRunAnimation>
+  [  3] not ..................................... <not pRunAnimation>
+  [  4] jmpifz [ 12] ............................ if not pRunAnimation then
+  [  7] pushzero ................................ <0>
+  [  8] pusharglistnoret 1 ...................... <0>
+  [ 10] extcall 189 ............................. return 0
+  [ 12] getmovieprop 345 ........................ <the milliSeconds>
+  [ 15] getprop 809 ............................. <pAnimStartTime>
+  [ 18] sub ..................................... <the milliSeconds - pAnimStartTime>
+  [ 19] setlocal 0 .............................. tMoveTime = the milliSeconds - pAnimStartTime
+  [ 21] getlocal 0 .............................. <tMoveTime>
+  [ 23] getprop 791 ............................. <pTotalAnimTime>
+  [ 26] gt ...................................... <tMoveTime > pTotalAnimTime>
+  [ 27] jmpifz [ 46] ............................ if tMoveTime > pTotalAnimTime then
+  [ 30] pushzero ................................ <0>
+  [ 31] setprop 798 ............................. pRunAnimation = 0
+  [ 34] getparam 0 .............................. <me>
+  [ 36] pusharglistnoret 1 ...................... <me>
+  [ 38] objcall 789 ............................. me.removeFromObjectManager()
+  [ 41] pushzero ................................ <0>
+  [ 42] pusharglistnoret 1 ...................... <0>
+  [ 44] extcall 189 ............................. return 0
+  [ 46] pushzero ................................ <0>
+  [ 47] setlocal 1 .............................. tUpdatePhase = 0
+  [ 49] getlocal 0 .............................. <tMoveTime>
+  [ 51] getprop 796 ............................. <pTimePerPhase>
+  [ 54] div ..................................... <tMoveTime / pTimePerPhase>
+  [ 55] pusharglist 1 ........................... <tMoveTime / pTimePerPhase>
+  [ 57] extcall 274 ............................. <integer(tMoveTime / pTimePerPhase)>
+  [ 60] pushint8 1 .............................. <1>
+  [ 62] add ..................................... <integer(tMoveTime / pTimePerPhase) + 1>
+  [ 63] setlocal 2 .............................. tCurrentPhase = integer(tMoveTime / pTimePerPhase) + 1
+  [ 65] getlocal 2 .............................. <tCurrentPhase>
+  [ 67] getprop 794 ............................. <pCurrentPhase>
+  [ 70] nteq .................................... <tCurrentPhase <> pCurrentPhase>
+  [ 71] jmpifz [ 83] ............................ if tCurrentPhase <> pCurrentPhase then
+  [ 74] pushint8 1 .............................. <1>
+  [ 76] setlocal 1 .............................. tUpdatePhase = 1
+  [ 78] getlocal 2 .............................. <tCurrentPhase>
+  [ 80] setprop 794 ............................. pCurrentPhase = tCurrentPhase
+  [ 83] getlocal 0 .............................. <tMoveTime>
+  [ 85] pushfloat32 3.0 ......................... <3.0>
+  [ 90] pushint8 4 .............................. <4>
+  [ 92] div ..................................... <3.0 / 4>
+  [ 93] getprop 791 ............................. <pTotalAnimTime>
+  [ 96] mul ..................................... <3.0 / 4 * pTotalAnimTime>
+  [ 97] gt ...................................... <tMoveTime > (3.0 / 4 * pTotalAnimTime)>
+  [ 98] jmpifz [111] ............................ if tMoveTime > (3.0 / 4 * pTotalAnimTime) then / else
+  [101] getparam 0 .............................. <me>
+  [103] pusharglistnoret 1 ...................... <me>
+  [105] objcall 789 ............................. me.removeFromObjectManager()
+  [108] jmp [260]
+  [111] getlocal 0 .............................. <tMoveTime>
+  [113] pushfloat32 2.0 ......................... <2.0>
+  [118] pushint8 4 .............................. <4>
+  [120] div ..................................... <2.0 / 4>
+  [121] getprop 791 ............................. <pTotalAnimTime>
+  [124] mul ..................................... <2.0 / 4 * pTotalAnimTime>
+  [125] gt ...................................... <tMoveTime > (2.0 / 4 * pTotalAnimTime)>
+  [126] getprop 799 ............................. <pHostSpriteData>
+  [129] pushsymb 221 ............................ <#sprite>
+  [131] pusharglist 2 ........................... <pHostSpriteData, #sprite>
+  [133] objcall 173 ............................. <pHostSpriteData[#sprite]>
+  [135] pusharglist 0 ........................... <>
+  [137] extcall 101 ............................. <VOID>
+  [139] nteq .................................... <pHostSpriteData[#sprite] <> VOID>
+  [140] and ..................................... <(tMoveTime > (2.0 / 4 * pTotalAnimTime)) and (pHostSpriteData[#sprite] <> VOID)>
+  [141] jmpifz [172] ............................ if (tMoveTime > (2.0 / 4 * pTotalAnimTime)) and (pHostSpriteData[#sprite] <> VOID) then / else
+  [144] getprop 799 ............................. <pHostSpriteData>
+  [147] pushsymb 221 ............................ <#sprite>
+  [149] pusharglist 2 ........................... <pHostSpriteData, #sprite>
+  [151] objcall 173 ............................. <pHostSpriteData[#sprite]>
+  [153] pushsymb 136 ............................ <#rgb>
+  [155] pushint8 62 ............................. <62>
+  [157] pushint8 51 ............................. <51>
+  [159] pushint8 15 ............................. <15>
+  [161] pusharglist 4 ........................... <#rgb, 62, 51, 15>
+  [163] extcall 366 ............................. <color(#rgb, 62, 51, 15)>
+  [166] setobjprop 366 .......................... pHostSpriteData[#sprite].color = color(#rgb, 62, 51, 15)
+  [169] jmp [260]
+  [172] getlocal 0 .............................. <tMoveTime>
+  [174] pushfloat32 1.0 ......................... <1.0>
+  [179] pushint8 4 .............................. <4>
+  [181] div ..................................... <1.0 / 4>
+  [182] getprop 791 ............................. <pTotalAnimTime>
+  [185] mul ..................................... <1.0 / 4 * pTotalAnimTime>
+  [186] gt ...................................... <tMoveTime > (1.0 / 4 * pTotalAnimTime)>
+  [187] getprop 799 ............................. <pHostSpriteData>
+  [190] pushsymb 221 ............................ <#sprite>
+  [192] pusharglist 2 ........................... <pHostSpriteData, #sprite>
+  [194] objcall 173 ............................. <pHostSpriteData[#sprite]>
+  [196] pusharglist 0 ........................... <>
+  [198] extcall 101 ............................. <VOID>
+  [200] nteq .................................... <pHostSpriteData[#sprite] <> VOID>
+  [201] and ..................................... <(tMoveTime > (1.0 / 4 * pTotalAnimTime)) and (pHostSpriteData[#sprite] <> VOID)>
+  [202] jmpifz [233] ............................ if (tMoveTime > (1.0 / 4 * pTotalAnimTime)) and (pHostSpriteData[#sprite] <> VOID) then / else
+  [205] getprop 799 ............................. <pHostSpriteData>
+  [208] pushsymb 221 ............................ <#sprite>
+  [210] pusharglist 2 ........................... <pHostSpriteData, #sprite>
+  [212] objcall 173 ............................. <pHostSpriteData[#sprite]>
+  [214] pushsymb 136 ............................ <#rgb>
+  [216] pushint8 124 ............................ <124>
+  [218] pushint8 102 ............................ <102>
+  [220] pushint8 29 ............................. <29>
+  [222] pusharglist 4 ........................... <#rgb, 124, 102, 29>
+  [224] extcall 366 ............................. <color(#rgb, 124, 102, 29)>
+  [227] setobjprop 366 .......................... pHostSpriteData[#sprite].color = color(#rgb, 124, 102, 29)
+  [230] jmp [260]
+  [233] getprop 799 ............................. <pHostSpriteData>
+  [236] pushsymb 221 ............................ <#sprite>
+  [238] pusharglist 2 ........................... <pHostSpriteData, #sprite>
+  [240] objcall 173 ............................. <pHostSpriteData[#sprite]>
+  [242] pushsymb 136 ............................ <#rgb>
+  [244] pushint16 247 ........................... <247>
+  [247] pushint16 204 ........................... <204>
+  [250] pushint8 59 ............................. <59>
+  [252] pusharglist 4 ........................... <#rgb, 247, 204, 59>
+  [254] extcall 366 ............................. <color(#rgb, 247, 204, 59)>
+  [257] setobjprop 366 .......................... pHostSpriteData[#sprite].color = color(#rgb, 247, 204, 59)
+  [260] ret
+end

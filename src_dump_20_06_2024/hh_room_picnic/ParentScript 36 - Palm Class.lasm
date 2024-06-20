@@ -1,0 +1,79 @@
+property pAnimCycle, pFrameCounter, pSkipPulseAmount, pSkipPulseCounter, pSprite, pPauseTimer
+
+on define me, tSprite
+  [  0] getparam 1 .............................. <tSprite>
+  [  2] setprop 41 .............................. pSprite = tSprite
+  [  4] pushint8 1 .............................. <1>
+  [  6] pushint8 2 .............................. <2>
+  [  8] pushint8 3 .............................. <3>
+  [ 10] pushint8 2 .............................. <2>
+  [ 12] pusharglist 4 ........................... <[1, 2, 3, 2]>
+  [ 14] pushlist ................................ <[1, 2, 3, 2]>
+  [ 15] setprop 42 .............................. pAnimCycle = [1, 2, 3, 2]
+  [ 17] pushint8 10 ............................. <10>
+  [ 19] pusharglist 1 ........................... <10>
+  [ 21] extcall 44 .............................. <random(10)>
+  [ 23] setprop 43 .............................. pFrameCounter = random(10)
+  [ 25] pushint8 1 .............................. <1>
+  [ 27] setprop 45 .............................. pSkipPulseCounter = 1
+  [ 29] pushint8 12 ............................. <12>
+  [ 31] setprop 46 .............................. pSkipPulseAmount = 12
+  [ 33] pushint8 20 ............................. <20>
+  [ 35] pusharglist 1 ........................... <20>
+  [ 37] extcall 44 .............................. <random(20)>
+  [ 39] setprop 47 .............................. pPauseTimer = random(20)
+  [ 41] pushint8 1 .............................. <1>
+  [ 43] pusharglistnoret 1 ...................... <1>
+  [ 45] extcall 8 ............................... return 1
+  [ 47] ret
+end
+
+on update me
+  [  0] getprop 47 .............................. <pPauseTimer>
+  [  2] pushzero ................................ <0>
+  [  3] gt ...................................... <pPauseTimer > 0>
+  [  4] jmpifz [ 20] ............................ if pPauseTimer > 0 then
+  [  7] getprop 47 .............................. <pPauseTimer>
+  [  9] pushint8 1 .............................. <1>
+  [ 11] sub ..................................... <pPauseTimer - 1>
+  [ 12] setprop 47 .............................. pPauseTimer = pPauseTimer - 1
+  [ 14] pushint8 1 .............................. <1>
+  [ 16] pusharglistnoret 1 ...................... <1>
+  [ 18] extcall 8 ............................... return 1
+  [ 20] getprop 45 .............................. <pSkipPulseCounter>
+  [ 22] pushint8 1 .............................. <1>
+  [ 24] add ..................................... <pSkipPulseCounter + 1>
+  [ 25] setprop 45 .............................. pSkipPulseCounter = pSkipPulseCounter + 1
+  [ 27] getprop 45 .............................. <pSkipPulseCounter>
+  [ 29] getprop 46 .............................. <pSkipPulseAmount>
+  [ 31] gt ...................................... <pSkipPulseCounter > pSkipPulseAmount>
+  [ 32] jmpifz [ 87] ............................ if pSkipPulseCounter > pSkipPulseAmount then
+  [ 35] pushint8 1 .............................. <1>
+  [ 37] setprop 45 .............................. pSkipPulseCounter = 1
+  [ 39] getprop 43 .............................. <pFrameCounter>
+  [ 41] pushint8 1 .............................. <1>
+  [ 43] add ..................................... <pFrameCounter + 1>
+  [ 44] setprop 43 .............................. pFrameCounter = pFrameCounter + 1
+  [ 46] getprop 43 .............................. <pFrameCounter>
+  [ 48] getprop 42 .............................. <pAnimCycle>
+  [ 50] getobjprop 49 ........................... <pAnimCycle.count>
+  [ 52] gt ...................................... <pFrameCounter > pAnimCycle.count>
+  [ 53] jmpifz [ 68] ............................ if pFrameCounter > pAnimCycle.count then
+  [ 56] pushint8 1 .............................. <1>
+  [ 58] setprop 43 .............................. pFrameCounter = 1
+  [ 60] pushint8 100 ............................ <100>
+  [ 62] pusharglist 1 ........................... <100>
+  [ 64] extcall 44 .............................. <random(100)>
+  [ 66] setprop 47 .............................. pPauseTimer = random(100)
+  [ 68] getprop 41 .............................. <pSprite>
+  [ 70] pushcons 0 .............................. <"palmtop">
+  [ 72] getprop 42 .............................. <pAnimCycle>
+  [ 74] getprop 43 .............................. <pFrameCounter>
+  [ 76] pusharglist 2 ........................... <pAnimCycle, pFrameCounter>
+  [ 78] objcall 51 .............................. <pAnimCycle[pFrameCounter]>
+  [ 80] joinstr ................................. <"palmtop" & pAnimCycle[pFrameCounter]>
+  [ 81] pusharglist 1 ........................... <"palmtop" & pAnimCycle[pFrameCounter]>
+  [ 83] extcall 50 .............................. <getmemnum("palmtop" & pAnimCycle[pFrameCounter])>
+  [ 85] setobjprop 52 ........................... pSprite.castNum = getmemnum("palmtop" & pAnimCycle[pFrameCounter])
+  [ 87] ret
+end

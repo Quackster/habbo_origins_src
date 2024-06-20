@@ -1,0 +1,1416 @@
+property pState, pMaxBalloons, pAvailableBalloons, pVisibleBalloons, pBalloonBuffer, pBalloonPulse, pReservedSprites, pScrollStep, pFastScrollStep, pAutoScrollTime, pScrollCounter, pScrollBy, pMaxWidth, pFirstLocz, pStartV, pMarginH, pMarginV, pMoveOffsetV, pLastMsg, pLastBalloonId, pBalloonColor, pDefaultTextColor, pBalloonImg, pBalloonWriterId
+
+on construct me
+  [  0] pushint16 140 ........................... <140>
+  [  3] setprop 549 ............................. pAutoScrollTime = 140
+  [  6] pushcons 0 .............................. <"chat.balloon.scrollstep">
+  [  8] pusharglist 1 ........................... <"chat.balloon.scrollstep">
+  [ 10] extcall 550 ............................. <variableExists("chat.balloon.scrollstep")>
+  [ 13] jmpifz [ 29] ............................ if variableExists("chat.balloon.scrollstep") then / else
+  [ 16] pushcons 0 .............................. <"chat.balloon.scrollstep">
+  [ 18] pusharglist 1 ........................... <"chat.balloon.scrollstep">
+  [ 20] extcall 552 ............................. <getIntVariable("chat.balloon.scrollstep")>
+  [ 23] setprop 551 ............................. pScrollStep = getIntVariable("chat.balloon.scrollstep")
+  [ 26] jmp [ 34]
+  [ 29] pushint8 3 .............................. <3>
+  [ 31] setprop 551 ............................. pScrollStep = 3
+  [ 34] pushsymb 554 ............................ <#normal>
+  [ 37] setprop 553 ............................. pState = #normal
+  [ 40] pushzero ................................ <0>
+  [ 41] setprop 555 ............................. pScrollCounter = 0
+  [ 44] pusharglist 0 ........................... <[:]>
+  [ 46] pushproplist ............................ <[:]>
+  [ 47] setprop 556 ............................. pVisibleBalloons = [:]
+  [ 50] pusharglist 0 ........................... <[:]>
+  [ 52] pushproplist ............................ <[:]>
+  [ 53] setprop 557 ............................. pAvailableBalloons = [:]
+  [ 56] pusharglist 0 ........................... <[]>
+  [ 58] pushlist ................................ <[]>
+  [ 59] setprop 558 ............................. pBalloonBuffer = []
+  [ 62] pushint8 6 .............................. <6>
+  [ 64] pushint8 1 .............................. <1>
+  [ 66] add ..................................... <6 + 1>
+  [ 67] setprop 559 ............................. pMaxBalloons = 6 + 1
+  [ 70] pushcons 1 .............................. <"window.default.locz">
+  [ 72] pusharglist 1 ........................... <"window.default.locz">
+  [ 74] extcall 552 ............................. <getIntVariable("window.default.locz")>
+  [ 77] pushint16 2000 .......................... <2000>
+  [ 80] add ..................................... <getIntVariable("window.default.locz") + 2000>
+  [ 81] getprop 559 ............................. <pMaxBalloons>
+  [ 84] sub ..................................... <getIntVariable("window.default.locz") + 2000 - pMaxBalloons>
+  [ 85] setprop 560 ............................. pFirstLocz = getIntVariable("window.default.locz") + 2000 - pMaxBalloons
+  [ 88] pushint8 21 ............................. <21>
+  [ 90] setprop 561 ............................. pMoveOffsetV = 21
+  [ 93] pushint8 20 ............................. <20>
+  [ 95] setprop 562 ............................. pMarginH = 20
+  [ 98] pushint8 11 ............................. <11>
+  [100] setprop 563 ............................. pMarginV = 11
+  [103] getprop 551 ............................. <pScrollStep>
+  [106] setprop 564 ............................. pScrollBy = pScrollStep
+  [109] pushint16 254 ........................... <254>
+  [112] pushint16 254 ........................... <254>
+  [115] pushint16 254 ........................... <254>
+  [118] pusharglist 3 ........................... <254, 254, 254>
+  [120] extcall 34 .............................. <rgb(254, 254, 254)>
+  [122] setprop 565 ............................. pDefaultTextColor = rgb(254, 254, 254)
+  [125] pushint16 255 ........................... <255>
+  [128] pusharglist 1 ........................... <255>
+  [130] extcall 567 ............................. <paletteIndex(255)>
+  [133] setprop 566 ............................. pBalloonColor = paletteIndex(255)
+  [136] pushcons 2 .............................. <"struct.font.plain">
+  [138] pusharglist 1 ........................... <"struct.font.plain">
+  [140] extcall 568 ............................. <getStructVariable("struct.font.plain")>
+  [143] setlocal 0 .............................. tFontStruct = getStructVariable("struct.font.plain")
+  [145] getlocal 0 .............................. <tFontStruct>
+  [147] pushsymb 1264 ........................... <#bgColor>
+  [150] getprop 566 ............................. <pBalloonColor>
+  [153] pusharglistnoret 3 ...................... <tFontStruct, #bgColor, pBalloonColor>
+  [155] objcall 138 ............................. tFontStruct.setaProp(#bgColor, pBalloonColor)
+  [157] getlocal 0 .............................. <tFontStruct>
+  [159] pushsymb 130 ............................ <#color>
+  [161] getprop 565 ............................. <pDefaultTextColor>
+  [164] pusharglistnoret 3 ...................... <tFontStruct, #color, pDefaultTextColor>
+  [166] objcall 138 ............................. tFontStruct.setaProp(#color, pDefaultTextColor)
+  [168] pushcons 3 .............................. <"bb_balloon_writer">
+  [170] setprop 1265 ............................ pBalloonWriterId = "bb_balloon_writer"
+  [173] getprop 1265 ............................ <pBalloonWriterId>
+  [176] getlocal 0 .............................. <tFontStruct>
+  [178] pusharglistnoret 2 ...................... <pBalloonWriterId, tFontStruct>
+  [180] extcall 853 ............................. createWriter(pBalloonWriterId, tFontStruct)
+  [183] getprop 561 ............................. <pMoveOffsetV>
+  [186] getprop 551 ............................. <pScrollStep>
+  [189] mod ..................................... <pMoveOffsetV mod pScrollStep>
+  [190] pushzero ................................ <0>
+  [191] nteq .................................... <(pMoveOffsetV mod pScrollStep) <> 0>
+  [192] jmpifz [209] ............................ if (pMoveOffsetV mod pScrollStep) <> 0 then
+  [195] getprop 561 ............................. <pMoveOffsetV>
+  [198] getprop 561 ............................. <pMoveOffsetV>
+  [201] getprop 551 ............................. <pScrollStep>
+  [204] mod ..................................... <pMoveOffsetV mod pScrollStep>
+  [205] sub ..................................... <pMoveOffsetV - (pMoveOffsetV mod pScrollStep)>
+  [206] setprop 561 ............................. pMoveOffsetV = pMoveOffsetV - (pMoveOffsetV mod pScrollStep)
+  [209] getprop 561 ............................. <pMoveOffsetV>
+  [212] getprop 551 ............................. <pScrollStep>
+  [215] div ..................................... <pMoveOffsetV / pScrollStep>
+  [216] setprop 580 ............................. pFastScrollStep = pMoveOffsetV / pScrollStep
+  [219] getprop 559 ............................. <pMaxBalloons>
+  [222] pushint8 1 .............................. <1>
+  [224] sub ..................................... <pMaxBalloons - 1>
+  [225] getprop 561 ............................. <pMoveOffsetV>
+  [228] mul ..................................... <(pMaxBalloons - 1) * pMoveOffsetV>
+  [229] pushint8 1 .............................. <1>
+  [231] sub ..................................... <((pMaxBalloons - 1) * pMoveOffsetV) - 1>
+  [232] setprop 581 ............................. pStartV = ((pMaxBalloons - 1) * pMoveOffsetV) - 1
+  [235] pusharglist 0 ........................... <>
+  [237] thebuiltin 583 .......................... <the stageRight>
+  [240] pusharglist 0 ........................... <>
+  [242] thebuiltin 584 .......................... <the stageLeft>
+  [245] sub ..................................... <the stageRight - the stageLeft>
+  [246] pushint8 10 ............................. <10>
+  [248] sub ..................................... <the stageRight - the stageLeft - 10>
+  [249] setprop 582 ............................. pMaxWidth = the stageRight - the stageLeft - 10
+  [252] pusharglist 0 ........................... <[]>
+  [254] pushlist ................................ <[]>
+  [255] setprop 585 ............................. pReservedSprites = []
+  [258] pusharglist 0 ........................... <[:]>
+  [260] pushproplist ............................ <[:]>
+  [261] setprop 586 ............................. pBalloonImg = [:]
+  [264] getprop 586 ............................. <pBalloonImg>
+  [267] pushsymb 587 ............................ <#middle>
+  [270] pushcons 4 .............................. <"bb2_pwrupbubble.middle">
+  [272] pusharglist 1 ........................... <"bb2_pwrupbubble.middle">
+  [274] extcall 238 ............................. <getmemnum("bb2_pwrupbubble.middle")>
+  [276] pusharglist 1 ........................... <getmemnum("bb2_pwrupbubble.middle")>
+  [278] extcall 91 .............................. <member(getmemnum("bb2_pwrupbubble.middle"))>
+  [280] getchainedprop 44 ....................... <member(getmemnum("bb2_pwrupbubble.middle")).image>
+  [282] pusharglist 1 ........................... <member(getmemnum("bb2_pwrupbubble.middle")).image>
+  [284] objcall 74 .............................. <member(getmemnum("bb2_pwrupbubble.middle")).image.duplicate()>
+  [286] pusharglistnoret 3 ...................... <pBalloonImg, #middle, member(getmemnum("bb2_pwrupbubble.middle")).image.duplicate()>
+  [288] objcall 352 ............................. pBalloonImg.addProp(#middle, member(getmemnum("bb2_pwrupbubble.middle")).image.duplicate())
+  [291] getprop 586 ............................. <pBalloonImg>
+  [294] pushsymb 588 ............................ <#right>
+  [297] pushcons 5 .............................. <"bb2_pwrupbubble.right">
+  [299] pusharglist 1 ........................... <"bb2_pwrupbubble.right">
+  [301] extcall 238 ............................. <getmemnum("bb2_pwrupbubble.right")>
+  [303] pusharglist 1 ........................... <getmemnum("bb2_pwrupbubble.right")>
+  [305] extcall 91 .............................. <member(getmemnum("bb2_pwrupbubble.right"))>
+  [307] getobjprop 44 ........................... <member(getmemnum("bb2_pwrupbubble.right")).image>
+  [309] pusharglistnoret 3 ...................... <pBalloonImg, #right, member(getmemnum("bb2_pwrupbubble.right")).image>
+  [311] objcall 352 ............................. pBalloonImg.addProp(#right, member(getmemnum("bb2_pwrupbubble.right")).image)
+  [314] pushsymb 589 ............................ <#leaveRoom>
+  [317] getparam 0 .............................. <me>
+  [319] pusharglist 1 ........................... <me>
+  [321] objcall 245 ............................. <me.getID()>
+  [323] pushsymb 544 ............................ <#removeBalloons>
+  [326] pusharglistnoret 3 ...................... <#leaveRoom, me.getID(), #removeBalloons>
+  [328] extcall 289 ............................. registerMessage(#leaveRoom, me.getID(), #removeBalloons)
+  [331] pushsymb 590 ............................ <#changeRoom>
+  [334] getparam 0 .............................. <me>
+  [336] pusharglist 1 ........................... <me>
+  [338] objcall 245 ............................. <me.getID()>
+  [340] pushsymb 544 ............................ <#removeBalloons>
+  [343] pusharglistnoret 3 ...................... <#changeRoom, me.getID(), #removeBalloons>
+  [345] extcall 289 ............................. registerMessage(#changeRoom, me.getID(), #removeBalloons)
+  [348] getparam 0 .............................. <me>
+  [350] pusharglistnoret 1 ...................... <me>
+  [352] objcall 543 ............................. me.resetBalloons()
+  [355] pushint8 1 .............................. <1>
+  [357] pusharglistnoret 1 ...................... <1>
+  [359] extcall 28 .............................. return 1
+  [361] ret
+end
+
+on deconstruct me
+  [  0] pushsymb 593 ............................ <#bbballoonautoscroll>
+  [  3] pusharglist 1 ........................... <#bbballoonautoscroll>
+  [  5] extcall 592 ............................. <timeoutExists(#bbballoonautoscroll)>
+  [  8] jmpifz [ 19] ............................ if timeoutExists(#bbballoonautoscroll) then
+  [ 11] pushsymb 593 ............................ <#bbballoonautoscroll>
+  [ 14] pusharglistnoret 1 ...................... <#bbballoonautoscroll>
+  [ 16] extcall 594 ............................. removeTimeout(#bbballoonautoscroll)
+  [ 19] getparam 0 .............................. <me>
+  [ 21] pusharglist 1 ........................... <me>
+  [ 23] objcall 245 ............................. <me.getID()>
+  [ 25] pusharglistnoret 1 ...................... <me.getID()>
+  [ 27] extcall 595 ............................. removePrepare(me.getID())
+  [ 30] pushsymb 589 ............................ <#leaveRoom>
+  [ 33] getparam 0 .............................. <me>
+  [ 35] pusharglist 1 ........................... <me>
+  [ 37] objcall 245 ............................. <me.getID()>
+  [ 39] pusharglistnoret 2 ...................... <#leaveRoom, me.getID()>
+  [ 41] extcall 291 ............................. unregisterMessage(#leaveRoom, me.getID())
+  [ 44] pushsymb 590 ............................ <#changeRoom>
+  [ 47] getparam 0 .............................. <me>
+  [ 49] pusharglist 1 ........................... <me>
+  [ 51] objcall 245 ............................. <me.getID()>
+  [ 53] pusharglistnoret 2 ...................... <#changeRoom, me.getID()>
+  [ 55] extcall 291 ............................. unregisterMessage(#changeRoom, me.getID())
+  [ 58] pusharglist 0 ........................... <[]>
+  [ 60] pushlist ................................ <[]>
+  [ 61] setprop 558 ............................. pBalloonBuffer = []
+  [ 64] getprop 557 ............................. <pAvailableBalloons>
+  [ 67] pusharglist 1 ........................... <pAvailableBalloons>
+  [ 69] extcall 122 ............................. <voidp(pAvailableBalloons)>
+  [ 71] not ..................................... <not voidp(pAvailableBalloons)>
+  [ 72] jmpifz [ 84] ............................ if not voidp(pAvailableBalloons) then
+  [ 75] pushsymb 1 .............................. <#deconstruct>
+  [ 77] getprop 557 ............................. <pAvailableBalloons>
+  [ 80] pusharglistnoret 2 ...................... <#deconstruct, pAvailableBalloons>
+  [ 82] extcall 103 ............................. call(#deconstruct, pAvailableBalloons)
+  [ 84] getprop 556 ............................. <pVisibleBalloons>
+  [ 87] pusharglist 1 ........................... <pVisibleBalloons>
+  [ 89] extcall 122 ............................. <voidp(pVisibleBalloons)>
+  [ 91] not ..................................... <not voidp(pVisibleBalloons)>
+  [ 92] jmpifz [104] ............................ if not voidp(pVisibleBalloons) then
+  [ 95] pushsymb 1 .............................. <#deconstruct>
+  [ 97] getprop 556 ............................. <pVisibleBalloons>
+  [100] pusharglistnoret 2 ...................... <#deconstruct, pVisibleBalloons>
+  [102] extcall 103 ............................. call(#deconstruct, pVisibleBalloons)
+  [104] getprop 596 ............................. <pBalloonPulse>
+  [107] pusharglist 1 ........................... <pBalloonPulse>
+  [109] extcall 122 ............................. <voidp(pBalloonPulse)>
+  [111] not ..................................... <not voidp(pBalloonPulse)>
+  [112] jmpifz [124] ............................ if not voidp(pBalloonPulse) then
+  [115] pushsymb 1 .............................. <#deconstruct>
+  [117] getprop 596 ............................. <pBalloonPulse>
+  [120] pusharglistnoret 2 ...................... <#deconstruct, pBalloonPulse>
+  [122] extcall 103 ............................. call(#deconstruct, pBalloonPulse)
+  [124] getprop 585 ............................. <pReservedSprites>
+  [127] peek 0
+  [129] pusharglist 1
+  [131] extcall 30
+  [133] pushint8 1
+  [135] peek 0
+  [137] peek 2
+  [139] lteq
+  [140] jmpifz [165] ............................ repeat with tSpr in pReservedSprites
+  [143] peek 2
+  [145] peek 1
+  [147] pusharglist 2
+  [149] extcall 31
+  [151] setlocal 0
+  [153] getlocal 0 .............................. <tSpr>
+  [155] pusharglistnoret 1 ...................... <tSpr>
+  [157] extcall 473 ............................. releaseSprite(tSpr)
+  [160] pushint8 1
+  [162] add
+  [163] endrepeat [135]
+  [165] pop 3
+  [167] getprop 1265 ............................ <pBalloonWriterId>
+  [170] pusharglist 1 ........................... <pBalloonWriterId>
+  [172] extcall 1266 ............................ <writerExists(pBalloonWriterId)>
+  [175] jmpifz [186] ............................ if writerExists(pBalloonWriterId) then
+  [178] getprop 1265 ............................ <pBalloonWriterId>
+  [181] pusharglistnoret 1 ...................... <pBalloonWriterId>
+  [183] extcall 861 ............................. removeWriter(pBalloonWriterId)
+  [186] pusharglist 0 ........................... <[]>
+  [188] pushlist ................................ <[]>
+  [189] setprop 585 ............................. pReservedSprites = []
+  [192] pusharglist 0 ........................... <>
+  [194] extcall 116 ............................. <VOID>
+  [196] setprop 557 ............................. pAvailableBalloons = VOID
+  [199] pusharglist 0 ........................... <>
+  [201] extcall 116 ............................. <VOID>
+  [203] setprop 556 ............................. pVisibleBalloons = VOID
+  [206] pusharglist 0 ........................... <>
+  [208] extcall 116 ............................. <VOID>
+  [210] setprop 558 ............................. pBalloonBuffer = VOID
+  [213] pushint8 1 .............................. <1>
+  [215] pusharglistnoret 1 ...................... <1>
+  [217] extcall 28 .............................. return 1
+  [219] ret
+end
+
+on Refresh me, tTopic, tdata
+  [  0] getparam 1 .............................. <tTopic>
+  [  2] peek 0 .................................. case tTopic of
+  [  4] pushsymb 205 ............................ <#bb_event_5>
+  [  6] eq
+  [  7] jmpifz [ 44] ............................ (case) #bb_event_5:
+  [ 10] getparam 0 .............................. <me>
+  [ 12] getparam 2 .............................. <tdata>
+  [ 14] pushsymb 220 ............................ <#playerId>
+  [ 16] pusharglist 2 ........................... <tdata, #playerId>
+  [ 18] objcall 31 .............................. <tdata[#playerId]>
+  [ 20] getparam 2 .............................. <tdata>
+  [ 22] pushsymb 206 ............................ <#powerupType>
+  [ 24] pusharglist 2 ........................... <tdata, #powerupType>
+  [ 26] objcall 31 .............................. <tdata[#powerupType]>
+  [ 28] getparam 2 .............................. <tdata>
+  [ 30] pushsymb 220 ............................ <#playerId>
+  [ 32] pusharglist 2 ........................... <tdata, #playerId>
+  [ 34] objcall 31 .............................. <tdata[#playerId]>
+  [ 36] pusharglistnoret 4 ...................... <me, tdata[#playerId], tdata[#powerupType], tdata[#playerId]>
+  [ 38] objcall 542 ............................. me.createBalloon(tdata[#playerId], tdata[#powerupType], tdata[#playerId])
+  [ 41] jmp [ 59]
+  [ 44] peek 0
+  [ 46] pushsymb 207 ............................ <#gameend>
+  [ 48] eq
+  [ 49] jmpifz [ 59] ............................ (case) #gameend:
+  [ 52] getparam 0 .............................. <me>
+  [ 54] pusharglistnoret 1 ...................... <me>
+  [ 56] objcall 544 ............................. me.removeBalloons()
+  [ 59] pop 1 ................................... end case
+  [ 61] pushint8 1 .............................. <1>
+  [ 63] pusharglistnoret 1 ...................... <1>
+  [ 65] extcall 28 .............................. return 1
+  [ 67] ret
+end
+
+on createBalloon me, tLocRefObjId, tPowerupType, tOwnerId
+  [  0] getprop 553 ............................. <pState>
+  [  3] pushsymb 554 ............................ <#normal>
+  [  6] eq ...................................... <pState = #normal>
+  [  7] jmpifz [499] ............................ if pState = #normal then / else
+  [ 10] getprop 557 ............................. <pAvailableBalloons>
+  [ 13] getobjprop 30 ........................... <pAvailableBalloons.count>
+  [ 15] pushzero ................................ <0>
+  [ 16] gt ...................................... <pAvailableBalloons.count > 0>
+  [ 17] jmpifz [454] ............................ if pAvailableBalloons.count > 0 then / else
+  [ 20] getparam 0 .............................. <me>
+  [ 22] pusharglist 1 ........................... <me>
+  [ 24] objcall 201 ............................. <me.getGameSystem()>
+  [ 26] setlocal 0 .............................. tGameSystem = me.getGameSystem()
+  [ 28] getlocal 0 .............................. <tGameSystem>
+  [ 30] pushzero ................................ <0>
+  [ 31] eq ...................................... <tGameSystem = 0>
+  [ 32] jmpifz [ 40] ............................ if tGameSystem = 0 then
+  [ 35] pushzero ................................ <0>
+  [ 36] pusharglistnoret 1 ...................... <0>
+  [ 38] extcall 28 .............................. return 0
+  [ 40] getlocal 0 .............................. <tGameSystem>
+  [ 42] getparam 1 .............................. <tLocRefObjId>
+  [ 44] pusharglist 2 ........................... <tGameSystem, tLocRefObjId>
+  [ 46] objcall 213 ............................. <tGameSystem.getGameObject(tLocRefObjId)>
+  [ 48] setlocal 1 .............................. tLocRefObj = tGameSystem.getGameObject(tLocRefObjId)
+  [ 50] getlocal 1 .............................. <tLocRefObj>
+  [ 52] pushzero ................................ <0>
+  [ 53] eq ...................................... <tLocRefObj = 0>
+  [ 54] jmpifz [ 75] ............................ if tLocRefObj = 0 then
+  [ 57] getparam 0 .............................. <me>
+  [ 59] pushcons 6 .............................. <"Cannot find game object by id:">
+  [ 61] getparam 1 .............................. <tLocRefObjId>
+  [ 63] joinpadstr .............................. <"Cannot find game object by id:" && tLocRefObjId>
+  [ 64] pushsymb 600 ............................ <#createNewBalloon>
+  [ 67] pusharglist 3 ........................... <me, "Cannot find game object by id:" && tLocRefObjId, #createNewBalloon>
+  [ 69] extcall 173 ............................. <error(me, "Cannot find game object by id:" && tLocRefObjId, #createNewBalloon)>
+  [ 71] pusharglistnoret 1 ...................... <error(me, "Cannot find game object by id:" && tLocRefObjId, #createNewBalloon)>
+  [ 73] extcall 28 .............................. return error(me, "Cannot find game object by id:" && tLocRefObjId, #createNewBalloon)
+  [ 75] getlocal 1 .............................. <tLocRefObj>
+  [ 77] pusharglist 1 ........................... <tLocRefObj>
+  [ 79] objcall 601 ............................. <tLocRefObj.getLocation()>
+  [ 82] pusharglist 1 ........................... <tLocRefObj.getLocation()>
+  [ 84] objcall 601 ............................. <tLocRefObj.getLocation().getLocation()>
+  [ 87] setlocal 2 .............................. tTileLocation = tLocRefObj.getLocation().getLocation()
+  [ 89] getlocal 0 .............................. <tGameSystem>
+  [ 91] getlocal 2 .............................. <tTileLocation>
+  [ 93] pushsymb 60 ............................. <#x>
+  [ 95] pusharglist 2 ........................... <tTileLocation, #x>
+  [ 97] objcall 31 .............................. <tTileLocation[#x]>
+  [ 99] getlocal 2 .............................. <tTileLocation>
+  [101] pushsymb 61 ............................. <#y>
+  [103] pusharglist 2 ........................... <tTileLocation, #y>
+  [105] objcall 31 .............................. <tTileLocation[#y]>
+  [107] getlocal 2 .............................. <tTileLocation>
+  [109] pushsymb 62 ............................. <#z>
+  [111] pusharglist 2 ........................... <tTileLocation, #z>
+  [113] objcall 31 .............................. <tTileLocation[#z]>
+  [115] pusharglist 4 ........................... <tGameSystem, tTileLocation[#x], tTileLocation[#y], tTileLocation[#z]>
+  [117] objcall 602 ............................. <tGameSystem.convertTileToWorldCoordinate(tTileLocation[#x], tTileLocation[#y], tTileLocation[#z])>
+  [120] setlocal 3 .............................. tWorldLocation = tGameSystem.convertTileToWorldCoordinate(tTileLocation[#x], tTileLocation[#y], tTileLocation[#z])
+  [122] getlocal 0 .............................. <tGameSystem>
+  [124] getlocal 3 .............................. <tWorldLocation>
+  [126] pushsymb 60 ............................. <#x>
+  [128] pusharglist 2 ........................... <tWorldLocation, #x>
+  [130] objcall 31 .............................. <tWorldLocation[#x]>
+  [132] getlocal 3 .............................. <tWorldLocation>
+  [134] pushsymb 61 ............................. <#y>
+  [136] pusharglist 2 ........................... <tWorldLocation, #y>
+  [138] objcall 31 .............................. <tWorldLocation[#y]>
+  [140] getlocal 3 .............................. <tWorldLocation>
+  [142] pushsymb 62 ............................. <#z>
+  [144] pusharglist 2 ........................... <tWorldLocation, #z>
+  [146] objcall 31 .............................. <tWorldLocation[#z]>
+  [148] pusharglist 4 ........................... <tGameSystem, tWorldLocation[#x], tWorldLocation[#y], tWorldLocation[#z]>
+  [150] objcall 603 ............................. <tGameSystem.convertWorldToScreenCoordinate(tWorldLocation[#x], tWorldLocation[#y], tWorldLocation[#z])>
+  [153] setlocal 4 .............................. tlocation = tGameSystem.convertWorldToScreenCoordinate(tWorldLocation[#x], tWorldLocation[#y], tWorldLocation[#z])
+  [155] getlocal 4 .............................. <tlocation>
+  [157] pushint8 1 .............................. <1>
+  [159] pusharglist 2 ........................... <tlocation, 1>
+  [161] objcall 31 .............................. <tlocation[1]>
+  [163] getlocal 4 .............................. <tlocation>
+  [165] pushint8 2 .............................. <2>
+  [167] pusharglist 2 ........................... <tlocation, 2>
+  [169] objcall 31 .............................. <tlocation[2]>
+  [171] pusharglist 2 ........................... <tlocation[1], tlocation[2]>
+  [173] extcall 96 .............................. <point(tlocation[1], tlocation[2])>
+  [175] setlocal 4 .............................. tlocation = point(tlocation[1], tlocation[2])
+  [177] pushcons 7 .............................. <"bb_powerup_">
+  [179] getparam 2 .............................. <tPowerupType>
+  [181] joinstr ................................. <"bb_powerup_" & tPowerupType>
+  [182] pusharglist 1 ........................... <"bb_powerup_" & tPowerupType>
+  [184] extcall 604 ............................. <getText("bb_powerup_" & tPowerupType)>
+  [187] setlocal 5 .............................. tText = getText("bb_powerup_" & tPowerupType)
+  [189] pusharglist 0 ........................... <[:]>
+  [191] pushproplist ............................ <[:]>
+  [192] setlocal 6 .............................. tMsg = [:]
+  [194] getlocal 6 .............................. <tMsg>
+  [196] pushsymb 571 ............................ <#text>
+  [199] getlocal 5 .............................. <tText>
+  [201] pusharglistnoret 3 ...................... <tMsg, #text, tText>
+  [203] objcall 352 ............................. tMsg.addProp(#text, tText)
+  [206] getlocal 6 .............................. <tMsg>
+  [208] pushsymb 605 ............................ <#location>
+  [211] getlocal 4 .............................. <tlocation>
+  [213] pusharglistnoret 3 ...................... <tMsg, #location, tlocation>
+  [215] objcall 352 ............................. tMsg.addProp(#location, tlocation)
+  [218] getlocal 6 .............................. <tMsg>
+  [220] pushsymb 197 ............................ <#id>
+  [222] getparam 1 .............................. <tLocRefObjId>
+  [224] pusharglist 1 ........................... <tLocRefObjId>
+  [226] extcall 420 ............................. <string(tLocRefObjId)>
+  [229] pusharglistnoret 3 ...................... <tMsg, #id, string(tLocRefObjId)>
+  [231] objcall 352 ............................. tMsg.addProp(#id, string(tLocRefObjId))
+  [234] getparam 2 .............................. <tPowerupType>
+  [236] pushint8 6 .............................. <6>
+  [238] eq ...................................... <tPowerupType = 6>
+  [239] jmpifz [274] ............................ if tPowerupType = 6 then / else
+  [242] getlocal 6 .............................. <tMsg>
+  [244] pushsymb 501 ............................ <#type>
+  [247] pushcons 8 .............................. <"6_">
+  [249] getparam 0 .............................. <me>
+  [251] pusharglist 1 ........................... <me>
+  [253] objcall 201 ............................. <me.getGameSystem()>
+  [255] getparam 3 .............................. <tOwnerId>
+  [257] pushsymb 257 ............................ <#teamId>
+  [260] pusharglist 3 ........................... <me.getGameSystem(), tOwnerId, #teamId>
+  [262] objcall 349 ............................. <me.getGameSystem().getGameObjectProperty(tOwnerId, #teamId)>
+  [265] joinstr ................................. <"6_" & me.getGameSystem().getGameObjectProperty(tOwnerId, #teamId)>
+  [266] pusharglistnoret 3 ...................... <tMsg, #type, "6_" & me.getGameSystem().getGameObjectProperty(tOwnerId, #teamId)>
+  [268] objcall 352 ............................. tMsg.addProp(#type, "6_" & me.getGameSystem().getGameObjectProperty(tOwnerId, #teamId))
+  [271] jmp [286]
+  [274] getlocal 6 .............................. <tMsg>
+  [276] pushsymb 501 ............................ <#type>
+  [279] getparam 2 .............................. <tPowerupType>
+  [281] pusharglistnoret 3 ...................... <tMsg, #type, tPowerupType>
+  [283] objcall 352 ............................. tMsg.addProp(#type, tPowerupType)
+  [286] getprop 557 ............................. <pAvailableBalloons>
+  [289] pushint8 1 .............................. <1>
+  [291] pusharglist 2 ........................... <pAvailableBalloons, 1>
+  [293] objcall 607 ............................. <pAvailableBalloons.getPropAt(1)>
+  [296] setprop 606 ............................. pLastBalloonId = pAvailableBalloons.getPropAt(1)
+  [299] getlocal 6 .............................. <tMsg>
+  [301] setprop 608 ............................. pLastMsg = tMsg
+  [304] getprop 596 ............................. <pBalloonPulse>
+  [307] pushsymb 609 ............................ <#humanLoc>
+  [310] getlocal 4 .............................. <tlocation>
+  [312] pusharglistnoret 3 ...................... <pBalloonPulse, #humanLoc, tlocation>
+  [314] objcall 388 ............................. pBalloonPulse.set(#humanLoc, tlocation)
+  [317] getprop 596 ............................. <pBalloonPulse>
+  [320] pushsymb 610 ............................ <#stoploc>
+  [323] getlocal 4 .............................. <tlocation>
+  [325] getobjprop 109 .......................... <tlocation.locH>
+  [327] getprop 581 ............................. <pStartV>
+  [330] pusharglist 2 ........................... <tlocation.locH, pStartV>
+  [332] extcall 96 .............................. <point(tlocation.locH, pStartV)>
+  [334] pusharglistnoret 3 ...................... <pBalloonPulse, #stoploc, point(tlocation.locH, pStartV)>
+  [336] objcall 388 ............................. pBalloonPulse.set(#stoploc, point(tlocation.locH, pStartV))
+  [339] getprop 596 ............................. <pBalloonPulse>
+  [342] pushsymb 611 ............................ <#balloonColor>
+  [345] pushzero ................................ <0>
+  [346] pushzero ................................ <0>
+  [347] pushzero ................................ <0>
+  [348] pusharglist 3 ........................... <0, 0, 0>
+  [350] extcall 34 .............................. <rgb(0, 0, 0)>
+  [352] pusharglistnoret 3 ...................... <pBalloonPulse, #balloonColor, rgb(0, 0, 0)>
+  [354] objcall 388 ............................. pBalloonPulse.set(#balloonColor, rgb(0, 0, 0))
+  [357] getprop 596 ............................. <pBalloonPulse>
+  [360] pushsymb 612 ............................ <#BalloonId>
+  [363] getprop 606 ............................. <pLastBalloonId>
+  [366] pusharglistnoret 3 ...................... <pBalloonPulse, #BalloonId, pLastBalloonId>
+  [368] objcall 388 ............................. pBalloonPulse.set(#BalloonId, pLastBalloonId)
+  [371] pushsymb 613 ............................ <#definePulse>
+  [374] getprop 596 ............................. <pBalloonPulse>
+  [377] pusharglistnoret 2 ...................... <#definePulse, pBalloonPulse>
+  [379] extcall 103 ............................. call(#definePulse, pBalloonPulse)
+  [381] pushzero ................................ <0>
+  [382] setprop 555 ............................. pScrollCounter = 0
+  [385] pushsymb 614 ............................ <#scroll>
+  [388] setprop 553 ............................. pState = #scroll
+  [391] getprop 558 ............................. <pBalloonBuffer>
+  [394] pusharglist 1 ........................... <pBalloonBuffer>
+  [396] objcall 30 .............................. <pBalloonBuffer.count()>
+  [398] pushzero ................................ <0>
+  [399] eq ...................................... <pBalloonBuffer.count() = 0>
+  [400] jmpifz [412] ............................ if pBalloonBuffer.count() = 0 then / else
+  [403] getprop 551 ............................. <pScrollStep>
+  [406] setprop 564 ............................. pScrollBy = pScrollStep
+  [409] jmp [440]
+  [412] getprop 558 ............................. <pBalloonBuffer>
+  [415] pusharglist 1 ........................... <pBalloonBuffer>
+  [417] objcall 30 .............................. <pBalloonBuffer.count()>
+  [419] pushint8 2 .............................. <2>
+  [421] lt ...................................... <pBalloonBuffer.count() < 2>
+  [422] jmpifz [434] ............................ if pBalloonBuffer.count() < 2 then / else
+  [425] getprop 580 ............................. <pFastScrollStep>
+  [428] setprop 564 ............................. pScrollBy = pFastScrollStep
+  [431] jmp [440]
+  [434] getprop 561 ............................. <pMoveOffsetV>
+  [437] setprop 564 ............................. pScrollBy = pMoveOffsetV
+  [440] getparam 0 .............................. <me>
+  [442] pusharglist 1 ........................... <me>
+  [444] objcall 245 ............................. <me.getID()>
+  [446] pusharglistnoret 1 ...................... <me.getID()>
+  [448] extcall 615 ............................. receivePrepare(me.getID())
+  [451] jmp [496]
+  [454] getprop 556 ............................. <pVisibleBalloons>
+  [457] pusharglist 1 ........................... <pVisibleBalloons>
+  [459] objcall 30 .............................. <pVisibleBalloons.count()>
+  [461] pushzero ................................ <0>
+  [462] gt ...................................... <pVisibleBalloons.count() > 0>
+  [463] jmpifz [483] ............................ if pVisibleBalloons.count() > 0 then
+  [466] getparam 0 .............................. <me>
+  [468] getprop 556 ............................. <pVisibleBalloons>
+  [471] pushint8 1 .............................. <1>
+  [473] pusharglist 2 ........................... <pVisibleBalloons, 1>
+  [475] objcall 607 ............................. <pVisibleBalloons.getPropAt(1)>
+  [478] pusharglistnoret 2 ...................... <me, pVisibleBalloons.getPropAt(1)>
+  [480] objcall 545 ............................. me.removeVisibleBalloon(pVisibleBalloons.getPropAt(1))
+  [483] getparam 0 .............................. <me>
+  [485] getparam 1 .............................. <tLocRefObjId>
+  [487] getparam 2 .............................. <tPowerupType>
+  [489] getparam 3 .............................. <tOwnerId>
+  [491] pusharglistnoret 4 ...................... <me, tLocRefObjId, tPowerupType, tOwnerId>
+  [493] objcall 542 ............................. me.createBalloon(tLocRefObjId, tPowerupType, tOwnerId)
+  [496] jmp [542]
+  [499] getprop 553 ............................. <pState>
+  [502] pushsymb 614 ............................ <#scroll>
+  [505] eq ...................................... <pState = #scroll>
+  [506] jmpifz [542] ............................ if pState = #scroll then
+  [509] getparam 1 .............................. <tLocRefObjId>
+  [511] getparam 2 .............................. <tPowerupType>
+  [513] getparam 3 .............................. <tOwnerId>
+  [515] pusharglist 3 ........................... <[tLocRefObjId, tPowerupType, tOwnerId]>
+  [517] pushlist ................................ <[tLocRefObjId, tPowerupType, tOwnerId]>
+  [518] setlocal 6 .............................. tMsg = [tLocRefObjId, tPowerupType, tOwnerId]
+  [520] getprop 558 ............................. <pBalloonBuffer>
+  [523] getlocal 6 .............................. <tMsg>
+  [525] pusharglist 2 ........................... <pBalloonBuffer, tMsg>
+  [527] objcall 134 ............................. <pBalloonBuffer.getPos(tMsg)>
+  [529] not ..................................... <not pBalloonBuffer.getPos(tMsg)>
+  [530] jmpifz [542] ............................ if not pBalloonBuffer.getPos(tMsg) then
+  [533] getprop 558 ............................. <pBalloonBuffer>
+  [536] getlocal 6 .............................. <tMsg>
+  [538] pusharglistnoret 2 ...................... <pBalloonBuffer, tMsg>
+  [540] objcall 136 ............................. pBalloonBuffer.add(tMsg)
+  [542] pushint8 1 .............................. <1>
+  [544] pusharglistnoret 1 ...................... <1>
+  [546] extcall 28 .............................. return 1
+  [548] ret
+end
+
+on resetBalloons me
+  [  0] pusharglist 0 ........................... <[:]>
+  [  2] pushproplist ............................ <[:]>
+  [  3] setprop 556 ............................. pVisibleBalloons = [:]
+  [  6] pusharglist 0 ........................... <[:]>
+  [  8] pushproplist ............................ <[:]>
+  [  9] setprop 557 ............................. pAvailableBalloons = [:]
+  [ 12] getparam 0 .............................. <me>
+  [ 14] pusharglist 1 ........................... <me>
+  [ 16] objcall 245 ............................. <me.getID()>
+  [ 18] pusharglist 1 ........................... <me.getID()>
+  [ 20] extcall 471 ............................. <reserveSprite(me.getID())>
+  [ 23] setlocal 0 .............................. tSprNum = reserveSprite(me.getID())
+  [ 25] getprop 585 ............................. <pReservedSprites>
+  [ 28] getlocal 0 .............................. <tSprNum>
+  [ 30] pusharglistnoret 2 ...................... <pReservedSprites, tSprNum>
+  [ 32] objcall 136 ............................. pReservedSprites.add(tSprNum)
+  [ 34] pushsymb 125 ............................ <#temp>
+  [ 36] pushcons 9 .............................. <"BB Balloon Pulse Class">
+  [ 38] pusharglist 2 ........................... <#temp, "BB Balloon Pulse Class">
+  [ 40] extcall 124 ............................. <createObject(#temp, "BB Balloon Pulse Class")>
+  [ 42] setprop 596 ............................. pBalloonPulse = createObject(#temp, "BB Balloon Pulse Class")
+  [ 45] getprop 596 ............................. <pBalloonPulse>
+  [ 48] pushzero ................................ <0>
+  [ 49] eq ...................................... <pBalloonPulse = 0>
+  [ 50] jmpifz [ 68] ............................ if pBalloonPulse = 0 then
+  [ 53] getparam 0 .............................. <me>
+  [ 55] pushcons 10 ............................. <"Cannot create Balloon Pulse controller.">
+  [ 57] pushsymb 543 ............................ <#resetBalloons>
+  [ 60] pusharglist 3 ........................... <me, "Cannot create Balloon Pulse controller.", #resetBalloons>
+  [ 62] extcall 173 ............................. <error(me, "Cannot create Balloon Pulse controller.", #resetBalloons)>
+  [ 64] pusharglistnoret 1 ...................... <error(me, "Cannot create Balloon Pulse controller.", #resetBalloons)>
+  [ 66] extcall 28 .............................. return error(me, "Cannot create Balloon Pulse controller.", #resetBalloons)
+  [ 68] getlocal 0 .............................. <tSprNum>
+  [ 70] pusharglist 1 ........................... <tSprNum>
+  [ 72] extcall 470 ............................. <sprite(tSprNum)>
+  [ 75] getprop 560 ............................. <pFirstLocz>
+  [ 78] setobjprop 111 .......................... sprite(tSprNum).locZ = pFirstLocz
+  [ 80] getlocal 0 .............................. <tSprNum>
+  [ 82] pusharglist 1 ........................... <tSprNum>
+  [ 84] extcall 470 ............................. <sprite(tSprNum)>
+  [ 87] pushint8 8 .............................. <8>
+  [ 89] setobjprop 50 ........................... sprite(tSprNum).ink = 8
+  [ 91] getprop 596 ............................. <pBalloonPulse>
+  [ 94] pushsymb 470 ............................ <#sprite>
+  [ 97] getlocal 0 .............................. <tSprNum>
+  [ 99] pusharglistnoret 3 ...................... <pBalloonPulse, #sprite, tSprNum>
+  [101] objcall 388 ............................. pBalloonPulse.set(#sprite, tSprNum)
+  [104] getprop 596 ............................. <pBalloonPulse>
+  [107] pushsymb 624 ............................ <#manager>
+  [110] getparam 0 .............................. <me>
+  [112] pusharglistnoret 3 ...................... <pBalloonPulse, #manager, me>
+  [114] objcall 388 ............................. pBalloonPulse.set(#manager, me)
+  [117] pushint8 1 .............................. <1>
+  [119] setlocal 1
+  [121] getlocal 1
+  [123] getprop 559 ............................. <pMaxBalloons>
+  [126] lteq
+  [127] jmpifz [367] ............................ repeat with f = 1 to pMaxBalloons
+  [130] getparam 0 .............................. <me>
+  [132] pusharglist 1 ........................... <me>
+  [134] objcall 245 ............................. <me.getID()>
+  [136] pusharglist 1 ........................... <me.getID()>
+  [138] extcall 471 ............................. <reserveSprite(me.getID())>
+  [141] setlocal 0 .............................. tSprNum = reserveSprite(me.getID())
+  [143] getprop 585 ............................. <pReservedSprites>
+  [146] getlocal 0 .............................. <tSprNum>
+  [148] pusharglistnoret 2 ...................... <pReservedSprites, tSprNum>
+  [150] objcall 136 ............................. pReservedSprites.add(tSprNum)
+  [152] getlocal 0 .............................. <tSprNum>
+  [154] pushzero ................................ <0>
+  [155] eq ...................................... <tSprNum = 0>
+  [156] jmpifz [171] ............................ if tSprNum = 0 then
+  [159] getlocal 1 .............................. <f>
+  [161] pushint8 1 .............................. <1>
+  [163] sub ..................................... <f - 1>
+  [164] setprop 559 ............................. pMaxBalloons = f - 1
+  [167] pusharglistnoret 0 ...................... <>
+  [169] extcall 28 .............................. return 
+  [171] getlocal 0 .............................. <tSprNum>
+  [173] pusharglist 1 ........................... <tSprNum>
+  [175] extcall 470 ............................. <sprite(tSprNum)>
+  [178] getprop 560 ............................. <pFirstLocz>
+  [181] getlocal 1 .............................. <f>
+  [183] add ..................................... <pFirstLocz + f>
+  [184] pushint8 1 .............................. <1>
+  [186] sub ..................................... <pFirstLocz + f - 1>
+  [187] setobjprop 111 .......................... sprite(tSprNum).locZ = pFirstLocz + f - 1
+  [189] getlocal 0 .............................. <tSprNum>
+  [191] pusharglist 1 ........................... <tSprNum>
+  [193] extcall 470 ............................. <sprite(tSprNum)>
+  [196] pushint8 8 .............................. <8>
+  [198] setobjprop 50 ........................... sprite(tSprNum).ink = 8
+  [200] pushcons 11 ............................. <"bb.balloon">
+  [202] getlocal 1 .............................. <f>
+  [204] joinstr ................................. <"bb.balloon" & f>
+  [205] setlocal 2 .............................. tBalloonId = "bb.balloon" & f
+  [207] pushcons 12 ............................. <"bb.balloon.">
+  [209] getlocal 2 .............................. <tBalloonId>
+  [211] joinstr ................................. <"bb.balloon." & tBalloonId>
+  [212] setlocal 3 .............................. tmember = "bb.balloon." & tBalloonId
+  [214] getlocal 3 .............................. <tmember>
+  [216] pusharglist 1 ........................... <tmember>
+  [218] extcall 625 ............................. <memberExists(tmember)>
+  [221] not ..................................... <not memberExists(tmember)>
+  [222] jmpifz [235] ............................ if not memberExists(tmember) then
+  [225] getlocal 3 .............................. <tmember>
+  [227] pushsymb 502 ............................ <#bitmap>
+  [230] pusharglistnoret 2 ...................... <tmember, #bitmap>
+  [232] extcall 570 ............................. createMember(tmember, #bitmap)
+  [235] getlocal 3 .............................. <tmember>
+  [237] pusharglist 1 ........................... <tmember>
+  [239] extcall 238 ............................. <getmemnum(tmember)>
+  [241] setlocal 3 .............................. tmember = getmemnum(tmember)
+  [243] getprop 557 ............................. <pAvailableBalloons>
+  [246] getlocal 2 .............................. <tBalloonId>
+  [248] pushsymb 125 ............................ <#temp>
+  [250] pushcons 13 ............................. <"BB Balloon Class">
+  [252] pusharglist 2 ........................... <#temp, "BB Balloon Class">
+  [254] extcall 124 ............................. <createObject(#temp, "BB Balloon Class")>
+  [256] pusharglistnoret 3 ...................... <pAvailableBalloons, tBalloonId, createObject(#temp, "BB Balloon Class")>
+  [258] objcall 352 ............................. pAvailableBalloons.addProp(tBalloonId, createObject(#temp, "BB Balloon Class"))
+  [261] getprop 557 ............................. <pAvailableBalloons>
+  [264] getlocal 2 .............................. <tBalloonId>
+  [266] pusharglist 2 ........................... <pAvailableBalloons, tBalloonId>
+  [268] objcall 31 .............................. <pAvailableBalloons[tBalloonId]>
+  [270] getlocal 2 .............................. <tBalloonId>
+  [272] pusharglistnoret 2 ...................... <pAvailableBalloons[tBalloonId], tBalloonId>
+  [274] objcall 626 ............................. pAvailableBalloons[tBalloonId].setID(tBalloonId)
+  [277] getprop 557 ............................. <pAvailableBalloons>
+  [280] getlocal 2 .............................. <tBalloonId>
+  [282] pusharglist 2 ........................... <pAvailableBalloons, tBalloonId>
+  [284] objcall 31 .............................. <pAvailableBalloons[tBalloonId]>
+  [286] pushsymb 470 ............................ <#sprite>
+  [289] getlocal 0 .............................. <tSprNum>
+  [291] pusharglistnoret 3 ...................... <pAvailableBalloons[tBalloonId], #sprite, tSprNum>
+  [293] objcall 388 ............................. pAvailableBalloons[tBalloonId].set(#sprite, tSprNum)
+  [296] getprop 557 ............................. <pAvailableBalloons>
+  [299] getlocal 2 .............................. <tBalloonId>
+  [301] pusharglist 2 ........................... <pAvailableBalloons, tBalloonId>
+  [303] objcall 31 .............................. <pAvailableBalloons[tBalloonId]>
+  [305] pushsymb 91 ............................. <#member>
+  [307] getlocal 3 .............................. <tmember>
+  [309] pusharglistnoret 3 ...................... <pAvailableBalloons[tBalloonId], #member, tmember>
+  [311] objcall 388 ............................. pAvailableBalloons[tBalloonId].set(#member, tmember)
+  [314] getprop 557 ............................. <pAvailableBalloons>
+  [317] getlocal 2 .............................. <tBalloonId>
+  [319] pusharglist 2 ........................... <pAvailableBalloons, tBalloonId>
+  [321] objcall 31 .............................. <pAvailableBalloons[tBalloonId]>
+  [323] pushsymb 112 ............................ <#loc>
+  [325] pushzero ................................ <0>
+  [326] pushint16 1000 .......................... <1000>
+  [329] inv ..................................... <-1000>
+  [330] pusharglist 2 ........................... <0, -1000>
+  [332] extcall 96 .............................. <point(0, -1000)>
+  [334] pusharglistnoret 3 ...................... <pAvailableBalloons[tBalloonId], #loc, point(0, -1000)>
+  [336] objcall 388 ............................. pAvailableBalloons[tBalloonId].set(#loc, point(0, -1000))
+  [339] getprop 557 ............................. <pAvailableBalloons>
+  [342] getlocal 2 .............................. <tBalloonId>
+  [344] pusharglist 2 ........................... <pAvailableBalloons, tBalloonId>
+  [346] objcall 31 .............................. <pAvailableBalloons[tBalloonId]>
+  [348] pushsymb 624 ............................ <#manager>
+  [351] getparam 0 .............................. <me>
+  [353] pusharglistnoret 3 ...................... <pAvailableBalloons[tBalloonId], #manager, me>
+  [355] objcall 388 ............................. pAvailableBalloons[tBalloonId].set(#manager, me)
+  [358] pushint8 1
+  [360] getlocal 1
+  [362] add
+  [363] setlocal 1
+  [365] endrepeat [121]
+  [367] ret
+end
+
+on removeBalloons me
+  [  0] getparam 0 .............................. <me>
+  [  2] pusharglist 1 ........................... <me>
+  [  4] objcall 245 ............................. <me.getID()>
+  [  6] pusharglistnoret 1 ...................... <me.getID()>
+  [  8] extcall 595 ............................. removePrepare(me.getID())
+  [ 11] pushsymb 593 ............................ <#bbballoonautoscroll>
+  [ 14] pusharglist 1 ........................... <#bbballoonautoscroll>
+  [ 16] extcall 592 ............................. <timeoutExists(#bbballoonautoscroll)>
+  [ 19] jmpifz [ 30] ............................ if timeoutExists(#bbballoonautoscroll) then
+  [ 22] pushsymb 593 ............................ <#bbballoonautoscroll>
+  [ 25] pusharglistnoret 1 ...................... <#bbballoonautoscroll>
+  [ 27] extcall 594 ............................. removeTimeout(#bbballoonautoscroll)
+  [ 30] pusharglist 0 ........................... <[]>
+  [ 32] pushlist ................................ <[]>
+  [ 33] setprop 558 ............................. pBalloonBuffer = []
+  [ 36] pusharglist 0 ........................... <>
+  [ 38] extcall 116 ............................. <VOID>
+  [ 40] setprop 606 ............................. pLastBalloonId = VOID
+  [ 43] pushsymb 554 ............................ <#normal>
+  [ 46] setprop 553 ............................. pState = #normal
+  [ 49] pushsymb 630 ............................ <#removePulse>
+  [ 52] getprop 596 ............................. <pBalloonPulse>
+  [ 55] pusharglistnoret 2 ...................... <#removePulse, pBalloonPulse>
+  [ 57] extcall 103 ............................. call(#removePulse, pBalloonPulse)
+  [ 59] pushsymb 631 ............................ <#removeBalloon>
+  [ 62] getprop 556 ............................. <pVisibleBalloons>
+  [ 65] pusharglistnoret 2 ...................... <#removeBalloon, pVisibleBalloons>
+  [ 67] extcall 103 ............................. call(#removeBalloon, pVisibleBalloons)
+  [ 69] pushsymb 631 ............................ <#removeBalloon>
+  [ 72] getprop 557 ............................. <pAvailableBalloons>
+  [ 75] pusharglistnoret 2 ...................... <#removeBalloon, pAvailableBalloons>
+  [ 77] extcall 103 ............................. call(#removeBalloon, pAvailableBalloons)
+  [ 79] pushsymb 632 ............................ <#showBalloon>
+  [ 82] getprop 556 ............................. <pVisibleBalloons>
+  [ 85] pusharglistnoret 2 ...................... <#showBalloon, pVisibleBalloons>
+  [ 87] extcall 103 ............................. call(#showBalloon, pVisibleBalloons)
+  [ 89] pushsymb 632 ............................ <#showBalloon>
+  [ 92] getprop 557 ............................. <pAvailableBalloons>
+  [ 95] pusharglistnoret 2 ...................... <#showBalloon, pAvailableBalloons>
+  [ 97] extcall 103 ............................. call(#showBalloon, pAvailableBalloons)
+  [ 99] getprop 556 ............................. <pVisibleBalloons>
+  [102] pusharglist 1 ........................... <pVisibleBalloons>
+  [104] objcall 74 .............................. <pVisibleBalloons.duplicate()>
+  [106] setlocal 0 .............................. tTempRemoveVisible = pVisibleBalloons.duplicate()
+  [108] pushint8 1 .............................. <1>
+  [110] setlocal 1
+  [112] getlocal 1
+  [114] getlocal 0 .............................. <tTempRemoveVisible>
+  [116] getobjprop 30 ........................... <tTempRemoveVisible.count>
+  [118] lteq
+  [119] jmpifz [147] ............................ repeat with f = 1 to tTempRemoveVisible.count
+  [122] getparam 0 .............................. <me>
+  [124] getlocal 0 .............................. <tTempRemoveVisible>
+  [126] getlocal 1 .............................. <f>
+  [128] pusharglist 2 ........................... <tTempRemoveVisible, f>
+  [130] objcall 607 ............................. <tTempRemoveVisible.getPropAt(f)>
+  [133] pusharglistnoret 2 ...................... <me, tTempRemoveVisible.getPropAt(f)>
+  [135] objcall 545 ............................. me.removeVisibleBalloon(tTempRemoveVisible.getPropAt(f))
+  [138] pushint8 1
+  [140] getlocal 1
+  [142] add
+  [143] setlocal 1
+  [145] endrepeat [112]
+  [147] ret
+end
+
+on removeVisibleBalloon me, tID
+  [  0] getprop 556 ............................. <pVisibleBalloons>
+  [  3] getparam 1 .............................. <tID>
+  [  5] pusharglist 2 ........................... <pVisibleBalloons, tID>
+  [  7] objcall 31 .............................. <pVisibleBalloons[tID]>
+  [  9] pusharglist 1 ........................... <pVisibleBalloons[tID]>
+  [ 11] extcall 122 ............................. <voidp(pVisibleBalloons[tID])>
+  [ 13] not ..................................... <not voidp(pVisibleBalloons[tID])>
+  [ 14] jmpifz [ 76] ............................ if not voidp(pVisibleBalloons[tID]) then
+  [ 17] getprop 557 ............................. <pAvailableBalloons>
+  [ 20] getparam 1 .............................. <tID>
+  [ 22] getprop 556 ............................. <pVisibleBalloons>
+  [ 25] getparam 1 .............................. <tID>
+  [ 27] pusharglist 2 ........................... <pVisibleBalloons, tID>
+  [ 29] objcall 31 .............................. <pVisibleBalloons[tID]>
+  [ 31] pusharglistnoret 3 ...................... <pAvailableBalloons, tID, pVisibleBalloons[tID]>
+  [ 33] objcall 123 ............................. pAvailableBalloons[tID] = pVisibleBalloons[tID]
+  [ 35] getprop 557 ............................. <pAvailableBalloons>
+  [ 38] getparam 1 .............................. <tID>
+  [ 40] pusharglist 2 ........................... <pAvailableBalloons, tID>
+  [ 42] objcall 31 .............................. <pAvailableBalloons[tID]>
+  [ 44] pushsymb 112 ............................ <#loc>
+  [ 46] pushzero ................................ <0>
+  [ 47] pushint16 1000 .......................... <1000>
+  [ 50] inv ..................................... <-1000>
+  [ 51] pusharglist 2 ........................... <0, -1000>
+  [ 53] extcall 96 .............................. <point(0, -1000)>
+  [ 55] pusharglistnoret 3 ...................... <pAvailableBalloons[tID], #loc, point(0, -1000)>
+  [ 57] objcall 388 ............................. pAvailableBalloons[tID].set(#loc, point(0, -1000))
+  [ 60] getprop 556 ............................. <pVisibleBalloons>
+  [ 63] getparam 1 .............................. <tID>
+  [ 65] pusharglistnoret 2 ...................... <pVisibleBalloons, tID>
+  [ 67] objcall 467 ............................. pVisibleBalloons.deleteProp(tID)
+  [ 70] pushint8 1 .............................. <1>
+  [ 72] pusharglistnoret 1 ...................... <1>
+  [ 74] extcall 28 .............................. return 1
+  [ 76] ret
+end
+
+on createballoonImg me, tText, ttype
+  [  0] pushcons 14 ............................. <"bb2_pwrupbubble.left_">
+  [  2] getparam 2 .............................. <ttype>
+  [  4] joinstr ................................. <"bb2_pwrupbubble.left_" & ttype>
+  [  5] pusharglist 1 ........................... <"bb2_pwrupbubble.left_" & ttype>
+  [  7] extcall 238 ............................. <getmemnum("bb2_pwrupbubble.left_" & ttype)>
+  [  9] setlocal 0 .............................. tLeftImageMemNum = getmemnum("bb2_pwrupbubble.left_" & ttype)
+  [ 11] getlocal 0 .............................. <tLeftImageMemNum>
+  [ 13] pushzero ................................ <0>
+  [ 14] lteq .................................... <tLeftImageMemNum <= 0>
+  [ 15] jmpifz [ 36] ............................ if tLeftImageMemNum <= 0 then
+  [ 18] getparam 0 .............................. <me>
+  [ 20] pushcons 15 ............................. <"Cannot create bubble for powerup type">
+  [ 22] getparam 2 .............................. <ttype>
+  [ 24] joinpadstr .............................. <"Cannot create bubble for powerup type" && ttype>
+  [ 25] pushsymb 546 ............................ <#createballoonImg>
+  [ 28] pusharglist 3 ........................... <me, "Cannot create bubble for powerup type" && ttype, #createballoonImg>
+  [ 30] extcall 173 ............................. <error(me, "Cannot create bubble for powerup type" && ttype, #createballoonImg)>
+  [ 32] pusharglistnoret 1 ...................... <error(me, "Cannot create bubble for powerup type" && ttype, #createballoonImg)>
+  [ 34] extcall 28 .............................. return error(me, "Cannot create bubble for powerup type" && ttype, #createballoonImg)
+  [ 36] getlocal 0 .............................. <tLeftImageMemNum>
+  [ 38] pusharglist 1 ........................... <tLeftImageMemNum>
+  [ 40] extcall 91 .............................. <member(tLeftImageMemNum)>
+  [ 42] setlocal 1 .............................. tLeftMember = member(tLeftImageMemNum)
+  [ 44] getlocal 1 .............................. <tLeftMember>
+  [ 46] getobjprop 44 ........................... <tLeftMember.image>
+  [ 48] setlocal 2 .............................. tLeftImage = tLeftMember.image
+  [ 50] getprop 1265 ............................ <pBalloonWriterId>
+  [ 53] pusharglist 1 ........................... <pBalloonWriterId>
+  [ 55] extcall 855 ............................. <getWriter(pBalloonWriterId)>
+  [ 58] setlocal 3 .............................. tWriter = getWriter(pBalloonWriterId)
+  [ 60] getlocal 3 .............................. <tWriter>
+  [ 62] pushzero ................................ <0>
+  [ 63] eq ...................................... <tWriter = 0>
+  [ 64] jmpifz [ 72] ............................ if tWriter = 0 then
+  [ 67] pushzero ................................ <0>
+  [ 68] pusharglistnoret 1 ...................... <0>
+  [ 70] extcall 28 .............................. return 0
+  [ 72] getlocal 3 .............................. <tWriter>
+  [ 74] getparam 1 .............................. <tText>
+  [ 76] pusharglist 2 ........................... <tWriter, tText>
+  [ 78] objcall 7 ............................... <tWriter.render(tText)>
+  [ 80] setlocal 4 .............................. tTextImg = tWriter.render(tText)
+  [ 82] getlocal 4 .............................. <tTextImg>
+  [ 84] getobjprop 94 ........................... <tTextImg.width>
+  [ 86] pushint8 10 ............................. <10>
+  [ 88] add ..................................... <tTextImg.width + 10>
+  [ 89] setlocal 5 .............................. tTextWidth = tTextImg.width + 10
+  [ 91] getlocal 5 .............................. <tTextWidth>
+  [ 93] getprop 562 ............................. <pMarginH>
+  [ 96] pushint8 2 .............................. <2>
+  [ 98] mul ..................................... <pMarginH * 2>
+  [ 99] add ..................................... <tTextWidth + (pMarginH * 2)>
+  [100] getlocal 1 .............................. <tLeftMember>
+  [102] getchainedprop 97 ....................... <tLeftMember.regPoint>
+  [104] getobjprop 109 .......................... <tLeftMember.regPoint.locH>
+  [106] add ..................................... <tTextWidth + (pMarginH * 2) + tLeftMember.regPoint.locH>
+  [107] setlocal 6 .............................. tWidth = tTextWidth + (pMarginH * 2) + tLeftMember.regPoint.locH
+  [109] getlocal 2 .............................. <tLeftImage>
+  [111] getobjprop 95 ........................... <tLeftImage.height>
+  [113] getlocal 1 .............................. <tLeftMember>
+  [115] getchainedprop 97 ....................... <tLeftMember.regPoint>
+  [117] getobjprop 110 .......................... <tLeftMember.regPoint.locV>
+  [119] add ..................................... <tLeftImage.height + tLeftMember.regPoint.locV>
+  [120] setlocal 7 .............................. tHeight = tLeftImage.height + tLeftMember.regPoint.locV
+  [122] getlocal 6 .............................. <tWidth>
+  [124] getlocal 7 .............................. <tHeight>
+  [126] pushint8 8 .............................. <8>
+  [128] pusharglist 3 ........................... <tWidth, tHeight, 8>
+  [130] extcall 44 .............................. <image(tWidth, tHeight, 8)>
+  [132] setlocal 8 .............................. tNewImg = image(tWidth, tHeight, 8)
+  [134] pushzero ................................ <0>
+  [135] setlocal 9 .............................. tStartPointY = 0
+  [137] getlocal 8 .............................. <tNewImg>
+  [139] getobjprop 95 ........................... <tNewImg.height>
+  [141] setlocal 10 ............................. tEndPointY = tNewImg.height
+  [143] pushzero ................................ <0>
+  [144] setlocal 11 ............................. tStartPointX = 0
+  [146] pushzero ................................ <0>
+  [147] setlocal 12 ............................. tEndPointX = 0
+  [149] pushsymb 267 ............................ <#left>
+  [152] pushsymb 587 ............................ <#middle>
+  [155] pushsymb 588 ............................ <#right>
+  [158] pusharglist 3 ........................... <[#left, #middle, #right]>
+  [160] pushlist ................................ <[#left, #middle, #right]>
+  [161] peek 0
+  [163] pusharglist 1
+  [165] extcall 30
+  [167] pushint8 1
+  [169] peek 0
+  [171] peek 2
+  [173] lteq
+  [174] jmpifz [414] ............................ repeat with i in [#left, #middle, #right]
+  [177] peek 2
+  [179] peek 1
+  [181] pusharglist 2
+  [183] extcall 31
+  [185] setlocal 13
+  [187] getlocal 12 ............................. <tEndPointX>
+  [189] setlocal 11 ............................. tStartPointX = tEndPointX
+  [191] getlocal 13 ............................. <i>
+  [193] peek 0 .................................. case i of
+  [195] pushsymb 267 ............................ <#left>
+  [198] eq
+  [199] jmpifz [223] ............................ (case) #left:
+  [202] pushzero ................................ <0>
+  [203] setlocal 9 .............................. tStartPointY = 0
+  [205] getlocal 12 ............................. <tEndPointX>
+  [207] getlocal 2 .............................. <tLeftImage>
+  [209] getobjprop 94 ........................... <tLeftImage.width>
+  [211] add ..................................... <tEndPointX + tLeftImage.width>
+  [212] setlocal 12 ............................. tEndPointX = tEndPointX + tLeftImage.width
+  [214] getlocal 2 .............................. <tLeftImage>
+  [216] getobjprop 95 ........................... <tLeftImage.height>
+  [218] setlocal 10 ............................. tEndPointY = tLeftImage.height
+  [220] jmp [339]
+  [223] peek 0
+  [225] pushsymb 587 ............................ <#middle>
+  [228] eq
+  [229] jmpifz [287] ............................ (case) #middle:
+  [232] pushint8 6 .............................. <6>
+  [234] getlocal 1 .............................. <tLeftMember>
+  [236] getchainedprop 97 ....................... <tLeftMember.regPoint>
+  [238] getobjprop 110 .......................... <tLeftMember.regPoint.locV>
+  [240] add ..................................... <6 + tLeftMember.regPoint.locV>
+  [241] setlocal 9 .............................. tStartPointY = 6 + tLeftMember.regPoint.locV
+  [243] getlocal 12 ............................. <tEndPointX>
+  [245] getlocal 6 .............................. <tWidth>
+  [247] add ..................................... <tEndPointX + tWidth>
+  [248] getlocal 2 .............................. <tLeftImage>
+  [250] getobjprop 94 ........................... <tLeftImage.width>
+  [252] sub ..................................... <tEndPointX + tWidth - tLeftImage.width>
+  [253] getprop 586 ............................. <pBalloonImg>
+  [256] pushsymb 588 ............................ <#right>
+  [259] pusharglist 2 ........................... <pBalloonImg, #right>
+  [261] objcall 67 .............................. <pBalloonImg.getProp(#right)>
+  [263] getobjprop 94 ........................... <pBalloonImg.getProp(#right).width>
+  [265] sub ..................................... <tEndPointX + tWidth - tLeftImage.width - pBalloonImg.getProp(#right).width>
+  [266] setlocal 12 ............................. tEndPointX = tEndPointX + tWidth - tLeftImage.width - pBalloonImg.getProp(#right).width
+  [268] getprop 586 ............................. <pBalloonImg>
+  [271] getlocal 13 ............................. <i>
+  [273] pusharglist 2 ........................... <pBalloonImg, i>
+  [275] objcall 67 .............................. <pBalloonImg.getProp(i)>
+  [277] getobjprop 95 ........................... <pBalloonImg.getProp(i).height>
+  [279] getlocal 9 .............................. <tStartPointY>
+  [281] add ..................................... <pBalloonImg.getProp(i).height + tStartPointY>
+  [282] setlocal 10 ............................. tEndPointY = pBalloonImg.getProp(i).height + tStartPointY
+  [284] jmp [339]
+  [287] peek 0
+  [289] pushsymb 588 ............................ <#right>
+  [292] eq
+  [293] jmpifz [339] ............................ (case) #right:
+  [296] pushint8 6 .............................. <6>
+  [298] getlocal 1 .............................. <tLeftMember>
+  [300] getchainedprop 97 ....................... <tLeftMember.regPoint>
+  [302] getobjprop 110 .......................... <tLeftMember.regPoint.locV>
+  [304] add ..................................... <6 + tLeftMember.regPoint.locV>
+  [305] setlocal 9 .............................. tStartPointY = 6 + tLeftMember.regPoint.locV
+  [307] getlocal 12 ............................. <tEndPointX>
+  [309] getprop 586 ............................. <pBalloonImg>
+  [312] getlocal 13 ............................. <i>
+  [314] pusharglist 2 ........................... <pBalloonImg, i>
+  [316] objcall 67 .............................. <pBalloonImg.getProp(i)>
+  [318] getobjprop 94 ........................... <pBalloonImg.getProp(i).width>
+  [320] add ..................................... <tEndPointX + pBalloonImg.getProp(i).width>
+  [321] setlocal 12 ............................. tEndPointX = tEndPointX + pBalloonImg.getProp(i).width
+  [323] getprop 586 ............................. <pBalloonImg>
+  [326] getlocal 13 ............................. <i>
+  [328] pusharglist 2 ........................... <pBalloonImg, i>
+  [330] objcall 67 .............................. <pBalloonImg.getProp(i)>
+  [332] getobjprop 95 ........................... <pBalloonImg.getProp(i).height>
+  [334] getlocal 9 .............................. <tStartPointY>
+  [336] add ..................................... <pBalloonImg.getProp(i).height + tStartPointY>
+  [337] setlocal 10 ............................. tEndPointY = pBalloonImg.getProp(i).height + tStartPointY
+  [339] pop 1 ................................... end case
+  [341] getlocal 11 ............................. <tStartPointX>
+  [343] getlocal 9 .............................. <tStartPointY>
+  [345] getlocal 12 ............................. <tEndPointX>
+  [347] getlocal 10 ............................. <tEndPointY>
+  [349] pusharglist 4 ........................... <tStartPointX, tStartPointY, tEndPointX, tEndPointY>
+  [351] extcall 45 .............................. <rect(tStartPointX, tStartPointY, tEndPointX, tEndPointY)>
+  [353] setlocal 14 ............................. tdestrect = rect(tStartPointX, tStartPointY, tEndPointX, tEndPointY)
+  [355] getlocal 13 ............................. <i>
+  [357] pushsymb 267 ............................ <#left>
+  [360] eq ...................................... <i = #left>
+  [361] jmpifz [381] ............................ if i = #left then
+  [364] getlocal 8 .............................. <tNewImg>
+  [366] getlocal 2 .............................. <tLeftImage>
+  [368] getlocal 14 ............................. <tdestrect>
+  [370] getlocal 2 .............................. <tLeftImage>
+  [372] getobjprop 45 ........................... <tLeftImage.rect>
+  [374] pusharglistnoret 4 ...................... <tNewImg, tLeftImage, tdestrect, tLeftImage.rect>
+  [376] objcall 105 ............................. tNewImg.copyPixels(tLeftImage, tdestrect, tLeftImage.rect)
+  [378] jmp [409] ............................... next repeat
+  [381] getlocal 8 .............................. <tNewImg>
+  [383] getprop 586 ............................. <pBalloonImg>
+  [386] getlocal 13 ............................. <i>
+  [388] pusharglist 2 ........................... <pBalloonImg, i>
+  [390] objcall 67 .............................. <pBalloonImg.getProp(i)>
+  [392] getlocal 14 ............................. <tdestrect>
+  [394] getprop 586 ............................. <pBalloonImg>
+  [397] getlocal 13 ............................. <i>
+  [399] pusharglist 2 ........................... <pBalloonImg, i>
+  [401] objcall 67 .............................. <pBalloonImg.getProp(i)>
+  [403] getobjprop 45 ........................... <pBalloonImg.getProp(i).rect>
+  [405] pusharglistnoret 4 ...................... <tNewImg, pBalloonImg.getProp(i), tdestrect, pBalloonImg.getProp(i).rect>
+  [407] objcall 105 ............................. tNewImg.copyPixels(pBalloonImg.getProp(i), tdestrect, pBalloonImg.getProp(i).rect)
+  [409] pushint8 1
+  [411] add
+  [412] endrepeat [169]
+  [414] pop 3
+  [416] getlocal 4 .............................. <tTextImg>
+  [418] getobjprop 45 ........................... <tTextImg.rect>
+  [420] getprop 562 ............................. <pMarginH>
+  [423] getprop 563 ............................. <pMarginV>
+  [426] getlocal 1 .............................. <tLeftMember>
+  [428] getchainedprop 97 ....................... <tLeftMember.regPoint>
+  [430] getobjprop 110 .......................... <tLeftMember.regPoint.locV>
+  [432] add ..................................... <pMarginV + tLeftMember.regPoint.locV>
+  [433] getprop 562 ............................. <pMarginH>
+  [436] getprop 563 ............................. <pMarginV>
+  [439] getlocal 1 .............................. <tLeftMember>
+  [441] getchainedprop 97 ....................... <tLeftMember.regPoint>
+  [443] getobjprop 110 .......................... <tLeftMember.regPoint.locV>
+  [445] add ..................................... <pMarginV + tLeftMember.regPoint.locV>
+  [446] pusharglist 4 ........................... <pMarginH, pMarginV + tLeftMember.regPoint.locV, pMarginH, pMarginV + tLeftMember.regPoint.locV>
+  [448] extcall 45 .............................. <rect(pMarginH, pMarginV + tLeftMember.regPoint.locV, pMarginH, pMarginV + tLeftMember.regPoint.locV)>
+  [450] add ..................................... <tTextImg.rect + rect(pMarginH, pMarginV + tLeftMember.regPoint.locV, pMarginH, pMarginV + tLeftMember.regPoint.locV)>
+  [451] setlocal 14 ............................. tdestrect = tTextImg.rect + rect(pMarginH, pMarginV + tLeftMember.regPoint.locV, pMarginH, pMarginV + tLeftMember.regPoint.locV)
+  [453] getlocal 14 ............................. <tdestrect>
+  [455] getlocal 8 .............................. <tNewImg>
+  [457] getobjprop 94 ........................... <tNewImg.width>
+  [459] pushint8 2 .............................. <2>
+  [461] div ..................................... <tNewImg.width / 2>
+  [462] pushzero ................................ <0>
+  [463] getlocal 8 .............................. <tNewImg>
+  [465] getobjprop 94 ........................... <tNewImg.width>
+  [467] pushint8 2 .............................. <2>
+  [469] div ..................................... <tNewImg.width / 2>
+  [470] pushzero ................................ <0>
+  [471] pusharglist 4 ........................... <tNewImg.width / 2, 0, tNewImg.width / 2, 0>
+  [473] extcall 45 .............................. <rect(tNewImg.width / 2, 0, tNewImg.width / 2, 0)>
+  [475] add ..................................... <tdestrect + rect(tNewImg.width / 2, 0, tNewImg.width / 2, 0)>
+  [476] getlocal 5 .............................. <tTextWidth>
+  [478] pushint8 2 .............................. <2>
+  [480] div ..................................... <tTextWidth / 2>
+  [481] pushzero ................................ <0>
+  [482] getlocal 5 .............................. <tTextWidth>
+  [484] pushint8 2 .............................. <2>
+  [486] div ..................................... <tTextWidth / 2>
+  [487] pushzero ................................ <0>
+  [488] pusharglist 4 ........................... <tTextWidth / 2, 0, tTextWidth / 2, 0>
+  [490] extcall 45 .............................. <rect(tTextWidth / 2, 0, tTextWidth / 2, 0)>
+  [492] sub ..................................... <tdestrect + rect(tNewImg.width / 2, 0, tNewImg.width / 2, 0) - rect(tTextWidth / 2, 0, tTextWidth / 2, 0)>
+  [493] setlocal 14 ............................. tdestrect = tdestrect + rect(tNewImg.width / 2, 0, tNewImg.width / 2, 0) - rect(tTextWidth / 2, 0, tTextWidth / 2, 0)
+  [495] getlocal 8 .............................. <tNewImg>
+  [497] getlocal 4 .............................. <tTextImg>
+  [499] getlocal 14 ............................. <tdestrect>
+  [501] getlocal 4 .............................. <tTextImg>
+  [503] getobjprop 45 ........................... <tTextImg.rect>
+  [505] pusharglistnoret 4 ...................... <tNewImg, tTextImg, tdestrect, tTextImg.rect>
+  [507] objcall 105 ............................. tNewImg.copyPixels(tTextImg, tdestrect, tTextImg.rect)
+  [509] getlocal 8 .............................. <tNewImg>
+  [511] pusharglistnoret 1 ...................... <tNewImg>
+  [513] extcall 28 .............................. return tNewImg
+  [515] ret
+end
+
+on showNewBalloon me
+  [  0] getprop 608 ............................. <pLastMsg>
+  [  3] setlocal 0 .............................. tMsg = pLastMsg
+  [  5] getprop 606 ............................. <pLastBalloonId>
+  [  8] pusharglist 1 ........................... <pLastBalloonId>
+  [ 10] extcall 122 ............................. <voidp(pLastBalloonId)>
+  [ 12] jmpifz [ 19] ............................ if voidp(pLastBalloonId) then
+  [ 15] pusharglistnoret 0 ...................... <>
+  [ 17] extcall 28 .............................. return 
+  [ 19] getprop 557 ............................. <pAvailableBalloons>
+  [ 22] pushint8 1 .............................. <1>
+  [ 24] pusharglist 2 ........................... <pAvailableBalloons, 1>
+  [ 26] objcall 31 .............................. <pAvailableBalloons[1]>
+  [ 28] setlocal 1 .............................. tNewBalloon = pAvailableBalloons[1]
+  [ 30] getprop 556 ............................. <pVisibleBalloons>
+  [ 33] getprop 606 ............................. <pLastBalloonId>
+  [ 36] getlocal 1 .............................. <tNewBalloon>
+  [ 38] pusharglistnoret 3 ...................... <pVisibleBalloons, pLastBalloonId, tNewBalloon>
+  [ 40] objcall 352 ............................. pVisibleBalloons.addProp(pLastBalloonId, tNewBalloon)
+  [ 43] getprop 557 ............................. <pAvailableBalloons>
+  [ 46] getprop 606 ............................. <pLastBalloonId>
+  [ 49] pusharglistnoret 2 ...................... <pAvailableBalloons, pLastBalloonId>
+  [ 51] objcall 467 ............................. pAvailableBalloons.deleteProp(pLastBalloonId)
+  [ 54] getprop 556 ............................. <pVisibleBalloons>
+  [ 57] getprop 606 ............................. <pLastBalloonId>
+  [ 60] pusharglist 2 ........................... <pVisibleBalloons, pLastBalloonId>
+  [ 62] objcall 31 .............................. <pVisibleBalloons[pLastBalloonId]>
+  [ 64] pushsymb 91 ............................. <#member>
+  [ 66] pusharglist 2 ........................... <pVisibleBalloons[pLastBalloonId], #member>
+  [ 68] objcall 306 ............................. <pVisibleBalloons[pLastBalloonId].GET(#member)>
+  [ 71] pusharglist 1 ........................... <pVisibleBalloons[pLastBalloonId].GET(#member)>
+  [ 73] extcall 91 .............................. <member(pVisibleBalloons[pLastBalloonId].GET(#member))>
+  [ 75] setlocal 2 .............................. tmember = member(pVisibleBalloons[pLastBalloonId].GET(#member))
+  [ 77] getprop 556 ............................. <pVisibleBalloons>
+  [ 80] getprop 606 ............................. <pLastBalloonId>
+  [ 83] pusharglist 2 ........................... <pVisibleBalloons, pLastBalloonId>
+  [ 85] objcall 31 .............................. <pVisibleBalloons[pLastBalloonId]>
+  [ 87] pushsymb 611 ............................ <#balloonColor>
+  [ 90] getprop 566 ............................. <pBalloonColor>
+  [ 93] pusharglistnoret 3 ...................... <pVisibleBalloons[pLastBalloonId], #balloonColor, pBalloonColor>
+  [ 95] objcall 388 ............................. pVisibleBalloons[pLastBalloonId].set(#balloonColor, pBalloonColor)
+  [ 98] getparam 0 .............................. <me>
+  [100] getlocal 0 .............................. <tMsg>
+  [102] pushsymb 571 ............................ <#text>
+  [105] pusharglist 2 ........................... <tMsg, #text>
+  [107] objcall 31 .............................. <tMsg[#text]>
+  [109] getlocal 0 .............................. <tMsg>
+  [111] pushsymb 501 ............................ <#type>
+  [114] pusharglist 2 ........................... <tMsg, #type>
+  [116] objcall 31 .............................. <tMsg[#type]>
+  [118] pusharglist 3 ........................... <me, tMsg[#text], tMsg[#type]>
+  [120] objcall 546 ............................. <me.createballoonImg(tMsg[#text], tMsg[#type])>
+  [123] setlocal 3 .............................. tBalloonImage = me.createballoonImg(tMsg[#text], tMsg[#type])
+  [125] getlocal 3 .............................. <tBalloonImage>
+  [127] pushzero ................................ <0>
+  [128] eq ...................................... <tBalloonImage = 0>
+  [129] jmpifz [162] ............................ if tBalloonImage = 0 then
+  [132] getparam 0 .............................. <me>
+  [134] getlocal 0 .............................. <tMsg>
+  [136] pushsymb 197 ............................ <#id>
+  [138] pusharglist 2 ........................... <tMsg, #id>
+  [140] objcall 31 .............................. <tMsg[#id]>
+  [142] pusharglistnoret 2 ...................... <me, tMsg[#id]>
+  [144] objcall 545 ............................. me.removeVisibleBalloon(tMsg[#id])
+  [147] getparam 0 .............................. <me>
+  [149] pushcons 16 ............................. <"No image for balloon.">
+  [151] pushsymb 547 ............................ <#showNewBalloon>
+  [154] pusharglist 3 ........................... <me, "No image for balloon.", #showNewBalloon>
+  [156] extcall 173 ............................. <error(me, "No image for balloon.", #showNewBalloon)>
+  [158] pusharglistnoret 1 ...................... <error(me, "No image for balloon.", #showNewBalloon)>
+  [160] extcall 28 .............................. return error(me, "No image for balloon.", #showNewBalloon)
+  [162] getlocal 2 .............................. <tmember>
+  [164] getlocal 3 .............................. <tBalloonImage>
+  [166] setobjprop 44 ........................... tmember.image = tBalloonImage
+  [168] getlocal 2 .............................. <tmember>
+  [170] getlocal 2 .............................. <tmember>
+  [172] getobjprop 97 ........................... <tmember.regPoint>
+  [174] pushzero ................................ <0>
+  [175] getlocal 2 .............................. <tmember>
+  [177] getchainedprop 44 ....................... <tmember.image>
+  [179] getobjprop 95 ........................... <tmember.image.height>
+  [181] pushint8 2 .............................. <2>
+  [183] div ..................................... <tmember.image.height / 2>
+  [184] pusharglist 2 ........................... <0, tmember.image.height / 2>
+  [186] extcall 96 .............................. <point(0, tmember.image.height / 2)>
+  [188] add ..................................... <tmember.regPoint + point(0, tmember.image.height / 2)>
+  [189] setobjprop 97 ........................... tmember.regPoint = tmember.regPoint + point(0, tmember.image.height / 2)
+  [191] pushcons 17 ............................. <"balloons.leftmargin">
+  [193] pushzero ................................ <0>
+  [194] pusharglist 2 ........................... <"balloons.leftmargin", 0>
+  [196] extcall 552 ............................. <getIntVariable("balloons.leftmargin", 0)>
+  [199] setlocal 4 .............................. pBalloonLeftMarg = getIntVariable("balloons.leftmargin", 0)
+  [201] pushcons 18 ............................. <"balloons.rightmargin">
+  [203] pushint16 720 ........................... <720>
+  [206] pusharglist 2 ........................... <"balloons.rightmargin", 720>
+  [208] extcall 552 ............................. <getIntVariable("balloons.rightmargin", 720)>
+  [211] setlocal 5 .............................. pBalloonRightMarg = getIntVariable("balloons.rightmargin", 720)
+  [213] getlocal 0 .............................. <tMsg>
+  [215] pushsymb 605 ............................ <#location>
+  [218] pusharglist 2 ........................... <tMsg, #location>
+  [220] objcall 31 .............................. <tMsg[#location]>
+  [222] pushint8 1 .............................. <1>
+  [224] pusharglist 2 ........................... <tMsg[#location], 1>
+  [226] objcall 31 .............................. <tMsg[#location][1]>
+  [228] getlocal 2 .............................. <tmember>
+  [230] getchainedprop 44 ....................... <tmember.image>
+  [232] getobjprop 94 ........................... <tmember.image.width>
+  [234] pushint8 2 .............................. <2>
+  [236] div ..................................... <tmember.image.width / 2>
+  [237] add ..................................... <tMsg[#location][1] + (tmember.image.width / 2)>
+  [238] getlocal 5 .............................. <pBalloonRightMarg>
+  [240] gt ...................................... <(tMsg[#location][1] + (tmember.image.width / 2)) > pBalloonRightMarg>
+  [241] jmpifz [261] ............................ if (tMsg[#location][1] + (tmember.image.width / 2)) > pBalloonRightMarg then / else
+  [244] getlocal 5 .............................. <pBalloonRightMarg>
+  [246] getlocal 2 .............................. <tmember>
+  [248] getchainedprop 44 ....................... <tmember.image>
+  [250] getobjprop 94 ........................... <tmember.image.width>
+  [252] pushint8 2 .............................. <2>
+  [254] div ..................................... <tmember.image.width / 2>
+  [255] sub ..................................... <pBalloonRightMarg - (tmember.image.width / 2)>
+  [256] setlocal 6 .............................. tStartH = pBalloonRightMarg - (tmember.image.width / 2)
+  [258] jmp [326]
+  [261] getlocal 0 .............................. <tMsg>
+  [263] pushsymb 605 ............................ <#location>
+  [266] pusharglist 2 ........................... <tMsg, #location>
+  [268] objcall 31 .............................. <tMsg[#location]>
+  [270] pushint8 1 .............................. <1>
+  [272] pusharglist 2 ........................... <tMsg[#location], 1>
+  [274] objcall 31 .............................. <tMsg[#location][1]>
+  [276] getlocal 2 .............................. <tmember>
+  [278] getchainedprop 44 ....................... <tmember.image>
+  [280] getobjprop 94 ........................... <tmember.image.width>
+  [282] pushint8 2 .............................. <2>
+  [284] div ..................................... <tmember.image.width / 2>
+  [285] sub ..................................... <tMsg[#location][1] - (tmember.image.width / 2)>
+  [286] getlocal 4 .............................. <pBalloonLeftMarg>
+  [288] lt ...................................... <(tMsg[#location][1] - (tmember.image.width / 2)) < pBalloonLeftMarg>
+  [289] jmpifz [309] ............................ if (tMsg[#location][1] - (tmember.image.width / 2)) < pBalloonLeftMarg then / else
+  [292] getlocal 4 .............................. <pBalloonLeftMarg>
+  [294] getlocal 2 .............................. <tmember>
+  [296] getchainedprop 44 ....................... <tmember.image>
+  [298] getobjprop 94 ........................... <tmember.image.width>
+  [300] pushint8 2 .............................. <2>
+  [302] div ..................................... <tmember.image.width / 2>
+  [303] add ..................................... <pBalloonLeftMarg + (tmember.image.width / 2)>
+  [304] setlocal 6 .............................. tStartH = pBalloonLeftMarg + (tmember.image.width / 2)
+  [306] jmp [326]
+  [309] getlocal 0 .............................. <tMsg>
+  [311] pushsymb 605 ............................ <#location>
+  [314] pusharglist 2 ........................... <tMsg, #location>
+  [316] objcall 31 .............................. <tMsg[#location]>
+  [318] pushint8 1 .............................. <1>
+  [320] pusharglist 2 ........................... <tMsg[#location], 1>
+  [322] objcall 31 .............................. <tMsg[#location][1]>
+  [324] setlocal 6 .............................. tStartH = tMsg[#location][1]
+  [326] getprop 556 ............................. <pVisibleBalloons>
+  [329] getprop 606 ............................. <pLastBalloonId>
+  [332] pusharglist 2 ........................... <pVisibleBalloons, pLastBalloonId>
+  [334] objcall 31 .............................. <pVisibleBalloons[pLastBalloonId]>
+  [336] pushsymb 112 ............................ <#loc>
+  [338] getlocal 6 .............................. <tStartH>
+  [340] getprop 581 ............................. <pStartV>
+  [343] pusharglist 2 ........................... <tStartH, pStartV>
+  [345] extcall 96 .............................. <point(tStartH, pStartV)>
+  [347] pusharglistnoret 3 ...................... <pVisibleBalloons[pLastBalloonId], #loc, point(tStartH, pStartV)>
+  [349] objcall 388 ............................. pVisibleBalloons[pLastBalloonId].set(#loc, point(tStartH, pStartV))
+  [352] getprop 556 ............................. <pVisibleBalloons>
+  [355] getprop 606 ............................. <pLastBalloonId>
+  [358] pusharglist 2 ........................... <pVisibleBalloons, pLastBalloonId>
+  [360] objcall 31 .............................. <pVisibleBalloons[pLastBalloonId]>
+  [362] pushsymb 651 ............................ <#ownerID>
+  [365] getlocal 0 .............................. <tMsg>
+  [367] pushsymb 197 ............................ <#id>
+  [369] pusharglist 2 ........................... <tMsg, #id>
+  [371] objcall 31 .............................. <tMsg[#id]>
+  [373] pusharglistnoret 3 ...................... <pVisibleBalloons[pLastBalloonId], #ownerID, tMsg[#id]>
+  [375] objcall 388 ............................. pVisibleBalloons[pLastBalloonId].set(#ownerID, tMsg[#id])
+  [378] pushsymb 652 ............................ <#defineBalloon>
+  [381] getprop 556 ............................. <pVisibleBalloons>
+  [384] getprop 606 ............................. <pLastBalloonId>
+  [387] pusharglist 2 ........................... <pVisibleBalloons, pLastBalloonId>
+  [389] objcall 31 .............................. <pVisibleBalloons[pLastBalloonId]>
+  [391] pusharglistnoret 2 ...................... <#defineBalloon, pVisibleBalloons[pLastBalloonId]>
+  [393] extcall 103 ............................. call(#defineBalloon, pVisibleBalloons[pLastBalloonId])
+  [395] ret
+end
+
+on prepare me
+  [  0] getprop 553 ............................. <pState>
+  [  3] pushsymb 614 ............................ <#scroll>
+  [  6] eq ...................................... <pState = #scroll>
+  [  7] jmpifz [233] ............................ if pState = #scroll then
+  [ 10] getprop 555 ............................. <pScrollCounter>
+  [ 13] getprop 564 ............................. <pScrollBy>
+  [ 16] add ..................................... <pScrollCounter + pScrollBy>
+  [ 17] getprop 561 ............................. <pMoveOffsetV>
+  [ 20] lteq .................................... <(pScrollCounter + pScrollBy) <= pMoveOffsetV>
+  [ 21] jmpifz [ 83] ............................ if (pScrollCounter + pScrollBy) <= pMoveOffsetV then / else
+  [ 24] getprop 555 ............................. <pScrollCounter>
+  [ 27] getprop 564 ............................. <pScrollBy>
+  [ 30] add ..................................... <pScrollCounter + pScrollBy>
+  [ 31] setprop 555 ............................. pScrollCounter = pScrollCounter + pScrollBy
+  [ 34] pushsymb 658 ............................ <#UpdateBalloonPos>
+  [ 37] getprop 556 ............................. <pVisibleBalloons>
+  [ 40] getprop 564 ............................. <pScrollBy>
+  [ 43] inv ..................................... <-pScrollBy>
+  [ 44] pusharglistnoret 3 ...................... <#UpdateBalloonPos, pVisibleBalloons, -pScrollBy>
+  [ 46] extcall 103 ............................. call(#UpdateBalloonPos, pVisibleBalloons, -pScrollBy)
+  [ 48] getprop 606 ............................. <pLastBalloonId>
+  [ 51] pusharglist 1 ........................... <pLastBalloonId>
+  [ 53] extcall 122 ............................. <voidp(pLastBalloonId)>
+  [ 55] not ..................................... <not voidp(pLastBalloonId)>
+  [ 56] jmpifz [ 80] ............................ if not voidp(pLastBalloonId) then
+  [ 59] pushsymb 659 ............................ <#OpeningBalloon>
+  [ 62] getprop 596 ............................. <pBalloonPulse>
+  [ 65] getprop 555 ............................. <pScrollCounter>
+  [ 68] inv ..................................... <-pScrollCounter>
+  [ 69] getprop 564 ............................. <pScrollBy>
+  [ 72] pushint8 2 .............................. <2>
+  [ 74] mul ..................................... <pScrollBy * 2>
+  [ 75] mul ..................................... <-pScrollCounter * (pScrollBy * 2)>
+  [ 76] pusharglistnoret 3 ...................... <#OpeningBalloon, pBalloonPulse, -pScrollCounter * (pScrollBy * 2)>
+  [ 78] extcall 103 ............................. call(#OpeningBalloon, pBalloonPulse, -pScrollCounter * (pScrollBy * 2))
+  [ 80] jmp [233]
+  [ 83] getprop 606 ............................. <pLastBalloonId>
+  [ 86] pusharglist 1 ........................... <pLastBalloonId>
+  [ 88] extcall 122 ............................. <voidp(pLastBalloonId)>
+  [ 90] not ..................................... <not voidp(pLastBalloonId)>
+  [ 91] jmpifz [101] ............................ if not voidp(pLastBalloonId) then
+  [ 94] getparam 0 .............................. <me>
+  [ 96] pusharglistnoret 1 ...................... <me>
+  [ 98] objcall 547 ............................. me.showNewBalloon()
+  [101] getparam 0 .............................. <me>
+  [103] pusharglist 1 ........................... <me>
+  [105] objcall 245 ............................. <me.getID()>
+  [107] pusharglistnoret 1 ...................... <me.getID()>
+  [109] extcall 595 ............................. removePrepare(me.getID())
+  [112] pushzero ................................ <0>
+  [113] setprop 555 ............................. pScrollCounter = 0
+  [116] pushsymb 554 ............................ <#normal>
+  [119] setprop 553 ............................. pState = #normal
+  [122] getprop 558 ............................. <pBalloonBuffer>
+  [125] pusharglist 1 ........................... <pBalloonBuffer>
+  [127] objcall 30 .............................. <pBalloonBuffer.count()>
+  [129] pushzero ................................ <0>
+  [130] gt ...................................... <pBalloonBuffer.count() > 0>
+  [131] jmpifz [188] ............................ if pBalloonBuffer.count() > 0 then / else
+  [134] getprop 558 ............................. <pBalloonBuffer>
+  [137] pushint8 1 .............................. <1>
+  [139] pusharglist 2 ........................... <pBalloonBuffer, 1>
+  [141] objcall 31 .............................. <pBalloonBuffer[1]>
+  [143] setlocal 0 .............................. tMsg = pBalloonBuffer[1]
+  [145] getprop 558 ............................. <pBalloonBuffer>
+  [148] pushint8 1 .............................. <1>
+  [150] pusharglistnoret 2 ...................... <pBalloonBuffer, 1>
+  [152] objcall 86 .............................. pBalloonBuffer.deleteAt(1)
+  [154] getparam 0 .............................. <me>
+  [156] getlocal 0 .............................. <tMsg>
+  [158] pushint8 1 .............................. <1>
+  [160] pusharglist 2 ........................... <tMsg, 1>
+  [162] objcall 31 .............................. <tMsg[1]>
+  [164] getlocal 0 .............................. <tMsg>
+  [166] pushint8 2 .............................. <2>
+  [168] pusharglist 2 ........................... <tMsg, 2>
+  [170] objcall 31 .............................. <tMsg[2]>
+  [172] getlocal 0 .............................. <tMsg>
+  [174] pushint8 3 .............................. <3>
+  [176] pusharglist 2 ........................... <tMsg, 3>
+  [178] objcall 31 .............................. <tMsg[3]>
+  [180] pusharglistnoret 4 ...................... <me, tMsg[1], tMsg[2], tMsg[3]>
+  [182] objcall 542 ............................. me.createBalloon(tMsg[1], tMsg[2], tMsg[3])
+  [185] jmp [233]
+  [188] pushsymb 593 ............................ <#bbballoonautoscroll>
+  [191] pusharglist 1 ........................... <#bbballoonautoscroll>
+  [193] extcall 592 ............................. <timeoutExists(#bbballoonautoscroll)>
+  [196] jmpifz [207] ............................ if timeoutExists(#bbballoonautoscroll) then
+  [199] pushsymb 593 ............................ <#bbballoonautoscroll>
+  [202] pusharglistnoret 1 ...................... <#bbballoonautoscroll>
+  [204] extcall 594 ............................. removeTimeout(#bbballoonautoscroll)
+  [207] pushsymb 593 ............................ <#bbballoonautoscroll>
+  [210] getprop 549 ............................. <pAutoScrollTime>
+  [213] pushsymb 548 ............................ <#timeToScrollLines>
+  [216] getparam 0 .............................. <me>
+  [218] pusharglist 1 ........................... <me>
+  [220] objcall 245 ............................. <me.getID()>
+  [222] pusharglist 0 ........................... <>
+  [224] extcall 116 ............................. <VOID>
+  [226] pushint8 1 .............................. <1>
+  [228] pusharglistnoret 6 ...................... <#bbballoonautoscroll, pAutoScrollTime, #timeToScrollLines, me.getID(), VOID, 1>
+  [230] extcall 660 ............................. createTimeout(#bbballoonautoscroll, pAutoScrollTime, #timeToScrollLines, me.getID(), VOID, 1)
+  [233] ret
+end
+
+on timeToScrollLines me
+  [  0] getprop 553 ............................. <pState>
+  [  3] pushsymb 554 ............................ <#normal>
+  [  6] eq ...................................... <pState = #normal>
+  [  7] getprop 556 ............................. <pVisibleBalloons>
+  [ 10] pusharglist 1 ........................... <pVisibleBalloons>
+  [ 12] objcall 30 .............................. <pVisibleBalloons.count()>
+  [ 14] pushzero ................................ <0>
+  [ 15] gt ...................................... <pVisibleBalloons.count() > 0>
+  [ 16] and ..................................... <(pState = #normal) and (pVisibleBalloons.count() > 0)>
+  [ 17] jmpifz [ 48] ............................ if (pState = #normal) and (pVisibleBalloons.count() > 0) then
+  [ 20] pusharglist 0 ........................... <>
+  [ 22] extcall 116 ............................. <VOID>
+  [ 24] setprop 606 ............................. pLastBalloonId = VOID
+  [ 27] pushzero ................................ <0>
+  [ 28] setprop 555 ............................. pScrollCounter = 0
+  [ 31] pushsymb 614 ............................ <#scroll>
+  [ 34] setprop 553 ............................. pState = #scroll
+  [ 37] getparam 0 .............................. <me>
+  [ 39] pusharglist 1 ........................... <me>
+  [ 41] objcall 245 ............................. <me.getID()>
+  [ 43] pusharglistnoret 1 ...................... <me.getID()>
+  [ 45] extcall 615 ............................. receivePrepare(me.getID())
+  [ 48] ret
+end

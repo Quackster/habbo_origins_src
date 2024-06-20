@@ -1,0 +1,345 @@
+property pSprite, pInitialLoc, pDir, pMoveTarget, pMoving, pMoveTime, pMovementTimer, pPixelsPerTimeX, pPixelsPerTimeY, pBoundsX, pBoundsY, pSplashFrameCount, pSplashFrame, pAnimTimeoutMax, pAnimTimeout
+
+on define me, tsprite
+  [  0] getparam 1 .............................. <tsprite>
+  [  2] setprop 141 ............................. pSprite = tsprite
+  [  4] pushint8 4 .............................. <4>
+  [  6] setprop 142 ............................. pSplashFrameCount = 4
+  [  8] getprop 142 ............................. <pSplashFrameCount>
+  [ 10] pusharglist 1 ........................... <pSplashFrameCount>
+  [ 12] extcall 94 .............................. <random(pSplashFrameCount)>
+  [ 14] setprop 143 ............................. pSplashFrame = random(pSplashFrameCount)
+  [ 16] pushint8 4 .............................. <4>
+  [ 18] setprop 144 ............................. pAnimTimeoutMax = 4
+  [ 20] getprop 144 ............................. <pAnimTimeoutMax>
+  [ 22] setprop 145 ............................. pAnimTimeout = pAnimTimeoutMax
+  [ 24] getprop 141 ............................. <pSprite>
+  [ 26] getchainedprop 40 ....................... <pSprite.member>
+  [ 28] getobjprop 146 .......................... <pSprite.member.name>
+  [ 30] setlocal 0 .............................. tMemName = pSprite.member.name
+  [ 32] getmovieprop 147 ........................ <the itemDelimiter>
+  [ 34] setlocal 1 .............................. tDelim = the itemDelimiter
+  [ 36] pushcons 0 .............................. <"_">
+  [ 38] setmovieprop 147 ........................ the itemDelimiter = "_"
+  [ 40] getlocal 0 .............................. <tMemName>
+  [ 42] pushsymb 148 ............................ <#item>
+  [ 44] pushint8 1 .............................. <1>
+  [ 46] pusharglist 3 ........................... <tMemName, #item, 1>
+  [ 48] objcall 45 .............................. <tMemName.item[1]>
+  [ 50] setlocal 2 .............................. tTemp = tMemName.item[1]
+  [ 52] getlocal 2 .............................. <tTemp>
+  [ 54] getlocal 2 .............................. <tTemp>
+  [ 56] getobjprop 151 .......................... <tTemp.length>
+  [ 58] getlocal 2 .............................. <tTemp>
+  [ 60] getobjprop 151 .......................... <tTemp.length>
+  [ 62] pusharglist 3 ........................... <tTemp, tTemp.length, tTemp.length>
+  [ 64] extcall 150 ............................. <chars(tTemp, tTemp.length, tTemp.length)>
+  [ 66] setprop 149 ............................. pDir = chars(tTemp, tTemp.length, tTemp.length)
+  [ 68] getlocal 1 .............................. <tDelim>
+  [ 70] setmovieprop 147 ........................ the itemDelimiter = tDelim
+  [ 72] getparam 1 .............................. <tsprite>
+  [ 74] getobjprop 114 .......................... <tsprite.loc>
+  [ 76] setprop 152 ............................. pInitialLoc = tsprite.loc
+  [ 78] pushint8 8 .............................. <8>
+  [ 80] setlocal 3 .............................. tMoveMargin = 8
+  [ 82] getprop 152 ............................. <pInitialLoc>
+  [ 84] pushint8 1 .............................. <1>
+  [ 86] pusharglist 2 ........................... <pInitialLoc, 1>
+  [ 88] objcall 56 .............................. <pInitialLoc[1]>
+  [ 90] getlocal 3 .............................. <tMoveMargin>
+  [ 92] sub ..................................... <pInitialLoc[1] - tMoveMargin>
+  [ 93] getprop 152 ............................. <pInitialLoc>
+  [ 95] pushint8 1 .............................. <1>
+  [ 97] pusharglist 2 ........................... <pInitialLoc, 1>
+  [ 99] objcall 56 .............................. <pInitialLoc[1]>
+  [101] getlocal 3 .............................. <tMoveMargin>
+  [103] add ..................................... <pInitialLoc[1] + tMoveMargin>
+  [104] pusharglist 2 ........................... <[pInitialLoc[1] - tMoveMargin, pInitialLoc[1] + tMoveMargin]>
+  [106] pushlist ................................ <[pInitialLoc[1] - tMoveMargin, pInitialLoc[1] + tMoveMargin]>
+  [107] setprop 153 ............................. pBoundsX = [pInitialLoc[1] - tMoveMargin, pInitialLoc[1] + tMoveMargin]
+  [109] getprop 152 ............................. <pInitialLoc>
+  [111] pushint8 2 .............................. <2>
+  [113] pusharglist 2 ........................... <pInitialLoc, 2>
+  [115] objcall 56 .............................. <pInitialLoc[2]>
+  [117] getlocal 3 .............................. <tMoveMargin>
+  [119] sub ..................................... <pInitialLoc[2] - tMoveMargin>
+  [120] getprop 152 ............................. <pInitialLoc>
+  [122] pushint8 2 .............................. <2>
+  [124] pusharglist 2 ........................... <pInitialLoc, 2>
+  [126] objcall 56 .............................. <pInitialLoc[2]>
+  [128] getlocal 3 .............................. <tMoveMargin>
+  [130] add ..................................... <pInitialLoc[2] + tMoveMargin>
+  [131] pusharglist 2 ........................... <[pInitialLoc[2] - tMoveMargin, pInitialLoc[2] + tMoveMargin]>
+  [133] pushlist ................................ <[pInitialLoc[2] - tMoveMargin, pInitialLoc[2] + tMoveMargin]>
+  [134] setprop 154 ............................. pBoundsY = [pInitialLoc[2] - tMoveMargin, pInitialLoc[2] + tMoveMargin]
+  [136] getparam 0 .............................. <me>
+  [138] pusharglistnoret 1 ...................... <me>
+  [140] objcall 139 ............................. me.setNewMoveTarget()
+  [142] pushint8 1 .............................. <1>
+  [144] pusharglistnoret 1 ...................... <1>
+  [146] extcall 47 .............................. return 1
+  [148] ret
+end
+
+on setNewMoveTarget me
+  [  0] pushzero ................................ <0>
+  [  1] setprop 159 ............................. pMoving = 0
+  [  3] getprop 153 ............................. <pBoundsX>
+  [  5] pushint8 2 .............................. <2>
+  [  7] pusharglist 2 ........................... <pBoundsX, 2>
+  [  9] objcall 56 .............................. <pBoundsX[2]>
+  [ 11] getprop 153 ............................. <pBoundsX>
+  [ 13] pushint8 1 .............................. <1>
+  [ 15] pusharglist 2 ........................... <pBoundsX, 1>
+  [ 17] objcall 56 .............................. <pBoundsX[1]>
+  [ 19] sub ..................................... <pBoundsX[2] - pBoundsX[1]>
+  [ 20] setlocal 0 .............................. tLimitX = pBoundsX[2] - pBoundsX[1]
+  [ 22] getlocal 0 .............................. <tLimitX>
+  [ 24] pusharglist 1 ........................... <tLimitX>
+  [ 26] extcall 94 .............................. <random(tLimitX)>
+  [ 28] getprop 153 ............................. <pBoundsX>
+  [ 30] pushint8 1 .............................. <1>
+  [ 32] pusharglist 2 ........................... <pBoundsX, 1>
+  [ 34] objcall 56 .............................. <pBoundsX[1]>
+  [ 36] add ..................................... <random(tLimitX) + pBoundsX[1]>
+  [ 37] setlocal 1 .............................. tNewX = random(tLimitX) + pBoundsX[1]
+  [ 39] getprop 154 ............................. <pBoundsY>
+  [ 41] pushint8 2 .............................. <2>
+  [ 43] pusharglist 2 ........................... <pBoundsY, 2>
+  [ 45] objcall 56 .............................. <pBoundsY[2]>
+  [ 47] getprop 154 ............................. <pBoundsY>
+  [ 49] pushint8 1 .............................. <1>
+  [ 51] pusharglist 2 ........................... <pBoundsY, 1>
+  [ 53] objcall 56 .............................. <pBoundsY[1]>
+  [ 55] sub ..................................... <pBoundsY[2] - pBoundsY[1]>
+  [ 56] setlocal 2 .............................. tLimitY = pBoundsY[2] - pBoundsY[1]
+  [ 58] getlocal 2 .............................. <tLimitY>
+  [ 60] pusharglist 1 ........................... <tLimitY>
+  [ 62] extcall 94 .............................. <random(tLimitY)>
+  [ 64] getprop 154 ............................. <pBoundsY>
+  [ 66] pushint8 2 .............................. <2>
+  [ 68] pusharglist 2 ........................... <pBoundsY, 2>
+  [ 70] objcall 56 .............................. <pBoundsY[2]>
+  [ 72] add ..................................... <random(tLimitY) + pBoundsY[2]>
+  [ 73] setlocal 3 .............................. tNewY = random(tLimitY) + pBoundsY[2]
+  [ 75] getlocal 1 .............................. <tNewX>
+  [ 77] getlocal 3 .............................. <tNewY>
+  [ 79] pusharglist 2 ........................... <tNewX, tNewY>
+  [ 81] extcall 113 ............................. <point(tNewX, tNewY)>
+  [ 83] setprop 160 ............................. pMoveTarget = point(tNewX, tNewY)
+  [ 85] getprop 141 ............................. <pSprite>
+  [ 87] getobjprop 114 .......................... <pSprite.loc>
+  [ 89] setprop 152 ............................. pInitialLoc = pSprite.loc
+  [ 91] pushint8 1 .............................. <1>
+  [ 93] pushint8 2 .............................. <2>
+  [ 95] pushint8 3 .............................. <3>
+  [ 97] pushint8 4 .............................. <4>
+  [ 99] pusharglist 4 ........................... <[1, 2, 3, 4]>
+  [101] pushlist ................................ <[1, 2, 3, 4]>
+  [102] setlocal 4 .............................. tDirOptions = [1, 2, 3, 4]
+  [104] getprop 152 ............................. <pInitialLoc>
+  [106] pushint8 1 .............................. <1>
+  [108] pusharglist 2 ........................... <pInitialLoc, 1>
+  [110] objcall 56 .............................. <pInitialLoc[1]>
+  [112] getprop 160 ............................. <pMoveTarget>
+  [114] pushint8 1 .............................. <1>
+  [116] pusharglist 2 ........................... <pMoveTarget, 1>
+  [118] objcall 56 .............................. <pMoveTarget[1]>
+  [120] gt ...................................... <pInitialLoc[1] > pMoveTarget[1]>
+  [121] jmpifz [143] ............................ if pInitialLoc[1] > pMoveTarget[1] then / else
+  [124] getlocal 4 .............................. <tDirOptions>
+  [126] pushint8 2 .............................. <2>
+  [128] pusharglistnoret 2 ...................... <tDirOptions, 2>
+  [130] objcall 161 ............................. tDirOptions.deleteOne(2)
+  [132] getlocal 4 .............................. <tDirOptions>
+  [134] pushint8 4 .............................. <4>
+  [136] pusharglistnoret 2 ...................... <tDirOptions, 4>
+  [138] objcall 161 ............................. tDirOptions.deleteOne(4)
+  [140] jmp [159]
+  [143] getlocal 4 .............................. <tDirOptions>
+  [145] pushint8 1 .............................. <1>
+  [147] pusharglistnoret 2 ...................... <tDirOptions, 1>
+  [149] objcall 161 ............................. tDirOptions.deleteOne(1)
+  [151] getlocal 4 .............................. <tDirOptions>
+  [153] pushint8 3 .............................. <3>
+  [155] pusharglistnoret 2 ...................... <tDirOptions, 3>
+  [157] objcall 161 ............................. tDirOptions.deleteOne(3)
+  [159] getprop 152 ............................. <pInitialLoc>
+  [161] pushint8 2 .............................. <2>
+  [163] pusharglist 2 ........................... <pInitialLoc, 2>
+  [165] objcall 56 .............................. <pInitialLoc[2]>
+  [167] getprop 160 ............................. <pMoveTarget>
+  [169] pushint8 2 .............................. <2>
+  [171] pusharglist 2 ........................... <pMoveTarget, 2>
+  [173] objcall 56 .............................. <pMoveTarget[2]>
+  [175] gt ...................................... <pInitialLoc[2] > pMoveTarget[2]>
+  [176] jmpifz [198] ............................ if pInitialLoc[2] > pMoveTarget[2] then / else
+  [179] getlocal 4 .............................. <tDirOptions>
+  [181] pushint8 1 .............................. <1>
+  [183] pusharglistnoret 2 ...................... <tDirOptions, 1>
+  [185] objcall 161 ............................. tDirOptions.deleteOne(1)
+  [187] getlocal 4 .............................. <tDirOptions>
+  [189] pushint8 2 .............................. <2>
+  [191] pusharglistnoret 2 ...................... <tDirOptions, 2>
+  [193] objcall 161 ............................. tDirOptions.deleteOne(2)
+  [195] jmp [214]
+  [198] getlocal 4 .............................. <tDirOptions>
+  [200] pushint8 3 .............................. <3>
+  [202] pusharglistnoret 2 ...................... <tDirOptions, 3>
+  [204] objcall 161 ............................. tDirOptions.deleteOne(3)
+  [206] getlocal 4 .............................. <tDirOptions>
+  [208] pushint8 4 .............................. <4>
+  [210] pusharglistnoret 2 ...................... <tDirOptions, 4>
+  [212] objcall 161 ............................. tDirOptions.deleteOne(4)
+  [214] getlocal 4 .............................. <tDirOptions>
+  [216] pushint8 1 .............................. <1>
+  [218] pusharglist 2 ........................... <tDirOptions, 1>
+  [220] objcall 56 .............................. <tDirOptions[1]>
+  [222] setprop 149 ............................. pDir = tDirOptions[1]
+  [224] pushint8 50 ............................. <50>
+  [226] pusharglist 1 ........................... <50>
+  [228] extcall 94 .............................. <random(50)>
+  [230] pushint8 50 ............................. <50>
+  [232] add ..................................... <random(50) + 50>
+  [233] setprop 162 ............................. pMoveTime = random(50) + 50
+  [235] pushzero ................................ <0>
+  [236] setprop 163 ............................. pMovementTimer = 0
+  [238] getprop 160 ............................. <pMoveTarget>
+  [240] pushint8 1 .............................. <1>
+  [242] pusharglist 2 ........................... <pMoveTarget, 1>
+  [244] objcall 56 .............................. <pMoveTarget[1]>
+  [246] getprop 152 ............................. <pInitialLoc>
+  [248] pushint8 1 .............................. <1>
+  [250] pusharglist 2 ........................... <pInitialLoc, 1>
+  [252] objcall 56 .............................. <pInitialLoc[1]>
+  [254] sub ..................................... <pMoveTarget[1] - pInitialLoc[1]>
+  [255] setlocal 5 .............................. tMovementDistX = pMoveTarget[1] - pInitialLoc[1]
+  [257] getprop 160 ............................. <pMoveTarget>
+  [259] pushint8 2 .............................. <2>
+  [261] pusharglist 2 ........................... <pMoveTarget, 2>
+  [263] objcall 56 .............................. <pMoveTarget[2]>
+  [265] getprop 152 ............................. <pInitialLoc>
+  [267] pushint8 2 .............................. <2>
+  [269] pusharglist 2 ........................... <pInitialLoc, 2>
+  [271] objcall 56 .............................. <pInitialLoc[2]>
+  [273] sub ..................................... <pMoveTarget[2] - pInitialLoc[2]>
+  [274] setlocal 6 .............................. tMovementDistY = pMoveTarget[2] - pInitialLoc[2]
+  [276] getlocal 5 .............................. <tMovementDistX>
+  [278] pusharglist 1 ........................... <tMovementDistX>
+  [280] extcall 165 ............................. <float(tMovementDistX)>
+  [282] getprop 162 ............................. <pMoveTime>
+  [284] div ..................................... <float(tMovementDistX) / pMoveTime>
+  [285] setprop 164 ............................. pPixelsPerTimeX = float(tMovementDistX) / pMoveTime
+  [287] getlocal 6 .............................. <tMovementDistY>
+  [289] pusharglist 1 ........................... <tMovementDistY>
+  [291] extcall 165 ............................. <float(tMovementDistY)>
+  [293] getprop 162 ............................. <pMoveTime>
+  [295] div ..................................... <float(tMovementDistY) / pMoveTime>
+  [296] setprop 166 ............................. pPixelsPerTimeY = float(tMovementDistY) / pMoveTime
+  [298] getparam 0 .............................. <me>
+  [300] pusharglistnoret 1 ...................... <me>
+  [302] objcall 140 ............................. me.enableMoving()
+  [304] ret
+end
+
+on enableMoving me
+  [  0] pushint8 1 .............................. <1>
+  [  2] setprop 159 ............................. pMoving = 1
+  [  4] ret
+end
+
+on update me
+  [  0] getprop 145 ............................. <pAnimTimeout>
+  [  2] pushint8 1 .............................. <1>
+  [  4] sub ..................................... <pAnimTimeout - 1>
+  [  5] setprop 145 ............................. pAnimTimeout = pAnimTimeout - 1
+  [  7] getprop 145 ............................. <pAnimTimeout>
+  [  9] pushzero ................................ <0>
+  [ 10] lt ...................................... <pAnimTimeout < 0>
+  [ 11] jmpifz [172] ............................ if pAnimTimeout < 0 then
+  [ 14] getprop 144 ............................. <pAnimTimeoutMax>
+  [ 16] setprop 145 ............................. pAnimTimeout = pAnimTimeoutMax
+  [ 18] getprop 143 ............................. <pSplashFrame>
+  [ 20] pushint8 1 .............................. <1>
+  [ 22] add ..................................... <pSplashFrame + 1>
+  [ 23] setprop 143 ............................. pSplashFrame = pSplashFrame + 1
+  [ 25] getprop 143 ............................. <pSplashFrame>
+  [ 27] getprop 142 ............................. <pSplashFrameCount>
+  [ 29] gt ...................................... <pSplashFrame > pSplashFrameCount>
+  [ 30] jmpifz [ 37] ............................ if pSplashFrame > pSplashFrameCount then
+  [ 33] pushint8 1 .............................. <1>
+  [ 35] setprop 143 ............................. pSplashFrame = 1
+  [ 37] pushcons 1 .............................. <"duck">
+  [ 39] getprop 149 ............................. <pDir>
+  [ 41] joinstr ................................. <"duck" & pDir>
+  [ 42] pushcons 2 .............................. <"_a_0_0_">
+  [ 44] joinstr ................................. <"duck" & pDir & "_a_0_0_">
+  [ 45] getprop 143 ............................. <pSplashFrame>
+  [ 47] joinstr ................................. <"duck" & pDir & "_a_0_0_" & pSplashFrame>
+  [ 48] setlocal 0 .............................. tMemberName = "duck" & pDir & "_a_0_0_" & pSplashFrame
+  [ 50] getlocal 0 .............................. <tMemberName>
+  [ 52] pusharglist 1 ........................... <tMemberName>
+  [ 54] extcall 41 .............................. <getmemnum(tMemberName)>
+  [ 56] pusharglist 1 ........................... <getmemnum(tMemberName)>
+  [ 58] extcall 40 .............................. <member(getmemnum(tMemberName))>
+  [ 60] setlocal 1 .............................. tMem = member(getmemnum(tMemberName))
+  [ 62] getprop 141 ............................. <pSprite>
+  [ 64] getlocal 1 .............................. <tMem>
+  [ 66] setobjprop 40 ........................... pSprite.member = tMem
+  [ 68] getprop 141 ............................. <pSprite>
+  [ 70] getlocal 1 .............................. <tMem>
+  [ 72] getobjprop 80 ........................... <tMem.width>
+  [ 74] setobjprop 80 ........................... pSprite.width = tMem.width
+  [ 76] getprop 141 ............................. <pSprite>
+  [ 78] getlocal 1 .............................. <tMem>
+  [ 80] getobjprop 111 .......................... <tMem.height>
+  [ 82] setobjprop 111 .......................... pSprite.height = tMem.height
+  [ 84] getprop 159 ............................. <pMoving>
+  [ 86] not ..................................... <not pMoving>
+  [ 87] jmpifz [ 95] ............................ if not pMoving then
+  [ 90] pushzero ................................ <0>
+  [ 91] pusharglistnoret 1 ...................... <0>
+  [ 93] extcall 47 .............................. return 0
+  [ 95] getprop 163 ............................. <pMovementTimer>
+  [ 97] pushint8 1 .............................. <1>
+  [ 99] add ..................................... <pMovementTimer + 1>
+  [100] setprop 163 ............................. pMovementTimer = pMovementTimer + 1
+  [102] getprop 152 ............................. <pInitialLoc>
+  [104] pushint8 1 .............................. <1>
+  [106] pusharglist 2 ........................... <pInitialLoc, 1>
+  [108] objcall 56 .............................. <pInitialLoc[1]>
+  [110] getprop 163 ............................. <pMovementTimer>
+  [112] getprop 164 ............................. <pPixelsPerTimeX>
+  [114] mul ..................................... <pMovementTimer * pPixelsPerTimeX>
+  [115] add ..................................... <pInitialLoc[1] + (pMovementTimer * pPixelsPerTimeX)>
+  [116] setlocal 2 .............................. tCurrX = pInitialLoc[1] + (pMovementTimer * pPixelsPerTimeX)
+  [118] getprop 152 ............................. <pInitialLoc>
+  [120] pushint8 2 .............................. <2>
+  [122] pusharglist 2 ........................... <pInitialLoc, 2>
+  [124] objcall 56 .............................. <pInitialLoc[2]>
+  [126] getprop 163 ............................. <pMovementTimer>
+  [128] getprop 166 ............................. <pPixelsPerTimeY>
+  [130] mul ..................................... <pMovementTimer * pPixelsPerTimeY>
+  [131] add ..................................... <pInitialLoc[2] + (pMovementTimer * pPixelsPerTimeY)>
+  [132] setlocal 3 .............................. tCurrY = pInitialLoc[2] + (pMovementTimer * pPixelsPerTimeY)
+  [134] getlocal 2 .............................. <tCurrX>
+  [136] pusharglist 1 ........................... <tCurrX>
+  [138] extcall 60 .............................. <integer(tCurrX)>
+  [140] getlocal 3 .............................. <tCurrY>
+  [142] pusharglist 1 ........................... <tCurrY>
+  [144] extcall 60 .............................. <integer(tCurrY)>
+  [146] pusharglist 2 ........................... <integer(tCurrX), integer(tCurrY)>
+  [148] extcall 113 ............................. <point(integer(tCurrX), integer(tCurrY))>
+  [150] setlocal 4 .............................. tloc = point(integer(tCurrX), integer(tCurrY))
+  [152] getprop 141 ............................. <pSprite>
+  [154] getlocal 4 .............................. <tloc>
+  [156] setobjprop 114 .......................... pSprite.loc = tloc
+  [158] getprop 163 ............................. <pMovementTimer>
+  [160] getprop 162 ............................. <pMoveTime>
+  [162] gt ...................................... <pMovementTimer > pMoveTime>
+  [163] jmpifz [172] ............................ if pMovementTimer > pMoveTime then
+  [166] getparam 0 .............................. <me>
+  [168] pusharglistnoret 1 ...................... <me>
+  [170] objcall 139 ............................. me.setNewMoveTarget()
+  [172] ret
+end

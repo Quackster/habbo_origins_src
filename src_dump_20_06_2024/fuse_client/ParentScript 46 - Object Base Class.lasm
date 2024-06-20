@@ -1,0 +1,236 @@
+property id, valid, delays
+
+on construct me
+  [  0] pushint8 1 .............................. <1>
+  [  2] setprop 660 ............................. valid = 1
+  [  5] pusharglist 0 ........................... <[:]>
+  [  7] pushproplist ............................ <[:]>
+  [  8] setprop 661 ............................. delays = [:]
+  [ 11] pushint8 1 .............................. <1>
+  [ 13] pusharglistnoret 1 ...................... <1>
+  [ 15] extcall 25 .............................. return 1
+  [ 17] ret
+end
+
+on deconstruct me
+  [  0] getprop 661 ............................. <delays>
+  [  3] pusharglist 1 ........................... <delays>
+  [  5] extcall 22 .............................. <count(delays)>
+  [  7] pushzero ................................ <0>
+  [  8] gt ...................................... <count(delays) > 0>
+  [  9] jmpifz [ 57] ............................ if count(delays) > 0 then
+  [ 12] pushint8 1 .............................. <1>
+  [ 14] setlocal 0
+  [ 16] getlocal 0
+  [ 18] getprop 661 ............................. <delays>
+  [ 21] pusharglist 1 ........................... <delays>
+  [ 23] extcall 22 .............................. <count(delays)>
+  [ 25] lteq
+  [ 26] jmpifz [ 57] ............................ repeat with i = 1 to count(delays)
+  [ 29] getprop 661 ............................. <delays>
+  [ 32] getlocal 0 .............................. <i>
+  [ 34] pusharglist 2 ........................... <delays, i>
+  [ 36] objcall 23 .............................. <delays.getPropAt(i)>
+  [ 38] pusharglist 1 ........................... <delays.getPropAt(i)>
+  [ 40] extcall 663 ............................. <timeout(delays.getPropAt(i))>
+  [ 43] pusharglistnoret 1 ...................... <timeout(delays.getPropAt(i))>
+  [ 45] objcall 647 ............................. timeout(delays.getPropAt(i)).forget()
+  [ 48] pushint8 1
+  [ 50] getlocal 0
+  [ 52] add
+  [ 53] setlocal 0
+  [ 55] endrepeat [ 16]
+  [ 57] pusharglist 0 ........................... <[:]>
+  [ 59] pushproplist ............................ <[:]>
+  [ 60] setprop 661 ............................. delays = [:]
+  [ 63] pushint8 1 .............................. <1>
+  [ 65] pusharglistnoret 1 ...................... <1>
+  [ 67] extcall 25 .............................. return 1
+  [ 69] ret
+end
+
+on setID me, tid
+  [  0] getparam 0 .............................. <me>
+  [  2] getobjprop 34 ........................... <me.id>
+  [  4] pusharglist 1 ........................... <me.id>
+  [  6] extcall 20 .............................. <voidp(me.id)>
+  [  8] jmpifz [ 18] ............................ if voidp(me.id) then / else
+  [ 11] getparam 1 .............................. <tid>
+  [ 13] setprop 34 .............................. id = tid
+  [ 15] jmp [ 42]
+  [ 18] getparam 0 .............................. <me>
+  [ 20] pushcons 0 .............................. <"Attempted to redefine object's ID:">
+  [ 22] pushcons 1 .............................. <RETURN>
+  [ 24] joinstr ................................. <"Attempted to redefine object's ID:" & RETURN>
+  [ 25] getparam 0 .............................. <me>
+  [ 27] getobjprop 34 ........................... <me.id>
+  [ 29] joinstr ................................. <"Attempted to redefine object's ID:" & RETURN & me.id>
+  [ 30] pushcons 2 .............................. <"->">
+  [ 32] joinpadstr .............................. <"Attempted to redefine object's ID:" & RETURN & me.id && "->">
+  [ 33] getparam 1 .............................. <tid>
+  [ 35] joinpadstr .............................. <"Attempted to redefine object's ID:" & RETURN & me.id && "->" && tid>
+  [ 36] pushsymb 4 .............................. <#setID>
+  [ 38] pusharglistnoret 3 ...................... <me, "Attempted to redefine object's ID:" & RETURN & me.id && "->" && tid, #setID>
+  [ 40] extcall 39 .............................. error(me, "Attempted to redefine object's ID:" & RETURN & me.id && "->" && tid, #setID)
+  [ 42] ret
+end
+
+on getID me
+  [  0] getprop 34 .............................. <id>
+  [  2] pusharglistnoret 1 ...................... <id>
+  [  4] extcall 25 .............................. return id
+  [  6] ret
+end
+
+on delay me, tTime, tMethod, tArgument
+  [  0] getparam 1 .............................. <tTime>
+  [  2] pusharglist 1 ........................... <tTime>
+  [  4] extcall 674 ............................. <integerp(tTime)>
+  [  7] not ..................................... <not integerp(tTime)>
+  [  8] jmpifz [ 29] ............................ if not integerp(tTime) then
+  [ 11] getparam 0 .............................. <me>
+  [ 13] pushcons 3 .............................. <"Integer expected:">
+  [ 15] getparam 1 .............................. <tTime>
+  [ 17] joinpadstr .............................. <"Integer expected:" && tTime>
+  [ 18] pushsymb 541 ............................ <#delay>
+  [ 21] pusharglist 3 ........................... <me, "Integer expected:" && tTime, #delay>
+  [ 23] extcall 39 .............................. <error(me, "Integer expected:" && tTime, #delay)>
+  [ 25] pusharglistnoret 1 ...................... <error(me, "Integer expected:" && tTime, #delay)>
+  [ 27] extcall 25 .............................. return error(me, "Integer expected:" && tTime, #delay)
+  [ 29] getparam 2 .............................. <tMethod>
+  [ 31] pusharglist 1 ........................... <tMethod>
+  [ 33] extcall 46 .............................. <symbolp(tMethod)>
+  [ 35] not ..................................... <not symbolp(tMethod)>
+  [ 36] jmpifz [ 57] ............................ if not symbolp(tMethod) then
+  [ 39] getparam 0 .............................. <me>
+  [ 41] pushcons 4 .............................. <"Symbol expected:">
+  [ 43] getparam 2 .............................. <tMethod>
+  [ 45] joinpadstr .............................. <"Symbol expected:" && tMethod>
+  [ 46] pushsymb 541 ............................ <#delay>
+  [ 49] pusharglist 3 ........................... <me, "Symbol expected:" && tMethod, #delay>
+  [ 51] extcall 39 .............................. <error(me, "Symbol expected:" && tMethod, #delay)>
+  [ 53] pusharglistnoret 1 ...................... <error(me, "Symbol expected:" && tMethod, #delay)>
+  [ 55] extcall 25 .............................. return error(me, "Symbol expected:" && tMethod, #delay)
+  [ 57] pushcons 5 .............................. <"Delay">
+  [ 59] getparam 0 .............................. <me>
+  [ 61] pusharglist 1 ........................... <me>
+  [ 63] objcall 3 ............................... <me.getID()>
+  [ 65] joinpadstr .............................. <"Delay" && me.getID()>
+  [ 66] getmovieprop 664 ........................ <the milliSeconds>
+  [ 69] joinpadstr .............................. <"Delay" && me.getID() && the milliSeconds>
+  [ 70] setlocal 0 .............................. tUniqueId = "Delay" && me.getID() && the milliSeconds
+  [ 72] getlocal 0 .............................. <tUniqueId>
+  [ 74] pusharglist 1 ........................... <tUniqueId>
+  [ 76] extcall 663 ............................. <timeout(tUniqueId)>
+  [ 79] getparam 1 .............................. <tTime>
+  [ 81] pushsymb 1056 ........................... <#executeDelay>
+  [ 84] getparam 0 .............................. <me>
+  [ 86] pusharglistnoret 4 ...................... <timeout(tUniqueId), tTime, #executeDelay, me>
+  [ 88] objcall 116 ............................. timeout(tUniqueId).new(tTime, #executeDelay, me)
+  [ 90] pushsymb 760 ............................ <#method>
+  [ 93] getparam 2 .............................. <tMethod>
+  [ 95] pushsymb 762 ............................ <#argument>
+  [ 98] getparam 3 .............................. <tArgument>
+  [100] pusharglist 4 ........................... <[#method: tMethod, #argument: tArgument]>
+  [102] pushproplist ............................ <[#method: tMethod, #argument: tArgument]>
+  [103] setlocal 1 .............................. tList = [#method: tMethod, #argument: tArgument]
+  [105] getparam 0 .............................. <me>
+  [107] pushsymb 661 ............................ <#delays>
+  [110] getlocal 0 .............................. <tUniqueId>
+  [112] getlocal 1 .............................. <tList>
+  [114] pusharglistnoret 4 ...................... <me, #delays, tUniqueId, tList>
+  [116] objcall 882 ............................. me.delays[tUniqueId] = tList
+  [119] getlocal 0 .............................. <tUniqueId>
+  [121] pusharglistnoret 1 ...................... <tUniqueId>
+  [123] extcall 25 .............................. return tUniqueId
+  [125] ret
+end
+
+on cancel me, tDelayID
+  [  0] getparam 0 .............................. <me>
+  [  2] pushsymb 661 ............................ <#delays>
+  [  5] getparam 1 .............................. <tDelayID>
+  [  7] pusharglist 3 ........................... <me, #delays, tDelayID>
+  [  9] objcall 285 ............................. <me.delays[tDelayID]>
+  [ 12] pusharglist 1 ........................... <me.delays[tDelayID]>
+  [ 14] extcall 20 .............................. <voidp(me.delays[tDelayID])>
+  [ 16] jmpifz [ 24] ............................ if voidp(me.delays[tDelayID]) then
+  [ 19] pushzero ................................ <0>
+  [ 20] pusharglistnoret 1 ...................... <0>
+  [ 22] extcall 25 .............................. return 0
+  [ 24] getparam 1 .............................. <tDelayID>
+  [ 26] pusharglist 1 ........................... <tDelayID>
+  [ 28] extcall 663 ............................. <timeout(tDelayID)>
+  [ 31] pusharglistnoret 1 ...................... <timeout(tDelayID)>
+  [ 33] objcall 647 ............................. timeout(tDelayID).forget()
+  [ 36] getparam 0 .............................. <me>
+  [ 38] getchainedprop 661 ...................... <me.delays>
+  [ 41] getparam 1 .............................. <tDelayID>
+  [ 43] pusharglist 2 ........................... <me.delays, tDelayID>
+  [ 45] objcall 652 ............................. <me.delays.deleteProp(tDelayID)>
+  [ 48] pusharglistnoret 1 ...................... <me.delays.deleteProp(tDelayID)>
+  [ 50] extcall 25 .............................. return me.delays.deleteProp(tDelayID)
+  [ 52] ret
+end
+
+on getRefCount me
+  [  0] pushint8 1 .............................. <1>
+  [  2] pusharglist 1 ........................... <1>
+  [  4] extcall 121 ............................. <param(1)>
+  [  6] pusharglist 1 ........................... <param(1)>
+  [  8] extcall 585 ............................. <string(param(1))>
+  [ 11] pushsymb 284 ............................ <#word>
+  [ 14] pushint8 1 .............................. <1>
+  [ 16] pusharglist 1 ........................... <1>
+  [ 18] extcall 121 ............................. <param(1)>
+  [ 20] pusharglist 1 ........................... <param(1)>
+  [ 22] extcall 585 ............................. <string(param(1))>
+  [ 25] pushsymb 284 ............................ <#word>
+  [ 28] pusharglist 2 ........................... <string(param(1)), #word>
+  [ 30] objcall 22 .............................. <string(param(1)).word.count>
+  [ 32] pushint8 1 .............................. <1>
+  [ 34] sub ..................................... <string(param(1)).word.count - 1>
+  [ 35] pusharglist 3 ........................... <string(param(1)), #word, string(param(1)).word.count - 1>
+  [ 37] objcall 285 ............................. <string(param(1)).word[string(param(1)).word.count - 1]>
+  [ 40] pusharglist 1 ........................... <string(param(1)).word[string(param(1)).word.count - 1]>
+  [ 42] extcall 915 ............................. <integer(string(param(1)).word[string(param(1)).word.count - 1])>
+  [ 45] pushint8 3 .............................. <3>
+  [ 47] sub ..................................... <integer(string(param(1)).word[string(param(1)).word.count - 1]) - 3>
+  [ 48] pusharglistnoret 1 ...................... <integer(string(param(1)).word[string(param(1)).word.count - 1]) - 3>
+  [ 50] extcall 25 .............................. return integer(string(param(1)).word[string(param(1)).word.count - 1]) - 3
+  [ 52] ret
+end
+
+on print me
+  [  0] getparam 0 .............................. <me>
+  [  2] pusharglistnoret 1 ...................... <me>
+  [  4] extcall 635 ............................. put me
+  [  7] ret
+end
+
+on executeDelay me, tTimeout
+  [  0] getparam 1 .............................. <tTimeout>
+  [  2] getobjprop 718 .......................... <tTimeout.name>
+  [  5] setlocal 0 .............................. tid = tTimeout.name
+  [  7] getprop 661 ............................. <delays>
+  [ 10] getlocal 0 .............................. <tid>
+  [ 12] pusharglist 2 ........................... <delays, tid>
+  [ 14] objcall 54 .............................. <delays[tid]>
+  [ 16] setlocal 1 .............................. tTask = delays[tid]
+  [ 18] getparam 0 .............................. <me>
+  [ 20] getlocal 0 .............................. <tid>
+  [ 22] pusharglistnoret 2 ...................... <me, tid>
+  [ 24] objcall 540 ............................. me.cancel(tid)
+  [ 27] getlocal 1 .............................. <tTask>
+  [ 29] pushsymb 760 ............................ <#method>
+  [ 32] pusharglist 2 ........................... <tTask, #method>
+  [ 34] objcall 54 .............................. <tTask[#method]>
+  [ 36] getparam 0 .............................. <me>
+  [ 38] getlocal 1 .............................. <tTask>
+  [ 40] pushsymb 762 ............................ <#argument>
+  [ 43] pusharglist 2 ........................... <tTask, #argument>
+  [ 45] objcall 54 .............................. <tTask[#argument]>
+  [ 47] pusharglistnoret 3 ...................... <tTask[#method], me, tTask[#argument]>
+  [ 49] extcall 68 .............................. call(tTask[#method], me, tTask[#argument])
+  [ 51] ret
+end

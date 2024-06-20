@@ -1,0 +1,663 @@
+property pData, pimage, pwidth, pheight, pClickAreas
+
+on construct me
+  [  0] pusharglist 0 ........................... <>
+  [  2] extcall 55 .............................. <VOID>
+  [  4] setprop 492 ............................. pData = VOID
+  [  7] pusharglist 0 ........................... <>
+  [  9] extcall 55 .............................. <VOID>
+  [ 11] setprop 16 .............................. pimage = VOID
+  [ 13] pushzero ................................ <0>
+  [ 14] setprop 40 .............................. pwidth = 0
+  [ 16] pushzero ................................ <0>
+  [ 17] setprop 696 ............................. pheight = 0
+  [ 20] pusharglist 0 ........................... <[]>
+  [ 22] pushlist ................................ <[]>
+  [ 23] setprop 738 ............................. pClickAreas = []
+  [ 26] pushint16 600 ........................... <600>
+  [ 29] pusharglistnoret 1 ...................... <600>
+  [ 31] extcall 1142 ............................ sendProcessTracking(600)
+  [ 34] ret
+end
+
+on deconstruct me
+  [  0] pusharglist 0 ........................... <>
+  [  2] extcall 55 .............................. <VOID>
+  [  4] setprop 492 ............................. pData = VOID
+  [  7] ret
+end
+
+on feedData me, tdata
+  [  0] pushint16 601 ........................... <601>
+  [  3] pusharglistnoret 1 ...................... <601>
+  [  5] extcall 1142 ............................ sendProcessTracking(601)
+  [  8] getparam 1 .............................. <tdata>
+  [ 10] pushzero ................................ <0>
+  [ 11] nteq .................................... <tdata <> 0>
+  [ 12] getparam 1 .............................. <tdata>
+  [ 14] pusharglist 1 ........................... <tdata>
+  [ 16] extcall 78 .............................. <voidp(tdata)>
+  [ 18] not ..................................... <not voidp(tdata)>
+  [ 19] and ..................................... <(tdata <> 0) and not voidp(tdata)>
+  [ 20] jmpifz [ 62] ............................ if (tdata <> 0) and not voidp(tdata) then
+  [ 23] getparam 1 .............................. <tdata>
+  [ 25] setprop 492 ............................. pData = tdata
+  [ 28] getprop 492 ............................. <pData>
+  [ 31] pusharglist 1 ........................... <pData>
+  [ 33] objcall 722 ............................. <pData.getRootNode()>
+  [ 36] setlocal 0 .............................. tRootNode = pData.getRootNode()
+  [ 38] getlocal 0 .............................. <tRootNode>
+  [ 40] pushzero ................................ <0>
+  [ 41] nteq .................................... <tRootNode <> 0>
+  [ 42] getlocal 0 .............................. <tRootNode>
+  [ 44] pusharglist 1 ........................... <tRootNode>
+  [ 46] extcall 78 .............................. <voidp(tRootNode)>
+  [ 48] not ..................................... <not voidp(tRootNode)>
+  [ 49] and ..................................... <(tRootNode <> 0) and not voidp(tRootNode)>
+  [ 50] jmpifz [ 62] ............................ if (tRootNode <> 0) and not voidp(tRootNode) then
+  [ 53] getlocal 0 .............................. <tRootNode>
+  [ 55] pushsymb 739 ............................ <#open>
+  [ 58] pusharglistnoret 2 ...................... <tRootNode, #open>
+  [ 60] objcall 80 .............................. tRootNode.setState(#open)
+  [ 62] pushint16 602 ........................... <602>
+  [ 65] pusharglistnoret 1 ...................... <602>
+  [ 67] extcall 1142 ............................ sendProcessTracking(602)
+  [ 70] ret
+end
+
+on define me, tProps
+  [  0] getparam 1 .............................. <tProps>
+  [  2] pushsymb 33 ............................. <#width>
+  [  4] pusharglist 2 ........................... <tProps, #width>
+  [  6] objcall 41 .............................. <tProps[#width]>
+  [  8] setprop 40 .............................. pwidth = tProps[#width]
+  [ 10] getparam 1 .............................. <tProps>
+  [ 12] pushsymb 34 ............................. <#height>
+  [ 14] pusharglist 2 ........................... <tProps, #height>
+  [ 16] objcall 41 .............................. <tProps[#height]>
+  [ 18] setprop 696 ............................. pheight = tProps[#height]
+  [ 21] pusharglist 0 ........................... <[]>
+  [ 23] pushlist ................................ <[]>
+  [ 24] setprop 738 ............................. pClickAreas = []
+  [ 27] ret
+end
+
+on getImage me
+  [  0] getprop 16 .............................. <pimage>
+  [  2] pusharglist 1 ........................... <pimage>
+  [  4] extcall 78 .............................. <voidp(pimage)>
+  [  6] jmpifz [ 16] ............................ if voidp(pimage) then
+  [  9] getparam 0 .............................. <me>
+  [ 11] pusharglistnoret 1 ...................... <me>
+  [ 13] objcall 735 ............................. me.render()
+  [ 16] getprop 16 .............................. <pimage>
+  [ 18] pusharglistnoret 1 ...................... <pimage>
+  [ 20] extcall 37 .............................. return pimage
+  [ 22] ret
+end
+
+on appendRenderToImage me, tImageDest, tImageSrc, tRectDest, tRectSrc
+  [  0] getparam 1 .............................. <tImageDest>
+  [  2] getobjprop 34 ........................... <tImageDest.height>
+  [  4] getparam 3 .............................. <tRectDest>
+  [  6] getobjprop 740 .......................... <tRectDest.bottom>
+  [  9] gt ...................................... <tImageDest.height > tRectDest.bottom>
+  [ 10] jmpifz [ 41] ............................ if tImageDest.height > tRectDest.bottom then / else
+  [ 13] getparam 1 .............................. <tImageDest>
+  [ 15] getparam 2 .............................. <tImageSrc>
+  [ 17] getparam 3 .............................. <tRectDest>
+  [ 19] getparam 4 .............................. <tRectSrc>
+  [ 21] pushsymb 76 ............................. <#useFastQuads>
+  [ 23] pushint8 1 .............................. <1>
+  [ 25] pusharglist 2 ........................... <[#useFastQuads: 1]>
+  [ 27] pushproplist ............................ <[#useFastQuads: 1]>
+  [ 28] pusharglistnoret 5 ...................... <tImageDest, tImageSrc, tRectDest, tRectSrc, [#useFastQuads: 1]>
+  [ 30] objcall 77 .............................. tImageDest.copyPixels(tImageSrc, tRectDest, tRectSrc, [#useFastQuads: 1])
+  [ 32] getparam 1 .............................. <tImageDest>
+  [ 34] pusharglistnoret 1 ...................... <tImageDest>
+  [ 36] extcall 37 .............................. return tImageDest
+  [ 38] jmp [109]
+  [ 41] getparam 1 .............................. <tImageDest>
+  [ 43] getobjprop 33 ........................... <tImageDest.width>
+  [ 45] getparam 3 .............................. <tRectDest>
+  [ 47] getobjprop 740 .......................... <tRectDest.bottom>
+  [ 50] getparam 1 .............................. <tImageDest>
+  [ 52] getobjprop 633 .......................... <tImageDest.depth>
+  [ 55] pusharglist 3 ........................... <tImageDest.width, tRectDest.bottom, tImageDest.depth>
+  [ 57] extcall 17 .............................. <image(tImageDest.width, tRectDest.bottom, tImageDest.depth)>
+  [ 59] setlocal 0 .............................. tImageNew = image(tImageDest.width, tRectDest.bottom, tImageDest.depth)
+  [ 61] getlocal 0 .............................. <tImageNew>
+  [ 63] getparam 1 .............................. <tImageDest>
+  [ 65] getparam 1 .............................. <tImageDest>
+  [ 67] getobjprop 69 ........................... <tImageDest.rect>
+  [ 69] getparam 1 .............................. <tImageDest>
+  [ 71] getobjprop 69 ........................... <tImageDest.rect>
+  [ 73] pushsymb 76 ............................. <#useFastQuads>
+  [ 75] pushint8 1 .............................. <1>
+  [ 77] pusharglist 2 ........................... <[#useFastQuads: 1]>
+  [ 79] pushproplist ............................ <[#useFastQuads: 1]>
+  [ 80] pusharglistnoret 5 ...................... <tImageNew, tImageDest, tImageDest.rect, tImageDest.rect, [#useFastQuads: 1]>
+  [ 82] objcall 77 .............................. tImageNew.copyPixels(tImageDest, tImageDest.rect, tImageDest.rect, [#useFastQuads: 1])
+  [ 84] getlocal 0 .............................. <tImageNew>
+  [ 86] getparam 2 .............................. <tImageSrc>
+  [ 88] getparam 3 .............................. <tRectDest>
+  [ 90] getparam 4 .............................. <tRectSrc>
+  [ 92] pushsymb 76 ............................. <#useFastQuads>
+  [ 94] pushint8 1 .............................. <1>
+  [ 96] pusharglist 2 ........................... <[#useFastQuads: 1]>
+  [ 98] pushproplist ............................ <[#useFastQuads: 1]>
+  [ 99] pusharglistnoret 5 ...................... <tImageNew, tImageSrc, tRectDest, tRectSrc, [#useFastQuads: 1]>
+  [101] objcall 77 .............................. tImageNew.copyPixels(tImageSrc, tRectDest, tRectSrc, [#useFastQuads: 1])
+  [103] getlocal 0 .............................. <tImageNew>
+  [105] pusharglistnoret 1 ...................... <tImageNew>
+  [107] extcall 37 .............................. return tImageNew
+  [109] ret
+end
+
+on renderNode me, tNode, tOffsetY
+  [  0] pushint16 603 ........................... <603>
+  [  3] pusharglistnoret 1 ...................... <603>
+  [  5] extcall 1142 ............................ sendProcessTracking(603)
+  [  8] getprop 492 ............................. <pData>
+  [ 11] pushzero ................................ <0>
+  [ 12] eq ...................................... <pData = 0>
+  [ 13] getprop 492 ............................. <pData>
+  [ 16] pusharglist 1 ........................... <pData>
+  [ 18] extcall 78 .............................. <voidp(pData)>
+  [ 20] or ...................................... <(pData = 0) or voidp(pData)>
+  [ 21] jmpifz [ 29] ............................ if (pData = 0) or voidp(pData) then
+  [ 24] pushzero ................................ <0>
+  [ 25] pusharglistnoret 1 ...................... <0>
+  [ 27] extcall 37 .............................. return 0
+  [ 29] getparam 1 .............................. <tNode>
+  [ 31] pushzero ................................ <0>
+  [ 32] eq ...................................... <tNode = 0>
+  [ 33] getparam 1 .............................. <tNode>
+  [ 35] pusharglist 1 ........................... <tNode>
+  [ 37] extcall 78 .............................. <voidp(tNode)>
+  [ 39] or ...................................... <(tNode = 0) or voidp(tNode)>
+  [ 40] jmpifz [ 48] ............................ if (tNode = 0) or voidp(tNode) then
+  [ 43] pushzero ................................ <0>
+  [ 44] pusharglistnoret 1 ...................... <0>
+  [ 46] extcall 37 .............................. return 0
+  [ 48] pushint16 604 ........................... <604>
+  [ 51] pusharglistnoret 1 ...................... <604>
+  [ 53] extcall 1142 ............................ sendProcessTracking(604)
+  [ 56] getparam 1 .............................. <tNode>
+  [ 58] getprop 492 ............................. <pData>
+  [ 61] pusharglist 1 ........................... <pData>
+  [ 63] objcall 722 ............................. <pData.getRootNode()>
+  [ 66] eq ...................................... <tNode = pData.getRootNode()>
+  [ 67] not ..................................... <not (tNode = pData.getRootNode())>
+  [ 68] getparam 1 .............................. <tNode>
+  [ 70] pushsymb 329 ............................ <#navigateable>
+  [ 73] pusharglist 2 ........................... <tNode, #navigateable>
+  [ 75] objcall 746 ............................. <tNode.getData(#navigateable)>
+  [ 78] not ..................................... <not tNode.getData(#navigateable)>
+  [ 79] and ..................................... <not (tNode = pData.getRootNode()) and not tNode.getData(#navigateable)>
+  [ 80] jmpifz [ 89] ............................ if not (tNode = pData.getRootNode()) and not tNode.getData(#navigateable) then
+  [ 83] getparam 2 .............................. <tOffsetY>
+  [ 85] pusharglistnoret 1 ...................... <tOffsetY>
+  [ 87] extcall 37 .............................. return tOffsetY
+  [ 89] pushint16 605 ........................... <605>
+  [ 92] pusharglistnoret 1 ...................... <605>
+  [ 94] extcall 1142 ............................ sendProcessTracking(605)
+  [ 97] getparam 1 .............................. <tNode>
+  [ 99] pushsymb 329 ............................ <#navigateable>
+  [102] pusharglist 2 ........................... <tNode, #navigateable>
+  [104] objcall 746 ............................. <tNode.getData(#navigateable)>
+  [107] jmpifz [194] ............................ if tNode.getData(#navigateable) then
+  [110] getparam 1 .............................. <tNode>
+  [112] pusharglist 1 ........................... <tNode>
+  [114] objcall 177 ............................. <tNode.getImage()>
+  [116] setlocal 0 .............................. tNodeImage = tNode.getImage()
+  [118] getparam 0 .............................. <me>
+  [120] getparam 0 .............................. <me>
+  [122] getparam 0 .............................. <me>
+  [124] getobjprop 16 ........................... <me.pimage>
+  [126] getlocal 0 .............................. <tNodeImage>
+  [128] getlocal 0 .............................. <tNodeImage>
+  [130] getobjprop 69 ........................... <tNodeImage.rect>
+  [132] pushzero ................................ <0>
+  [133] getparam 2 .............................. <tOffsetY>
+  [135] pushzero ................................ <0>
+  [136] getparam 2 .............................. <tOffsetY>
+  [138] pusharglist 4 ........................... <0, tOffsetY, 0, tOffsetY>
+  [140] extcall 69 .............................. <rect(0, tOffsetY, 0, tOffsetY)>
+  [142] add ..................................... <tNodeImage.rect + rect(0, tOffsetY, 0, tOffsetY)>
+  [143] getlocal 0 .............................. <tNodeImage>
+  [145] getobjprop 69 ........................... <tNodeImage.rect>
+  [147] pusharglist 5 ........................... <me, me.pimage, tNodeImage, tNodeImage.rect + rect(0, tOffsetY, 0, tOffsetY), tNodeImage.rect>
+  [149] objcall 733 ............................. <me.appendRenderToImage(me.pimage, tNodeImage, tNodeImage.rect + rect(0, tOffsetY, 0, tOffsetY), tNodeImage.rect)>
+  [152] setobjprop 16 ........................... me.pimage = me.appendRenderToImage(me.pimage, tNodeImage, tNodeImage.rect + rect(0, tOffsetY, 0, tOffsetY), tNodeImage.rect)
+  [154] getprop 738 ............................. <pClickAreas>
+  [157] pushsymb 747 ............................ <#min>
+  [160] getparam 2 .............................. <tOffsetY>
+  [162] pushsymb 748 ............................ <#max>
+  [165] getparam 2 .............................. <tOffsetY>
+  [167] getlocal 0 .............................. <tNodeImage>
+  [169] getobjprop 34 ........................... <tNodeImage.height>
+  [171] add ..................................... <tOffsetY + tNodeImage.height>
+  [172] pushsymb 749 ............................ <#data>
+  [175] getparam 1 .............................. <tNode>
+  [177] pusharglist 6 ........................... <[#min: tOffsetY, #max: tOffsetY + tNodeImage.height, #data: tNode]>
+  [179] pushproplist ............................ <[#min: tOffsetY, #max: tOffsetY + tNodeImage.height, #data: tNode]>
+  [180] pusharglistnoret 2 ...................... <pClickAreas, [#min: tOffsetY, #max: tOffsetY + tNodeImage.height, #data: tNode]>
+  [182] objcall 339 ............................. pClickAreas.add([#min: tOffsetY, #max: tOffsetY + tNodeImage.height, #data: tNode])
+  [185] getparam 2 .............................. <tOffsetY>
+  [187] getlocal 0 .............................. <tNodeImage>
+  [189] getobjprop 34 ........................... <tNodeImage.height>
+  [191] add ..................................... <tOffsetY + tNodeImage.height>
+  [192] setparam 2 .............................. tOffsetY = tOffsetY + tNodeImage.height
+  [194] pushint16 606 ........................... <606>
+  [197] pusharglistnoret 1 ...................... <606>
+  [199] extcall 1142 ............................ sendProcessTracking(606)
+  [202] getparam 1 .............................. <tNode>
+  [204] pusharglist 1 ........................... <tNode>
+  [206] objcall 750 ............................. <tNode.getChildren()>
+  [209] setlocal 1 .............................. tChildren = tNode.getChildren()
+  [211] getlocal 1 .............................. <tChildren>
+  [213] pusharglist 1 ........................... <tChildren>
+  [215] extcall 43 .............................. <ilk(tChildren)>
+  [217] pushsymb 507 ............................ <#list>
+  [220] eq ...................................... <ilk(tChildren) = #list>
+  [221] jmpifz [292] ............................ if ilk(tChildren) = #list then
+  [224] getparam 1 .............................. <tNode>
+  [226] pusharglist 1 ........................... <tNode>
+  [228] objcall 108 ............................. <tNode.getState()>
+  [230] pushsymb 739 ............................ <#open>
+  [233] eq ...................................... <tNode.getState() = #open>
+  [234] getlocal 1 .............................. <tChildren>
+  [236] getobjprop 48 ........................... <tChildren.count>
+  [238] pushzero ................................ <0>
+  [239] gt ...................................... <tChildren.count > 0>
+  [240] and ..................................... <(tNode.getState() = #open) and (tChildren.count > 0)>
+  [241] jmpifz [292] ............................ if (tNode.getState() = #open) and (tChildren.count > 0) then
+  [244] getlocal 1 .............................. <tChildren>
+  [246] peek 0
+  [248] pusharglist 1
+  [250] extcall 48
+  [252] pushint8 1
+  [254] peek 0
+  [256] peek 2
+  [258] lteq
+  [259] jmpifz [290] ............................ repeat with tChild in tChildren
+  [262] peek 2
+  [264] peek 1
+  [266] pusharglist 2
+  [268] extcall 41
+  [270] setlocal 2
+  [272] getparam 0 .............................. <me>
+  [274] getlocal 2 .............................. <tChild>
+  [276] getparam 2 .............................. <tOffsetY>
+  [278] pusharglist 3 ........................... <me, tChild, tOffsetY>
+  [280] objcall 734 ............................. <me.renderNode(tChild, tOffsetY)>
+  [283] setparam 2 .............................. tOffsetY = me.renderNode(tChild, tOffsetY)
+  [285] pushint8 1
+  [287] add
+  [288] endrepeat [254]
+  [290] pop 3
+  [292] pushint16 607 ........................... <607>
+  [295] pusharglistnoret 1 ...................... <607>
+  [297] extcall 1142 ............................ sendProcessTracking(607)
+  [300] getparam 2 .............................. <tOffsetY>
+  [302] pusharglistnoret 1 ...................... <tOffsetY>
+  [304] extcall 37 .............................. return tOffsetY
+  [306] ret
+end
+
+on render me
+  [  0] pushint16 610 ........................... <610>
+  [  3] pusharglistnoret 1 ...................... <610>
+  [  5] extcall 1142 ............................ sendProcessTracking(610)
+  [  8] getprop 40 .............................. <pwidth>
+  [ 10] getprop 696 ............................. <pheight>
+  [ 13] pushint8 32 ............................. <32>
+  [ 15] pusharglist 3 ........................... <pwidth, pheight, 32>
+  [ 17] extcall 17 .............................. <image(pwidth, pheight, 32)>
+  [ 19] setprop 16 .............................. pimage = image(pwidth, pheight, 32)
+  [ 21] pusharglist 0 ........................... <[]>
+  [ 23] pushlist ................................ <[]>
+  [ 24] setprop 738 ............................. pClickAreas = []
+  [ 27] pushzero ................................ <0>
+  [ 28] setlocal 0 .............................. tOffsetY = 0
+  [ 30] getprop 492 ............................. <pData>
+  [ 33] pushzero ................................ <0>
+  [ 34] eq ...................................... <pData = 0>
+  [ 35] getprop 492 ............................. <pData>
+  [ 38] pusharglist 1 ........................... <pData>
+  [ 40] extcall 78 .............................. <voidp(pData)>
+  [ 42] or ...................................... <(pData = 0) or voidp(pData)>
+  [ 43] jmpifz [ 51] ............................ if (pData = 0) or voidp(pData) then
+  [ 46] pushzero ................................ <0>
+  [ 47] pusharglistnoret 1 ...................... <0>
+  [ 49] extcall 37 .............................. return 0
+  [ 51] getparam 0 .............................. <me>
+  [ 53] getprop 492 ............................. <pData>
+  [ 56] pusharglist 1 ........................... <pData>
+  [ 58] objcall 722 ............................. <pData.getRootNode()>
+  [ 61] getlocal 0 .............................. <tOffsetY>
+  [ 63] pusharglistnoret 3 ...................... <me, pData.getRootNode(), tOffsetY>
+  [ 65] objcall 734 ............................. me.renderNode(pData.getRootNode(), tOffsetY)
+  [ 68] ret
+end
+
+on selectNode me, tNode, tSelectedNode
+  [  0] pushint16 620 ........................... <620>
+  [  3] pusharglistnoret 1 ...................... <620>
+  [  5] extcall 1142 ............................ sendProcessTracking(620)
+  [  8] getparam 1 .............................. <tNode>
+  [ 10] getparam 2 .............................. <tSelectedNode>
+  [ 12] eq ...................................... <tNode = tSelectedNode>
+  [ 13] jmpifz [ 28] ............................ if tNode = tSelectedNode then / else
+  [ 16] getparam 1 .............................. <tNode>
+  [ 18] pushint8 1 .............................. <1>
+  [ 20] pusharglistnoret 2 ...................... <tNode, 1>
+  [ 22] objcall 737 ............................. tNode.select(1)
+  [ 25] jmp [ 36]
+  [ 28] getparam 1 .............................. <tNode>
+  [ 30] pushzero ................................ <0>
+  [ 31] pusharglistnoret 2 ...................... <tNode, 0>
+  [ 33] objcall 737 ............................. tNode.select(0)
+  [ 36] getparam 1 .............................. <tNode>
+  [ 38] pusharglist 1 ........................... <tNode>
+  [ 40] objcall 750 ............................. <tNode.getChildren()>
+  [ 43] peek 0
+  [ 45] pusharglist 1
+  [ 47] extcall 48
+  [ 49] pushint8 1
+  [ 51] peek 0
+  [ 53] peek 2
+  [ 55] lteq
+  [ 56] jmpifz [ 85] ............................ repeat with tChild in tNode.getChildren()
+  [ 59] peek 2
+  [ 61] peek 1
+  [ 63] pusharglist 2
+  [ 65] extcall 41
+  [ 67] setlocal 0
+  [ 69] getparam 0 .............................. <me>
+  [ 71] getlocal 0 .............................. <tChild>
+  [ 73] getparam 2 .............................. <tSelectedNode>
+  [ 75] pusharglistnoret 3 ...................... <me, tChild, tSelectedNode>
+  [ 77] objcall 736 ............................. me.selectNode(tChild, tSelectedNode)
+  [ 80] pushint8 1
+  [ 82] add
+  [ 83] endrepeat [ 51]
+  [ 85] pop 3
+  [ 87] ret
+end
+
+on select me, tNodeObj
+  [  0] pushint16 630 ........................... <630>
+  [  3] pusharglistnoret 1 ...................... <630>
+  [  5] extcall 1142 ............................ sendProcessTracking(630)
+  [  8] getprop 492 ............................. <pData>
+  [ 11] pushzero ................................ <0>
+  [ 12] eq ...................................... <pData = 0>
+  [ 13] getprop 492 ............................. <pData>
+  [ 16] pusharglist 1 ........................... <pData>
+  [ 18] extcall 78 .............................. <voidp(pData)>
+  [ 20] or ...................................... <(pData = 0) or voidp(pData)>
+  [ 21] jmpifz [ 29] ............................ if (pData = 0) or voidp(pData) then
+  [ 24] pushzero ................................ <0>
+  [ 25] pusharglistnoret 1 ...................... <0>
+  [ 27] extcall 37 .............................. return 0
+  [ 29] getparam 0 .............................. <me>
+  [ 31] getprop 492 ............................. <pData>
+  [ 34] pusharglist 1 ........................... <pData>
+  [ 36] objcall 722 ............................. <pData.getRootNode()>
+  [ 39] getparam 1 .............................. <tNodeObj>
+  [ 41] pusharglistnoret 3 ...................... <me, pData.getRootNode(), tNodeObj>
+  [ 43] objcall 736 ............................. me.selectNode(pData.getRootNode(), tNodeObj)
+  [ 46] ret
+end
+
+on simulateClickByName me, tNodeName
+  [  0] pushint16 640 ........................... <640>
+  [  3] pusharglistnoret 1 ...................... <640>
+  [  5] extcall 1142 ............................ sendProcessTracking(640)
+  [  8] getprop 738 ............................. <pClickAreas>
+  [ 11] pusharglist 1 ........................... <pClickAreas>
+  [ 13] extcall 43 .............................. <ilk(pClickAreas)>
+  [ 15] pushsymb 507 ............................ <#list>
+  [ 18] nteq .................................... <ilk(pClickAreas) <> #list>
+  [ 19] jmpifz [ 27] ............................ if ilk(pClickAreas) <> #list then
+  [ 22] pushzero ................................ <0>
+  [ 23] pusharglistnoret 1 ...................... <0>
+  [ 25] extcall 37 .............................. return 0
+  [ 27] pushint8 2 .............................. <2>
+  [ 29] pushzero ................................ <0>
+  [ 30] pusharglist 2 ........................... <2, 0>
+  [ 32] extcall 32 .............................. <point(2, 0)>
+  [ 34] setlocal 0 .............................. tClickLoc = point(2, 0)
+  [ 36] pushint8 1 .............................. <1>
+  [ 38] setlocal 1
+  [ 40] getlocal 1
+  [ 42] getprop 738 ............................. <pClickAreas>
+  [ 45] getobjprop 48 ........................... <pClickAreas.count>
+  [ 47] lteq
+  [ 48] jmpifz [158] ............................ repeat with i = 1 to pClickAreas.count
+  [ 51] getprop 738 ............................. <pClickAreas>
+  [ 54] getlocal 1 .............................. <i>
+  [ 56] pusharglist 2 ........................... <pClickAreas, i>
+  [ 58] objcall 41 .............................. <pClickAreas[i]>
+  [ 60] pusharglist 1 ........................... <pClickAreas[i]>
+  [ 62] extcall 43 .............................. <ilk(pClickAreas[i])>
+  [ 64] pushsymb 45 ............................. <#propList>
+  [ 66] eq ...................................... <ilk(pClickAreas[i]) = #propList>
+  [ 67] jmpifz [149] ............................ if ilk(pClickAreas[i]) = #propList then
+  [ 70] getprop 738 ............................. <pClickAreas>
+  [ 73] getlocal 1 .............................. <i>
+  [ 75] pusharglist 2 ........................... <pClickAreas, i>
+  [ 77] objcall 41 .............................. <pClickAreas[i]>
+  [ 79] pushsymb 749 ............................ <#data>
+  [ 82] pusharglist 2 ........................... <pClickAreas[i], #data>
+  [ 84] objcall 41 .............................. <pClickAreas[i][#data]>
+  [ 86] pusharglist 1 ........................... <pClickAreas[i][#data]>
+  [ 88] extcall 57 .............................. <objectp(pClickAreas[i][#data])>
+  [ 90] jmpifz [149] ............................ if objectp(pClickAreas[i][#data]) then
+  [ 93] getprop 738 ............................. <pClickAreas>
+  [ 96] getlocal 1 .............................. <i>
+  [ 98] pusharglist 2 ........................... <pClickAreas, i>
+  [100] objcall 41 .............................. <pClickAreas[i]>
+  [102] pushsymb 749 ............................ <#data>
+  [105] pusharglist 2 ........................... <pClickAreas[i], #data>
+  [107] objcall 41 .............................. <pClickAreas[i][#data]>
+  [109] pushsymb 334 ............................ <#nodename>
+  [112] pusharglist 2 ........................... <pClickAreas[i][#data], #nodename>
+  [114] objcall 746 ............................. <pClickAreas[i][#data].getData(#nodename)>
+  [117] getparam 1 .............................. <tNodeName>
+  [119] eq ...................................... <pClickAreas[i][#data].getData(#nodename) = tNodeName>
+  [120] jmpifz [149] ............................ if pClickAreas[i][#data].getData(#nodename) = tNodeName then
+  [123] getlocal 0 .............................. <tClickLoc>
+  [125] getprop 738 ............................. <pClickAreas>
+  [128] getlocal 1 .............................. <i>
+  [130] pusharglist 2 ........................... <pClickAreas, i>
+  [132] objcall 41 .............................. <pClickAreas[i]>
+  [134] pushsymb 747 ............................ <#min>
+  [137] pusharglist 2 ........................... <pClickAreas[i], #min>
+  [139] objcall 41 .............................. <pClickAreas[i][#min]>
+  [141] pushint8 1 .............................. <1>
+  [143] add ..................................... <pClickAreas[i][#min] + 1>
+  [144] setobjprop 83 ........................... tClickLoc.locV = pClickAreas[i][#min] + 1
+  [146] jmp [158] ............................... exit repeat
+  [149] pushint8 1
+  [151] getlocal 1
+  [153] add
+  [154] setlocal 1
+  [156] endrepeat [ 40]
+  [158] getparam 0 .............................. <me>
+  [160] getlocal 0 .............................. <tClickLoc>
+  [162] pusharglistnoret 2 ...................... <me, tClickLoc>
+  [164] objcall 225 ............................. me.handleClick(tClickLoc)
+  [166] ret
+end
+
+on handleClick me, tloc
+  [  0] pushint16 650 ........................... <650>
+  [  3] pusharglistnoret 1 ...................... <650>
+  [  5] extcall 1142 ............................ sendProcessTracking(650)
+  [  8] getprop 492 ............................. <pData>
+  [ 11] pushzero ................................ <0>
+  [ 12] eq ...................................... <pData = 0>
+  [ 13] getprop 492 ............................. <pData>
+  [ 16] pusharglist 1 ........................... <pData>
+  [ 18] extcall 78 .............................. <voidp(pData)>
+  [ 20] or ...................................... <(pData = 0) or voidp(pData)>
+  [ 21] jmpifz [ 29] ............................ if (pData = 0) or voidp(pData) then
+  [ 24] pushzero ................................ <0>
+  [ 25] pusharglistnoret 1 ...................... <0>
+  [ 27] extcall 37 .............................. return 0
+  [ 29] getparam 1 .............................. <tloc>
+  [ 31] pusharglist 1 ........................... <tloc>
+  [ 33] extcall 43 .............................. <ilk(tloc)>
+  [ 35] pushsymb 32 ............................. <#point>
+  [ 37] nteq .................................... <ilk(tloc) <> #point>
+  [ 38] jmpifz [ 45] ............................ if ilk(tloc) <> #point then
+  [ 41] pusharglistnoret 0 ...................... <>
+  [ 43] extcall 37 .............................. return 
+  [ 45] pusharglist 0 ........................... <>
+  [ 47] extcall 55 .............................. <VOID>
+  [ 49] setlocal 0 .............................. tNode = VOID
+  [ 51] pushint8 1 .............................. <1>
+  [ 53] setlocal 1
+  [ 55] getlocal 1
+  [ 57] getprop 738 ............................. <pClickAreas>
+  [ 60] getobjprop 48 ........................... <pClickAreas.count>
+  [ 62] lteq
+  [ 63] jmpifz [142] ............................ repeat with i = 1 to pClickAreas.count
+  [ 66] getprop 738 ............................. <pClickAreas>
+  [ 69] getlocal 1 .............................. <i>
+  [ 71] pusharglist 2 ........................... <pClickAreas, i>
+  [ 73] objcall 41 .............................. <pClickAreas[i]>
+  [ 75] pushsymb 747 ............................ <#min>
+  [ 78] pusharglist 2 ........................... <pClickAreas[i], #min>
+  [ 80] objcall 41 .............................. <pClickAreas[i][#min]>
+  [ 82] getparam 1 .............................. <tloc>
+  [ 84] getobjprop 83 ........................... <tloc.locV>
+  [ 86] lt ...................................... <pClickAreas[i][#min] < tloc.locV>
+  [ 87] getprop 738 ............................. <pClickAreas>
+  [ 90] getlocal 1 .............................. <i>
+  [ 92] pusharglist 2 ........................... <pClickAreas, i>
+  [ 94] objcall 41 .............................. <pClickAreas[i]>
+  [ 96] pushsymb 748 ............................ <#max>
+  [ 99] pusharglist 2 ........................... <pClickAreas[i], #max>
+  [101] objcall 41 .............................. <pClickAreas[i][#max]>
+  [103] getparam 1 .............................. <tloc>
+  [105] getobjprop 83 ........................... <tloc.locV>
+  [107] gt ...................................... <pClickAreas[i][#max] > tloc.locV>
+  [108] and ..................................... <(pClickAreas[i][#min] < tloc.locV) and (pClickAreas[i][#max] > tloc.locV)>
+  [109] jmpifz [133] ............................ if (pClickAreas[i][#min] < tloc.locV) and (pClickAreas[i][#max] > tloc.locV) then
+  [112] getprop 738 ............................. <pClickAreas>
+  [115] getlocal 1 .............................. <i>
+  [117] pusharglist 2 ........................... <pClickAreas, i>
+  [119] objcall 41 .............................. <pClickAreas[i]>
+  [121] pushsymb 749 ............................ <#data>
+  [124] pusharglist 2 ........................... <pClickAreas[i], #data>
+  [126] objcall 41 .............................. <pClickAreas[i][#data]>
+  [128] setlocal 0 .............................. tNode = pClickAreas[i][#data]
+  [130] jmp [142] ............................... exit repeat
+  [133] pushint8 1
+  [135] getlocal 1
+  [137] add
+  [138] setlocal 1
+  [140] endrepeat [ 55]
+  [142] getlocal 0 .............................. <tNode>
+  [144] pusharglist 1 ........................... <tNode>
+  [146] extcall 78 .............................. <voidp(tNode)>
+  [148] jmpifz [156] ............................ if voidp(tNode) then
+  [151] pushzero ................................ <0>
+  [152] pusharglistnoret 1 ...................... <0>
+  [154] extcall 37 .............................. return 0
+  [156] getlocal 0 .............................. <tNode>
+  [158] pusharglist 1 ........................... <tNode>
+  [160] objcall 750 ............................. <tNode.getChildren()>
+  [163] getobjprop 48 ........................... <tNode.getChildren().count>
+  [165] pushzero ................................ <0>
+  [166] gt ...................................... <tNode.getChildren().count > 0>
+  [167] jmpifz [204] ............................ if tNode.getChildren().count > 0 then
+  [170] getlocal 0 .............................. <tNode>
+  [172] pusharglist 1 ........................... <tNode>
+  [174] objcall 108 ............................. <tNode.getState()>
+  [176] pushsymb 739 ............................ <#open>
+  [179] eq ...................................... <tNode.getState() = #open>
+  [180] jmpifz [195] ............................ if tNode.getState() = #open then / else
+  [183] getlocal 0 .............................. <tNode>
+  [185] pushsymb 756 ............................ <#closed>
+  [188] pusharglistnoret 2 ...................... <tNode, #closed>
+  [190] objcall 80 .............................. tNode.setState(#closed)
+  [192] jmp [204]
+  [195] getlocal 0 .............................. <tNode>
+  [197] pushsymb 739 ............................ <#open>
+  [200] pusharglistnoret 2 ...................... <tNode, #open>
+  [202] objcall 80 .............................. tNode.setState(#open)
+  [204] getlocal 0 .............................. <tNode>
+  [206] pushsymb 729 ............................ <#level>
+  [209] pusharglist 2 ........................... <tNode, #level>
+  [211] objcall 746 ............................. <tNode.getData(#level)>
+  [214] pushint8 1 .............................. <1>
+  [216] lteq .................................... <tNode.getData(#level) <= 1>
+  [217] jmpifz [298] ............................ if tNode.getData(#level) <= 1 then
+  [220] getprop 492 ............................. <pData>
+  [223] pusharglist 1 ........................... <pData>
+  [225] objcall 722 ............................. <pData.getRootNode()>
+  [228] pushsymb 739 ............................ <#open>
+  [231] pusharglistnoret 2 ...................... <pData.getRootNode(), #open>
+  [233] objcall 80 .............................. pData.getRootNode().setState(#open)
+  [235] getprop 492 ............................. <pData>
+  [238] pusharglist 1 ........................... <pData>
+  [240] objcall 722 ............................. <pData.getRootNode()>
+  [243] pusharglist 1 ........................... <pData.getRootNode()>
+  [245] objcall 750 ............................. <pData.getRootNode().getChildren()>
+  [248] peek 0
+  [250] pusharglist 1
+  [252] extcall 48
+  [254] pushint8 1
+  [256] peek 0
+  [258] peek 2
+  [260] lteq
+  [261] jmpifz [296] ............................ repeat with tChild in pData.getRootNode().getChildren()
+  [264] peek 2
+  [266] peek 1
+  [268] pusharglist 2
+  [270] extcall 41
+  [272] setlocal 2
+  [274] getlocal 0 .............................. <tNode>
+  [276] getlocal 2 .............................. <tChild>
+  [278] nteq .................................... <tNode <> tChild>
+  [279] jmpifz [291] ............................ if tNode <> tChild then
+  [282] getlocal 2 .............................. <tChild>
+  [284] pushsymb 756 ............................ <#closed>
+  [287] pusharglistnoret 2 ...................... <tChild, #closed>
+  [289] objcall 80 .............................. tChild.setState(#closed)
+  [291] pushint8 1
+  [293] add
+  [294] endrepeat [256]
+  [296] pop 3
+  [298] getparam 0 .............................. <me>
+  [300] getlocal 0 .............................. <tNode>
+  [302] pusharglistnoret 2 ...................... <me, tNode>
+  [304] objcall 737 ............................. me.select(tNode)
+  [307] getparam 0 .............................. <me>
+  [309] pusharglistnoret 1 ...................... <me>
+  [311] objcall 735 ............................. me.render()
+  [314] getlocal 0 .............................. <tNode>
+  [316] pushsymb 103 ............................ <#pageid>
+  [318] pusharglist 2 ........................... <tNode, #pageid>
+  [320] objcall 746 ............................. <tNode.getData(#pageid)>
+  [323] pushint8 1 .............................. <1>
+  [325] inv ..................................... <-1>
+  [326] nteq .................................... <tNode.getData(#pageid) <> -1>
+  [327] jmpifz [347] ............................ if tNode.getData(#pageid) <> -1 then
+  [330] getprop 492 ............................. <pData>
+  [333] getlocal 0 .............................. <tNode>
+  [335] pushsymb 103 ............................ <#pageid>
+  [337] pusharglist 2 ........................... <tNode, #pageid>
+  [339] objcall 746 ............................. <tNode.getData(#pageid)>
+  [342] pusharglistnoret 2 ...................... <pData, tNode.getData(#pageid)>
+  [344] objcall 723 ............................. pData.handlePageRequest(tNode.getData(#pageid))
+  [347] pushint8 1 .............................. <1>
+  [349] pusharglistnoret 1 ...................... <1>
+  [351] extcall 37 .............................. return 1
+  [353] ret
+end

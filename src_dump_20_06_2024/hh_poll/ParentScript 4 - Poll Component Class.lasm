@@ -1,0 +1,1113 @@
+property pQuestionList, pQuestionIndex, pConfirmedAction, pConnectionId, pPollOfferID, pThanksText
+
+on construct me
+  [  0] pusharglist 0 ........................... <[]>
+  [  2] pushlist ................................ <[]>
+  [  3] setprop 28 .............................. pQuestionList = []
+  [  5] pushint8 1 .............................. <1>
+  [  7] setprop 29 .............................. pQuestionIndex = 1
+  [  9] pushcons 0 .............................. <"connection.info.id">
+  [ 11] pushsymb 32 ............................. <#Info>
+  [ 13] pusharglist 2 ........................... <"connection.info.id", #Info>
+  [ 15] extcall 200 ............................. <getVariable("connection.info.id", #Info)>
+  [ 17] setprop 30 .............................. pConnectionId = getVariable("connection.info.id", #Info)
+  [ 19] pushsymb 34 ............................. <#show_poll_question>
+  [ 21] getparam 0 .............................. <me>
+  [ 23] pusharglist 1 ........................... <me>
+  [ 25] objcall 35 .............................. <me.getID()>
+  [ 27] pushsymb 26 ............................. <#parseQuestion>
+  [ 29] pusharglistnoret 3 ...................... <#show_poll_question, me.getID(), #parseQuestion>
+  [ 31] extcall 33 .............................. registerMessage(#show_poll_question, me.getID(), #parseQuestion)
+  [ 33] pushint8 1 .............................. <1>
+  [ 35] pusharglistnoret 1 ...................... <1>
+  [ 37] extcall 36 .............................. return 1
+  [ 39] ret
+end
+
+on deconstruct me
+  [  0] pushsymb 34 ............................. <#show_poll_question>
+  [  2] getparam 0 .............................. <me>
+  [  4] pusharglist 1 ........................... <me>
+  [  6] objcall 35 .............................. <me.getID()>
+  [  8] pusharglistnoret 2 ...................... <#show_poll_question, me.getID()>
+  [ 10] extcall 38 .............................. unregisterMessage(#show_poll_question, me.getID())
+  [ 12] pushint8 1 .............................. <1>
+  [ 14] pusharglistnoret 1 ...................... <1>
+  [ 16] extcall 36 .............................. return 1
+  [ 18] ret
+end
+
+on getQuestionAvailable me
+  [  0] getprop 28 .............................. <pQuestionList>
+  [  2] getobjprop 39 ........................... <pQuestionList.count>
+  [  4] getprop 29 .............................. <pQuestionIndex>
+  [  6] gteq .................................... <pQuestionList.count >= pQuestionIndex>
+  [  7] jmpifz [ 16] ............................ if pQuestionList.count >= pQuestionIndex then
+  [ 10] pushint8 1 .............................. <1>
+  [ 12] pusharglistnoret 1 ...................... <1>
+  [ 14] extcall 36 .............................. return 1
+  [ 16] pushzero ................................ <0>
+  [ 17] pusharglistnoret 1 ...................... <0>
+  [ 19] extcall 36 .............................. return 0
+  [ 21] ret
+end
+
+on getNewQuestion me, tNext
+  [  0] getparam 1 .............................. <tNext>
+  [  2] jmpifz [ 25] ............................ if tNext then / else
+  [  5] getprop 29 .............................. <pQuestionIndex>
+  [  7] getprop 28 .............................. <pQuestionList>
+  [  9] getobjprop 39 ........................... <pQuestionList.count>
+  [ 11] lt ...................................... <pQuestionIndex < pQuestionList.count>
+  [ 12] jmpifz [ 22] ............................ if pQuestionIndex < pQuestionList.count then
+  [ 15] getprop 29 .............................. <pQuestionIndex>
+  [ 17] pushint8 1 .............................. <1>
+  [ 19] add ..................................... <pQuestionIndex + 1>
+  [ 20] setprop 29 .............................. pQuestionIndex = pQuestionIndex + 1
+  [ 22] jmp [ 40]
+  [ 25] getprop 29 .............................. <pQuestionIndex>
+  [ 27] pushint8 1 .............................. <1>
+  [ 29] gt ...................................... <pQuestionIndex > 1>
+  [ 30] jmpifz [ 40] ............................ if pQuestionIndex > 1 then
+  [ 33] getprop 29 .............................. <pQuestionIndex>
+  [ 35] pushint8 1 .............................. <1>
+  [ 37] sub ..................................... <pQuestionIndex - 1>
+  [ 38] setprop 29 .............................. pQuestionIndex = pQuestionIndex - 1
+  [ 40] ret
+end
+
+on getPollHeadLine me
+  [  0] getparam 0 .............................. <me>
+  [  2] pushsymb 41 ............................. <#pollHeadLine>
+  [  4] pusharglist 2 ........................... <me, #pollHeadLine>
+  [  6] objcall 21 .............................. <me.getQuestionData(#pollHeadLine)>
+  [  8] pusharglistnoret 1 ...................... <me.getQuestionData(#pollHeadLine)>
+  [ 10] extcall 36 .............................. return me.getQuestionData(#pollHeadLine)
+  [ 12] ret
+end
+
+on getQuestionText me
+  [  0] getparam 0 .............................. <me>
+  [  2] pushsymb 42 ............................. <#questionText>
+  [  4] pusharglist 2 ........................... <me, #questionText>
+  [  6] objcall 21 .............................. <me.getQuestionData(#questionText)>
+  [  8] pusharglistnoret 1 ...................... <me.getQuestionData(#questionText)>
+  [ 10] extcall 36 .............................. return me.getQuestionData(#questionText)
+  [ 12] ret
+end
+
+on getQuestionNumber me
+  [  0] getparam 0 .............................. <me>
+  [  2] pushsymb 43 ............................. <#questionNumber>
+  [  4] pusharglist 2 ........................... <me, #questionNumber>
+  [  6] objcall 21 .............................. <me.getQuestionData(#questionNumber)>
+  [  8] pusharglistnoret 1 ...................... <me.getQuestionData(#questionNumber)>
+  [ 10] extcall 36 .............................. return me.getQuestionData(#questionNumber)
+  [ 12] ret
+end
+
+on getQuestionCount me
+  [  0] getparam 0 .............................. <me>
+  [  2] pushsymb 44 ............................. <#questionCount>
+  [  4] pusharglist 2 ........................... <me, #questionCount>
+  [  6] objcall 21 .............................. <me.getQuestionData(#questionCount)>
+  [  8] pusharglistnoret 1 ...................... <me.getQuestionData(#questionCount)>
+  [ 10] extcall 36 .............................. return me.getQuestionData(#questionCount)
+  [ 12] ret
+end
+
+on getQuestionType me
+  [  0] getparam 0 .............................. <me>
+  [  2] pushsymb 45 ............................. <#questionType>
+  [  4] pusharglist 2 ........................... <me, #questionType>
+  [  6] objcall 21 .............................. <me.getQuestionData(#questionType)>
+  [  8] pusharglistnoret 1 ...................... <me.getQuestionData(#questionType)>
+  [ 10] extcall 36 .............................. return me.getQuestionData(#questionType)
+  [ 12] ret
+end
+
+on getSelectionCount me
+  [  0] getparam 0 .............................. <me>
+  [  2] pushsymb 46 ............................. <#selectionData>
+  [  4] pusharglist 2 ........................... <me, #selectionData>
+  [  6] objcall 21 .............................. <me.getQuestionData(#selectionData)>
+  [  8] setlocal 0 .............................. tSelectionData = me.getQuestionData(#selectionData)
+  [ 10] getlocal 0 .............................. <tSelectionData>
+  [ 12] pusharglist 1 ........................... <tSelectionData>
+  [ 14] extcall 47 .............................. <voidp(tSelectionData)>
+  [ 16] jmpifz [ 24] ............................ if voidp(tSelectionData) then
+  [ 19] pushzero ................................ <0>
+  [ 20] pusharglistnoret 1 ...................... <0>
+  [ 22] extcall 36 .............................. return 0
+  [ 24] getlocal 0 .............................. <tSelectionData>
+  [ 26] pushsymb 48 ............................. <#questions>
+  [ 28] pusharglist 2 ........................... <tSelectionData, #questions>
+  [ 30] objcall 49 .............................. <tSelectionData[#questions]>
+  [ 32] setlocal 1 .............................. tQuestions = tSelectionData[#questions]
+  [ 34] getlocal 1 .............................. <tQuestions>
+  [ 36] pusharglist 1 ........................... <tQuestions>
+  [ 38] extcall 47 .............................. <voidp(tQuestions)>
+  [ 40] jmpifz [ 48] ............................ if voidp(tQuestions) then
+  [ 43] pushzero ................................ <0>
+  [ 44] pusharglistnoret 1 ...................... <0>
+  [ 46] extcall 36 .............................. return 0
+  [ 48] getlocal 1 .............................. <tQuestions>
+  [ 50] getobjprop 39 ........................... <tQuestions.count>
+  [ 52] pusharglistnoret 1 ...................... <tQuestions.count>
+  [ 54] extcall 36 .............................. return tQuestions.count
+  [ 56] ret
+end
+
+on getSelectionMinCount me
+  [  0] getparam 0 .............................. <me>
+  [  2] pushsymb 46 ............................. <#selectionData>
+  [  4] pusharglist 2 ........................... <me, #selectionData>
+  [  6] objcall 21 .............................. <me.getQuestionData(#selectionData)>
+  [  8] setlocal 0 .............................. tSelectionData = me.getQuestionData(#selectionData)
+  [ 10] getlocal 0 .............................. <tSelectionData>
+  [ 12] pusharglist 1 ........................... <tSelectionData>
+  [ 14] extcall 47 .............................. <voidp(tSelectionData)>
+  [ 16] jmpifz [ 24] ............................ if voidp(tSelectionData) then
+  [ 19] pushzero ................................ <0>
+  [ 20] pusharglistnoret 1 ...................... <0>
+  [ 22] extcall 36 .............................. return 0
+  [ 24] getlocal 0 .............................. <tSelectionData>
+  [ 26] pushsymb 52 ............................. <#minSelect>
+  [ 28] pusharglist 2 ........................... <tSelectionData, #minSelect>
+  [ 30] objcall 49 .............................. <tSelectionData[#minSelect]>
+  [ 32] pusharglist 1 ........................... <tSelectionData[#minSelect]>
+  [ 34] extcall 47 .............................. <voidp(tSelectionData[#minSelect])>
+  [ 36] jmpifz [ 44] ............................ if voidp(tSelectionData[#minSelect]) then
+  [ 39] pushzero ................................ <0>
+  [ 40] pusharglistnoret 1 ...................... <0>
+  [ 42] extcall 36 .............................. return 0
+  [ 44] getlocal 0 .............................. <tSelectionData>
+  [ 46] pushsymb 52 ............................. <#minSelect>
+  [ 48] pusharglist 2 ........................... <tSelectionData, #minSelect>
+  [ 50] objcall 49 .............................. <tSelectionData[#minSelect]>
+  [ 52] pusharglistnoret 1 ...................... <tSelectionData[#minSelect]>
+  [ 54] extcall 36 .............................. return tSelectionData[#minSelect]
+  [ 56] ret
+end
+
+on getSelectionMaxCount me
+  [  0] getparam 0 .............................. <me>
+  [  2] pushsymb 46 ............................. <#selectionData>
+  [  4] pusharglist 2 ........................... <me, #selectionData>
+  [  6] objcall 21 .............................. <me.getQuestionData(#selectionData)>
+  [  8] setlocal 0 .............................. tSelectionData = me.getQuestionData(#selectionData)
+  [ 10] getlocal 0 .............................. <tSelectionData>
+  [ 12] pusharglist 1 ........................... <tSelectionData>
+  [ 14] extcall 47 .............................. <voidp(tSelectionData)>
+  [ 16] jmpifz [ 24] ............................ if voidp(tSelectionData) then
+  [ 19] pushzero ................................ <0>
+  [ 20] pusharglistnoret 1 ...................... <0>
+  [ 22] extcall 36 .............................. return 0
+  [ 24] getlocal 0 .............................. <tSelectionData>
+  [ 26] pushsymb 53 ............................. <#maxSelect>
+  [ 28] pusharglist 2 ........................... <tSelectionData, #maxSelect>
+  [ 30] objcall 49 .............................. <tSelectionData[#maxSelect]>
+  [ 32] pusharglist 1 ........................... <tSelectionData[#maxSelect]>
+  [ 34] extcall 47 .............................. <voidp(tSelectionData[#maxSelect])>
+  [ 36] jmpifz [ 44] ............................ if voidp(tSelectionData[#maxSelect]) then
+  [ 39] pushzero ................................ <0>
+  [ 40] pusharglistnoret 1 ...................... <0>
+  [ 42] extcall 36 .............................. return 0
+  [ 44] getlocal 0 .............................. <tSelectionData>
+  [ 46] pushsymb 53 ............................. <#maxSelect>
+  [ 48] pusharglist 2 ........................... <tSelectionData, #maxSelect>
+  [ 50] objcall 49 .............................. <tSelectionData[#maxSelect]>
+  [ 52] pusharglistnoret 1 ...................... <tSelectionData[#maxSelect]>
+  [ 54] extcall 36 .............................. return tSelectionData[#maxSelect]
+  [ 56] ret
+end
+
+on getSelectionText me, tIndex
+  [  0] getparam 0 .............................. <me>
+  [  2] pushsymb 46 ............................. <#selectionData>
+  [  4] pusharglist 2 ........................... <me, #selectionData>
+  [  6] objcall 21 .............................. <me.getQuestionData(#selectionData)>
+  [  8] setlocal 0 .............................. tSelectionData = me.getQuestionData(#selectionData)
+  [ 10] getlocal 0 .............................. <tSelectionData>
+  [ 12] pusharglist 1 ........................... <tSelectionData>
+  [ 14] extcall 47 .............................. <voidp(tSelectionData)>
+  [ 16] jmpifz [ 24] ............................ if voidp(tSelectionData) then
+  [ 19] pushzero ................................ <0>
+  [ 20] pusharglistnoret 1 ...................... <0>
+  [ 22] extcall 36 .............................. return 0
+  [ 24] getlocal 0 .............................. <tSelectionData>
+  [ 26] pushsymb 48 ............................. <#questions>
+  [ 28] pusharglist 2 ........................... <tSelectionData, #questions>
+  [ 30] objcall 49 .............................. <tSelectionData[#questions]>
+  [ 32] setlocal 1 .............................. tQuestions = tSelectionData[#questions]
+  [ 34] getlocal 1 .............................. <tQuestions>
+  [ 36] pusharglist 1 ........................... <tQuestions>
+  [ 38] extcall 47 .............................. <voidp(tQuestions)>
+  [ 40] jmpifz [ 49] ............................ if voidp(tQuestions) then
+  [ 43] pushcons 1 .............................. <EMPTY>
+  [ 45] pusharglistnoret 1 ...................... <EMPTY>
+  [ 47] extcall 36 .............................. return EMPTY
+  [ 49] getparam 1 .............................. <tIndex>
+  [ 51] pushint8 1 .............................. <1>
+  [ 53] lt ...................................... <tIndex < 1>
+  [ 54] getparam 1 .............................. <tIndex>
+  [ 56] getlocal 1 .............................. <tQuestions>
+  [ 58] getobjprop 39 ........................... <tQuestions.count>
+  [ 60] gt ...................................... <tIndex > tQuestions.count>
+  [ 61] or ...................................... <(tIndex < 1) or (tIndex > tQuestions.count)>
+  [ 62] jmpifz [ 71] ............................ if (tIndex < 1) or (tIndex > tQuestions.count) then
+  [ 65] pushcons 1 .............................. <EMPTY>
+  [ 67] pusharglistnoret 1 ...................... <EMPTY>
+  [ 69] extcall 36 .............................. return EMPTY
+  [ 71] getlocal 1 .............................. <tQuestions>
+  [ 73] getparam 1 .............................. <tIndex>
+  [ 75] pusharglist 2 ........................... <tQuestions, tIndex>
+  [ 77] objcall 49 .............................. <tQuestions[tIndex]>
+  [ 79] pusharglistnoret 1 ...................... <tQuestions[tIndex]>
+  [ 81] extcall 36 .............................. return tQuestions[tIndex]
+  [ 83] ret
+end
+
+on getSelectionState me, tIndex
+  [  0] getparam 0 .............................. <me>
+  [  2] pushsymb 55 ............................. <#answerSelections>
+  [  4] pusharglist 2 ........................... <me, #answerSelections>
+  [  6] objcall 21 .............................. <me.getQuestionData(#answerSelections)>
+  [  8] setlocal 0 .............................. tSelections = me.getQuestionData(#answerSelections)
+  [ 10] getlocal 0 .............................. <tSelections>
+  [ 12] pusharglist 1 ........................... <tSelections>
+  [ 14] extcall 47 .............................. <voidp(tSelections)>
+  [ 16] jmpifz [ 24] ............................ if voidp(tSelections) then
+  [ 19] pushzero ................................ <0>
+  [ 20] pusharglistnoret 1 ...................... <0>
+  [ 22] extcall 36 .............................. return 0
+  [ 24] getparam 1 .............................. <tIndex>
+  [ 26] pushint8 1 .............................. <1>
+  [ 28] lt ...................................... <tIndex < 1>
+  [ 29] getparam 1 .............................. <tIndex>
+  [ 31] getlocal 0 .............................. <tSelections>
+  [ 33] getobjprop 39 ........................... <tSelections.count>
+  [ 35] gt ...................................... <tIndex > tSelections.count>
+  [ 36] or ...................................... <(tIndex < 1) or (tIndex > tSelections.count)>
+  [ 37] jmpifz [ 45] ............................ if (tIndex < 1) or (tIndex > tSelections.count) then
+  [ 40] pushzero ................................ <0>
+  [ 41] pusharglistnoret 1 ...................... <0>
+  [ 43] extcall 36 .............................. return 0
+  [ 45] getlocal 0 .............................. <tSelections>
+  [ 47] getparam 1 .............................. <tIndex>
+  [ 49] pusharglist 2 ........................... <tSelections, tIndex>
+  [ 51] objcall 49 .............................. <tSelections[tIndex]>
+  [ 53] pusharglistnoret 1 ...................... <tSelections[tIndex]>
+  [ 55] extcall 36 .............................. return tSelections[tIndex]
+  [ 57] ret
+end
+
+on changeSelectionState me, tIndex
+  [  0] getparam 0 .............................. <me>
+  [  2] pushsymb 55 ............................. <#answerSelections>
+  [  4] pusharglist 2 ........................... <me, #answerSelections>
+  [  6] objcall 21 .............................. <me.getQuestionData(#answerSelections)>
+  [  8] setlocal 0 .............................. tSelections = me.getQuestionData(#answerSelections)
+  [ 10] getlocal 0 .............................. <tSelections>
+  [ 12] pusharglist 1 ........................... <tSelections>
+  [ 14] extcall 47 .............................. <voidp(tSelections)>
+  [ 16] jmpifz [ 24] ............................ if voidp(tSelections) then
+  [ 19] pushzero ................................ <0>
+  [ 20] pusharglistnoret 1 ...................... <0>
+  [ 22] extcall 36 .............................. return 0
+  [ 24] getparam 1 .............................. <tIndex>
+  [ 26] pushint8 1 .............................. <1>
+  [ 28] lt ...................................... <tIndex < 1>
+  [ 29] getparam 1 .............................. <tIndex>
+  [ 31] getlocal 0 .............................. <tSelections>
+  [ 33] getobjprop 39 ........................... <tSelections.count>
+  [ 35] gt ...................................... <tIndex > tSelections.count>
+  [ 36] or ...................................... <(tIndex < 1) or (tIndex > tSelections.count)>
+  [ 37] jmpifz [ 45] ............................ if (tIndex < 1) or (tIndex > tSelections.count) then
+  [ 40] pushzero ................................ <0>
+  [ 41] pusharglistnoret 1 ...................... <0>
+  [ 43] extcall 36 .............................. return 0
+  [ 45] getparam 0 .............................. <me>
+  [ 47] pusharglist 1 ........................... <me>
+  [ 49] objcall 11 .............................. <me.getSelectionMaxCount()>
+  [ 51] setlocal 1 .............................. tMaxSelect = me.getSelectionMaxCount()
+  [ 53] getlocal 1 .............................. <tMaxSelect>
+  [ 55] pushint8 1 .............................. <1>
+  [ 57] eq ...................................... <tMaxSelect = 1>
+  [ 58] jmpifz [100] ............................ if tMaxSelect = 1 then / else
+  [ 61] pushint8 1 .............................. <1>
+  [ 63] setlocal 2 .............................. tstate = 1
+  [ 65] getlocal 0 .............................. <tSelections>
+  [ 67] getobjprop 39 ........................... <tSelections.count>
+  [ 69] setlocal 3
+  [ 71] getlocal 3
+  [ 73] pushint8 1 .............................. <1>
+  [ 75] gteq
+  [ 76] jmpifz [ 97] ............................ repeat with i = tSelections.count down to 1
+  [ 79] getlocal 0 .............................. <tSelections>
+  [ 81] getlocal 3 .............................. <i>
+  [ 83] pushzero ................................ <0>
+  [ 84] pusharglistnoret 3 ...................... <tSelections, i, 0>
+  [ 86] objcall 57 .............................. tSelections[i] = 0
+  [ 88] pushint8 -1
+  [ 90] getlocal 3
+  [ 92] add
+  [ 93] setlocal 3
+  [ 95] endrepeat [ 71]
+  [ 97] jmp [173]
+  [100] getlocal 0 .............................. <tSelections>
+  [102] getparam 1 .............................. <tIndex>
+  [104] pusharglist 2 ........................... <tSelections, tIndex>
+  [106] objcall 49 .............................. <tSelections[tIndex]>
+  [108] not ..................................... <not tSelections[tIndex]>
+  [109] setlocal 2 .............................. tstate = not tSelections[tIndex]
+  [111] pushzero ................................ <0>
+  [112] setlocal 4 .............................. tCount = 0
+  [114] getlocal 0 .............................. <tSelections>
+  [116] getobjprop 39 ........................... <tSelections.count>
+  [118] setlocal 3
+  [120] getlocal 3
+  [122] pushint8 1 .............................. <1>
+  [124] gteq
+  [125] jmpifz [157] ............................ repeat with i = tSelections.count down to 1
+  [128] getlocal 0 .............................. <tSelections>
+  [130] getlocal 3 .............................. <i>
+  [132] pusharglist 2 ........................... <tSelections, i>
+  [134] objcall 49 .............................. <tSelections[i]>
+  [136] pushzero ................................ <0>
+  [137] nteq .................................... <tSelections[i] <> 0>
+  [138] jmpifz [148] ............................ if tSelections[i] <> 0 then
+  [141] getlocal 4 .............................. <tCount>
+  [143] pushint8 1 .............................. <1>
+  [145] add ..................................... <tCount + 1>
+  [146] setlocal 4 .............................. tCount = tCount + 1
+  [148] pushint8 -1
+  [150] getlocal 3
+  [152] add
+  [153] setlocal 3
+  [155] endrepeat [120]
+  [157] getlocal 4 .............................. <tCount>
+  [159] getlocal 2 .............................. <tstate>
+  [161] add ..................................... <tCount + tstate>
+  [162] getlocal 1 .............................. <tMaxSelect>
+  [164] gt ...................................... <(tCount + tstate) > tMaxSelect>
+  [165] jmpifz [173] ............................ if (tCount + tstate) > tMaxSelect then
+  [168] pushzero ................................ <0>
+  [169] pusharglistnoret 1 ...................... <0>
+  [171] extcall 36 .............................. return 0
+  [173] getlocal 0 .............................. <tSelections>
+  [175] getparam 1 .............................. <tIndex>
+  [177] getlocal 2 .............................. <tstate>
+  [179] pusharglistnoret 3 ...................... <tSelections, tIndex, tstate>
+  [181] objcall 57 .............................. tSelections[tIndex] = tstate
+  [183] pushint8 1 .............................. <1>
+  [185] pusharglistnoret 1 ...................... <1>
+  [187] extcall 36 .............................. return 1
+  [189] ret
+end
+
+on setAnswerText me, tText
+  [  0] getprop 28 .............................. <pQuestionList>
+  [  2] getobjprop 39 ........................... <pQuestionList.count>
+  [  4] getprop 29 .............................. <pQuestionIndex>
+  [  6] lt ...................................... <pQuestionList.count < pQuestionIndex>
+  [  7] jmpifz [ 15] ............................ if pQuestionList.count < pQuestionIndex then
+  [ 10] pushzero ................................ <0>
+  [ 11] pusharglistnoret 1 ...................... <0>
+  [ 13] extcall 36 .............................. return 0
+  [ 15] getprop 28 .............................. <pQuestionList>
+  [ 17] getprop 29 .............................. <pQuestionIndex>
+  [ 19] pusharglist 2 ........................... <pQuestionList, pQuestionIndex>
+  [ 21] objcall 49 .............................. <pQuestionList[pQuestionIndex]>
+  [ 23] pushsymb 62 ............................. <#answerText>
+  [ 25] getparam 1 .............................. <tText>
+  [ 27] pusharglistnoret 3 ...................... <pQuestionList[pQuestionIndex], #answerText, tText>
+  [ 29] objcall 57 .............................. pQuestionList[pQuestionIndex][#answerText] = tText
+  [ 31] pushint8 1 .............................. <1>
+  [ 33] pusharglistnoret 1 ...................... <1>
+  [ 35] extcall 36 .............................. return 1
+  [ 37] ret
+end
+
+on getAnswerText me
+  [  0] getparam 0 .............................. <me>
+  [  2] pushsymb 62 ............................. <#answerText>
+  [  4] pusharglist 2 ........................... <me, #answerText>
+  [  6] objcall 21 .............................. <me.getQuestionData(#answerText)>
+  [  8] pusharglistnoret 1 ...................... <me.getQuestionData(#answerText)>
+  [ 10] extcall 36 .............................. return me.getQuestionData(#answerText)
+  [ 12] ret
+end
+
+on getThanks me
+  [  0] getprop 92 .............................. <pThanksText>
+  [  2] pusharglistnoret 1 ...................... <pThanksText>
+  [  4] extcall 36 .............................. return pThanksText
+  [  6] ret
+end
+
+on confirmAction me, tAction
+  [  0] getparam 1 .............................. <tAction>
+  [  2] setprop 64 .............................. pConfirmedAction = tAction
+  [  4] pushint8 1 .............................. <1>
+  [  6] pusharglistnoret 1 ...................... <1>
+  [  8] extcall 36 .............................. return 1
+  [ 10] ret
+end
+
+on actionConfirmed me
+  [  0] getprop 64 .............................. <pConfirmedAction>
+  [  2] pushcons 2 .............................. <"cancel">
+  [  4] eq ...................................... <pConfirmedAction = "cancel">
+  [  5] jmpifz [ 24] ............................ if pConfirmedAction = "cancel" then
+  [  8] getparam 0 .............................. <me>
+  [ 10] pusharglistnoret 1 ...................... <me>
+  [ 12] objcall 20 .............................. me.cancelAnswer()
+  [ 14] getparam 0 .............................. <me>
+  [ 16] pusharglist 1 ........................... <me>
+  [ 18] objcall 66 .............................. <me.getInterface()>
+  [ 20] pusharglistnoret 1 ...................... <me.getInterface()>
+  [ 22] objcall 67 .............................. me.getInterface().hideQuestion()
+  [ 24] ret
+end
+
+on sendAnswer me
+  [  0] getparam 0 .............................. <me>
+  [  2] pusharglist 1 ........................... <me>
+  [  4] objcall 2 ............................... <me.getQuestionAvailable()>
+  [  6] not ..................................... <not me.getQuestionAvailable()>
+  [  7] jmpifz [ 15] ............................ if not me.getQuestionAvailable() then
+  [ 10] pushzero ................................ <0>
+  [ 11] pusharglistnoret 1 ...................... <0>
+  [ 13] extcall 36 .............................. return 0
+  [ 15] getprop 29 .............................. <pQuestionIndex>
+  [ 17] setlocal 0 .............................. tQuestionIndex = pQuestionIndex
+  [ 19] pushint8 1 .............................. <1>
+  [ 21] setlocal 1
+  [ 23] getlocal 1
+  [ 25] getlocal 0 .............................. <tQuestionIndex>
+  [ 27] lteq
+  [ 28] jmpifz [372] ............................ repeat with tIndex = 1 to tQuestionIndex
+  [ 31] pushint8 1 .............................. <1>
+  [ 33] setprop 29 .............................. pQuestionIndex = 1
+  [ 35] getparam 0 .............................. <me>
+  [ 37] pushsymb 69 ............................. <#pollID>
+  [ 39] pusharglist 2 ........................... <me, #pollID>
+  [ 41] objcall 21 .............................. <me.getQuestionData(#pollID)>
+  [ 43] setlocal 2 .............................. tPollID = me.getQuestionData(#pollID)
+  [ 45] getparam 0 .............................. <me>
+  [ 47] pushsymb 70 ............................. <#questionID>
+  [ 49] pusharglist 2 ........................... <me, #questionID>
+  [ 51] objcall 21 .............................. <me.getQuestionData(#questionID)>
+  [ 53] setlocal 3 .............................. tQuestionID = me.getQuestionData(#questionID)
+  [ 55] getparam 0 .............................. <me>
+  [ 57] pushsymb 45 ............................. <#questionType>
+  [ 59] pusharglist 2 ........................... <me, #questionType>
+  [ 61] objcall 21 .............................. <me.getQuestionData(#questionType)>
+  [ 63] setlocal 4 .............................. tQuestionType = me.getQuestionData(#questionType)
+  [ 65] pushsymb 71 ............................. <#integer>
+  [ 67] getlocal 2 .............................. <tPollID>
+  [ 69] pushsymb 71 ............................. <#integer>
+  [ 71] getlocal 3 .............................. <tQuestionID>
+  [ 73] pusharglist 4 ........................... <[#integer: tPollID, #integer: tQuestionID]>
+  [ 75] pushproplist ............................ <[#integer: tPollID, #integer: tQuestionID]>
+  [ 76] setlocal 5 .............................. tReply = [#integer: tPollID, #integer: tQuestionID]
+  [ 78] getparam 0 .............................. <me>
+  [ 80] pusharglist 1 ........................... <me>
+  [ 82] objcall 8 ............................... <me.getQuestionType()>
+  [ 84] setlocal 4 .............................. tQuestionType = me.getQuestionType()
+  [ 86] getlocal 4 .............................. <tQuestionType>
+  [ 88] pushint8 1 .............................. <1>
+  [ 90] eq ...................................... <tQuestionType = 1>
+  [ 91] getlocal 4 .............................. <tQuestionType>
+  [ 93] pushint8 2 .............................. <2>
+  [ 95] eq ...................................... <tQuestionType = 2>
+  [ 96] or ...................................... <(tQuestionType = 1) or (tQuestionType = 2)>
+  [ 97] jmpifz [263] ............................ if (tQuestionType = 1) or (tQuestionType = 2) then / else
+  [100] getparam 0 .............................. <me>
+  [102] pusharglist 1 ........................... <me>
+  [104] objcall 9 ............................... <me.getSelectionCount()>
+  [106] setlocal 6 .............................. tSelectionCount = me.getSelectionCount()
+  [108] getparam 0 .............................. <me>
+  [110] pusharglist 1 ........................... <me>
+  [112] objcall 10 .............................. <me.getSelectionMinCount()>
+  [114] setlocal 7 .............................. tMinSelect = me.getSelectionMinCount()
+  [116] pushzero ................................ <0>
+  [117] setlocal 8 .............................. tSelected = 0
+  [119] pusharglist 0 ........................... <[]>
+  [121] pushlist ................................ <[]>
+  [122] setlocal 9 .............................. tSelectionList = []
+  [124] pushint8 1 .............................. <1>
+  [126] setlocal 10
+  [128] getlocal 10
+  [130] getlocal 6 .............................. <tSelectionCount>
+  [132] lteq
+  [133] jmpifz [181] ............................ repeat with i = 1 to tSelectionCount
+  [136] getlocal 9 .............................. <tSelectionList>
+  [138] getlocal 10 ............................. <i>
+  [140] getparam 0 .............................. <me>
+  [142] getlocal 10 ............................. <i>
+  [144] pusharglist 2 ........................... <me, i>
+  [146] objcall 13 .............................. <me.getSelectionState(i)>
+  [148] pusharglistnoret 3 ...................... <tSelectionList, i, me.getSelectionState(i)>
+  [150] objcall 57 .............................. tSelectionList[i] = me.getSelectionState(i)
+  [152] getlocal 9 .............................. <tSelectionList>
+  [154] getlocal 10 ............................. <i>
+  [156] pusharglist 2 ........................... <tSelectionList, i>
+  [158] objcall 49 .............................. <tSelectionList[i]>
+  [160] pushzero ................................ <0>
+  [161] nteq .................................... <tSelectionList[i] <> 0>
+  [162] jmpifz [172] ............................ if tSelectionList[i] <> 0 then
+  [165] getlocal 8 .............................. <tSelected>
+  [167] pushint8 1 .............................. <1>
+  [169] add ..................................... <tSelected + 1>
+  [170] setlocal 8 .............................. tSelected = tSelected + 1
+  [172] pushint8 1
+  [174] getlocal 10
+  [176] add
+  [177] setlocal 10
+  [179] endrepeat [128]
+  [181] getlocal 8 .............................. <tSelected>
+  [183] getlocal 7 .............................. <tMinSelect>
+  [185] lt ...................................... <tSelected < tMinSelect>
+  [186] jmpifz [204] ............................ if tSelected < tMinSelect then
+  [189] getlocal 0 .............................. <tQuestionIndex>
+  [191] getlocal 1 .............................. <tIndex>
+  [193] pushint8 1 .............................. <1>
+  [195] sub ..................................... <tIndex - 1>
+  [196] sub ..................................... <tQuestionIndex - (tIndex - 1)>
+  [197] setprop 29 .............................. pQuestionIndex = tQuestionIndex - (tIndex - 1)
+  [199] pushzero ................................ <0>
+  [200] pusharglistnoret 1 ...................... <0>
+  [202] extcall 36 .............................. return 0
+  [204] getlocal 5 .............................. <tReply>
+  [206] pushsymb 71 ............................. <#integer>
+  [208] getlocal 8 .............................. <tSelected>
+  [210] pusharglistnoret 3 ...................... <tReply, #integer, tSelected>
+  [212] objcall 73 .............................. tReply.addProp(#integer, tSelected)
+  [214] pushint8 1 .............................. <1>
+  [216] setlocal 10
+  [218] getlocal 10
+  [220] getlocal 9 .............................. <tSelectionList>
+  [222] getobjprop 39 ........................... <tSelectionList.count>
+  [224] lteq
+  [225] jmpifz [260] ............................ repeat with i = 1 to tSelectionList.count
+  [228] getlocal 9 .............................. <tSelectionList>
+  [230] getlocal 10 ............................. <i>
+  [232] pusharglist 2 ........................... <tSelectionList, i>
+  [234] objcall 49 .............................. <tSelectionList[i]>
+  [236] pushzero ................................ <0>
+  [237] nteq .................................... <tSelectionList[i] <> 0>
+  [238] jmpifz [251] ............................ if tSelectionList[i] <> 0 then
+  [241] getlocal 5 .............................. <tReply>
+  [243] pushsymb 71 ............................. <#integer>
+  [245] getlocal 10 ............................. <i>
+  [247] pusharglistnoret 3 ...................... <tReply, #integer, i>
+  [249] objcall 73 .............................. tReply.addProp(#integer, i)
+  [251] pushint8 1
+  [253] getlocal 10
+  [255] add
+  [256] setlocal 10
+  [258] endrepeat [218]
+  [260] jmp [329]
+  [263] getlocal 4 .............................. <tQuestionType>
+  [265] pushint8 3 .............................. <3>
+  [267] eq ...................................... <tQuestionType = 3>
+  [268] getlocal 4 .............................. <tQuestionType>
+  [270] pushint8 4 .............................. <4>
+  [272] eq ...................................... <tQuestionType = 4>
+  [273] or ...................................... <(tQuestionType = 3) or (tQuestionType = 4)>
+  [274] jmpifz [329] ............................ if (tQuestionType = 3) or (tQuestionType = 4) then
+  [277] getparam 0 .............................. <me>
+  [279] pusharglist 1 ........................... <me>
+  [281] objcall 16 .............................. <me.getAnswerText()>
+  [283] setlocal 11 ............................. tAnswer = me.getAnswerText()
+  [285] getlocal 11 ............................. <tAnswer>
+  [287] getobjprop 68 ........................... <tAnswer.length>
+  [289] pushzero ................................ <0>
+  [290] eq ...................................... <tAnswer.length = 0>
+  [291] jmpifz [309] ............................ if tAnswer.length = 0 then
+  [294] getlocal 0 .............................. <tQuestionIndex>
+  [296] getlocal 1 .............................. <tIndex>
+  [298] pushint8 1 .............................. <1>
+  [300] sub ..................................... <tIndex - 1>
+  [301] sub ..................................... <tQuestionIndex - (tIndex - 1)>
+  [302] setprop 29 .............................. pQuestionIndex = tQuestionIndex - (tIndex - 1)
+  [304] pushzero ................................ <0>
+  [305] pusharglistnoret 1 ...................... <0>
+  [307] extcall 36 .............................. return 0
+  [309] getparam 0 .............................. <me>
+  [311] pushsymb 62 ............................. <#answerText>
+  [313] pusharglist 2 ........................... <me, #answerText>
+  [315] objcall 21 .............................. <me.getQuestionData(#answerText)>
+  [317] setlocal 12 ............................. tAnswerText = me.getQuestionData(#answerText)
+  [319] getlocal 5 .............................. <tReply>
+  [321] pushsymb 72 ............................. <#string>
+  [323] getlocal 12 ............................. <tAnswerText>
+  [325] pusharglistnoret 3 ...................... <tReply, #string, tAnswerText>
+  [327] objcall 73 .............................. tReply.addProp(#string, tAnswerText)
+  [329] getprop 30 .............................. <pConnectionId>
+  [331] pusharglist 1 ........................... <pConnectionId>
+  [333] extcall 74 .............................. <getConnection(pConnectionId)>
+  [335] pushzero ................................ <0>
+  [336] nteq .................................... <getConnection(pConnectionId) <> 0>
+  [337] jmpifz [354] ............................ if getConnection(pConnectionId) <> 0 then
+  [340] getprop 30 .............................. <pConnectionId>
+  [342] pusharglist 1 ........................... <pConnectionId>
+  [344] extcall 74 .............................. <getConnection(pConnectionId)>
+  [346] pushcons 3 .............................. <"POLL_ANSWER">
+  [348] getlocal 5 .............................. <tReply>
+  [350] pusharglistnoret 3 ...................... <getConnection(pConnectionId), "POLL_ANSWER", tReply>
+  [352] objcall 75 .............................. getConnection(pConnectionId).send("POLL_ANSWER", tReply)
+  [354] getprop 28 .............................. <pQuestionList>
+  [356] pushint8 1 .............................. <1>
+  [358] pusharglistnoret 2 ...................... <pQuestionList, 1>
+  [360] objcall 76 .............................. pQuestionList.deleteAt(1)
+  [362] pushint8 1
+  [364] getlocal 1
+  [366] add
+  [367] setlocal 1
+  [369] endrepeat [ 23]
+  [372] pushint8 1 .............................. <1>
+  [374] setprop 29 .............................. pQuestionIndex = 1
+  [376] pushint8 1 .............................. <1>
+  [378] pusharglistnoret 1 ...................... <1>
+  [380] extcall 36 .............................. return 1
+  [382] ret
+end
+
+on cancelAnswer me
+  [  0] pusharglist 0 ........................... <>
+  [  2] extcall 89 .............................. <VOID>
+  [  4] setlocal 0 .............................. tPollID = VOID
+  [  6] pushint8 1 .............................. <1>
+  [  8] setlocal 1
+  [ 10] getlocal 1
+  [ 12] getprop 28 .............................. <pQuestionList>
+  [ 14] getobjprop 39 ........................... <pQuestionList.count>
+  [ 16] lteq
+  [ 17] jmpifz [103] ............................ repeat with i = 1 to pQuestionList.count
+  [ 20] getlocal 1 .............................. <i>
+  [ 22] setprop 29 .............................. pQuestionIndex = i
+  [ 24] getparam 0 .............................. <me>
+  [ 26] pushsymb 69 ............................. <#pollID>
+  [ 28] pusharglist 2 ........................... <me, #pollID>
+  [ 30] objcall 21 .............................. <me.getQuestionData(#pollID)>
+  [ 32] setlocal 2 .............................. tPollIDNew = me.getQuestionData(#pollID)
+  [ 34] getparam 0 .............................. <me>
+  [ 36] pushsymb 70 ............................. <#questionID>
+  [ 38] pusharglist 2 ........................... <me, #questionID>
+  [ 40] objcall 21 .............................. <me.getQuestionData(#questionID)>
+  [ 42] setlocal 3 .............................. tQuestionID = me.getQuestionData(#questionID)
+  [ 44] getlocal 2 .............................. <tPollIDNew>
+  [ 46] getlocal 0 .............................. <tPollID>
+  [ 48] nteq .................................... <tPollIDNew <> tPollID>
+  [ 49] jmpifz [ 94] ............................ if tPollIDNew <> tPollID then
+  [ 52] getlocal 2 .............................. <tPollIDNew>
+  [ 54] setlocal 0 .............................. tPollID = tPollIDNew
+  [ 56] pushsymb 71 ............................. <#integer>
+  [ 58] getlocal 0 .............................. <tPollID>
+  [ 60] pushsymb 71 ............................. <#integer>
+  [ 62] getlocal 3 .............................. <tQuestionID>
+  [ 64] pusharglist 4 ........................... <[#integer: tPollID, #integer: tQuestionID]>
+  [ 66] pushproplist ............................ <[#integer: tPollID, #integer: tQuestionID]>
+  [ 67] setlocal 4 .............................. tReply = [#integer: tPollID, #integer: tQuestionID]
+  [ 69] getprop 30 .............................. <pConnectionId>
+  [ 71] pusharglist 1 ........................... <pConnectionId>
+  [ 73] extcall 74 .............................. <getConnection(pConnectionId)>
+  [ 75] pushzero ................................ <0>
+  [ 76] nteq .................................... <getConnection(pConnectionId) <> 0>
+  [ 77] jmpifz [ 94] ............................ if getConnection(pConnectionId) <> 0 then
+  [ 80] getprop 30 .............................. <pConnectionId>
+  [ 82] pusharglist 1 ........................... <pConnectionId>
+  [ 84] extcall 74 .............................. <getConnection(pConnectionId)>
+  [ 86] pushcons 4 .............................. <"POLL_CANCEL">
+  [ 88] getlocal 4 .............................. <tReply>
+  [ 90] pusharglistnoret 3 ...................... <getConnection(pConnectionId), "POLL_CANCEL", tReply>
+  [ 92] objcall 75 .............................. getConnection(pConnectionId).send("POLL_CANCEL", tReply)
+  [ 94] pushint8 1
+  [ 96] getlocal 1
+  [ 98] add
+  [ 99] setlocal 1
+  [101] endrepeat [ 10]
+  [103] pusharglist 0 ........................... <[]>
+  [105] pushlist ................................ <[]>
+  [106] setprop 28 .............................. pQuestionList = []
+  [108] pushint8 1 .............................. <1>
+  [110] setprop 29 .............................. pQuestionIndex = 1
+  [112] ret
+end
+
+on getQuestionData me, tProperty
+  [  0] getprop 28 .............................. <pQuestionList>
+  [  2] getobjprop 39 ........................... <pQuestionList.count>
+  [  4] getprop 29 .............................. <pQuestionIndex>
+  [  6] lt ...................................... <pQuestionList.count < pQuestionIndex>
+  [  7] jmpifz [ 16] ............................ if pQuestionList.count < pQuestionIndex then
+  [ 10] pushcons 1 .............................. <EMPTY>
+  [ 12] pusharglistnoret 1 ...................... <EMPTY>
+  [ 14] extcall 36 .............................. return EMPTY
+  [ 16] getprop 28 .............................. <pQuestionList>
+  [ 18] getprop 29 .............................. <pQuestionIndex>
+  [ 20] pusharglist 2 ........................... <pQuestionList, pQuestionIndex>
+  [ 22] objcall 49 .............................. <pQuestionList[pQuestionIndex]>
+  [ 24] getparam 1 .............................. <tProperty>
+  [ 26] pusharglist 2 ........................... <pQuestionList[pQuestionIndex], tProperty>
+  [ 28] objcall 49 .............................. <pQuestionList[pQuestionIndex][tProperty]>
+  [ 30] pusharglistnoret 1 ...................... <pQuestionList[pQuestionIndex][tProperty]>
+  [ 32] extcall 36 .............................. return pQuestionList[pQuestionIndex][tProperty]
+  [ 34] ret
+end
+
+on setThanks me, tText
+  [  0] getparam 1 .............................. <tText>
+  [  2] setprop 92 .............................. pThanksText = tText
+  [  4] ret
+end
+
+on offerPoll me, tdata
+  [  0] getparam 1 .............................. <tdata>
+  [  2] pusharglist 1 ........................... <tdata>
+  [  4] extcall 93 .............................. <ilk(tdata)>
+  [  6] pushsymb 94 ............................. <#propList>
+  [  8] nteq .................................... <ilk(tdata) <> #propList>
+  [  9] jmpifz [ 17] ............................ if ilk(tdata) <> #propList then
+  [ 12] pushzero ................................ <0>
+  [ 13] pusharglistnoret 1 ...................... <0>
+  [ 15] extcall 36 .............................. return 0
+  [ 17] getparam 1 .............................. <tdata>
+  [ 19] pushsymb 69 ............................. <#pollID>
+  [ 21] pusharglist 2 ........................... <tdata, #pollID>
+  [ 23] objcall 49 .............................. <tdata[#pollID]>
+  [ 25] pusharglist 1 ........................... <tdata[#pollID]>
+  [ 27] extcall 47 .............................. <voidp(tdata[#pollID])>
+  [ 29] getparam 1 .............................. <tdata>
+  [ 31] pushsymb 95 ............................. <#pollDescription>
+  [ 33] pusharglist 2 ........................... <tdata, #pollDescription>
+  [ 35] objcall 49 .............................. <tdata[#pollDescription]>
+  [ 37] pusharglist 1 ........................... <tdata[#pollDescription]>
+  [ 39] extcall 47 .............................. <voidp(tdata[#pollDescription])>
+  [ 41] or ...................................... <voidp(tdata[#pollID]) or voidp(tdata[#pollDescription])>
+  [ 42] jmpifz [ 50] ............................ if voidp(tdata[#pollID]) or voidp(tdata[#pollDescription]) then
+  [ 45] pushzero ................................ <0>
+  [ 46] pusharglistnoret 1 ...................... <0>
+  [ 48] extcall 36 .............................. return 0
+  [ 50] getparam 1 .............................. <tdata>
+  [ 52] pushsymb 69 ............................. <#pollID>
+  [ 54] pusharglist 2 ........................... <tdata, #pollID>
+  [ 56] objcall 49 .............................. <tdata[#pollID]>
+  [ 58] setprop 96 .............................. pPollOfferID = tdata[#pollID]
+  [ 60] getparam 1 .............................. <tdata>
+  [ 62] pushsymb 95 ............................. <#pollDescription>
+  [ 64] pusharglist 2 ........................... <tdata, #pollDescription>
+  [ 66] objcall 49 .............................. <tdata[#pollDescription]>
+  [ 68] setlocal 0 .............................. tPollDescription = tdata[#pollDescription]
+  [ 70] getparam 0 .............................. <me>
+  [ 72] pusharglist 1 ........................... <me>
+  [ 74] objcall 66 .............................. <me.getInterface()>
+  [ 76] getlocal 0 .............................. <tPollDescription>
+  [ 78] pusharglistnoret 2 ...................... <me.getInterface(), tPollDescription>
+  [ 80] objcall 97 .............................. me.getInterface().showOffer(tPollDescription)
+  [ 82] ret
+end
+
+on acceptPoll me
+  [  0] getprop 30 .............................. <pConnectionId>
+  [  2] pusharglist 1 ........................... <pConnectionId>
+  [  4] extcall 74 .............................. <getConnection(pConnectionId)>
+  [  6] pushzero ................................ <0>
+  [  7] nteq .................................... <getConnection(pConnectionId) <> 0>
+  [  8] jmpifz [ 30] ............................ if getConnection(pConnectionId) <> 0 then
+  [ 11] getprop 30 .............................. <pConnectionId>
+  [ 13] pusharglist 1 ........................... <pConnectionId>
+  [ 15] extcall 74 .............................. <getConnection(pConnectionId)>
+  [ 17] pushcons 5 .............................. <"POLL_START">
+  [ 19] pushsymb 71 ............................. <#integer>
+  [ 21] getprop 96 .............................. <pPollOfferID>
+  [ 23] pusharglist 2 ........................... <[#integer: pPollOfferID]>
+  [ 25] pushproplist ............................ <[#integer: pPollOfferID]>
+  [ 26] pusharglistnoret 3 ...................... <getConnection(pConnectionId), "POLL_START", [#integer: pPollOfferID]>
+  [ 28] objcall 75 .............................. getConnection(pConnectionId).send("POLL_START", [#integer: pPollOfferID])
+  [ 30] ret
+end
+
+on rejectPoll me
+  [  0] getprop 30 .............................. <pConnectionId>
+  [  2] pusharglist 1 ........................... <pConnectionId>
+  [  4] extcall 74 .............................. <getConnection(pConnectionId)>
+  [  6] pushzero ................................ <0>
+  [  7] nteq .................................... <getConnection(pConnectionId) <> 0>
+  [  8] jmpifz [ 30] ............................ if getConnection(pConnectionId) <> 0 then
+  [ 11] getprop 30 .............................. <pConnectionId>
+  [ 13] pusharglist 1 ........................... <pConnectionId>
+  [ 15] extcall 74 .............................. <getConnection(pConnectionId)>
+  [ 17] pushcons 6 .............................. <"POLL_REJECT">
+  [ 19] pushsymb 71 ............................. <#integer>
+  [ 21] getprop 96 .............................. <pPollOfferID>
+  [ 23] pusharglist 2 ........................... <[#integer: pPollOfferID]>
+  [ 25] pushproplist ............................ <[#integer: pPollOfferID]>
+  [ 26] pusharglistnoret 3 ...................... <getConnection(pConnectionId), "POLL_REJECT", [#integer: pPollOfferID]>
+  [ 28] objcall 75 .............................. getConnection(pConnectionId).send("POLL_REJECT", [#integer: pPollOfferID])
+  [ 30] ret
+end
+
+on parseQuestion me, tdata
+  [  0] getparam 0 .............................. <me>
+  [  2] getparam 1 .............................. <tdata>
+  [  4] pusharglist 2 ........................... <me, tdata>
+  [  6] objcall 27 .............................. <me.validateQuestion(tdata)>
+  [  8] not ..................................... <not me.validateQuestion(tdata)>
+  [  9] jmpifz [ 17] ............................ if not me.validateQuestion(tdata) then
+  [ 12] pushzero ................................ <0>
+  [ 13] pusharglistnoret 1 ...................... <0>
+  [ 15] extcall 36 .............................. return 0
+  [ 17] getprop 28 .............................. <pQuestionList>
+  [ 19] getparam 1 .............................. <tdata>
+  [ 21] pusharglistnoret 2 ...................... <pQuestionList, tdata>
+  [ 23] objcall 100 ............................. pQuestionList.add(tdata)
+  [ 25] getparam 1 .............................. <tdata>
+  [ 27] pushsymb 62 ............................. <#answerText>
+  [ 29] pushcons 1 .............................. <EMPTY>
+  [ 31] pusharglistnoret 3 ...................... <tdata, #answerText, EMPTY>
+  [ 33] objcall 57 .............................. tdata[#answerText] = EMPTY
+  [ 35] getparam 1 .............................. <tdata>
+  [ 37] pushsymb 55 ............................. <#answerSelections>
+  [ 39] pusharglist 0 ........................... <[]>
+  [ 41] pushlist ................................ <[]>
+  [ 42] pusharglistnoret 3 ...................... <tdata, #answerSelections, []>
+  [ 44] objcall 57 .............................. tdata[#answerSelections] = []
+  [ 46] getprop 29 .............................. <pQuestionIndex>
+  [ 48] setlocal 0 .............................. tTmpIndex = pQuestionIndex
+  [ 50] getprop 28 .............................. <pQuestionList>
+  [ 52] pusharglist 1 ........................... <pQuestionList>
+  [ 54] objcall 39 .............................. <pQuestionList.count()>
+  [ 56] setprop 29 .............................. pQuestionIndex = pQuestionList.count()
+  [ 58] getparam 0 .............................. <me>
+  [ 60] pusharglist 1 ........................... <me>
+  [ 62] objcall 9 ............................... <me.getSelectionCount()>
+  [ 64] setlocal 1 .............................. tSelectionCount = me.getSelectionCount()
+  [ 66] pushint8 1 .............................. <1>
+  [ 68] setlocal 2
+  [ 70] getlocal 2
+  [ 72] getlocal 1 .............................. <tSelectionCount>
+  [ 74] lteq
+  [ 75] jmpifz [100] ............................ repeat with i = 1 to tSelectionCount
+  [ 78] getparam 1 .............................. <tdata>
+  [ 80] pushsymb 55 ............................. <#answerSelections>
+  [ 82] pusharglist 2 ........................... <tdata, #answerSelections>
+  [ 84] objcall 49 .............................. <tdata[#answerSelections]>
+  [ 86] pushzero ................................ <0>
+  [ 87] pusharglistnoret 2 ...................... <tdata[#answerSelections], 0>
+  [ 89] objcall 100 ............................. tdata[#answerSelections].add(0)
+  [ 91] pushint8 1
+  [ 93] getlocal 2
+  [ 95] add
+  [ 96] setlocal 2
+  [ 98] endrepeat [ 70]
+  [100] getlocal 0 .............................. <tTmpIndex>
+  [102] setprop 29 .............................. pQuestionIndex = tTmpIndex
+  [104] getparam 0 .............................. <me>
+  [106] pusharglist 1 ........................... <me>
+  [108] objcall 66 .............................. <me.getInterface()>
+  [110] pusharglistnoret 1 ...................... <me.getInterface()>
+  [112] objcall 101 ............................. me.getInterface().showQuestion()
+  [114] ret
+end
+
+on validateQuestion me, tdata
+  [  0] getparam 1 .............................. <tdata>
+  [  2] pusharglist 1 ........................... <tdata>
+  [  4] extcall 93 .............................. <ilk(tdata)>
+  [  6] pushsymb 94 ............................. <#propList>
+  [  8] nteq .................................... <ilk(tdata) <> #propList>
+  [  9] jmpifz [ 17] ............................ if ilk(tdata) <> #propList then
+  [ 12] pushzero ................................ <0>
+  [ 13] pusharglistnoret 1 ...................... <0>
+  [ 15] extcall 36 .............................. return 0
+  [ 17] pushsymb 69 ............................. <#pollID>
+  [ 19] pushsymb 41 ............................. <#pollHeadLine>
+  [ 21] pushsymb 70 ............................. <#questionID>
+  [ 23] pushsymb 43 ............................. <#questionNumber>
+  [ 25] pushsymb 44 ............................. <#questionCount>
+  [ 27] pushsymb 45 ............................. <#questionType>
+  [ 29] pushsymb 42 ............................. <#questionText>
+  [ 31] pusharglist 7 ........................... <[#pollID, #pollHeadLine, #questionID, #questionNumber, #questionCount, #questionType, #questionText]>
+  [ 33] pushlist ................................ <[#pollID, #pollHeadLine, #questionID, #questionNumber, #questionCount, #questionType, #questionText]>
+  [ 34] setlocal 0 .............................. tList = [#pollID, #pollHeadLine, #questionID, #questionNumber, #questionCount, #questionType, #questionText]
+  [ 36] getlocal 0 .............................. <tList>
+  [ 38] peek 0
+  [ 40] pusharglist 1
+  [ 42] extcall 39
+  [ 44] pushint8 1
+  [ 46] peek 0
+  [ 48] peek 2
+  [ 50] lteq
+  [ 51] jmpifz [ 89] ............................ repeat with tItem in tList
+  [ 54] peek 2
+  [ 56] peek 1
+  [ 58] pusharglist 2
+  [ 60] extcall 49
+  [ 62] setlocal 1
+  [ 64] getparam 1 .............................. <tdata>
+  [ 66] getlocal 1 .............................. <tItem>
+  [ 68] pusharglist 2 ........................... <tdata, tItem>
+  [ 70] objcall 49 .............................. <tdata[tItem]>
+  [ 72] pusharglist 1 ........................... <tdata[tItem]>
+  [ 74] extcall 47 .............................. <voidp(tdata[tItem])>
+  [ 76] jmpifz [ 84] ............................ if voidp(tdata[tItem]) then
+  [ 79] pushzero ................................ <0>
+  [ 80] pusharglistnoret 1 ...................... <0>
+  [ 82] extcall 36 .............................. return 0
+  [ 84] pushint8 1
+  [ 86] add
+  [ 87] endrepeat [ 46]
+  [ 89] pop 3
+  [ 91] getparam 1 .............................. <tdata>
+  [ 93] pushsymb 45 ............................. <#questionType>
+  [ 95] pusharglist 2 ........................... <tdata, #questionType>
+  [ 97] objcall 49 .............................. <tdata[#questionType]>
+  [ 99] pushint8 1 .............................. <1>
+  [101] eq ...................................... <tdata[#questionType] = 1>
+  [102] getparam 1 .............................. <tdata>
+  [104] pushsymb 45 ............................. <#questionType>
+  [106] pusharglist 2 ........................... <tdata, #questionType>
+  [108] objcall 49 .............................. <tdata[#questionType]>
+  [110] pushint8 2 .............................. <2>
+  [112] eq ...................................... <tdata[#questionType] = 2>
+  [113] or ...................................... <(tdata[#questionType] = 1) or (tdata[#questionType] = 2)>
+  [114] jmpifz [340] ............................ if (tdata[#questionType] = 1) or (tdata[#questionType] = 2) then
+  [117] getparam 1 .............................. <tdata>
+  [119] pushsymb 46 ............................. <#selectionData>
+  [121] pusharglist 2 ........................... <tdata, #selectionData>
+  [123] objcall 49 .............................. <tdata[#selectionData]>
+  [125] pusharglist 1 ........................... <tdata[#selectionData]>
+  [127] extcall 47 .............................. <voidp(tdata[#selectionData])>
+  [129] jmpifz [137] ............................ if voidp(tdata[#selectionData]) then
+  [132] pushzero ................................ <0>
+  [133] pusharglistnoret 1 ...................... <0>
+  [135] extcall 36 .............................. return 0
+  [137] getparam 1 .............................. <tdata>
+  [139] pushsymb 46 ............................. <#selectionData>
+  [141] pusharglist 2 ........................... <tdata, #selectionData>
+  [143] objcall 49 .............................. <tdata[#selectionData]>
+  [145] setlocal 2 .............................. tSelectionData = tdata[#selectionData]
+  [147] pushsymb 52 ............................. <#minSelect>
+  [149] pushsymb 53 ............................. <#maxSelect>
+  [151] pushsymb 48 ............................. <#questions>
+  [153] pusharglist 3 ........................... <[#minSelect, #maxSelect, #questions]>
+  [155] pushlist ................................ <[#minSelect, #maxSelect, #questions]>
+  [156] setlocal 3 .............................. tListSelection = [#minSelect, #maxSelect, #questions]
+  [158] getlocal 3 .............................. <tListSelection>
+  [160] peek 0
+  [162] pusharglist 1
+  [164] extcall 39
+  [166] pushint8 1
+  [168] peek 0
+  [170] peek 2
+  [172] lteq
+  [173] jmpifz [211] ............................ repeat with tItem in tListSelection
+  [176] peek 2
+  [178] peek 1
+  [180] pusharglist 2
+  [182] extcall 49
+  [184] setlocal 1
+  [186] getlocal 2 .............................. <tSelectionData>
+  [188] getlocal 1 .............................. <tItem>
+  [190] pusharglist 2 ........................... <tSelectionData, tItem>
+  [192] objcall 49 .............................. <tSelectionData[tItem]>
+  [194] pusharglist 1 ........................... <tSelectionData[tItem]>
+  [196] extcall 47 .............................. <voidp(tSelectionData[tItem])>
+  [198] jmpifz [206] ............................ if voidp(tSelectionData[tItem]) then
+  [201] pushzero ................................ <0>
+  [202] pusharglistnoret 1 ...................... <0>
+  [204] extcall 36 .............................. return 0
+  [206] pushint8 1
+  [208] add
+  [209] endrepeat [168]
+  [211] pop 3
+  [213] getlocal 2 .............................. <tSelectionData>
+  [215] pushsymb 48 ............................. <#questions>
+  [217] pusharglist 2 ........................... <tSelectionData, #questions>
+  [219] objcall 49 .............................. <tSelectionData[#questions]>
+  [221] pusharglist 1 ........................... <tSelectionData[#questions]>
+  [223] extcall 93 .............................. <ilk(tSelectionData[#questions])>
+  [225] pushsymb 103 ............................ <#list>
+  [227] nteq .................................... <ilk(tSelectionData[#questions]) <> #list>
+  [228] jmpifz [236] ............................ if ilk(tSelectionData[#questions]) <> #list then
+  [231] pushzero ................................ <0>
+  [232] pusharglistnoret 1 ...................... <0>
+  [234] extcall 36 .............................. return 0
+  [236] getlocal 2 .............................. <tSelectionData>
+  [238] pushsymb 48 ............................. <#questions>
+  [240] pusharglist 2 ........................... <tSelectionData, #questions>
+  [242] objcall 49 .............................. <tSelectionData[#questions]>
+  [244] getobjprop 39 ........................... <tSelectionData[#questions].count>
+  [246] pushzero ................................ <0>
+  [247] eq ...................................... <tSelectionData[#questions].count = 0>
+  [248] jmpifz [256] ............................ if tSelectionData[#questions].count = 0 then
+  [251] pushzero ................................ <0>
+  [252] pusharglistnoret 1 ...................... <0>
+  [254] extcall 36 .............................. return 0
+  [256] getlocal 2 .............................. <tSelectionData>
+  [258] pushsymb 53 ............................. <#maxSelect>
+  [260] getlocal 2 .............................. <tSelectionData>
+  [262] pushsymb 53 ............................. <#maxSelect>
+  [264] pusharglist 2 ........................... <tSelectionData, #maxSelect>
+  [266] objcall 49 .............................. <tSelectionData[#maxSelect]>
+  [268] pusharglist 1 ........................... <tSelectionData[#maxSelect]>
+  [270] extcall 104 ............................. <value(tSelectionData[#maxSelect])>
+  [272] pusharglistnoret 3 ...................... <tSelectionData, #maxSelect, value(tSelectionData[#maxSelect])>
+  [274] objcall 57 .............................. tSelectionData[#maxSelect] = value(tSelectionData[#maxSelect])
+  [276] getlocal 2 .............................. <tSelectionData>
+  [278] pushsymb 53 ............................. <#maxSelect>
+  [280] pusharglist 2 ........................... <tSelectionData, #maxSelect>
+  [282] objcall 49 .............................. <tSelectionData[#maxSelect]>
+  [284] pushint8 1 .............................. <1>
+  [286] lt ...................................... <tSelectionData[#maxSelect] < 1>
+  [287] jmpifz [295] ............................ if tSelectionData[#maxSelect] < 1 then
+  [290] pushzero ................................ <0>
+  [291] pusharglistnoret 1 ...................... <0>
+  [293] extcall 36 .............................. return 0
+  [295] getlocal 2 .............................. <tSelectionData>
+  [297] pushsymb 52 ............................. <#minSelect>
+  [299] getlocal 2 .............................. <tSelectionData>
+  [301] pushsymb 52 ............................. <#minSelect>
+  [303] pusharglist 2 ........................... <tSelectionData, #minSelect>
+  [305] objcall 49 .............................. <tSelectionData[#minSelect]>
+  [307] pusharglist 1 ........................... <tSelectionData[#minSelect]>
+  [309] extcall 104 ............................. <value(tSelectionData[#minSelect])>
+  [311] pusharglistnoret 3 ...................... <tSelectionData, #minSelect, value(tSelectionData[#minSelect])>
+  [313] objcall 57 .............................. tSelectionData[#minSelect] = value(tSelectionData[#minSelect])
+  [315] getlocal 2 .............................. <tSelectionData>
+  [317] pushsymb 52 ............................. <#minSelect>
+  [319] pusharglist 2 ........................... <tSelectionData, #minSelect>
+  [321] objcall 49 .............................. <tSelectionData[#minSelect]>
+  [323] getlocal 2 .............................. <tSelectionData>
+  [325] pushsymb 53 ............................. <#maxSelect>
+  [327] pusharglist 2 ........................... <tSelectionData, #maxSelect>
+  [329] objcall 49 .............................. <tSelectionData[#maxSelect]>
+  [331] gt ...................................... <tSelectionData[#minSelect] > tSelectionData[#maxSelect]>
+  [332] jmpifz [340] ............................ if tSelectionData[#minSelect] > tSelectionData[#maxSelect] then
+  [335] pushzero ................................ <0>
+  [336] pusharglistnoret 1 ...................... <0>
+  [338] extcall 36 .............................. return 0
+  [340] pushint8 1 .............................. <1>
+  [342] pusharglistnoret 1 ...................... <1>
+  [344] extcall 36 .............................. return 1
+  [346] ret
+end
+
+on pollError me
+  [  0] getparam 0 .............................. <me>
+  [  2] pusharglist 1 ........................... <me>
+  [  4] objcall 66 .............................. <me.getInterface()>
+  [  6] pusharglistnoret 1 ...................... <me.getInterface()>
+  [  8] objcall 218 ............................. me.getInterface().hideWindows()
+  [ 10] getparam 0 .............................. <me>
+  [ 12] pusharglist 1 ........................... <me>
+  [ 14] objcall 66 .............................. <me.getInterface()>
+  [ 16] pushcons 7 .............................. <"server_error">
+  [ 18] pusharglistnoret 2 ...................... <me.getInterface(), "server_error">
+  [ 20] objcall 112 ............................. me.getInterface().ShowAlert("server_error")
+  [ 22] ret
+end

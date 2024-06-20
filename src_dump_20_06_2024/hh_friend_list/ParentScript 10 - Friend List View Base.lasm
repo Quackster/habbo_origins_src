@@ -1,0 +1,344 @@
+property pFriendRenderQueue, pTasksPerUpdate, pNeedsRender
+
+on construct me
+  [  0] pusharglist 0 ........................... <[]>
+  [  2] pushlist ................................ <[]>
+  [  3] setprop 492 ............................. pFriendRenderQueue = []
+  [  6] pushint8 6 .............................. <6>
+  [  8] setprop 493 ............................. pTasksPerUpdate = 6
+  [ 11] pushint8 1 .............................. <1>
+  [ 13] setprop 144 ............................. pNeedsRender = 1
+  [ 15] getparam 0 .............................. <me>
+  [ 17] getchainedprop 494 ...................... <me.ancestor>
+  [ 20] pusharglist 1 ........................... <me.ancestor>
+  [ 22] objcall 0 ............................... <me.ancestor.construct()>
+  [ 24] pusharglistnoret 1 ...................... <me.ancestor.construct()>
+  [ 26] extcall 63 .............................. return me.ancestor.construct()
+  [ 28] ret
+end
+
+on hasQueue me
+  [  0] getprop 492 ............................. <pFriendRenderQueue>
+  [  3] getobjprop 114 .......................... <pFriendRenderQueue.count>
+  [  5] pushzero ................................ <0>
+  [  6] gt ...................................... <pFriendRenderQueue.count > 0>
+  [  7] pusharglistnoret 1 ...................... <pFriendRenderQueue.count > 0>
+  [  9] extcall 63 .............................. return pFriendRenderQueue.count > 0
+  [ 11] ret
+end
+
+on update me, tContentElem
+  [  0] getprop 492 ............................. <pFriendRenderQueue>
+  [  3] getobjprop 114 .......................... <pFriendRenderQueue.count>
+  [  5] pushzero ................................ <0>
+  [  6] eq ...................................... <pFriendRenderQueue.count = 0>
+  [  7] jmpifz [ 16] ............................ if pFriendRenderQueue.count = 0 then
+  [ 10] pushint8 1 .............................. <1>
+  [ 12] pusharglistnoret 1 ...................... <1>
+  [ 14] extcall 63 .............................. return 1
+  [ 16] getparam 0 .............................. <me>
+  [ 18] getparam 1 .............................. <tContentElem>
+  [ 20] pusharglistnoret 2 ...................... <me, tContentElem>
+  [ 22] objcall 495 ............................. me.renderFromQueue(tContentElem)
+  [ 25] ret
+end
+
+on renderListImage me
+  [  0] pusharglistnoret 0 ...................... <>
+  [  2] extcall 496 ............................. nothing()
+  [  5] ret
+end
+
+on needsRender me
+  [  0] getprop 144 ............................. <pNeedsRender>
+  [  2] pusharglistnoret 1 ...................... <pNeedsRender>
+  [  4] extcall 63 .............................. return pNeedsRender
+  [  6] ret
+end
+
+on resetRenderFlag me
+  [  0] pushzero ................................ <0>
+  [  1] setprop 144 ............................. pNeedsRender = 0
+  [  3] ret
+end
+
+on getViewImage me
+  [  0] getparam 0 .............................. <me>
+  [  2] pushsymb 497 ............................ <#pContentList>
+  [  5] pusharglist 2 ........................... <me, #pContentList>
+  [  7] objcall 114 ............................. <me.pContentList.count>
+  [  9] pushzero ................................ <0>
+  [ 10] eq ...................................... <me.pContentList.count = 0>
+  [ 11] jmpifz [192] ............................ if me.pContentList.count = 0 then
+  [ 14] pusharglist 0 ........................... <>
+  [ 16] extcall 40 .............................. <getUniqueID()>
+  [ 18] setlocal 0 .............................. tID = getUniqueID()
+  [ 20] getlocal 0 .............................. <tID>
+  [ 22] pusharglistnoret 1 ...................... <tID>
+  [ 24] extcall 498 ............................. createWriter(tID)
+  [ 27] getlocal 0 .............................. <tID>
+  [ 29] pusharglist 1 ........................... <tID>
+  [ 31] extcall 499 ............................. <getWriter(tID)>
+  [ 34] setlocal 1 .............................. tWriter = getWriter(tID)
+  [ 36] pushcons 0 .............................. <"struct.font.plain">
+  [ 38] pusharglist 1 ........................... <"struct.font.plain">
+  [ 40] extcall 500 ............................. <getStructVariable("struct.font.plain")>
+  [ 43] setlocal 2 .............................. tFont = getStructVariable("struct.font.plain")
+  [ 45] getlocal 2 .............................. <tFont>
+  [ 47] pushsymb 501 ............................ <#wordWrap>
+  [ 50] pushint8 1 .............................. <1>
+  [ 52] pusharglistnoret 3 ...................... <tFont, #wordWrap, 1>
+  [ 54] objcall 390 ............................. tFont.setaProp(#wordWrap, 1)
+  [ 57] pushint8 5 .............................. <5>
+  [ 59] pushint8 2 .............................. <2>
+  [ 61] pushint8 5 .............................. <5>
+  [ 63] pushint8 2 .............................. <2>
+  [ 65] pusharglist 4 ........................... <5, 2, 5, 2>
+  [ 67] extcall 182 ............................. <rect(5, 2, 5, 2)>
+  [ 69] setlocal 3 .............................. tOffsets = rect(5, 2, 5, 2)
+  [ 71] pushcons 1 .............................. <"fr.list.panel.width">
+  [ 73] pusharglist 1 ........................... <"fr.list.panel.width">
+  [ 75] extcall 46 .............................. <getVariable("fr.list.panel.width")>
+  [ 77] getlocal 3 .............................. <tOffsets>
+  [ 79] pushint8 1 .............................. <1>
+  [ 81] pusharglist 2 ........................... <tOffsets, 1>
+  [ 83] objcall 93 .............................. <tOffsets[1]>
+  [ 85] pushint8 2 .............................. <2>
+  [ 87] mul ..................................... <tOffsets[1] * 2>
+  [ 88] sub ..................................... <getVariable("fr.list.panel.width") - (tOffsets[1] * 2)>
+  [ 89] setlocal 4 .............................. tWidth = getVariable("fr.list.panel.width") - (tOffsets[1] * 2)
+  [ 91] getlocal 2 .............................. <tFont>
+  [ 93] pushsymb 182 ............................ <#rect>
+  [ 95] pushzero ................................ <0>
+  [ 96] pushzero ................................ <0>
+  [ 97] getlocal 4 .............................. <tWidth>
+  [ 99] pushzero ................................ <0>
+  [100] pusharglist 4 ........................... <0, 0, tWidth, 0>
+  [102] extcall 182 ............................. <rect(0, 0, tWidth, 0)>
+  [104] pusharglistnoret 3 ...................... <tFont, #rect, rect(0, 0, tWidth, 0)>
+  [106] objcall 390 ............................. tFont.setaProp(#rect, rect(0, 0, tWidth, 0))
+  [109] getlocal 1 .............................. <tWriter>
+  [111] getlocal 2 .............................. <tFont>
+  [113] pusharglistnoret 2 ...................... <tWriter, tFont>
+  [115] objcall 502 ............................. tWriter.define(tFont)
+  [118] getlocal 1 .............................. <tWriter>
+  [120] getparam 0 .............................. <me>
+  [122] getobjprop 503 .......................... <me.pEmptyListText>
+  [125] pusharglist 2 ........................... <tWriter, me.pEmptyListText>
+  [127] objcall 504 ............................. <tWriter.render(me.pEmptyListText)>
+  [130] setlocal 5 .............................. tEmptyListTextImg = tWriter.render(me.pEmptyListText)
+  [132] getlocal 5 .............................. <tEmptyListTextImg>
+  [134] getobjprop 128 .......................... <tEmptyListTextImg.width>
+  [136] getlocal 3 .............................. <tOffsets>
+  [138] pushint8 1 .............................. <1>
+  [140] pusharglist 2 ........................... <tOffsets, 1>
+  [142] objcall 93 .............................. <tOffsets[1]>
+  [144] add ..................................... <tEmptyListTextImg.width + tOffsets[1]>
+  [145] getlocal 5 .............................. <tEmptyListTextImg>
+  [147] getobjprop 81 ........................... <tEmptyListTextImg.height>
+  [149] getlocal 3 .............................. <tOffsets>
+  [151] pushint8 2 .............................. <2>
+  [153] pusharglist 2 ........................... <tOffsets, 2>
+  [155] objcall 93 .............................. <tOffsets[2]>
+  [157] add ..................................... <tEmptyListTextImg.height + tOffsets[2]>
+  [158] pushint8 32 ............................. <32>
+  [160] pusharglist 3 ........................... <tEmptyListTextImg.width + tOffsets[1], tEmptyListTextImg.height + tOffsets[2], 32>
+  [162] extcall 142 ............................. <image(tEmptyListTextImg.width + tOffsets[1], tEmptyListTextImg.height + tOffsets[2], 32)>
+  [164] setlocal 6 .............................. tEmptyListImg = image(tEmptyListTextImg.width + tOffsets[1], tEmptyListTextImg.height + tOffsets[2], 32)
+  [166] getlocal 6 .............................. <tEmptyListImg>
+  [168] getlocal 5 .............................. <tEmptyListTextImg>
+  [170] getlocal 6 .............................. <tEmptyListImg>
+  [172] getobjprop 182 .......................... <tEmptyListImg.rect>
+  [174] getlocal 3 .............................. <tOffsets>
+  [176] add ..................................... <tEmptyListImg.rect + tOffsets>
+  [177] getlocal 6 .............................. <tEmptyListImg>
+  [179] getobjprop 182 .......................... <tEmptyListImg.rect>
+  [181] pusharglistnoret 4 ...................... <tEmptyListImg, tEmptyListTextImg, tEmptyListImg.rect + tOffsets, tEmptyListImg.rect>
+  [183] objcall 505 ............................. tEmptyListImg.copyPixels(tEmptyListTextImg, tEmptyListImg.rect + tOffsets, tEmptyListImg.rect)
+  [186] getlocal 6 .............................. <tEmptyListImg>
+  [188] pusharglistnoret 1 ...................... <tEmptyListImg>
+  [190] extcall 63 .............................. return tEmptyListImg
+  [192] getparam 0 .............................. <me>
+  [194] pusharglist 1 ........................... <me>
+  [196] objcall 506 ............................. <me.renderBackgroundImage()>
+  [199] setlocal 7 .............................. tImage = me.renderBackgroundImage()
+  [201] getlocal 7 .............................. <tImage>
+  [203] getparam 0 .............................. <me>
+  [205] getobjprop 143 .......................... <me.pListImg>
+  [207] getparam 0 .............................. <me>
+  [209] getchainedprop 143 ...................... <me.pListImg>
+  [211] getobjprop 182 .......................... <me.pListImg.rect>
+  [213] getparam 0 .............................. <me>
+  [215] getchainedprop 143 ...................... <me.pListImg>
+  [217] getobjprop 182 .......................... <me.pListImg.rect>
+  [219] pushsymb 507 ............................ <#ink>
+  [222] pushint8 36 ............................. <36>
+  [224] pusharglist 2 ........................... <[#ink: 36]>
+  [226] pushproplist ............................ <[#ink: 36]>
+  [227] pusharglistnoret 5 ...................... <tImage, me.pListImg, me.pListImg.rect, me.pListImg.rect, [#ink: 36]>
+  [229] objcall 505 ............................. tImage.copyPixels(me.pListImg, me.pListImg.rect, me.pListImg.rect, [#ink: 36])
+  [232] getlocal 7 .............................. <tImage>
+  [234] pusharglistnoret 1 ...................... <tImage>
+  [236] extcall 63 .............................. return tImage
+  [238] ret
+end
+
+on insertImageTo me, tSourceImg, tTargetImg, tPosV
+  [  0] getparam 2 .............................. <tTargetImg>
+  [  2] getobjprop 128 .......................... <tTargetImg.width>
+  [  4] getparam 2 .............................. <tTargetImg>
+  [  6] getobjprop 81 ........................... <tTargetImg.height>
+  [  8] getparam 1 .............................. <tSourceImg>
+  [ 10] getobjprop 81 ........................... <tSourceImg.height>
+  [ 12] add ..................................... <tTargetImg.height + tSourceImg.height>
+  [ 13] pushint8 32 ............................. <32>
+  [ 15] pusharglist 3 ........................... <tTargetImg.width, tTargetImg.height + tSourceImg.height, 32>
+  [ 17] extcall 142 ............................. <image(tTargetImg.width, tTargetImg.height + tSourceImg.height, 32)>
+  [ 19] setlocal 0 .............................. tNewImg = image(tTargetImg.width, tTargetImg.height + tSourceImg.height, 32)
+  [ 21] pushzero ................................ <0>
+  [ 22] pushzero ................................ <0>
+  [ 23] getparam 2 .............................. <tTargetImg>
+  [ 25] getobjprop 128 .......................... <tTargetImg.width>
+  [ 27] getparam 3 .............................. <tPosV>
+  [ 29] pusharglist 4 ........................... <0, 0, tTargetImg.width, tPosV>
+  [ 31] extcall 182 ............................. <rect(0, 0, tTargetImg.width, tPosV)>
+  [ 33] setlocal 1 .............................. tTopRect = rect(0, 0, tTargetImg.width, tPosV)
+  [ 35] getlocal 0 .............................. <tNewImg>
+  [ 37] getparam 2 .............................. <tTargetImg>
+  [ 39] getlocal 1 .............................. <tTopRect>
+  [ 41] getlocal 1 .............................. <tTopRect>
+  [ 43] pusharglistnoret 4 ...................... <tNewImg, tTargetImg, tTopRect, tTopRect>
+  [ 45] objcall 505 ............................. tNewImg.copyPixels(tTargetImg, tTopRect, tTopRect)
+  [ 48] pushzero ................................ <0>
+  [ 49] getlocal 1 .............................. <tTopRect>
+  [ 51] getobjprop 81 ........................... <tTopRect.height>
+  [ 53] getparam 1 .............................. <tSourceImg>
+  [ 55] getobjprop 128 .......................... <tSourceImg.width>
+  [ 57] getlocal 1 .............................. <tTopRect>
+  [ 59] getobjprop 81 ........................... <tTopRect.height>
+  [ 61] getparam 1 .............................. <tSourceImg>
+  [ 63] getobjprop 81 ........................... <tSourceImg.height>
+  [ 65] add ..................................... <tTopRect.height + tSourceImg.height>
+  [ 66] pusharglist 4 ........................... <0, tTopRect.height, tSourceImg.width, tTopRect.height + tSourceImg.height>
+  [ 68] extcall 182 ............................. <rect(0, tTopRect.height, tSourceImg.width, tTopRect.height + tSourceImg.height)>
+  [ 70] setlocal 2 .............................. tdestrect = rect(0, tTopRect.height, tSourceImg.width, tTopRect.height + tSourceImg.height)
+  [ 72] getlocal 0 .............................. <tNewImg>
+  [ 74] getparam 1 .............................. <tSourceImg>
+  [ 76] getlocal 2 .............................. <tdestrect>
+  [ 78] getparam 1 .............................. <tSourceImg>
+  [ 80] getobjprop 182 .......................... <tSourceImg.rect>
+  [ 82] pusharglistnoret 4 ...................... <tNewImg, tSourceImg, tdestrect, tSourceImg.rect>
+  [ 84] objcall 505 ............................. tNewImg.copyPixels(tSourceImg, tdestrect, tSourceImg.rect)
+  [ 87] pushzero ................................ <0>
+  [ 88] getparam 3 .............................. <tPosV>
+  [ 90] getparam 2 .............................. <tTargetImg>
+  [ 92] getobjprop 128 .......................... <tTargetImg.width>
+  [ 94] getparam 2 .............................. <tTargetImg>
+  [ 96] getobjprop 81 ........................... <tTargetImg.height>
+  [ 98] pusharglist 4 ........................... <0, tPosV, tTargetImg.width, tTargetImg.height>
+  [100] extcall 182 ............................. <rect(0, tPosV, tTargetImg.width, tTargetImg.height)>
+  [102] setlocal 3 .............................. tSourceRect = rect(0, tPosV, tTargetImg.width, tTargetImg.height)
+  [104] getlocal 3 .............................. <tSourceRect>
+  [106] pushzero ................................ <0>
+  [107] getparam 1 .............................. <tSourceImg>
+  [109] getobjprop 81 ........................... <tSourceImg.height>
+  [111] pushzero ................................ <0>
+  [112] getparam 1 .............................. <tSourceImg>
+  [114] getobjprop 81 ........................... <tSourceImg.height>
+  [116] pusharglist 4 ........................... <0, tSourceImg.height, 0, tSourceImg.height>
+  [118] extcall 182 ............................. <rect(0, tSourceImg.height, 0, tSourceImg.height)>
+  [120] add ..................................... <tSourceRect + rect(0, tSourceImg.height, 0, tSourceImg.height)>
+  [121] setlocal 2 .............................. tdestrect = tSourceRect + rect(0, tSourceImg.height, 0, tSourceImg.height)
+  [123] getlocal 0 .............................. <tNewImg>
+  [125] getparam 2 .............................. <tTargetImg>
+  [127] getlocal 2 .............................. <tdestrect>
+  [129] getlocal 3 .............................. <tSourceRect>
+  [131] pusharglistnoret 4 ...................... <tNewImg, tTargetImg, tdestrect, tSourceRect>
+  [133] objcall 505 ............................. tNewImg.copyPixels(tTargetImg, tdestrect, tSourceRect)
+  [136] getlocal 0 .............................. <tNewImg>
+  [138] pusharglistnoret 1 ...................... <tNewImg>
+  [140] extcall 63 .............................. return tNewImg
+  [142] ret
+end
+
+on updateImagePart me, tSourceImg, tTargetImg, tPosV
+  [  0] pushzero ................................ <0>
+  [  1] getparam 3 .............................. <tPosV>
+  [  3] getparam 1 .............................. <tSourceImg>
+  [  5] getobjprop 128 .......................... <tSourceImg.width>
+  [  7] getparam 3 .............................. <tPosV>
+  [  9] getparam 1 .............................. <tSourceImg>
+  [ 11] getobjprop 81 ........................... <tSourceImg.height>
+  [ 13] add ..................................... <tPosV + tSourceImg.height>
+  [ 14] pusharglist 4 ........................... <0, tPosV, tSourceImg.width, tPosV + tSourceImg.height>
+  [ 16] extcall 182 ............................. <rect(0, tPosV, tSourceImg.width, tPosV + tSourceImg.height)>
+  [ 18] setlocal 0 .............................. tdestrect = rect(0, tPosV, tSourceImg.width, tPosV + tSourceImg.height)
+  [ 20] getparam 2 .............................. <tTargetImg>
+  [ 22] getparam 1 .............................. <tSourceImg>
+  [ 24] getlocal 0 .............................. <tdestrect>
+  [ 26] getparam 1 .............................. <tSourceImg>
+  [ 28] getobjprop 182 .......................... <tSourceImg.rect>
+  [ 30] pusharglistnoret 4 ...................... <tTargetImg, tSourceImg, tdestrect, tSourceImg.rect>
+  [ 32] objcall 505 ............................. tTargetImg.copyPixels(tSourceImg, tdestrect, tSourceImg.rect)
+  [ 35] getparam 2 .............................. <tTargetImg>
+  [ 37] pusharglistnoret 1 ...................... <tTargetImg>
+  [ 39] extcall 63 .............................. return tTargetImg
+  [ 41] ret
+end
+
+on removeImagePart me, tImage, tStartPosV, tEndPosV
+  [  0] getparam 0 .............................. <me>
+  [  2] getobjprop 521 .......................... <me.pItemWidth>
+  [  5] getparam 1 .............................. <tImage>
+  [  7] getobjprop 81 ........................... <tImage.height>
+  [  9] getparam 3 .............................. <tEndPosV>
+  [ 11] getparam 2 .............................. <tStartPosV>
+  [ 13] sub ..................................... <tEndPosV - tStartPosV>
+  [ 14] sub ..................................... <tImage.height - (tEndPosV - tStartPosV)>
+  [ 15] pushint8 32 ............................. <32>
+  [ 17] pusharglist 3 ........................... <me.pItemWidth, tImage.height - (tEndPosV - tStartPosV), 32>
+  [ 19] extcall 142 ............................. <image(me.pItemWidth, tImage.height - (tEndPosV - tStartPosV), 32)>
+  [ 21] setlocal 0 .............................. tNewImg = image(me.pItemWidth, tImage.height - (tEndPosV - tStartPosV), 32)
+  [ 23] pushzero ................................ <0>
+  [ 24] pushzero ................................ <0>
+  [ 25] getparam 1 .............................. <tImage>
+  [ 27] getobjprop 128 .......................... <tImage.width>
+  [ 29] getparam 2 .............................. <tStartPosV>
+  [ 31] pusharglist 4 ........................... <0, 0, tImage.width, tStartPosV>
+  [ 33] extcall 182 ............................. <rect(0, 0, tImage.width, tStartPosV)>
+  [ 35] setlocal 1 .............................. tTopRect = rect(0, 0, tImage.width, tStartPosV)
+  [ 37] getlocal 0 .............................. <tNewImg>
+  [ 39] getparam 1 .............................. <tImage>
+  [ 41] getlocal 1 .............................. <tTopRect>
+  [ 43] getlocal 1 .............................. <tTopRect>
+  [ 45] pusharglistnoret 4 ...................... <tNewImg, tImage, tTopRect, tTopRect>
+  [ 47] objcall 505 ............................. tNewImg.copyPixels(tImage, tTopRect, tTopRect)
+  [ 50] pushzero ................................ <0>
+  [ 51] getparam 3 .............................. <tEndPosV>
+  [ 53] getparam 1 .............................. <tImage>
+  [ 55] getobjprop 128 .......................... <tImage.width>
+  [ 57] getparam 1 .............................. <tImage>
+  [ 59] getobjprop 81 ........................... <tImage.height>
+  [ 61] pusharglist 4 ........................... <0, tEndPosV, tImage.width, tImage.height>
+  [ 63] extcall 182 ............................. <rect(0, tEndPosV, tImage.width, tImage.height)>
+  [ 65] setlocal 2 .............................. tSourceRect = rect(0, tEndPosV, tImage.width, tImage.height)
+  [ 67] pushzero ................................ <0>
+  [ 68] getparam 2 .............................. <tStartPosV>
+  [ 70] getparam 1 .............................. <tImage>
+  [ 72] getobjprop 128 .......................... <tImage.width>
+  [ 74] getlocal 0 .............................. <tNewImg>
+  [ 76] getobjprop 81 ........................... <tNewImg.height>
+  [ 78] pusharglist 4 ........................... <0, tStartPosV, tImage.width, tNewImg.height>
+  [ 80] extcall 182 ............................. <rect(0, tStartPosV, tImage.width, tNewImg.height)>
+  [ 82] setlocal 3 .............................. tdestrect = rect(0, tStartPosV, tImage.width, tNewImg.height)
+  [ 84] getlocal 0 .............................. <tNewImg>
+  [ 86] getparam 1 .............................. <tImage>
+  [ 88] getlocal 3 .............................. <tdestrect>
+  [ 90] getlocal 2 .............................. <tSourceRect>
+  [ 92] pusharglistnoret 4 ...................... <tNewImg, tImage, tdestrect, tSourceRect>
+  [ 94] objcall 505 ............................. tNewImg.copyPixels(tImage, tdestrect, tSourceRect)
+  [ 97] getlocal 0 .............................. <tNewImg>
+  [ 99] pusharglistnoret 1 ...................... <tNewImg>
+  [101] extcall 63 .............................. return tNewImg
+  [103] ret
+end

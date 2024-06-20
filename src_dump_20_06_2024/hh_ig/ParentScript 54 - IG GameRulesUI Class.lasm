@@ -1,0 +1,227 @@
+property pWindowID, pWindowList
+
+on construct me
+  [  0] pusharglist 0 ........................... <[]>
+  [  2] pushlist ................................ <[]>
+  [  3] setprop 900 ............................. pWindowList = []
+  [  6] ret
+end
+
+on deconstruct me
+  [  0] getprop 900 ............................. <pWindowList>
+  [  3] peek 0
+  [  5] pusharglist 1
+  [  7] extcall 180
+  [  9] pushint8 1
+  [ 11] peek 0
+  [ 13] peek 2
+  [ 15] lteq
+  [ 16] jmpifz [ 41] ............................ repeat with tWindowID in pWindowList
+  [ 19] peek 2
+  [ 21] peek 1
+  [ 23] pusharglist 2
+  [ 25] extcall 181
+  [ 27] setlocal 0
+  [ 29] getlocal 0 .............................. <tWindowID>
+  [ 31] pusharglistnoret 1 ...................... <tWindowID>
+  [ 33] extcall 417 ............................. removeWindow(tWindowID)
+  [ 36] pushint8 1
+  [ 38] add
+  [ 39] endrepeat [ 11]
+  [ 41] pop 3
+  [ 43] pusharglist 0 ........................... <[]>
+  [ 45] pushlist ................................ <[]>
+  [ 46] setprop 900 ............................. pWindowList = []
+  [ 49] getparam 0 .............................. <me>
+  [ 51] getchainedprop 470 ...................... <me.ancestor>
+  [ 54] pusharglist 1 ........................... <me.ancestor>
+  [ 56] objcall 1 ............................... <me.ancestor.deconstruct()>
+  [ 58] pusharglistnoret 1 ...................... <me.ancestor.deconstruct()>
+  [ 60] extcall 38 .............................. return me.ancestor.deconstruct()
+  [ 62] ret
+end
+
+on toggle me, tGameType
+  [  0] getprop 900 ............................. <pWindowList>
+  [  3] getobjprop 180 .......................... <pWindowList.count>
+  [  5] pushzero ................................ <0>
+  [  6] eq ...................................... <pWindowList.count = 0>
+  [  7] jmpifz [ 26] ............................ if pWindowList.count = 0 then / else
+  [ 10] getparam 0 .............................. <me>
+  [ 12] getparam 1 .............................. <tGameType>
+  [ 14] pusharglist 2 ........................... <me, tGameType>
+  [ 16] objcall 513 ............................. <me.addWindows(tGameType)>
+  [ 19] pusharglistnoret 1 ...................... <me.addWindows(tGameType)>
+  [ 21] extcall 38 .............................. return me.addWindows(tGameType)
+  [ 23] jmp [ 37]
+  [ 26] getparam 0 .............................. <me>
+  [ 28] pusharglist 1 ........................... <me>
+  [ 30] objcall 637 ............................. <me.Remove()>
+  [ 33] pusharglistnoret 1 ...................... <me.Remove()>
+  [ 35] extcall 38 .............................. return me.Remove()
+  [ 37] ret
+end
+
+on addWindows me, tGameType
+  [  0] getparam 0 .............................. <me>
+  [  2] pushcons 0 .............................. <"ru">
+  [  4] setobjprop 399 .......................... me.pWindowID = "ru"
+  [  7] pusharglist 0 ........................... <>
+  [  9] thebuiltin 902 .......................... <the stageRight>
+  [ 12] pusharglist 0 ........................... <>
+  [ 14] thebuiltin 903 .......................... <the stageLeft>
+  [ 17] sub ..................................... <the stageRight - the stageLeft>
+  [ 18] setlocal 0 .............................. tStageWidth = the stageRight - the stageLeft
+  [ 20] pushint8 10 ............................. <10>
+  [ 22] setlocal 1 .............................. tLocY = 10
+  [ 24] pushcons 1 .............................. <"a">
+  [ 26] setlocal 2 .............................. tWinChar = "a"
+  [ 28] pusharglist 0 ........................... <[]>
+  [ 30] pushlist ................................ <[]>
+  [ 31] setlocal 3 .............................. tLayoutList = []
+  [ 33] pushcons 1 .............................. <"a">
+  [ 35] pusharglist 1 ........................... <"a">
+  [ 37] extcall 904 ............................. <charToNum("a")>
+  [ 40] setlocal 4
+  [ 42] getlocal 4
+  [ 44] pushcons 2 .............................. <"z">
+  [ 46] pusharglist 1 ........................... <"z">
+  [ 48] extcall 904 ............................. <charToNum("z")>
+  [ 51] lteq
+  [ 52] jmpifz [103] ............................ repeat with i = charToNum("a") to charToNum("z")
+  [ 55] pushcons 3 .............................. <"ig_pg_rules_">
+  [ 57] getlocal 4 .............................. <i>
+  [ 59] pusharglist 1 ........................... <i>
+  [ 61] extcall 905 ............................. <numToChar(i)>
+  [ 64] joinstr ................................. <"ig_pg_rules_" & numToChar(i)>
+  [ 65] pushcons 4 .............................. <"_">
+  [ 67] joinstr ................................. <"ig_pg_rules_" & numToChar(i) & "_">
+  [ 68] getparam 1 .............................. <tGameType>
+  [ 70] joinstr ................................. <"ig_pg_rules_" & numToChar(i) & "_" & tGameType>
+  [ 71] pushcons 5 .............................. <".window">
+  [ 73] joinstr ................................. <"ig_pg_rules_" & numToChar(i) & "_" & tGameType & ".window">
+  [ 74] setlocal 5 .............................. tLayoutID = "ig_pg_rules_" & numToChar(i) & "_" & tGameType & ".window"
+  [ 76] getlocal 5 .............................. <tLayoutID>
+  [ 78] pusharglist 1 ........................... <tLayoutID>
+  [ 80] extcall 390 ............................. <memberExists(tLayoutID)>
+  [ 83] jmpifz [ 94] ............................ if memberExists(tLayoutID) then
+  [ 86] getlocal 3 .............................. <tLayoutList>
+  [ 88] getlocal 5 .............................. <tLayoutID>
+  [ 90] pusharglistnoret 2 ...................... <tLayoutList, tLayoutID>
+  [ 92] objcall 224 ............................. tLayoutList.append(tLayoutID)
+  [ 94] pushint8 1
+  [ 96] getlocal 4
+  [ 98] add
+  [ 99] setlocal 4
+  [101] endrepeat [ 42]
+  [103] pushint8 1 .............................. <1>
+  [105] setlocal 4
+  [107] getlocal 4
+  [109] getlocal 3 .............................. <tLayoutList>
+  [111] getobjprop 180 .......................... <tLayoutList.count>
+  [113] lteq
+  [114] jmpifz [237] ............................ repeat with i = 1 to tLayoutList.count
+  [117] getparam 0 .............................. <me>
+  [119] getlocal 4 .............................. <i>
+  [121] pusharglist 2 ........................... <me, i>
+  [123] objcall 541 ............................. <me.getWindowId(i)>
+  [126] setlocal 6 .............................. tWindowID = me.getWindowId(i)
+  [128] getprop 900 ............................. <pWindowList>
+  [131] getlocal 6 .............................. <tWindowID>
+  [133] pusharglistnoret 2 ...................... <pWindowList, tWindowID>
+  [135] objcall 224 ............................. pWindowList.append(tWindowID)
+  [137] getlocal 6 .............................. <tWindowID>
+  [139] getlocal 3 .............................. <tLayoutList>
+  [141] getlocal 4 .............................. <i>
+  [143] pusharglist 2 ........................... <tLayoutList, i>
+  [145] objcall 181 ............................. <tLayoutList[i]>
+  [147] pusharglistnoret 2 ...................... <tWindowID, tLayoutList[i]>
+  [149] extcall 414 ............................. createWindow(tWindowID, tLayoutList[i])
+  [152] getlocal 6 .............................. <tWindowID>
+  [154] pusharglist 1 ........................... <tWindowID>
+  [156] extcall 400 ............................. <getWindow(tWindowID)>
+  [159] setlocal 7 .............................. tWndObj = getWindow(tWindowID)
+  [161] getlocal 7 .............................. <tWndObj>
+  [163] pushzero ................................ <0>
+  [164] nteq .................................... <tWndObj <> 0>
+  [165] jmpifz [228] ............................ if tWndObj <> 0 then
+  [168] getlocal 0 .............................. <tStageWidth>
+  [170] getlocal 7 .............................. <tWndObj>
+  [172] pushsymb 404 ............................ <#width>
+  [175] pusharglist 2 ........................... <tWndObj, #width>
+  [177] objcall 63 .............................. <tWndObj.getProperty(#width)>
+  [179] sub ..................................... <tStageWidth - tWndObj.getProperty(#width)>
+  [180] pushint8 10 ............................. <10>
+  [182] sub ..................................... <tStageWidth - tWndObj.getProperty(#width) - 10>
+  [183] setlocal 8 .............................. tLocX = tStageWidth - tWndObj.getProperty(#width) - 10
+  [185] getlocal 7 .............................. <tWndObj>
+  [187] getlocal 8 .............................. <tLocX>
+  [189] getlocal 1 .............................. <tLocY>
+  [191] pusharglistnoret 3 ...................... <tWndObj, tLocX, tLocY>
+  [193] objcall 86 .............................. tWndObj.moveTo(tLocX, tLocY)
+  [195] getlocal 1 .............................. <tLocY>
+  [197] getlocal 7 .............................. <tWndObj>
+  [199] pushsymb 416 ............................ <#height>
+  [202] pusharglist 2 ........................... <tWndObj, #height>
+  [204] objcall 63 .............................. <tWndObj.getProperty(#height)>
+  [206] add ..................................... <tLocY + tWndObj.getProperty(#height)>
+  [207] pushint8 2 .............................. <2>
+  [209] add ..................................... <tLocY + tWndObj.getProperty(#height) + 2>
+  [210] setlocal 1 .............................. tLocY = tLocY + tWndObj.getProperty(#height) + 2
+  [212] getlocal 7 .............................. <tWndObj>
+  [214] pushsymb 22 ............................. <#eventProcMouseDown>
+  [216] getparam 0 .............................. <me>
+  [218] pusharglist 1 ........................... <me>
+  [220] objcall 31 .............................. <me.getID()>
+  [222] pushsymb 90 ............................. <#mouseDown>
+  [224] pusharglistnoret 4 ...................... <tWndObj, #eventProcMouseDown, me.getID(), #mouseDown>
+  [226] objcall 91 .............................. tWndObj.registerProcedure(#eventProcMouseDown, me.getID(), #mouseDown)
+  [228] pushint8 1
+  [230] getlocal 4
+  [232] add
+  [233] setlocal 4
+  [235] endrepeat [107]
+  [237] pushint8 1 .............................. <1>
+  [239] pusharglistnoret 1 ...................... <1>
+  [241] extcall 38 .............................. return 1
+  [243] ret
+end
+
+on getWindowId me, tIndex
+  [  0] getparam 0 .............................. <me>
+  [  2] getobjprop 399 .......................... <me.pWindowID>
+  [  5] getparam 1 .............................. <tIndex>
+  [  7] joinstr ................................. <me.pWindowID & tIndex>
+  [  8] pusharglistnoret 1 ...................... <me.pWindowID & tIndex>
+  [ 10] extcall 38 .............................. return me.pWindowID & tIndex
+  [ 12] ret
+end
+
+on eventProcMouseDown me, tEvent, tSprID, tParam, tWndID
+  [  0] getparam 2 .............................. <tSprID>
+  [  2] pushcons 6 .............................. <"ig_close">
+  [  4] nteq .................................... <tSprID <> "ig_close">
+  [  5] jmpifz [ 14] ............................ if tSprID <> "ig_close" then
+  [  8] pushint8 1 .............................. <1>
+  [ 10] pusharglistnoret 1 ...................... <1>
+  [ 12] extcall 38 .............................. return 1
+  [ 14] getparam 4 .............................. <tWndID>
+  [ 16] pusharglistnoret 1 ...................... <tWndID>
+  [ 18] extcall 417 ............................. removeWindow(tWndID)
+  [ 21] getprop 900 ............................. <pWindowList>
+  [ 24] getparam 4 .............................. <tWndID>
+  [ 26] pusharglistnoret 2 ...................... <pWindowList, tWndID>
+  [ 28] objcall 447 ............................. pWindowList.deleteOne(tWndID)
+  [ 31] getprop 900 ............................. <pWindowList>
+  [ 34] getobjprop 180 .......................... <pWindowList.count>
+  [ 36] pushzero ................................ <0>
+  [ 37] eq ...................................... <pWindowList.count = 0>
+  [ 38] jmpifz [ 48] ............................ if pWindowList.count = 0 then
+  [ 41] getparam 0 .............................. <me>
+  [ 43] pusharglistnoret 1 ...................... <me>
+  [ 45] objcall 637 ............................. me.Remove()
+  [ 48] pushint8 1 .............................. <1>
+  [ 50] pusharglistnoret 1 ...................... <1>
+  [ 52] extcall 38 .............................. return 1
+  [ 54] ret
+end

@@ -1,0 +1,265 @@
+property pActive, pFrame, pSkipCounter, pMaxFrames
+
+on define me, tdata
+  [  0] pushzero ................................ <0>
+  [  1] setprop 400 ............................. pSkipCounter = 0
+  [  4] pushint8 1 .............................. <1>
+  [  6] setprop 85 .............................. pActive = 1
+  [  8] pushint8 1 .............................. <1>
+  [ 10] inv ..................................... <-1>
+  [ 11] setprop 401 ............................. pMaxFrames = -1
+  [ 14] getparam 0 .............................. <me>
+  [ 16] getchainedprop 27 ....................... <me.ancestor>
+  [ 18] getparam 1 .............................. <tdata>
+  [ 20] pusharglistnoret 2 ...................... <me.ancestor, tdata>
+  [ 22] objcall 135 ............................. me.ancestor.define(tdata)
+  [ 24] getparam 0 .............................. <me>
+  [ 26] pushzero ................................ <0>
+  [ 27] pusharglistnoret 2 ...................... <me, 0>
+  [ 29] objcall 398 ............................. me.setFrame(0)
+  [ 32] pushint8 1 .............................. <1>
+  [ 34] pusharglistnoret 1 ...................... <1>
+  [ 36] extcall 28 .............................. return 1
+  [ 38] ret
+end
+
+on setAnimation me, tstate
+  [  0] getparam 0 .............................. <me>
+  [  2] getparam 1 .............................. <tstate>
+  [  4] setobjprop 85 ........................... me.pActive = tstate
+  [  6] getparam 1 .............................. <tstate>
+  [  8] pushzero ................................ <0>
+  [  9] eq ...................................... <tstate = 0>
+  [ 10] jmpifz [ 21] ............................ if tstate = 0 then
+  [ 13] getparam 0 .............................. <me>
+  [ 15] pushzero ................................ <0>
+  [ 16] pusharglistnoret 2 ...................... <me, 0>
+  [ 18] objcall 398 ............................. me.setFrame(0)
+  [ 21] ret
+end
+
+on update me
+  [  0] getprop 85 .............................. <pActive>
+  [  2] not ..................................... <not pActive>
+  [  3] jmpifz [ 12] ............................ if not pActive then
+  [  6] pushint8 1 .............................. <1>
+  [  8] pusharglistnoret 1 ...................... <1>
+  [ 10] extcall 28 .............................. return 1
+  [ 12] getprop 400 ............................. <pSkipCounter>
+  [ 15] pushint8 1 .............................. <1>
+  [ 17] add ..................................... <pSkipCounter + 1>
+  [ 18] setprop 400 ............................. pSkipCounter = pSkipCounter + 1
+  [ 21] getprop 400 ............................. <pSkipCounter>
+  [ 24] pushint8 2 .............................. <2>
+  [ 26] gt ...................................... <pSkipCounter > 2>
+  [ 27] jmpifz [ 41] ............................ if pSkipCounter > 2 then
+  [ 30] pushzero ................................ <0>
+  [ 31] setprop 400 ............................. pSkipCounter = 0
+  [ 34] getparam 0 .............................. <me>
+  [ 36] pusharglistnoret 1 ...................... <me>
+  [ 38] objcall 399 ............................. me.animate()
+  [ 41] ret
+end
+
+on setFrame me, tValue
+  [  0] getparam 1 .............................. <tValue>
+  [  2] pusharglist 0 ........................... <>
+  [  4] extcall 116 ............................. <VOID>
+  [  6] eq ...................................... <tValue = VOID>
+  [  7] jmpifz [ 13] ............................ if tValue = VOID then
+  [ 10] pushzero ................................ <0>
+  [ 11] setparam 1 .............................. tValue = 0
+  [ 13] getparam 0 .............................. <me>
+  [ 15] pushsymb 402 ............................ <#pSprList>
+  [ 18] pushint8 1 .............................. <1>
+  [ 20] pusharglist 3 ........................... <me, #pSprList, 1>
+  [ 22] objcall 67 .............................. <me.pSprList[1]>
+  [ 24] setlocal 0 .............................. tsprite = me.pSprList[1]
+  [ 26] getlocal 0 .............................. <tsprite>
+  [ 28] getchainedprop 91 ....................... <tsprite.member>
+  [ 30] getobjprop 278 .......................... <tsprite.member.name>
+  [ 33] setlocal 1 .............................. tName = tsprite.member.name
+  [ 35] getlocal 1 .............................. <tName>
+  [ 37] pushsymb 403 ............................ <#char>
+  [ 40] pushint8 1 .............................. <1>
+  [ 42] getlocal 1 .............................. <tName>
+  [ 44] pusharglist 1 ........................... <tName>
+  [ 46] extcall 404 ............................. <length(tName)>
+  [ 49] pushint8 1 .............................. <1>
+  [ 51] sub ..................................... <length(tName) - 1>
+  [ 52] pusharglist 4 ........................... <tName, #char, 1, length(tName) - 1>
+  [ 54] objcall 67 .............................. <tName.char[1..length(tName) - 1]>
+  [ 56] getparam 1 .............................. <tValue>
+  [ 58] joinstr ................................. <tName.char[1..length(tName) - 1] & tValue>
+  [ 59] setlocal 1 .............................. tName = tName.char[1..length(tName) - 1] & tValue
+  [ 61] getlocal 0 .............................. <tsprite>
+  [ 63] getlocal 1 .............................. <tName>
+  [ 65] pusharglist 1 ........................... <tName>
+  [ 67] extcall 238 ............................. <getmemnum(tName)>
+  [ 69] pusharglist 1 ........................... <getmemnum(tName)>
+  [ 71] extcall 91 .............................. <member(getmemnum(tName))>
+  [ 73] setobjprop 91 ........................... tsprite.member = member(getmemnum(tName))
+  [ 75] pushint8 1 .............................. <1>
+  [ 77] pusharglistnoret 1 ...................... <1>
+  [ 79] extcall 28 .............................. return 1
+  [ 81] ret
+end
+
+on animate me
+  [  0] pushint8 1 .............................. <1>
+  [  2] setlocal 0
+  [  4] getlocal 0
+  [  6] getparam 0 .............................. <me>
+  [  8] pushsymb 402 ............................ <#pSprList>
+  [ 11] pusharglist 2 ........................... <me, #pSprList>
+  [ 13] objcall 30 .............................. <me.pSprList.count>
+  [ 15] lteq
+  [ 16] jmpifz [251] ............................ repeat with tSpriteIndex = 1 to me.pSprList.count
+  [ 19] getparam 0 .............................. <me>
+  [ 21] pushsymb 402 ............................ <#pSprList>
+  [ 24] getlocal 0 .............................. <tSpriteIndex>
+  [ 26] pusharglist 3 ........................... <me, #pSprList, tSpriteIndex>
+  [ 28] objcall 67 .............................. <me.pSprList[tSpriteIndex]>
+  [ 30] setlocal 1 .............................. tsprite = me.pSprList[tSpriteIndex]
+  [ 32] getlocal 1 .............................. <tsprite>
+  [ 34] getchainedprop 91 ....................... <tsprite.member>
+  [ 36] getobjprop 278 .......................... <tsprite.member.name>
+  [ 39] getparam 0 .............................. <me>
+  [ 41] getobjprop 407 .......................... <me.pClass>
+  [ 44] containsstr ............................. <tsprite.member.name contains me.pClass>
+  [ 45] jmpifz [242] ............................ if tsprite.member.name contains me.pClass then
+  [ 48] getprop 401 ............................. <pMaxFrames>
+  [ 51] pushint8 1 .............................. <1>
+  [ 53] inv ..................................... <-1>
+  [ 54] eq ...................................... <pMaxFrames = -1>
+  [ 55] jmpifz [ 64] ............................ if pMaxFrames = -1 then
+  [ 58] pusharglist 0 ........................... <[]>
+  [ 60] pushlist ................................ <[]>
+  [ 61] setprop 401 ............................. pMaxFrames = []
+  [ 64] getlocal 1 .............................. <tsprite>
+  [ 66] getchainedprop 91 ....................... <tsprite.member>
+  [ 68] getobjprop 278 .......................... <tsprite.member.name>
+  [ 71] setlocal 2 .............................. tName = tsprite.member.name
+  [ 73] getlocal 2 .............................. <tName>
+  [ 75] pushsymb 403 ............................ <#char>
+  [ 78] getlocal 2 .............................. <tName>
+  [ 80] pusharglist 1 ........................... <tName>
+  [ 82] extcall 404 ............................. <length(tName)>
+  [ 85] pusharglist 3 ........................... <tName, #char, length(tName)>
+  [ 87] objcall 67 .............................. <tName.char[length(tName)]>
+  [ 89] pusharglist 1 ........................... <tName.char[length(tName)]>
+  [ 91] extcall 181 ............................. <integer(tName.char[length(tName)])>
+  [ 93] setlocal 3 .............................. tCurrentFrame = integer(tName.char[length(tName)])
+  [ 95] getlocal 2 .............................. <tName>
+  [ 97] pushsymb 403 ............................ <#char>
+  [100] pushint8 1 .............................. <1>
+  [102] getlocal 2 .............................. <tName>
+  [104] pusharglist 1 ........................... <tName>
+  [106] extcall 404 ............................. <length(tName)>
+  [109] pushint8 1 .............................. <1>
+  [111] sub ..................................... <length(tName) - 1>
+  [112] pusharglist 4 ........................... <tName, #char, 1, length(tName) - 1>
+  [114] objcall 67 .............................. <tName.char[1..length(tName) - 1]>
+  [116] setlocal 4 .............................. tNamePrefix = tName.char[1..length(tName) - 1]
+  [118] getprop 401 ............................. <pMaxFrames>
+  [121] getobjprop 30 ........................... <pMaxFrames.count>
+  [123] getlocal 0 .............................. <tSpriteIndex>
+  [125] lt ...................................... <pMaxFrames.count < tSpriteIndex>
+  [126] jmpifz [196] ............................ if pMaxFrames.count < tSpriteIndex then / else
+  [129] getlocal 4 .............................. <tNamePrefix>
+  [131] getlocal 3 .............................. <tCurrentFrame>
+  [133] pushint8 1 .............................. <1>
+  [135] add ..................................... <tCurrentFrame + 1>
+  [136] joinstr ................................. <tNamePrefix & tCurrentFrame + 1>
+  [137] pusharglist 1 ........................... <tNamePrefix & tCurrentFrame + 1>
+  [139] extcall 238 ............................. <getmemnum(tNamePrefix & tCurrentFrame + 1)>
+  [141] jmpifz [154] ............................ if getmemnum(tNamePrefix & tCurrentFrame + 1) then / else
+  [144] getlocal 3 .............................. <tCurrentFrame>
+  [146] pushint8 1 .............................. <1>
+  [148] add ..................................... <tCurrentFrame + 1>
+  [149] setlocal 5 .............................. tFrame = tCurrentFrame + 1
+  [151] jmp [193]
+  [154] getprop 401 ............................. <pMaxFrames>
+  [157] getlocal 0 .............................. <tSpriteIndex>
+  [159] getlocal 3 .............................. <tCurrentFrame>
+  [161] pusharglistnoret 3 ...................... <pMaxFrames, tSpriteIndex, tCurrentFrame>
+  [163] objcall 123 ............................. pMaxFrames[tSpriteIndex] = tCurrentFrame
+  [165] pushzero ................................ <0>
+  [166] setlocal 5 .............................. tFrame = 0
+  [168] getlocal 1 .............................. <tsprite>
+  [170] getchainedprop 91 ....................... <tsprite.member>
+  [172] getobjprop 278 .......................... <tsprite.member.name>
+  [175] pushcons 0 .............................. <"_a_">
+  [177] containsstr ............................. <tsprite.member.name contains "_a_">
+  [178] jmpifz [193] ............................ if tsprite.member.name contains "_a_" then
+  [181] pushint8 3 .............................. <3>
+  [183] pusharglist 1 ........................... <3>
+  [185] extcall 258 ............................. <random(3)>
+  [188] pushint8 1 .............................. <1>
+  [190] sub ..................................... <random(3) - 1>
+  [191] setlocal 5 .............................. tFrame = random(3) - 1
+  [193] jmp [202]
+  [196] pushint8 1 .............................. <1>
+  [198] pusharglistnoret 1 ...................... <1>
+  [200] extcall 28 .............................. return 1
+  [202] getlocal 2 .............................. <tName>
+  [204] pushsymb 403 ............................ <#char>
+  [207] pushint8 1 .............................. <1>
+  [209] getlocal 2 .............................. <tName>
+  [211] pusharglist 1 ........................... <tName>
+  [213] extcall 404 ............................. <length(tName)>
+  [216] pushint8 1 .............................. <1>
+  [218] sub ..................................... <length(tName) - 1>
+  [219] pusharglist 4 ........................... <tName, #char, 1, length(tName) - 1>
+  [221] objcall 67 .............................. <tName.char[1..length(tName) - 1]>
+  [223] getlocal 5 .............................. <tFrame>
+  [225] joinstr ................................. <tName.char[1..length(tName) - 1] & tFrame>
+  [226] setlocal 2 .............................. tName = tName.char[1..length(tName) - 1] & tFrame
+  [228] getlocal 1 .............................. <tsprite>
+  [230] getlocal 2 .............................. <tName>
+  [232] pusharglist 1 ........................... <tName>
+  [234] extcall 238 ............................. <getmemnum(tName)>
+  [236] pusharglist 1 ........................... <getmemnum(tName)>
+  [238] extcall 91 .............................. <member(getmemnum(tName))>
+  [240] setobjprop 91 ........................... tsprite.member = member(getmemnum(tName))
+  [242] pushint8 1
+  [244] getlocal 0
+  [246] add
+  [247] setlocal 0
+  [249] endrepeat [  4]
+  [251] pushint8 1 .............................. <1>
+  [253] pusharglistnoret 1 ...................... <1>
+  [255] extcall 28 .............................. return 1
+  [257] ret
+end
+
+on roomObjectAction me, tAction, tdata
+  [  0] ret
+end
+
+on select me
+  [  0] pushsymb 412 ............................ <#bb_gamesystem>
+  [  3] pusharglist 1 ........................... <#bb_gamesystem>
+  [  5] extcall 166 ............................. <getObject(#bb_gamesystem)>
+  [  7] setlocal 0 .............................. tFramework = getObject(#bb_gamesystem)
+  [  9] getlocal 0 .............................. <tFramework>
+  [ 11] pushzero ................................ <0>
+  [ 12] eq ...................................... <tFramework = 0>
+  [ 13] jmpifz [ 21] ............................ if tFramework = 0 then
+  [ 16] pushzero ................................ <0>
+  [ 17] pusharglistnoret 1 ...................... <0>
+  [ 19] extcall 28 .............................. return 0
+  [ 21] getlocal 0 .............................. <tFramework>
+  [ 23] pushsymb 292 ............................ <#send_set_target>
+  [ 26] getparam 0 .............................. <me>
+  [ 28] getobjprop 55 ........................... <me.pLocX>
+  [ 30] getparam 0 .............................. <me>
+  [ 32] getobjprop 56 ........................... <me.pLocY>
+  [ 34] pusharglist 2 ........................... <[me.pLocX, me.pLocY]>
+  [ 36] pushlist ................................ <[me.pLocX, me.pLocY]>
+  [ 37] pusharglist 3 ........................... <tFramework, #send_set_target, [me.pLocX, me.pLocY]>
+  [ 39] objcall 200 ............................. <tFramework.sendGameSystemEvent(#send_set_target, [me.pLocX, me.pLocY])>
+  [ 41] pusharglistnoret 1 ...................... <tFramework.sendGameSystemEvent(#send_set_target, [me.pLocX, me.pLocY])>
+  [ 43] extcall 28 .............................. return tFramework.sendGameSystemEvent(#send_set_target, [me.pLocX, me.pLocY])
+  [ 45] ret
+end
