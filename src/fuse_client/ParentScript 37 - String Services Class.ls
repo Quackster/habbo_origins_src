@@ -4,7 +4,7 @@ on construct me
   pConvList = [:]
   pDigits = "0123456789ABCDEF"
   pUsesUTF8 = VOID
-  if value(chars(_player.productVersion, 1, 2)) >= 11 then
+  if value(_player.productVersion) >= 11 then
     pUnicodeDirector = 1
   else
     pUnicodeDirector = 0
@@ -277,6 +277,9 @@ on encodeUTF8 me, tStr
       pUsesUTF8 = VOID
     end if
   end if
+  if not pUsesUTF8 then
+    return tStr
+  end if
   tUnicodeData = me.convertToUnicode(tStr)
   tUTF8Data = []
   repeat with i = 1 to tUnicodeData.count
@@ -301,11 +304,10 @@ on encodeUTF8 me, tStr
 end
 
 on decodeUTF8 me, tStr, tForceDecode
-  startProfilingTask("DecodeUTF8")
   if voidp(pUsesUTF8) then
     tVar = "client.textdata.utf8"
     if variableExists(tVar) then
-      pUsesUTF8 = getIntVariable(tVar)
+      pUsesUTF8 = getVariableValue(tVar)
     else
       pUsesUTF8 = VOID
     end if
@@ -349,7 +351,7 @@ on decodeUTF8 me, tStr, tForceDecode
       tUnicodeData.add(tValue)
     else
       if tValue > 224 then
-        if (i + 2) <= tBinData.count then
+        if i <= (tBinData.count + 2) then
           tValue2 = tBinData[i + 1]
           tValue3 = tBinData[i + 2]
           tResVal = (((bitAnd(tValue, 15) * 64) + bitAnd(tValue2, 63)) * 64) + bitAnd(tValue3, 63)
@@ -358,7 +360,7 @@ on decodeUTF8 me, tStr, tForceDecode
         i = i + 2
       else
         if tValue > 192 then
-          if (i + 1) <= tBinData.count then
+          if i <= (tBinData.count + 1) then
             tValue2 = tBinData[i + 1]
             tResVal = (bitAnd(tValue, 31) * 64) + bitAnd(tValue2, 63)
             tUnicodeData.add(tResVal)
@@ -370,7 +372,6 @@ on decodeUTF8 me, tStr, tForceDecode
     i = i + 1
   end repeat
   tResult = me.convertFromUnicode(tUnicodeData)
-  finishProfilingTask("DecodeUTF8")
   return tResult
 end
 
@@ -464,8 +465,4 @@ on initConvList me
     pConvList[tKey] = tVal
   end repeat
   return 1
-end
-
-on handlers
-  return []
 end

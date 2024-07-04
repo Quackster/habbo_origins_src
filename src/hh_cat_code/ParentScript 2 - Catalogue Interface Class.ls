@@ -1258,10 +1258,6 @@ on eventProcInfoWnd me, tEvent, tSprID, tParam, tWndID
       end if
       tSession = getObject(#session)
       tURL = getText("url_nobalance")
-      tURL = tURL & urlEncode(tSession.get(#userName))
-      if tSession.exists("user_checksum") then
-        tURL = tURL & "&sum=" & urlEncode(tSession.get("user_checksum"))
-      end if
       openNetPage(tURL, "_new")
       me.hideOrderInfo()
       pActiveOrderCode = EMPTY

@@ -69,12 +69,12 @@ on handle_doorbell_ringing me, tMsg
   if tMsg.content = EMPTY then
     return me.getInterface().showDoorBellWaiting()
   else
-    return me.getInterface().showDoorBellDialog(tMsg.content)
+    return me.getInterface().showDoorBellDialog(tMsg.connection.GetStrFrom())
   end if
 end
 
 on handle_flatnotallowedtoenter me, tMsg
-  tConn = tMsg.connection
+  tConn = tMsg.connection.GetStrFrom()
   tName = tConn.GetStrFrom()
   return me.getInterface().showDoorBellRejected(tName)
 end
@@ -418,7 +418,7 @@ on handle_items me, tMsg
     tLine = tMsg.content.line[i]
     if tLine <> EMPTY then
       tObj = [:]
-      tObj[#id] = tLine.item[1]
+      tObj[#id] = string(integer(tLine.item[1]))
       tObj[#class] = tLine.item[2]
       tObj[#owner] = tLine.item[3]
       tObj[#type] = tLine.item[5]
@@ -438,11 +438,11 @@ on handle_items me, tMsg
         tLocString = tLine.item[4]
         tWallLoc = tLocString.word[1].char[4..length(tLocString.word[1])]
         the itemDelimiter = ","
-        tObj[#wall_x] = value(tWallLoc.item[1])
-        tObj[#wall_y] = value(tWallLoc.item[2])
+        tObj[#wall_x] = integer(tWallLoc.item[1])
+        tObj[#wall_y] = integer(tWallLoc.item[2])
         tLocalLoc = tLocString.word[2].char[3..length(tLocString.word[2])]
-        tObj[#local_x] = value(tLocalLoc.item[1])
-        tObj[#local_y] = value(tLocalLoc.item[2])
+        tObj[#local_x] = integer(tLocalLoc.item[1])
+        tObj[#local_y] = integer(tLocalLoc.item[2])
         tDirChar = tLocString.word[3]
         case tDirChar of
           "r":
@@ -999,6 +999,7 @@ on regMsgList me, tBool
   tCmds.setaProp("GETPETSTAT", 128)
   tCmds.setaProp("SETBADGE", 158)
   tCmds.setaProp("GETINTERST", 182)
+  tCmds.setaProp("ROOMBAN", 330)
   if tBool then
     registerListener(getVariable("connection.room.id"), me.getID(), tMsgs)
     registerCommands(getVariable("connection.room.id"), me.getID(), tCmds)

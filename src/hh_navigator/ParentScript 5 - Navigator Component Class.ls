@@ -554,19 +554,7 @@ on sendupdateFlatInfo me, tPropList
   if (tPropList.ilk <> #propList) or voidp(tPropList[#flatId]) then
     return error(me, "Cant send updateFlatInfo", #sendupdateFlatInfo)
   end if
-  tFlatMsg = EMPTY
-  repeat with tProp in [#flatId, #name, #door, #showownername]
-    tFlatMsg = tFlatMsg & tPropList[tProp] & "/"
-  end repeat
-  tFlatMsg = tFlatMsg.char[1..length(tFlatMsg) - 1]
-  getConnection(pConnectionId).send("UPDATEFLAT", [#string: string(tFlatMsg)])
-  tFlatMsg = replaceChars(string(tPropList[#flatId]), "/", SPACE) & "/" & RETURN
-  tFlatMsg = tFlatMsg & "description=" & tPropList[#description] & RETURN
-  tFlatMsg = tFlatMsg & "password=" & tPropList[#password] & RETURN
-  tFlatMsg = tFlatMsg & "allsuperuser=" & tPropList[#ableothersmovefurniture] & RETURN
-  tFlatMsg = tFlatMsg & "maxvisitors=" & tPropList[#maxVisitors]
-  put "Sending update flat: " && tFlatMsg
-  getConnection(pConnectionId).send("SETFLATINFO", [#string: string(tFlatMsg)])
+  getConnection(pConnectionId).send("UPDATEFLAT", [#integer: integer(tPropList[#flatId]), #string: string(tPropList[#name]), #string: string(tPropList[#description]), #string: string(tPropList[#door]), #string: string(tPropList[#password]), #integer: integer(tPropList[#showownername]), #integer: integer(tPropList[#ableothersmovefurniture]), #integer: integer(tPropList[#maxVisitors])])
   return 1
 end
 

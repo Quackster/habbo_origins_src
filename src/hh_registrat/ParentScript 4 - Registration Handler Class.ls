@@ -106,7 +106,7 @@ end
 on handle_totp_email_verification_required me, tMsg
   tFlag = tMsg.connection.GetIntFrom(tMsg)
   if tFlag = 0 then
-    me.changePage(1)
+    me.getInterface().changePage(1)
   end if
   if tFlag = 1 then
     me.getComponent().onTotpEmailVerificationNeedQueryResult(tFlag)

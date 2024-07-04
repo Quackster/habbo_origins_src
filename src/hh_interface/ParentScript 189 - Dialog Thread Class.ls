@@ -221,9 +221,9 @@ on showDialog me, tWndID, tProps
 end
 
 on buildResources me
-  pWriterPlain = "dialog_writer_plain"
-  pWriterLink = "dialog_writer_link"
-  pWriterBold = "dialog_writer_bold"
+  pWriterPlain = "dialog_writer_plain_dt"
+  pWriterLink = "dialog_writer_link_dt"
+  pWriterBold = "dialog_writer_bold_dt"
   tFontPlain = getStructVariable("struct.font.plain")
   tFontLink = getStructVariable("struct.font.link")
   tFontBold = getStructVariable("struct.font.bold")
