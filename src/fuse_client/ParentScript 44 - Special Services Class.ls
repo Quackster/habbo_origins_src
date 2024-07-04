@@ -35,7 +35,6 @@ end
 on catch me
   the alertHook = pSavedHook
   return pCatchFlag
-  return 0
 end
 
 on createToolTip me, tText
@@ -101,16 +100,7 @@ on setcursor me, ttype
   return 1
 end
 
-on callJavaScriptFunction me, tCallString, tdata
-  startProfilingTask("Special Services::callJavascriptFunction")
-  if the runMode = "Author" then
-    return 0
-  end if
-  script("JavaScript Proxy").callJavaScript(QUOTE & tCallString & QUOTE, QUOTE & tdata & QUOTE)
-  finishProfilingTask("Special Services::callJavascriptFunction")
-end
-
-on openNetPage me, tURL_key, tTarget
+on openNetPage me, tURL_key
   if not stringp(tURL_key) then
     return 0
   end if
@@ -119,40 +109,23 @@ on openNetPage me, tURL_key, tTarget
   else
     tURL = tURL_key
   end if
-  tURL = me.getPredefinedURL(tURL)
-  tResolvedTarget = VOID
-  tTargetIsPArent = 0
-  if voidp(tTarget) then
-    if variableExists("default.url.open.target") then
-      tResolvedTarget = getVariable("default.url.open.target")
-      tTargetIsPArent = 1
+  if tURL contains "http://%predefined%/" then
+    if getVariable("url.prefix").ilk = #string then
+      tURL = replaceChunks(tURL, "http://%predefined%/", getVariable("url.prefix"))
     else
-      tResolvedTarget = "_new"
-    end if
-  else
-    if (tTarget = "self") or (tTarget = "_self") then
-      tResolvedTarget = VOID
-    else
-      if (tTarget = "_new") or (tTarget = "new") then
-        tResolvedTarget = "_new"
-      else
-        tResolvedTarget = tTarget
-      end if
+      return error(me, "URL prefix not defined, invalid link.", #openNetPage)
     end if
   end if
-  gotoNetPage(tURL, tResolvedTarget)
-  put "Open page:" && tURL && "target:" && tResolvedTarget
+  gotoNetPage(tURL, "_new")
+  put "Open page:" && tURL
   return 1
 end
 
 on showLoadingBar me, tLoadID, tProps
   tObj = createObject(#random, getClassVariable("loading.bar.class"))
-  if tObj = 0 then
-    return error(me, "Couldn't create loading bar instance!", #showLoadingBar, #major)
-  end if
   if not tObj.define(tLoadID, tProps) then
     removeObject(tObj.getID())
-    return error(me, "Couldn't initialize loading bar instance!", #showLoadingBar, #major)
+    return error(me, "Couldn't initialize loading bar instance!", #showLoadingBar)
   end if
   return tObj.getID()
 end
@@ -176,6 +149,16 @@ on getMachineID me
   return tMachineID
 end
 
+on generateMachineId me, tMaxLength
+  tMachineID = string(the milliSeconds) & string(the time) & string(the date)
+  tLocaleDelimiters = [".", ",", ":", ";", "/", "\", "am", "pm", " ", "-", "AM", "PM", numToChar(10), numToChar(13)]
+  repeat with tDelimiter in tLocaleDelimiters
+    tMachineID = replaceChunks(tMachineID, tDelimiter, EMPTY)
+  end repeat
+  tMachineID = chars(tMachineID, 1, tMaxLength)
+  return tMachineID
+end
+
 on getMoviePath me
   tVariableID = "system.v1"
   if not variableExists(tVariableID) then
@@ -184,65 +167,12 @@ on getMoviePath me
   return deobfuscate(getVariable(tVariableID))
 end
 
-on getDomainPart me, tPath
-  if voidp(tPath) then
-    return EMPTY
-  end if
-  if chars(tPath, 1, 8) = "https://" then
-    tPath = chars(tPath, 9, tPath.length)
-  else
-    if chars(tPath, 1, 7) = "http://" then
-      tPath = chars(tPath, 8, tPath.length)
-    end if
-  end if
-  tDelim = the itemDelimiter
-  the itemDelimiter = "/"
-  tPath = tPath.item[1]
-  the itemDelimiter = "."
-  tMaxItemCount = 2
-  if tPath contains ".co." then
-    tMaxItemCount = tMaxItemCount + 1
-  end if
-  tPath = tPath.item[tPath.item.count - tMaxItemCount + 1..tPath.item.count]
-  the itemDelimiter = ":"
-  tPath = tPath.item[1]
-  the itemDelimiter = tDelim
-  return tPath
-end
-
-on getPredefinedURL me, tURL
-  if tURL contains "http://%predefined%/" then
-    if variableExists("url.prefix") then
-      tReplace = "http://%predefined%"
-      tPrefix = getVariable("url.prefix")
-      if chars(tPrefix, tPrefix.length, tPrefix.length) = "/" then
-        tReplace = "http://%predefined%/"
-      end if
-      tURL = replaceChunks(tURL, tReplace, tPrefix)
-    else
-      return error(me, "URL prefix not defined, invalid link.", #getPredefinedURL, #minor)
-    end if
-  end if
-  return tURL
-end
-
 on getExtVarPath me
   tVariableID = "system.v2"
   if not variableExists(tVariableID) then
     return getVariableManager().get("external.variables.txt")
   end if
   return deobfuscate(getVariable(tVariableID))
-end
-
-on sendProcessTracking me, tStepValue
-  if not variableExists("processlog.enabled") then
-    return 0
-  end if
-  if not getVariable("processlog.enabled") then
-    return 0
-  end if
-  tJsHandler = script("javascriptLog").newJavascriptLog()
-  tJsHandler.call(tStepValue)
 end
 
 on secretDecode me, tKey
@@ -298,6 +228,10 @@ on readValueFromField me, tField, tDelimiter, tSearchedKey
         if stringp(tValue) then
           repeat with j = 1 to length(tValue)
             case charToNum(tValue.char[j]) of
+              228:
+                put "Š" into char j of tValue
+              246:
+                put "š" into char j of tValue
             end case
           end repeat
         end if
@@ -311,31 +245,11 @@ on readValueFromField me, tField, tDelimiter, tSearchedKey
   return 0
 end
 
-on addRandomParamToURL me, tURL
-  tRandomParamName = "randp"
-  tSeparator = "?"
-  if tURL contains "?" then
-    tSeparator = "&"
-  end if
-  tURL = tURL & tSeparator & tRandomParamName & random(999) & "=1"
-  return tURL
-end
-
 on print me, tObj, tMsg
   tObj = string(tObj)
   tObj = tObj.word[2..tObj.word.count - 2]
   tObj = tObj.char[2..length(tObj)]
   put "Print:" & RETURN & TAB && "Object: " && tObj & RETURN & TAB && "Message:" && tMsg
-end
-
-on generateMachineId me, tMaxLength
-  tMachineID = string(the milliSeconds) & string(the time) & string(the date)
-  tLocaleDelimiters = [".", ",", ":", ";", "/", "\", "am", "pm", " ", "-", "AM", "PM", numToChar(10), numToChar(13)]
-  repeat with tDelimiter in tLocaleDelimiters
-    tMachineID = replaceChunks(tMachineID, tDelimiter, EMPTY)
-  end repeat
-  tMachineID = chars(tMachineID, 1, tMaxLength)
-  return tMachineID
 end
 
 on setExtVarPath me, tURL
@@ -368,15 +282,4 @@ on alertHook me
   pCatchFlag = 1
   the alertHook = pSavedHook
   return 1
-end
-
-on getReceipt me, tStamp
-  tReceipt = []
-  repeat with tCharNo = 1 to tStamp.length
-    tChar = chars(tStamp, tCharNo, tCharNo)
-    tChar = charToNum(tChar)
-    tChar = (tChar * tCharNo) + 309203
-    tReceipt[tCharNo] = tChar
-  end repeat
-  return tReceipt
 end

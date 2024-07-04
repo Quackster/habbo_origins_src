@@ -195,7 +195,6 @@ on myHabboSmile me
     getObject("Figure_Preview").createTemplateHuman("h", 3, "gest", "temp sml")
   end if
   me.delay(1200, #stopWaving)
-  getObject(#session).set(#password, VOID)
 end
 
 on stopWaving me
