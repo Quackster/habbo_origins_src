@@ -1,0 +1,536 @@
+property pTaskId, pBuffer, pBgColor, pcolor, pwidth, pheight, pBarRect, pOffRect, pTaskType, pPercent, pDrawPoint, pWindowID, pReadyFlag
+
+on construct me
+  [  0] pushsymb 1208 ........................... <#bgColor>
+  [  3] getmovieprop 928 ........................ <the stage>
+  [  6] getobjprop 1208 ......................... <(the stage).bgColor>
+  [  9] pushsymb 589 ............................ <#color>
+  [ 12] pushint16 128 ........................... <128>
+  [ 15] pushint16 128 ........................... <128>
+  [ 18] pushint16 128 ........................... <128>
+  [ 21] pusharglist 3 ........................... <128, 128, 128>
+  [ 23] extcall 568 ............................. <rgb(128, 128, 128)>
+  [ 26] pushsymb 42 ............................. <#width>
+  [ 28] pushint16 128 ........................... <128>
+  [ 31] pushsymb 43 ............................. <#height>
+  [ 33] pushint8 16 ............................. <16>
+  [ 35] pusharglist 8 ........................... <[#bgColor: (the stage).bgColor, #color: rgb(128, 128, 128), #width: 128, #height: 16]>
+  [ 37] pushproplist ............................ <[#bgColor: (the stage).bgColor, #color: rgb(128, 128, 128), #width: 128, #height: 16]>
+  [ 38] setlocal 0 .............................. tProps = [#bgColor: (the stage).bgColor, #color: rgb(128, 128, 128), #width: 128, #height: 16]
+  [ 40] pushcons 0 .............................. <"loading.bar.props">
+  [ 42] getlocal 0 .............................. <tProps>
+  [ 44] pusharglist 2 ........................... <"loading.bar.props", tProps>
+  [ 46] extcall 367 ............................. <getVariableValue("loading.bar.props", tProps)>
+  [ 49] setlocal 0 .............................. tProps = getVariableValue("loading.bar.props", tProps)
+  [ 51] pushcons 1 .............................. <EMPTY>
+  [ 53] setprop 1556 ............................ pTaskId = EMPTY
+  [ 56] getmovieprop 928 ........................ <the stage>
+  [ 59] getobjprop 492 .......................... <(the stage).image>
+  [ 62] setprop 455 ............................. pBuffer = (the stage).image
+  [ 65] getlocal 0 .............................. <tProps>
+  [ 67] pushsymb 42 ............................. <#width>
+  [ 69] pusharglist 2 ........................... <tProps, #width>
+  [ 71] objcall 54 .............................. <tProps[#width]>
+  [ 73] setprop 489 ............................. pwidth = tProps[#width]
+  [ 76] getlocal 0 .............................. <tProps>
+  [ 78] pushsymb 43 ............................. <#height>
+  [ 80] pusharglist 2 ........................... <tProps, #height>
+  [ 82] objcall 54 .............................. <tProps[#height]>
+  [ 84] setprop 494 ............................. pheight = tProps[#height]
+  [ 87] getlocal 0 .............................. <tProps>
+  [ 89] pushsymb 1208 ........................... <#bgColor>
+  [ 92] pusharglist 2 ........................... <tProps, #bgColor>
+  [ 94] objcall 54 .............................. <tProps[#bgColor]>
+  [ 96] setprop 1557 ............................ pBgColor = tProps[#bgColor]
+  [ 99] getlocal 0 .............................. <tProps>
+  [101] pushsymb 589 ............................ <#color>
+  [104] pusharglist 2 ........................... <tProps, #color>
+  [106] objcall 54 .............................. <tProps[#color]>
+  [108] setprop 1558 ............................ pcolor = tProps[#color]
+  [111] pushsymb 1560 ........................... <#cast>
+  [114] setprop 1559 ............................ pTaskType = #cast
+  [117] pushzero ................................ <0>
+  [118] setprop 1561 ............................ pDrawPoint = 0
+  [121] pushcons 1 .............................. <EMPTY>
+  [123] setprop 1562 ............................ pWindowID = EMPTY
+  [126] pushzero ................................ <0>
+  [127] setprop 1563 ............................ pReadyFlag = 0
+  [130] pushint8 1 .............................. <1>
+  [132] pusharglistnoret 1 ...................... <1>
+  [134] extcall 25 .............................. return 1
+  [136] ret
+end
+
+on deconstruct me
+  [  0] pusharglist 0 ........................... <>
+  [  2] extcall 32 .............................. <VOID>
+  [  4] setprop 1556 ............................ pTaskId = VOID
+  [  7] getparam 0 .............................. <me>
+  [  9] pusharglist 1 ........................... <me>
+  [ 11] objcall 3 ............................... <me.getID()>
+  [ 13] pusharglistnoret 1 ...................... <me.getID()>
+  [ 15] extcall 107 ............................. removePrepare(me.getID())
+  [ 17] getprop 1562 ............................ <pWindowID>
+  [ 20] pushcons 1 .............................. <EMPTY>
+  [ 22] nteq .................................... <pWindowID <> EMPTY>
+  [ 23] jmpifz [ 39] ............................ if pWindowID <> EMPTY then
+  [ 26] getprop 1562 ............................ <pWindowID>
+  [ 29] pusharglistnoret 1 ...................... <pWindowID>
+  [ 31] extcall 316 ............................. removeWindow(pWindowID)
+  [ 34] pushcons 1 .............................. <EMPTY>
+  [ 36] setprop 1562 ............................ pWindowID = EMPTY
+  [ 39] pushint8 1 .............................. <1>
+  [ 41] pusharglistnoret 1 ...................... <1>
+  [ 43] extcall 25 .............................. return 1
+  [ 45] ret
+end
+
+on define me, tLoadID, tProps
+  [  0] getparam 1 .............................. <tLoadID>
+  [  2] pusharglist 1 ........................... <tLoadID>
+  [  4] extcall 38 .............................. <stringp(tLoadID)>
+  [  6] not ..................................... <not stringp(tLoadID)>
+  [  7] getparam 1 .............................. <tLoadID>
+  [  9] pusharglist 1 ........................... <tLoadID>
+  [ 11] extcall 46 .............................. <symbolp(tLoadID)>
+  [ 13] not ..................................... <not symbolp(tLoadID)>
+  [ 14] and ..................................... <not stringp(tLoadID) and not symbolp(tLoadID)>
+  [ 15] jmpifz [ 36] ............................ if not stringp(tLoadID) and not symbolp(tLoadID) then
+  [ 18] getparam 0 .............................. <me>
+  [ 20] pushcons 2 .............................. <"Invalid castload task ID:">
+  [ 22] getparam 1 .............................. <tLoadID>
+  [ 24] joinpadstr .............................. <"Invalid castload task ID:" && tLoadID>
+  [ 25] pushsymb 426 ............................ <#define>
+  [ 28] pusharglist 3 ........................... <me, "Invalid castload task ID:" && tLoadID, #define>
+  [ 30] extcall 39 .............................. <error(me, "Invalid castload task ID:" && tLoadID, #define)>
+  [ 32] pusharglistnoret 1 ...................... <error(me, "Invalid castload task ID:" && tLoadID, #define)>
+  [ 34] extcall 25 .............................. return error(me, "Invalid castload task ID:" && tLoadID, #define)
+  [ 36] getparam 1 .............................. <tLoadID>
+  [ 38] setprop 1556 ............................ pTaskId = tLoadID
+  [ 41] pushfloat32 0.0 ......................... <0.0>
+  [ 46] setprop 827 ............................. pPercent = 0.0
+  [ 49] pushzero ................................ <0>
+  [ 50] setprop 1561 ............................ pDrawPoint = 0
+  [ 53] pushzero ................................ <0>
+  [ 54] setprop 1563 ............................ pReadyFlag = 0
+  [ 57] getparam 2 .............................. <tProps>
+  [ 59] pushsymb 800 ............................ <#propList>
+  [ 62] pusharglist 2 ........................... <tProps, #propList>
+  [ 64] extcall 480 ............................. <ilk(tProps, #propList)>
+  [ 67] jmpifz [368] ............................ if ilk(tProps, #propList) then
+  [ 70] getparam 2 .............................. <tProps>
+  [ 72] pushsymb 454 ............................ <#buffer>
+  [ 75] pusharglist 2 ........................... <tProps, #buffer>
+  [ 77] objcall 54 .............................. <tProps[#buffer]>
+  [ 79] pusharglist 1 ........................... <tProps[#buffer]>
+  [ 81] extcall 480 ............................. <ilk(tProps[#buffer])>
+  [ 84] pushsymb 492 ............................ <#image>
+  [ 87] eq ...................................... <ilk(tProps[#buffer]) = #image>
+  [ 88] jmpifz [103] ............................ if ilk(tProps[#buffer]) = #image then
+  [ 91] getparam 2 .............................. <tProps>
+  [ 93] pushsymb 454 ............................ <#buffer>
+  [ 96] pusharglist 2 ........................... <tProps, #buffer>
+  [ 98] objcall 54 .............................. <tProps[#buffer]>
+  [100] setprop 455 ............................. pBuffer = tProps[#buffer]
+  [103] getparam 2 .............................. <tProps>
+  [105] pushsymb 42 ............................. <#width>
+  [107] pusharglist 2 ........................... <tProps, #width>
+  [109] objcall 54 .............................. <tProps[#width]>
+  [111] pushsymb 915 ............................ <#integer>
+  [114] pusharglist 2 ........................... <tProps[#width], #integer>
+  [116] extcall 480 ............................. <ilk(tProps[#width], #integer)>
+  [119] jmpifz [133] ............................ if ilk(tProps[#width], #integer) then
+  [122] getparam 2 .............................. <tProps>
+  [124] pushsymb 42 ............................. <#width>
+  [126] pusharglist 2 ........................... <tProps, #width>
+  [128] objcall 54 .............................. <tProps[#width]>
+  [130] setprop 489 ............................. pwidth = tProps[#width]
+  [133] getparam 2 .............................. <tProps>
+  [135] pushsymb 43 ............................. <#height>
+  [137] pusharglist 2 ........................... <tProps, #height>
+  [139] objcall 54 .............................. <tProps[#height]>
+  [141] pushsymb 915 ............................ <#integer>
+  [144] pusharglist 2 ........................... <tProps[#height], #integer>
+  [146] extcall 480 ............................. <ilk(tProps[#height], #integer)>
+  [149] jmpifz [163] ............................ if ilk(tProps[#height], #integer) then
+  [152] getparam 2 .............................. <tProps>
+  [154] pushsymb 43 ............................. <#height>
+  [156] pusharglist 2 ........................... <tProps, #height>
+  [158] objcall 54 .............................. <tProps[#height]>
+  [160] setprop 494 ............................. pheight = tProps[#height]
+  [163] getparam 2 .............................. <tProps>
+  [165] pushsymb 1208 ........................... <#bgColor>
+  [168] pusharglist 2 ........................... <tProps, #bgColor>
+  [170] objcall 54 .............................. <tProps[#bgColor]>
+  [172] pushsymb 589 ............................ <#color>
+  [175] pusharglist 2 ........................... <tProps[#bgColor], #color>
+  [177] extcall 480 ............................. <ilk(tProps[#bgColor], #color)>
+  [180] jmpifz [195] ............................ if ilk(tProps[#bgColor], #color) then
+  [183] getparam 2 .............................. <tProps>
+  [185] pushsymb 1208 ........................... <#bgColor>
+  [188] pusharglist 2 ........................... <tProps, #bgColor>
+  [190] objcall 54 .............................. <tProps[#bgColor]>
+  [192] setprop 1557 ............................ pBgColor = tProps[#bgColor]
+  [195] getparam 2 .............................. <tProps>
+  [197] pushsymb 589 ............................ <#color>
+  [200] pusharglist 2 ........................... <tProps, #color>
+  [202] objcall 54 .............................. <tProps[#color]>
+  [204] pushsymb 589 ............................ <#color>
+  [207] pusharglist 2 ........................... <tProps[#color], #color>
+  [209] extcall 480 ............................. <ilk(tProps[#color], #color)>
+  [212] jmpifz [227] ............................ if ilk(tProps[#color], #color) then
+  [215] getparam 2 .............................. <tProps>
+  [217] pushsymb 589 ............................ <#color>
+  [220] pusharglist 2 ........................... <tProps, #color>
+  [222] objcall 54 .............................. <tProps[#color]>
+  [224] setprop 1558 ............................ pcolor = tProps[#color]
+  [227] getparam 2 .............................. <tProps>
+  [229] pushsymb 446 ............................ <#type>
+  [232] pusharglist 2 ........................... <tProps, #type>
+  [234] objcall 54 .............................. <tProps[#type]>
+  [236] pushsymb 562 ............................ <#symbol>
+  [239] pusharglist 2 ........................... <tProps[#type], #symbol>
+  [241] extcall 480 ............................. <ilk(tProps[#type], #symbol)>
+  [244] jmpifz [259] ............................ if ilk(tProps[#type], #symbol) then
+  [247] getparam 2 .............................. <tProps>
+  [249] pushsymb 446 ............................ <#type>
+  [252] pusharglist 2 ........................... <tProps, #type>
+  [254] objcall 54 .............................. <tProps[#type]>
+  [256] setprop 1559 ............................ pTaskType = tProps[#type]
+  [259] getparam 2 .............................. <tProps>
+  [261] pushsymb 454 ............................ <#buffer>
+  [264] pusharglist 2 ........................... <tProps, #buffer>
+  [266] objcall 54 .............................. <tProps[#buffer]>
+  [268] pushsymb 1564 ........................... <#window>
+  [271] eq ...................................... <tProps[#buffer] = #window>
+  [272] jmpifz [368] ............................ if tProps[#buffer] = #window then
+  [275] getprop 1562 ............................ <pWindowID>
+  [278] pushcons 1 .............................. <EMPTY>
+  [280] nteq .................................... <pWindowID <> EMPTY>
+  [281] jmpifz [292] ............................ if pWindowID <> EMPTY then
+  [284] getprop 1562 ............................ <pWindowID>
+  [287] pusharglistnoret 1 ...................... <pWindowID>
+  [289] extcall 316 ............................. removeWindow(pWindowID)
+  [292] getparam 0 .............................. <me>
+  [294] pusharglist 1 ........................... <me>
+  [296] objcall 3 ............................... <me.getID()>
+  [298] getmovieprop 664 ........................ <the milliSeconds>
+  [301] joinpadstr .............................. <me.getID() && the milliSeconds>
+  [302] setprop 1562 ............................ pWindowID = me.getID() && the milliSeconds
+  [305] getprop 1562 ............................ <pWindowID>
+  [308] pushcons 3 .............................. <"system.window">
+  [310] pusharglistnoret 2 ...................... <pWindowID, "system.window">
+  [312] extcall 315 ............................. createWindow(pWindowID, "system.window")
+  [315] getprop 1562 ............................ <pWindowID>
+  [318] pusharglist 1 ........................... <pWindowID>
+  [320] extcall 317 ............................. <getWindow(pWindowID)>
+  [323] setlocal 0 .............................. tWndObj = getWindow(pWindowID)
+  [325] getlocal 0 .............................. <tWndObj>
+  [327] getprop 489 ............................. <pwidth>
+  [330] getprop 494 ............................. <pheight>
+  [333] pusharglistnoret 3 ...................... <tWndObj, pwidth, pheight>
+  [335] objcall 959 ............................. tWndObj.resizeTo(pwidth, pheight)
+  [338] getlocal 0 .............................. <tWndObj>
+  [340] pusharglistnoret 1 ...................... <tWndObj>
+  [342] objcall 498 ............................. tWndObj.center()
+  [345] getlocal 0 .............................. <tWndObj>
+  [347] pushcons 4 .............................. <"drag">
+  [349] pusharglist 2 ........................... <tWndObj, "drag">
+  [351] objcall 960 ............................. <tWndObj.getElement("drag")>
+  [354] pushsymb 454 ............................ <#buffer>
+  [357] pusharglist 2 ........................... <tWndObj.getElement("drag"), #buffer>
+  [359] objcall 434 ............................. <tWndObj.getElement("drag").getProperty(#buffer)>
+  [362] getobjprop 492 .......................... <tWndObj.getElement("drag").getProperty(#buffer).image>
+  [365] setprop 455 ............................. pBuffer = tWndObj.getElement("drag").getProperty(#buffer).image
+  [368] getparam 2 .............................. <tProps>
+  [370] pushsymb 531 ............................ <#locY>
+  [373] pusharglist 2 ........................... <tProps, #locY>
+  [375] objcall 54 .............................. <tProps[#locY]>
+  [377] pusharglist 1 ........................... <tProps[#locY]>
+  [379] extcall 20 .............................. <voidp(tProps[#locY])>
+  [381] not ..................................... <not voidp(tProps[#locY])>
+  [382] jmpifz [411] ............................ if not voidp(tProps[#locY]) then
+  [385] getlocal 0 .............................. <tWndObj>
+  [387] getlocal 0 .............................. <tWndObj>
+  [389] pushsymb 530 ............................ <#locX>
+  [392] pusharglist 2 ........................... <tWndObj, #locX>
+  [394] objcall 434 ............................. <tWndObj.getProperty(#locX)>
+  [397] getparam 2 .............................. <tProps>
+  [399] pushsymb 531 ............................ <#locY>
+  [402] pusharglist 2 ........................... <tProps, #locY>
+  [404] objcall 54 .............................. <tProps[#locY]>
+  [406] pusharglistnoret 3 ...................... <tWndObj, tWndObj.getProperty(#locX), tProps[#locY]>
+  [408] objcall 958 ............................. tWndObj.moveTo(tWndObj.getProperty(#locX), tProps[#locY])
+  [411] getparam 2 .............................. <tProps>
+  [413] pushsymb 530 ............................ <#locX>
+  [416] pusharglist 2 ........................... <tProps, #locX>
+  [418] objcall 54 .............................. <tProps[#locX]>
+  [420] pusharglist 1 ........................... <tProps[#locX]>
+  [422] extcall 20 .............................. <voidp(tProps[#locX])>
+  [424] not ..................................... <not voidp(tProps[#locX])>
+  [425] jmpifz [454] ............................ if not voidp(tProps[#locX]) then
+  [428] getlocal 0 .............................. <tWndObj>
+  [430] getparam 2 .............................. <tProps>
+  [432] pushsymb 531 ............................ <#locY>
+  [435] pusharglist 2 ........................... <tProps, #locY>
+  [437] objcall 54 .............................. <tProps[#locY]>
+  [439] getlocal 0 .............................. <tWndObj>
+  [441] pushsymb 531 ............................ <#locY>
+  [444] pusharglist 2 ........................... <tWndObj, #locY>
+  [446] objcall 434 ............................. <tWndObj.getProperty(#locY)>
+  [449] pusharglistnoret 3 ...................... <tWndObj, tProps[#locY], tWndObj.getProperty(#locY)>
+  [451] objcall 958 ............................. tWndObj.moveTo(tProps[#locY], tWndObj.getProperty(#locY))
+  [454] getprop 455 ............................. <pBuffer>
+  [457] getobjprop 547 .......................... <pBuffer.rect>
+  [460] setlocal 1 .............................. tRect = pBuffer.rect
+  [462] getprop 489 ............................. <pwidth>
+  [465] getlocal 1 .............................. <tRect>
+  [467] getobjprop 42 ........................... <tRect.width>
+  [469] gt ...................................... <pwidth > tRect.width>
+  [470] jmpifz [480] ............................ if pwidth > tRect.width then
+  [473] getlocal 1 .............................. <tRect>
+  [475] getobjprop 42 ........................... <tRect.width>
+  [477] setprop 489 ............................. pwidth = tRect.width
+  [480] getprop 494 ............................. <pheight>
+  [483] getlocal 1 .............................. <tRect>
+  [485] getobjprop 43 ........................... <tRect.height>
+  [487] gt ...................................... <pheight > tRect.height>
+  [488] jmpifz [498] ............................ if pheight > tRect.height then
+  [491] getlocal 1 .............................. <tRect>
+  [493] getobjprop 43 ........................... <tRect.height>
+  [495] setprop 494 ............................. pheight = tRect.height
+  [498] getlocal 1 .............................. <tRect>
+  [500] getobjprop 42 ........................... <tRect.width>
+  [502] pushint8 2 .............................. <2>
+  [504] div ..................................... <tRect.width / 2>
+  [505] getprop 489 ............................. <pwidth>
+  [508] pushint8 2 .............................. <2>
+  [510] div ..................................... <pwidth / 2>
+  [511] sub ..................................... <(tRect.width / 2) - (pwidth / 2)>
+  [512] getlocal 1 .............................. <tRect>
+  [514] getobjprop 43 ........................... <tRect.height>
+  [516] pushint8 2 .............................. <2>
+  [518] div ..................................... <tRect.height / 2>
+  [519] getprop 494 ............................. <pheight>
+  [522] pushint8 2 .............................. <2>
+  [524] div ..................................... <pheight / 2>
+  [525] sub ..................................... <(tRect.height / 2) - (pheight / 2)>
+  [526] getlocal 1 .............................. <tRect>
+  [528] getobjprop 42 ........................... <tRect.width>
+  [530] pushint8 2 .............................. <2>
+  [532] div ..................................... <tRect.width / 2>
+  [533] getprop 489 ............................. <pwidth>
+  [536] pushint8 2 .............................. <2>
+  [538] div ..................................... <pwidth / 2>
+  [539] add ..................................... <(tRect.width / 2) + (pwidth / 2)>
+  [540] getlocal 1 .............................. <tRect>
+  [542] getobjprop 43 ........................... <tRect.height>
+  [544] pushint8 2 .............................. <2>
+  [546] div ..................................... <tRect.height / 2>
+  [547] getprop 494 ............................. <pheight>
+  [550] pushint8 2 .............................. <2>
+  [552] div ..................................... <pheight / 2>
+  [553] add ..................................... <(tRect.height / 2) + (pheight / 2)>
+  [554] pusharglist 4 ........................... <(tRect.width / 2) - (pwidth / 2), (tRect.height / 2) - (pheight / 2), (tRect.width / 2) + (pwidth / 2), (tRect.height / 2) + (pheight / 2)>
+  [556] extcall 547 ............................. <rect((tRect.width / 2) - (pwidth / 2), (tRect.height / 2) - (pheight / 2), (tRect.width / 2) + (pwidth / 2), (tRect.height / 2) + (pheight / 2))>
+  [559] setprop 1565 ............................ pBarRect = rect((tRect.width / 2) - (pwidth / 2), (tRect.height / 2) - (pheight / 2), (tRect.width / 2) + (pwidth / 2), (tRect.height / 2) + (pheight / 2))
+  [562] getprop 1565 ............................ <pBarRect>
+  [565] pushint8 1 .............................. <1>
+  [567] pusharglist 2 ........................... <pBarRect, 1>
+  [569] objcall 54 .............................. <pBarRect[1]>
+  [571] pushint8 2 .............................. <2>
+  [573] add ..................................... <pBarRect[1] + 2>
+  [574] getprop 1565 ............................ <pBarRect>
+  [577] pushint8 2 .............................. <2>
+  [579] pusharglist 2 ........................... <pBarRect, 2>
+  [581] objcall 54 .............................. <pBarRect[2]>
+  [583] pushint8 2 .............................. <2>
+  [585] add ..................................... <pBarRect[2] + 2>
+  [586] getprop 1565 ............................ <pBarRect>
+  [589] pushint8 3 .............................. <3>
+  [591] pusharglist 2 ........................... <pBarRect, 3>
+  [593] objcall 54 .............................. <pBarRect[3]>
+  [595] pushint8 2 .............................. <2>
+  [597] sub ..................................... <pBarRect[3] - 2>
+  [598] getprop 1565 ............................ <pBarRect>
+  [601] pushint8 4 .............................. <4>
+  [603] pusharglist 2 ........................... <pBarRect, 4>
+  [605] objcall 54 .............................. <pBarRect[4]>
+  [607] pushint8 2 .............................. <2>
+  [609] sub ..................................... <pBarRect[4] - 2>
+  [610] pusharglist 4 ........................... <pBarRect[1] + 2, pBarRect[2] + 2, pBarRect[3] - 2, pBarRect[4] - 2>
+  [612] extcall 547 ............................. <rect(pBarRect[1] + 2, pBarRect[2] + 2, pBarRect[3] - 2, pBarRect[4] - 2)>
+  [615] setprop 1566 ............................ pOffRect = rect(pBarRect[1] + 2, pBarRect[2] + 2, pBarRect[3] - 2, pBarRect[4] - 2)
+  [618] getprop 455 ............................. <pBuffer>
+  [621] getprop 1565 ............................ <pBarRect>
+  [624] getprop 1557 ............................ <pBgColor>
+  [627] pusharglistnoret 3 ...................... <pBuffer, pBarRect, pBgColor>
+  [629] objcall 1427 ............................ pBuffer.fill(pBarRect, pBgColor)
+  [632] getprop 455 ............................. <pBuffer>
+  [635] getprop 1565 ............................ <pBarRect>
+  [638] pushsymb 589 ............................ <#color>
+  [641] getprop 1558 ............................ <pcolor>
+  [644] pushsymb 1406 ........................... <#shapeType>
+  [647] pushsymb 547 ............................ <#rect>
+  [650] pusharglist 4 ........................... <[#color: pcolor, #shapeType: #rect]>
+  [652] pushproplist ............................ <[#color: pcolor, #shapeType: #rect]>
+  [653] pusharglistnoret 3 ...................... <pBuffer, pBarRect, [#color: pcolor, #shapeType: #rect]>
+  [655] objcall 1342 ............................ pBuffer.draw(pBarRect, [#color: pcolor, #shapeType: #rect])
+  [658] getparam 0 .............................. <me>
+  [660] pusharglist 1 ........................... <me>
+  [662] objcall 3 ............................... <me.getID()>
+  [664] pusharglist 1 ........................... <me.getID()>
+  [666] extcall 106 ............................. <receivePrepare(me.getID())>
+  [668] pusharglistnoret 1 ...................... <receivePrepare(me.getID())>
+  [670] extcall 25 .............................. return receivePrepare(me.getID())
+  [672] ret
+end
+
+on prepare me
+  [  0] getprop 1556 ............................ <pTaskId>
+  [  3] pusharglist 1 ........................... <pTaskId>
+  [  5] extcall 20 .............................. <voidp(pTaskId)>
+  [  7] getprop 1563 ............................ <pReadyFlag>
+  [ 10] or ...................................... <voidp(pTaskId) or pReadyFlag>
+  [ 11] jmpifz [ 28] ............................ if voidp(pTaskId) or pReadyFlag then
+  [ 14] getparam 0 .............................. <me>
+  [ 16] pusharglist 1 ........................... <me>
+  [ 18] objcall 3 ............................... <me.getID()>
+  [ 20] pusharglist 1 ........................... <me.getID()>
+  [ 22] extcall 95 .............................. <removeObject(me.getID())>
+  [ 24] pusharglistnoret 1 ...................... <removeObject(me.getID())>
+  [ 26] extcall 25 .............................. return removeObject(me.getID())
+  [ 28] getprop 1559 ............................ <pTaskType>
+  [ 31] peek 0 .................................. case pTaskType of
+  [ 33] pushsymb 1560 ........................... <#cast>
+  [ 36] eq
+  [ 37] jmpifz [ 56] ............................ (case) #cast:
+  [ 40] pusharglist 0 ........................... <>
+  [ 42] extcall 179 ............................. <getCastLoadManager()>
+  [ 44] getprop 1556 ............................ <pTaskId>
+  [ 47] pusharglist 2 ........................... <getCastLoadManager(), pTaskId>
+  [ 49] objcall 195 ............................. <getCastLoadManager().getLoadPercent(pTaskId)>
+  [ 51] setlocal 0 .............................. tPercent = getCastLoadManager().getLoadPercent(pTaskId)
+  [ 53] jmp [ 78]
+  [ 56] peek 0
+  [ 58] pushsymb 1567 ........................... <#file>
+  [ 61] eq
+  [ 62] jmpifz [ 78] ............................ (case) #file:
+  [ 65] pusharglist 0 ........................... <>
+  [ 67] extcall 199 ............................. <getDownloadManager()>
+  [ 69] getprop 1556 ............................ <pTaskId>
+  [ 72] pusharglist 2 ........................... <getDownloadManager(), pTaskId>
+  [ 74] objcall 195 ............................. <getDownloadManager().getLoadPercent(pTaskId)>
+  [ 76] setlocal 0 .............................. tPercent = getDownloadManager().getLoadPercent(pTaskId)
+  [ 78] pop 1 ................................... end case
+  [ 80] getprop 1561 ............................ <pDrawPoint>
+  [ 83] pushint8 1 .............................. <1>
+  [ 85] add ..................................... <pDrawPoint + 1>
+  [ 86] setprop 1561 ............................ pDrawPoint = pDrawPoint + 1
+  [ 89] getprop 1561 ............................ <pDrawPoint>
+  [ 92] getprop 827 ............................. <pPercent>
+  [ 95] getprop 1566 ............................ <pOffRect>
+  [ 98] getobjprop 42 ........................... <pOffRect.width>
+  [100] mul ..................................... <pPercent * pOffRect.width>
+  [101] lteq .................................... <pDrawPoint <= (pPercent * pOffRect.width)>
+  [102] jmpifz [172] ............................ if pDrawPoint <= (pPercent * pOffRect.width) then
+  [105] getprop 1566 ............................ <pOffRect>
+  [108] pushint8 1 .............................. <1>
+  [110] pusharglist 2 ........................... <pOffRect, 1>
+  [112] objcall 54 .............................. <pOffRect[1]>
+  [114] getprop 1561 ............................ <pDrawPoint>
+  [117] add ..................................... <pOffRect[1] + pDrawPoint>
+  [118] pushint8 1 .............................. <1>
+  [120] sub ..................................... <pOffRect[1] + pDrawPoint - 1>
+  [121] getprop 1566 ............................ <pOffRect>
+  [124] pushint8 2 .............................. <2>
+  [126] pusharglist 2 ........................... <pOffRect, 2>
+  [128] objcall 54 .............................. <pOffRect[2]>
+  [130] getprop 1566 ............................ <pOffRect>
+  [133] pushint8 1 .............................. <1>
+  [135] pusharglist 2 ........................... <pOffRect, 1>
+  [137] objcall 54 .............................. <pOffRect[1]>
+  [139] getprop 1561 ............................ <pDrawPoint>
+  [142] add ..................................... <pOffRect[1] + pDrawPoint>
+  [143] getprop 1566 ............................ <pOffRect>
+  [146] pushint8 4 .............................. <4>
+  [148] pusharglist 2 ........................... <pOffRect, 4>
+  [150] objcall 54 .............................. <pOffRect[4]>
+  [152] pusharglist 4 ........................... <pOffRect[1] + pDrawPoint - 1, pOffRect[2], pOffRect[1] + pDrawPoint, pOffRect[4]>
+  [154] extcall 547 ............................. <rect(pOffRect[1] + pDrawPoint - 1, pOffRect[2], pOffRect[1] + pDrawPoint, pOffRect[4])>
+  [157] setlocal 1 .............................. tRect = rect(pOffRect[1] + pDrawPoint - 1, pOffRect[2], pOffRect[1] + pDrawPoint, pOffRect[4])
+  [159] getprop 455 ............................. <pBuffer>
+  [162] getlocal 1 .............................. <tRect>
+  [164] getprop 1558 ............................ <pcolor>
+  [167] pusharglistnoret 3 ...................... <pBuffer, tRect, pcolor>
+  [169] objcall 1427 ............................ pBuffer.fill(tRect, pcolor)
+  [172] getprop 827 ............................. <pPercent>
+  [175] getlocal 0 .............................. <tPercent>
+  [177] eq ...................................... <pPercent = tPercent>
+  [178] jmpifz [185] ............................ if pPercent = tPercent then
+  [181] pusharglistnoret 0 ...................... <>
+  [183] extcall 25 .............................. return 
+  [185] getprop 455 ............................. <pBuffer>
+  [188] getprop 1565 ............................ <pBarRect>
+  [191] getprop 1557 ............................ <pBgColor>
+  [194] pusharglistnoret 3 ...................... <pBuffer, pBarRect, pBgColor>
+  [196] objcall 1427 ............................ pBuffer.fill(pBarRect, pBgColor)
+  [199] getprop 455 ............................. <pBuffer>
+  [202] getprop 1565 ............................ <pBarRect>
+  [205] pushsymb 589 ............................ <#color>
+  [208] getprop 1558 ............................ <pcolor>
+  [211] pushsymb 1406 ........................... <#shapeType>
+  [214] pushsymb 547 ............................ <#rect>
+  [217] pusharglist 4 ........................... <[#color: pcolor, #shapeType: #rect]>
+  [219] pushproplist ............................ <[#color: pcolor, #shapeType: #rect]>
+  [220] pusharglistnoret 3 ...................... <pBuffer, pBarRect, [#color: pcolor, #shapeType: #rect]>
+  [222] objcall 1342 ............................ pBuffer.draw(pBarRect, [#color: pcolor, #shapeType: #rect])
+  [225] getprop 1566 ............................ <pOffRect>
+  [228] pushint8 1 .............................. <1>
+  [230] pusharglist 2 ........................... <pOffRect, 1>
+  [232] objcall 54 .............................. <pOffRect[1]>
+  [234] getprop 1566 ............................ <pOffRect>
+  [237] pushint8 2 .............................. <2>
+  [239] pusharglist 2 ........................... <pOffRect, 2>
+  [241] objcall 54 .............................. <pOffRect[2]>
+  [243] getprop 827 ............................. <pPercent>
+  [246] getprop 1566 ............................ <pOffRect>
+  [249] getobjprop 42 ........................... <pOffRect.width>
+  [251] mul ..................................... <pPercent * pOffRect.width>
+  [252] getprop 1566 ............................ <pOffRect>
+  [255] pushint8 1 .............................. <1>
+  [257] pusharglist 2 ........................... <pOffRect, 1>
+  [259] objcall 54 .............................. <pOffRect[1]>
+  [261] add ..................................... <(pPercent * pOffRect.width) + pOffRect[1]>
+  [262] getprop 1566 ............................ <pOffRect>
+  [265] pushint8 4 .............................. <4>
+  [267] pusharglist 2 ........................... <pOffRect, 4>
+  [269] objcall 54 .............................. <pOffRect[4]>
+  [271] pusharglist 4 ........................... <pOffRect[1], pOffRect[2], (pPercent * pOffRect.width) + pOffRect[1], pOffRect[4]>
+  [273] extcall 547 ............................. <rect(pOffRect[1], pOffRect[2], (pPercent * pOffRect.width) + pOffRect[1], pOffRect[4])>
+  [276] setlocal 1 .............................. tRect = rect(pOffRect[1], pOffRect[2], (pPercent * pOffRect.width) + pOffRect[1], pOffRect[4])
+  [278] getprop 455 ............................. <pBuffer>
+  [281] getlocal 1 .............................. <tRect>
+  [283] getprop 1558 ............................ <pcolor>
+  [286] pusharglistnoret 3 ...................... <pBuffer, tRect, pcolor>
+  [288] objcall 1427 ............................ pBuffer.fill(tRect, pcolor)
+  [291] getprop 827 ............................. <pPercent>
+  [294] getprop 1566 ............................ <pOffRect>
+  [297] getobjprop 42 ........................... <pOffRect.width>
+  [299] mul ..................................... <pPercent * pOffRect.width>
+  [300] setprop 1561 ............................ pDrawPoint = pPercent * pOffRect.width
+  [303] getlocal 0 .............................. <tPercent>
+  [305] setprop 827 ............................. pPercent = tPercent
+  [308] getprop 827 ............................. <pPercent>
+  [311] pushfloat32 1.0 ......................... <1.0>
+  [316] gteq .................................... <pPercent >= 1.0>
+  [317] jmpifz [339] ............................ if pPercent >= 1.0 then
+  [320] getprop 455 ............................. <pBuffer>
+  [323] getprop 1566 ............................ <pOffRect>
+  [326] getprop 1558 ............................ <pcolor>
+  [329] pusharglistnoret 3 ...................... <pBuffer, pOffRect, pcolor>
+  [331] objcall 1427 ............................ pBuffer.fill(pOffRect, pcolor)
+  [334] pushint8 1 .............................. <1>
+  [336] setprop 1563 ............................ pReadyFlag = 1
+  [339] ret
+end

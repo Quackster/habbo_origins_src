@@ -1,0 +1,1910 @@
+property pInventoryList, pInventoryEffects, pActiveEffects, pActiveEffectIndex, pSelectedEffectType, pActiveSlot, pSlotOffset, pBadgeWindowID, pListRenderer, pUpdateTimerId, pState
+
+on construct me
+  [  0] pushzero ................................ <0>
+  [  1] setprop 807 ............................. pState = 0
+  [  4] getparam 0 .............................. <me>
+  [  6] pushint8 1 .............................. <1>
+  [  8] pusharglistnoret 2 ...................... <me, 1>
+  [ 10] objcall 867 ............................. me.regMsgList(1)
+  [ 13] pusharglist 0 ........................... <[:]>
+  [ 15] pushproplist ............................ <[:]>
+  [ 16] setprop 868 ............................. pInventoryList = [:]
+  [ 19] pusharglist 0 ........................... <[]>
+  [ 21] pushlist ................................ <[]>
+  [ 22] setprop 869 ............................. pInventoryEffects = []
+  [ 25] pusharglist 0 ........................... <[:]>
+  [ 27] pushproplist ............................ <[:]>
+  [ 28] setprop 870 ............................. pActiveEffects = [:]
+  [ 31] pusharglist 0 ........................... <[]>
+  [ 33] pushlist ................................ <[]>
+  [ 34] setprop 871 ............................. pActiveEffectIndex = []
+  [ 37] pushcons 0 .............................. <"badgeSelectionWindowID">
+  [ 39] setprop 872 ............................. pBadgeWindowID = "badgeSelectionWindowID"
+  [ 42] pushcons 1 .............................. <"fx_inventory_timer">
+  [ 44] setprop 873 ............................. pUpdateTimerId = "fx_inventory_timer"
+  [ 47] pushzero ................................ <0>
+  [ 48] setprop 874 ............................. pSlotOffset = 0
+  [ 51] pushsymb 171 ............................ <#session>
+  [ 53] pusharglist 1 ........................... <#session>
+  [ 55] extcall 24 .............................. <getObject(#session)>
+  [ 57] pushcons 2 .............................. <"active_fx">
+  [ 59] pusharglist 0 ........................... <[]>
+  [ 61] pushlist ................................ <[]>
+  [ 62] pusharglistnoret 3 ...................... <getObject(#session), "active_fx", []>
+  [ 64] objcall 875 ............................. getObject(#session).set("active_fx", [])
+  [ 67] pusharglist 0 ........................... <>
+  [ 69] extcall 622 ............................. <getUniqueID()>
+  [ 72] pushcons 3 .............................. <"FX List Class">
+  [ 74] pusharglist 2 ........................... <getUniqueID(), "FX List Class">
+  [ 76] extcall 16 .............................. <createObject(getUniqueID(), "FX List Class")>
+  [ 78] setprop 876 ............................. pListRenderer = createObject(getUniqueID(), "FX List Class")
+  [ 81] pushsymb 451 ............................ <#use_avatar_effect>
+  [ 84] getparam 0 .............................. <me>
+  [ 86] pusharglist 1 ........................... <me>
+  [ 88] objcall 19 .............................. <me.getID()>
+  [ 90] pushsymb 860 ............................ <#send_use_avatar_effect>
+  [ 93] pusharglistnoret 3 ...................... <#use_avatar_effect, me.getID(), #send_use_avatar_effect>
+  [ 95] extcall 17 .............................. registerMessage(#use_avatar_effect, me.getID(), #send_use_avatar_effect)
+  [ 97] pushsymb 877 ............................ <#activate_avatar_effect>
+  [100] getparam 0 .............................. <me>
+  [102] pusharglist 1 ........................... <me>
+  [104] objcall 19 .............................. <me.getID()>
+  [106] pushsymb 861 ............................ <#send_activate_avatar_effect>
+  [109] pusharglistnoret 3 ...................... <#activate_avatar_effect, me.getID(), #send_activate_avatar_effect>
+  [111] extcall 17 .............................. registerMessage(#activate_avatar_effect, me.getID(), #send_activate_avatar_effect)
+  [113] pushsymb 452 ............................ <#openFxWindow>
+  [116] getparam 0 .............................. <me>
+  [118] pusharglist 1 ........................... <me>
+  [120] objcall 19 .............................. <me.getID()>
+  [122] pushsymb 452 ............................ <#openFxWindow>
+  [125] pusharglistnoret 3 ...................... <#openFxWindow, me.getID(), #openFxWindow>
+  [127] extcall 17 .............................. registerMessage(#openFxWindow, me.getID(), #openFxWindow)
+  [129] pushint8 1 .............................. <1>
+  [131] pusharglistnoret 1 ...................... <1>
+  [133] extcall 20 .............................. return 1
+  [135] ret
+end
+
+on deconstruct me
+  [  0] pushzero ................................ <0>
+  [  1] setprop 807 ............................. pState = 0
+  [  4] getparam 0 .............................. <me>
+  [  6] pushzero ................................ <0>
+  [  7] pusharglistnoret 2 ...................... <me, 0>
+  [  9] objcall 859 ............................. me.setUpdateTimer(0)
+  [ 12] getparam 0 .............................. <me>
+  [ 14] pushzero ................................ <0>
+  [ 15] pusharglistnoret 2 ...................... <me, 0>
+  [ 17] objcall 867 ............................. me.regMsgList(0)
+  [ 20] getprop 872 ............................. <pBadgeWindowID>
+  [ 23] pusharglist 1 ........................... <pBadgeWindowID>
+  [ 25] extcall 75 .............................. <windowExists(pBadgeWindowID)>
+  [ 27] jmpifz [ 37] ............................ if windowExists(pBadgeWindowID) then
+  [ 30] getprop 872 ............................. <pBadgeWindowID>
+  [ 33] pusharglistnoret 1 ...................... <pBadgeWindowID>
+  [ 35] extcall 106 ............................. removeWindow(pBadgeWindowID)
+  [ 37] pushsymb 452 ............................ <#openFxWindow>
+  [ 40] getparam 0 .............................. <me>
+  [ 42] pusharglist 1 ........................... <me>
+  [ 44] objcall 19 .............................. <me.getID()>
+  [ 46] pusharglistnoret 2 ...................... <#openFxWindow, me.getID()>
+  [ 48] extcall 22 .............................. unregisterMessage(#openFxWindow, me.getID())
+  [ 50] getprop 876 ............................. <pListRenderer>
+  [ 53] pusharglist 1 ........................... <pListRenderer>
+  [ 55] extcall 159 ............................. <objectp(pListRenderer)>
+  [ 57] jmpifz [ 71] ............................ if objectp(pListRenderer) then
+  [ 60] getprop 876 ............................. <pListRenderer>
+  [ 63] pusharglist 1 ........................... <pListRenderer>
+  [ 65] objcall 19 .............................. <pListRenderer.getID()>
+  [ 67] pusharglistnoret 1 ...................... <pListRenderer.getID()>
+  [ 69] extcall 23 .............................. removeObject(pListRenderer.getID())
+  [ 71] pushint8 1 .............................. <1>
+  [ 73] pusharglistnoret 1 ...................... <1>
+  [ 75] extcall 20 .............................. return 1
+  [ 77] ret
+end
+
+on openFxWindow me
+  [  0] getprop 807 ............................. <pState>
+  [  3] not ..................................... <not pState>
+  [  4] jmpifz [ 13] ............................ if not pState then
+  [  7] pushint8 1 .............................. <1>
+  [  9] pusharglistnoret 1 ...................... <1>
+  [ 11] extcall 20 .............................. return 1
+  [ 13] getprop 869 ............................. <pInventoryEffects>
+  [ 16] getprop 878 ............................. <pSelectedEffectType>
+  [ 19] pusharglist 2 ........................... <pInventoryEffects, pSelectedEffectType>
+  [ 21] objcall 770 ............................. <pInventoryEffects.findPos(pSelectedEffectType)>
+  [ 24] pushzero ................................ <0>
+  [ 25] eq ...................................... <pInventoryEffects.findPos(pSelectedEffectType) = 0>
+  [ 26] jmpifz [ 36] ............................ if pInventoryEffects.findPos(pSelectedEffectType) = 0 then
+  [ 29] pusharglist 0 ........................... <>
+  [ 31] extcall 116 ............................. <VOID>
+  [ 33] setprop 878 ............................. pSelectedEffectType = VOID
+  [ 36] getprop 878 ............................. <pSelectedEffectType>
+  [ 39] pusharglist 1 ........................... <pSelectedEffectType>
+  [ 41] extcall 25 .............................. <voidp(pSelectedEffectType)>
+  [ 43] jmpifz [ 69] ............................ if voidp(pSelectedEffectType) then
+  [ 46] getprop 868 ............................. <pInventoryList>
+  [ 49] getobjprop 162 .......................... <pInventoryList.count>
+  [ 51] pushint8 1 .............................. <1>
+  [ 53] gt ...................................... <pInventoryList.count > 1>
+  [ 54] jmpifz [ 69] ............................ if pInventoryList.count > 1 then
+  [ 57] getprop 868 ............................. <pInventoryList>
+  [ 60] pushint8 1 .............................. <1>
+  [ 62] pusharglist 2 ........................... <pInventoryList, 1>
+  [ 64] objcall 163 ............................. <pInventoryList.getPropAt(1)>
+  [ 66] setprop 878 ............................. pSelectedEffectType = pInventoryList.getPropAt(1)
+  [ 69] getparam 0 .............................. <me>
+  [ 71] pusharglistnoret 1 ...................... <me>
+  [ 73] objcall 434 ............................. me.getWindowObj()
+  [ 76] getparam 0 .............................. <me>
+  [ 78] pusharglistnoret 1 ...................... <me>
+  [ 80] objcall 857 ............................. me.updateFxView()
+  [ 83] getparam 0 .............................. <me>
+  [ 85] pushint8 1 .............................. <1>
+  [ 87] pusharglistnoret 2 ...................... <me, 1>
+  [ 89] objcall 859 ............................. me.setUpdateTimer(1)
+  [ 92] ret
+end
+
+on setCatalogLinkVisibility me
+  [  0] getprop 872 ............................. <pBadgeWindowID>
+  [  3] pusharglist 1 ........................... <pBadgeWindowID>
+  [  5] extcall 80 .............................. <getWindow(pBadgeWindowID)>
+  [  7] setlocal 0 .............................. tWndObj = getWindow(pBadgeWindowID)
+  [  9] getlocal 0 .............................. <tWndObj>
+  [ 11] pushzero ................................ <0>
+  [ 12] eq ...................................... <tWndObj = 0>
+  [ 13] jmpifz [ 21] ............................ if tWndObj = 0 then
+  [ 16] pushzero ................................ <0>
+  [ 17] pusharglistnoret 1 ...................... <0>
+  [ 19] extcall 20 .............................. return 0
+  [ 21] getprop 869 ............................. <pInventoryEffects>
+  [ 24] getobjprop 162 .......................... <pInventoryEffects.count>
+  [ 26] pushzero ................................ <0>
+  [ 27] gt ...................................... <pInventoryEffects.count > 0>
+  [ 28] jmpifz [ 70] ............................ if pInventoryEffects.count > 0 then / else
+  [ 31] getlocal 0 .............................. <tWndObj>
+  [ 33] pushcons 4 .............................. <"selected_fx">
+  [ 35] pusharglist 2 ........................... <tWndObj, "selected_fx">
+  [ 37] objcall 87 .............................. <tWndObj.getElement("selected_fx")>
+  [ 39] pusharglistnoret 1 ...................... <tWndObj.getElement("selected_fx")>
+  [ 41] objcall 141 ............................. tWndObj.getElement("selected_fx").show()
+  [ 43] getlocal 0 .............................. <tWndObj>
+  [ 45] pushcons 5 .............................. <"selected_fx_bg">
+  [ 47] pusharglist 2 ........................... <tWndObj, "selected_fx_bg">
+  [ 49] objcall 87 .............................. <tWndObj.getElement("selected_fx_bg")>
+  [ 51] pusharglistnoret 1 ...................... <tWndObj.getElement("selected_fx_bg")>
+  [ 53] objcall 141 ............................. tWndObj.getElement("selected_fx_bg").show()
+  [ 55] getlocal 0 .............................. <tWndObj>
+  [ 57] pushcons 6 .............................. <"fx_catalog_link_text">
+  [ 59] pusharglist 2 ........................... <tWndObj, "fx_catalog_link_text">
+  [ 61] objcall 87 .............................. <tWndObj.getElement("fx_catalog_link_text")>
+  [ 63] pusharglistnoret 1 ...................... <tWndObj.getElement("fx_catalog_link_text")>
+  [ 65] objcall 101 ............................. tWndObj.getElement("fx_catalog_link_text").hide()
+  [ 67] jmp [106]
+  [ 70] getlocal 0 .............................. <tWndObj>
+  [ 72] pushcons 4 .............................. <"selected_fx">
+  [ 74] pusharglist 2 ........................... <tWndObj, "selected_fx">
+  [ 76] objcall 87 .............................. <tWndObj.getElement("selected_fx")>
+  [ 78] pusharglistnoret 1 ...................... <tWndObj.getElement("selected_fx")>
+  [ 80] objcall 101 ............................. tWndObj.getElement("selected_fx").hide()
+  [ 82] getlocal 0 .............................. <tWndObj>
+  [ 84] pushcons 5 .............................. <"selected_fx_bg">
+  [ 86] pusharglist 2 ........................... <tWndObj, "selected_fx_bg">
+  [ 88] objcall 87 .............................. <tWndObj.getElement("selected_fx_bg")>
+  [ 90] pusharglistnoret 1 ...................... <tWndObj.getElement("selected_fx_bg")>
+  [ 92] objcall 101 ............................. tWndObj.getElement("selected_fx_bg").hide()
+  [ 94] getlocal 0 .............................. <tWndObj>
+  [ 96] pushcons 6 .............................. <"fx_catalog_link_text">
+  [ 98] pusharglist 2 ........................... <tWndObj, "fx_catalog_link_text">
+  [100] objcall 87 .............................. <tWndObj.getElement("fx_catalog_link_text")>
+  [102] pusharglistnoret 1 ...................... <tWndObj.getElement("fx_catalog_link_text")>
+  [104] objcall 141 ............................. tWndObj.getElement("fx_catalog_link_text").show()
+  [106] ret
+end
+
+on updateListImage me
+  [  0] getprop 872 ............................. <pBadgeWindowID>
+  [  3] pusharglist 1 ........................... <pBadgeWindowID>
+  [  5] extcall 80 .............................. <getWindow(pBadgeWindowID)>
+  [  7] setlocal 0 .............................. tWndObj = getWindow(pBadgeWindowID)
+  [  9] getlocal 0 .............................. <tWndObj>
+  [ 11] pushzero ................................ <0>
+  [ 12] eq ...................................... <tWndObj = 0>
+  [ 13] jmpifz [ 21] ............................ if tWndObj = 0 then
+  [ 16] pushzero ................................ <0>
+  [ 17] pusharglistnoret 1 ...................... <0>
+  [ 19] extcall 20 .............................. return 0
+  [ 21] getlocal 0 .............................. <tWndObj>
+  [ 23] pushcons 7 .............................. <"fx_list">
+  [ 25] pusharglist 2 ........................... <tWndObj, "fx_list">
+  [ 27] objcall 100 ............................. <tWndObj.elementExists("fx_list")>
+  [ 29] not ..................................... <not tWndObj.elementExists("fx_list")>
+  [ 30] jmpifz [ 38] ............................ if not tWndObj.elementExists("fx_list") then
+  [ 33] pushzero ................................ <0>
+  [ 34] pusharglistnoret 1 ...................... <0>
+  [ 36] extcall 20 .............................. return 0
+  [ 38] getlocal 0 .............................. <tWndObj>
+  [ 40] pushcons 7 .............................. <"fx_list">
+  [ 42] pusharglist 2 ........................... <tWndObj, "fx_list">
+  [ 44] objcall 87 .............................. <tWndObj.getElement("fx_list")>
+  [ 46] setlocal 1 .............................. tListElem = tWndObj.getElement("fx_list")
+  [ 48] getlocal 1 .............................. <tListElem>
+  [ 50] getprop 876 ............................. <pListRenderer>
+  [ 53] getprop 869 ............................. <pInventoryEffects>
+  [ 56] getprop 871 ............................. <pActiveEffectIndex>
+  [ 59] pusharglist 0 ........................... <>
+  [ 61] extcall 116 ............................. <VOID>
+  [ 63] getprop 878 ............................. <pSelectedEffectType>
+  [ 66] pusharglist 5 ........................... <pListRenderer, pInventoryEffects, pActiveEffectIndex, VOID, pSelectedEffectType>
+  [ 68] objcall 522 ............................. <pListRenderer.render(pInventoryEffects, pActiveEffectIndex, VOID, pSelectedEffectType)>
+  [ 71] pusharglistnoret 2 ...................... <tListElem, pListRenderer.render(pInventoryEffects, pActiveEffectIndex, VOID, pSelectedEffectType)>
+  [ 73] objcall 130 ............................. tListElem.feedImage(pListRenderer.render(pInventoryEffects, pActiveEffectIndex, VOID, pSelectedEffectType))
+  [ 75] pushint8 1 .............................. <1>
+  [ 77] pusharglistnoret 1 ...................... <1>
+  [ 79] extcall 20 .............................. return 1
+  [ 81] ret
+end
+
+on updatePreview me
+  [  0] getprop 872 ............................. <pBadgeWindowID>
+  [  3] pusharglist 1 ........................... <pBadgeWindowID>
+  [  5] extcall 75 .............................. <windowExists(pBadgeWindowID)>
+  [  7] not ..................................... <not windowExists(pBadgeWindowID)>
+  [  8] jmpifz [ 16] ............................ if not windowExists(pBadgeWindowID) then
+  [ 11] pushzero ................................ <0>
+  [ 12] pusharglistnoret 1 ...................... <0>
+  [ 14] extcall 20 .............................. return 0
+  [ 16] getprop 872 ............................. <pBadgeWindowID>
+  [ 19] pusharglist 1 ........................... <pBadgeWindowID>
+  [ 21] extcall 80 .............................. <getWindow(pBadgeWindowID)>
+  [ 23] setlocal 0 .............................. tWindow = getWindow(pBadgeWindowID)
+  [ 25] getprop 868 ............................. <pInventoryList>
+  [ 28] getprop 878 ............................. <pSelectedEffectType>
+  [ 31] pusharglist 2 ........................... <pInventoryList, pSelectedEffectType>
+  [ 33] objcall 250 ............................. <pInventoryList.getaProp(pSelectedEffectType)>
+  [ 35] setlocal 1 .............................. tItemData = pInventoryList.getaProp(pSelectedEffectType)
+  [ 37] getlocal 1 .............................. <tItemData>
+  [ 39] pusharglist 0 ........................... <>
+  [ 41] extcall 116 ............................. <VOID>
+  [ 43] eq ...................................... <tItemData = VOID>
+  [ 44] jmpifz [ 52] ............................ if tItemData = VOID then
+  [ 47] pushzero ................................ <0>
+  [ 48] pusharglistnoret 1 ...................... <0>
+  [ 50] extcall 20 .............................. return 0
+  [ 52] getlocal 0 .............................. <tWindow>
+  [ 54] pushcons 4 .............................. <"selected_fx">
+  [ 56] pusharglist 2 ........................... <tWindow, "selected_fx">
+  [ 58] objcall 100 ............................. <tWindow.elementExists("selected_fx")>
+  [ 60] jmpifz [204] ............................ if tWindow.elementExists("selected_fx") then
+  [ 63] getlocal 0 .............................. <tWindow>
+  [ 65] pushcons 4 .............................. <"selected_fx">
+  [ 67] pusharglist 2 ........................... <tWindow, "selected_fx">
+  [ 69] objcall 87 .............................. <tWindow.getElement("selected_fx")>
+  [ 71] setlocal 2 .............................. tElem = tWindow.getElement("selected_fx")
+  [ 73] getprop 878 ............................. <pSelectedEffectType>
+  [ 76] pushzero ................................ <0>
+  [ 77] nteq .................................... <pSelectedEffectType <> 0>
+  [ 78] pushcons 8 .............................. <"ctlg_fx_prev_">
+  [ 80] getprop 878 ............................. <pSelectedEffectType>
+  [ 83] joinstr ................................. <"ctlg_fx_prev_" & pSelectedEffectType>
+  [ 84] pusharglist 1 ........................... <"ctlg_fx_prev_" & pSelectedEffectType>
+  [ 86] extcall 675 ............................. <memberExists("ctlg_fx_prev_" & pSelectedEffectType)>
+  [ 89] and ..................................... <(pSelectedEffectType <> 0) and memberExists("ctlg_fx_prev_" & pSelectedEffectType)>
+  [ 90] jmpifz [114] ............................ if (pSelectedEffectType <> 0) and memberExists("ctlg_fx_prev_" & pSelectedEffectType) then / else
+  [ 93] pushcons 8 .............................. <"ctlg_fx_prev_">
+  [ 95] getprop 878 ............................. <pSelectedEffectType>
+  [ 98] joinstr ................................. <"ctlg_fx_prev_" & pSelectedEffectType>
+  [ 99] pusharglist 1 ........................... <"ctlg_fx_prev_" & pSelectedEffectType>
+  [101] extcall 128 ............................. <getmemnum("ctlg_fx_prev_" & pSelectedEffectType)>
+  [103] pusharglist 1 ........................... <getmemnum("ctlg_fx_prev_" & pSelectedEffectType)>
+  [105] extcall 88 .............................. <member(getmemnum("ctlg_fx_prev_" & pSelectedEffectType))>
+  [107] getobjprop 129 .......................... <member(getmemnum("ctlg_fx_prev_" & pSelectedEffectType)).image>
+  [109] setlocal 3 .............................. tBadgeImage = member(getmemnum("ctlg_fx_prev_" & pSelectedEffectType)).image
+  [111] jmp [126]
+  [114] pushint8 1 .............................. <1>
+  [116] pushint8 1 .............................. <1>
+  [118] pushint8 8 .............................. <8>
+  [120] pusharglist 3 ........................... <1, 1, 8>
+  [122] extcall 129 ............................. <image(1, 1, 8)>
+  [124] setlocal 3 .............................. tBadgeImage = image(1, 1, 8)
+  [126] getlocal 3 .............................. <tBadgeImage>
+  [128] getobjprop 138 .......................... <tBadgeImage.width>
+  [130] getlocal 3 .............................. <tBadgeImage>
+  [132] getobjprop 146 .......................... <tBadgeImage.height>
+  [134] pushint8 32 ............................. <32>
+  [136] pusharglist 3 ........................... <tBadgeImage.width, tBadgeImage.height, 32>
+  [138] extcall 129 ............................. <image(tBadgeImage.width, tBadgeImage.height, 32)>
+  [140] setlocal 4 .............................. tConvertImage = image(tBadgeImage.width, tBadgeImage.height, 32)
+  [142] getlocal 4 .............................. <tConvertImage>
+  [144] getlocal 3 .............................. <tBadgeImage>
+  [146] getlocal 3 .............................. <tBadgeImage>
+  [148] getobjprop 218 .......................... <tBadgeImage.rect>
+  [150] getlocal 3 .............................. <tBadgeImage>
+  [152] getobjprop 218 .......................... <tBadgeImage.rect>
+  [154] pusharglistnoret 4 ...................... <tConvertImage, tBadgeImage, tBadgeImage.rect, tBadgeImage.rect>
+  [156] objcall 219 ............................. tConvertImage.copyPixels(tBadgeImage, tBadgeImage.rect, tBadgeImage.rect)
+  [158] getlocal 4 .............................. <tConvertImage>
+  [160] setlocal 3 .............................. tBadgeImage = tConvertImage
+  [162] getprop 876 ............................. <pListRenderer>
+  [165] getlocal 3 .............................. <tBadgeImage>
+  [167] pushzero ................................ <0>
+  [168] pushzero ................................ <0>
+  [169] getlocal 2 .............................. <tElem>
+  [171] pushsymb 138 ............................ <#width>
+  [173] pusharglist 2 ........................... <tElem, #width>
+  [175] objcall 139 ............................. <tElem.getProperty(#width)>
+  [177] getlocal 2 .............................. <tElem>
+  [179] pushsymb 146 ............................ <#height>
+  [181] pusharglist 2 ........................... <tElem, #height>
+  [183] objcall 139 ............................. <tElem.getProperty(#height)>
+  [185] pusharglist 4 ........................... <0, 0, tElem.getProperty(#width), tElem.getProperty(#height)>
+  [187] extcall 218 ............................. <rect(0, 0, tElem.getProperty(#width), tElem.getProperty(#height))>
+  [189] pusharglist 3 ........................... <pListRenderer, tBadgeImage, rect(0, 0, tElem.getProperty(#width), tElem.getProperty(#height))>
+  [191] objcall 880 ............................. <pListRenderer.centerImage(tBadgeImage, rect(0, 0, tElem.getProperty(#width), tElem.getProperty(#height)))>
+  [194] setlocal 3 .............................. tBadgeImage = pListRenderer.centerImage(tBadgeImage, rect(0, 0, tElem.getProperty(#width), tElem.getProperty(#height)))
+  [196] getlocal 2 .............................. <tElem>
+  [198] getlocal 3 .............................. <tBadgeImage>
+  [200] pusharglistnoret 2 ...................... <tElem, tBadgeImage>
+  [202] objcall 130 ............................. tElem.feedImage(tBadgeImage)
+  [204] getlocal 0 .............................. <tWindow>
+  [206] pushcons 9 .............................. <"fx_title">
+  [208] pusharglist 2 ........................... <tWindow, "fx_title">
+  [210] objcall 100 ............................. <tWindow.elementExists("fx_title")>
+  [212] jmpifz [258] ............................ if tWindow.elementExists("fx_title") then
+  [215] getlocal 0 .............................. <tWindow>
+  [217] pushcons 9 .............................. <"fx_title">
+  [219] pusharglist 2 ........................... <tWindow, "fx_title">
+  [221] objcall 87 .............................. <tWindow.getElement("fx_title")>
+  [223] setlocal 5 .............................. tNameElem = tWindow.getElement("fx_title")
+  [225] getprop 878 ............................. <pSelectedEffectType>
+  [228] pushzero ................................ <0>
+  [229] nteq .................................... <pSelectedEffectType <> 0>
+  [230] jmpifz [252] ............................ if pSelectedEffectType <> 0 then / else
+  [233] getlocal 5 .............................. <tNameElem>
+  [235] pushcons 10 ............................. <"fx_">
+  [237] getprop 878 ............................. <pSelectedEffectType>
+  [240] joinstr ................................. <"fx_" & pSelectedEffectType>
+  [241] pusharglist 1 ........................... <"fx_" & pSelectedEffectType>
+  [243] extcall 109 ............................. <getText("fx_" & pSelectedEffectType)>
+  [245] pusharglistnoret 2 ...................... <tNameElem, getText("fx_" & pSelectedEffectType)>
+  [247] objcall 110 ............................. tNameElem.setText(getText("fx_" & pSelectedEffectType))
+  [249] jmp [258]
+  [252] getlocal 5 .............................. <tNameElem>
+  [254] pusharglistnoret 1 ...................... <tNameElem>
+  [256] objcall 101 ............................. tNameElem.hide()
+  [258] getlocal 0 .............................. <tWindow>
+  [260] pushcons 11 ............................. <"fx_desc">
+  [262] pusharglist 2 ........................... <tWindow, "fx_desc">
+  [264] objcall 100 ............................. <tWindow.elementExists("fx_desc")>
+  [266] jmpifz [465] ............................ if tWindow.elementExists("fx_desc") then
+  [269] getlocal 0 .............................. <tWindow>
+  [271] pushcons 11 ............................. <"fx_desc">
+  [273] pusharglist 2 ........................... <tWindow, "fx_desc">
+  [275] objcall 87 .............................. <tWindow.getElement("fx_desc")>
+  [277] setlocal 6 .............................. tDescElem = tWindow.getElement("fx_desc")
+  [279] getprop 878 ............................. <pSelectedEffectType>
+  [282] pushzero ................................ <0>
+  [283] nteq .................................... <pSelectedEffectType <> 0>
+  [284] jmpifz [459] ............................ if pSelectedEffectType <> 0 then / else
+  [287] pushcons 10 ............................. <"fx_">
+  [289] getprop 878 ............................. <pSelectedEffectType>
+  [292] joinstr ................................. <"fx_" & pSelectedEffectType>
+  [293] pushcons 12 ............................. <"_desc">
+  [295] joinstr ................................. <"fx_" & pSelectedEffectType & "_desc">
+  [296] pusharglist 1 ........................... <"fx_" & pSelectedEffectType & "_desc">
+  [298] extcall 109 ............................. <getText("fx_" & pSelectedEffectType & "_desc")>
+  [300] pushcons 13 ............................. <"fx_desc_duration">
+  [302] pusharglist 1 ........................... <"fx_desc_duration">
+  [304] extcall 109 ............................. <getText("fx_desc_duration")>
+  [306] joinstr ................................. <getText("fx_" & pSelectedEffectType & "_desc") & getText("fx_desc_duration")>
+  [307] setlocal 7 .............................. tText = getText("fx_" & pSelectedEffectType & "_desc") & getText("fx_desc_duration")
+  [309] getlocal 7 .............................. <tText>
+  [311] pushcons 14 ............................. <"%r">
+  [313] pushcons 15 ............................. <RETURN>
+  [315] pusharglist 3 ........................... <tText, "%r", RETURN>
+  [317] extcall 465 ............................. <replaceChunks(tText, "%r", RETURN)>
+  [320] setlocal 7 .............................. tText = replaceChunks(tText, "%r", RETURN)
+  [322] getlocal 7 .............................. <tText>
+  [324] pushcons 16 ............................. <"%h">
+  [326] getparam 0 .............................. <me>
+  [328] getlocal 1 .............................. <tItemData>
+  [330] pushsymb 881 ............................ <#time_duration>
+  [333] pusharglist 2 ........................... <tItemData, #time_duration>
+  [335] objcall 250 ............................. <tItemData.getaProp(#time_duration)>
+  [337] pusharglist 2 ........................... <me, tItemData.getaProp(#time_duration)>
+  [339] objcall 851 ............................. <me.getHours(tItemData.getaProp(#time_duration))>
+  [342] pusharglist 3 ........................... <tText, "%h", me.getHours(tItemData.getaProp(#time_duration))>
+  [344] extcall 465 ............................. <replaceChunks(tText, "%h", me.getHours(tItemData.getaProp(#time_duration)))>
+  [347] setlocal 7 .............................. tText = replaceChunks(tText, "%h", me.getHours(tItemData.getaProp(#time_duration)))
+  [349] getlocal 7 .............................. <tText>
+  [351] pushcons 17 ............................. <"%m">
+  [353] getparam 0 .............................. <me>
+  [355] getlocal 1 .............................. <tItemData>
+  [357] pushsymb 881 ............................ <#time_duration>
+  [360] pusharglist 2 ........................... <tItemData, #time_duration>
+  [362] objcall 250 ............................. <tItemData.getaProp(#time_duration)>
+  [364] pusharglist 2 ........................... <me, tItemData.getaProp(#time_duration)>
+  [366] objcall 852 ............................. <me.getMinutes(tItemData.getaProp(#time_duration))>
+  [369] pushint8 60 ............................. <60>
+  [371] mod ..................................... <me.getMinutes(tItemData.getaProp(#time_duration)) mod 60>
+  [372] pusharglist 3 ........................... <tText, "%m", me.getMinutes(tItemData.getaProp(#time_duration)) mod 60>
+  [374] extcall 465 ............................. <replaceChunks(tText, "%m", me.getMinutes(tItemData.getaProp(#time_duration)) mod 60)>
+  [377] setlocal 7 .............................. tText = replaceChunks(tText, "%m", me.getMinutes(tItemData.getaProp(#time_duration)) mod 60)
+  [379] getlocal 7 .............................. <tText>
+  [381] pushcons 18 ............................. <"%d">
+  [383] getparam 0 .............................. <me>
+  [385] getlocal 1 .............................. <tItemData>
+  [387] pushsymb 881 ............................ <#time_duration>
+  [390] pusharglist 2 ........................... <tItemData, #time_duration>
+  [392] objcall 250 ............................. <tItemData.getaProp(#time_duration)>
+  [394] pusharglist 2 ........................... <me, tItemData.getaProp(#time_duration)>
+  [396] objcall 851 ............................. <me.getHours(tItemData.getaProp(#time_duration))>
+  [399] pushcons 19 ............................. <":">
+  [401] joinstr ................................. <me.getHours(tItemData.getaProp(#time_duration)) & ":">
+  [402] getparam 0 .............................. <me>
+  [404] getlocal 1 .............................. <tItemData>
+  [406] pushsymb 881 ............................ <#time_duration>
+  [409] pusharglist 2 ........................... <tItemData, #time_duration>
+  [411] objcall 250 ............................. <tItemData.getaProp(#time_duration)>
+  [413] pusharglist 2 ........................... <me, tItemData.getaProp(#time_duration)>
+  [415] objcall 852 ............................. <me.getMinutes(tItemData.getaProp(#time_duration))>
+  [418] pushint8 60 ............................. <60>
+  [420] mod ..................................... <me.getMinutes(tItemData.getaProp(#time_duration)) mod 60>
+  [421] joinstr ................................. <me.getHours(tItemData.getaProp(#time_duration)) & ":" & me.getMinutes(tItemData.getaProp(#time_duration)) mod 60>
+  [422] pusharglist 3 ........................... <tText, "%d", me.getHours(tItemData.getaProp(#time_duration)) & ":" & me.getMinutes(tItemData.getaProp(#time_duration)) mod 60>
+  [424] extcall 465 ............................. <replaceChunks(tText, "%d", me.getHours(tItemData.getaProp(#time_duration)) & ":" & me.getMinutes(tItemData.getaProp(#time_duration)) mod 60)>
+  [427] setlocal 7 .............................. tText = replaceChunks(tText, "%d", me.getHours(tItemData.getaProp(#time_duration)) & ":" & me.getMinutes(tItemData.getaProp(#time_duration)) mod 60)
+  [429] getlocal 7 .............................. <tText>
+  [431] pushcons 20 ............................. <"%c">
+  [433] getlocal 1 .............................. <tItemData>
+  [435] pushsymb 162 ............................ <#count>
+  [437] pusharglist 2 ........................... <tItemData, #count>
+  [439] objcall 250 ............................. <tItemData.getaProp(#count)>
+  [441] pusharglist 3 ........................... <tText, "%c", tItemData.getaProp(#count)>
+  [443] extcall 465 ............................. <replaceChunks(tText, "%c", tItemData.getaProp(#count))>
+  [446] setlocal 7 .............................. tText = replaceChunks(tText, "%c", tItemData.getaProp(#count))
+  [448] getlocal 6 .............................. <tDescElem>
+  [450] getlocal 7 .............................. <tText>
+  [452] pusharglistnoret 2 ...................... <tDescElem, tText>
+  [454] objcall 110 ............................. tDescElem.setText(tText)
+  [456] jmp [465]
+  [459] getlocal 6 .............................. <tDescElem>
+  [461] pusharglistnoret 1 ...................... <tDescElem>
+  [463] objcall 101 ............................. tDescElem.hide()
+  [465] getlocal 0 .............................. <tWindow>
+  [467] pushcons 21 ............................. <"fx_activate_button">
+  [469] pusharglist 2 ........................... <tWindow, "fx_activate_button">
+  [471] objcall 100 ............................. <tWindow.elementExists("fx_activate_button")>
+  [473] jmpifz [519] ............................ if tWindow.elementExists("fx_activate_button") then
+  [476] getlocal 0 .............................. <tWindow>
+  [478] pushcons 21 ............................. <"fx_activate_button">
+  [480] pusharglist 2 ........................... <tWindow, "fx_activate_button">
+  [482] objcall 87 .............................. <tWindow.getElement("fx_activate_button")>
+  [484] setlocal 2 .............................. tElem = tWindow.getElement("fx_activate_button")
+  [486] getparam 0 .............................. <me>
+  [488] getchainedprop 871 ...................... <me.pActiveEffectIndex>
+  [491] getprop 878 ............................. <pSelectedEffectType>
+  [494] pusharglist 2 ........................... <me.pActiveEffectIndex, pSelectedEffectType>
+  [496] objcall 770 ............................. <me.pActiveEffectIndex.findPos(pSelectedEffectType)>
+  [499] pushzero ................................ <0>
+  [500] gt ...................................... <me.pActiveEffectIndex.findPos(pSelectedEffectType) > 0>
+  [501] jmpifz [513] ............................ if me.pActiveEffectIndex.findPos(pSelectedEffectType) > 0 then / else
+  [504] getlocal 2 .............................. <tElem>
+  [506] pusharglistnoret 1 ...................... <tElem>
+  [508] objcall 101 ............................. tElem.hide()
+  [510] jmp [519]
+  [513] getlocal 2 .............................. <tElem>
+  [515] pusharglistnoret 1 ...................... <tElem>
+  [517] objcall 141 ............................. tElem.show()
+  [519] pushint8 1 .............................. <1>
+  [521] pusharglistnoret 1 ...................... <1>
+  [523] extcall 20 .............................. return 1
+  [525] ret
+end
+
+on getHours me, tSeconds
+  [  0] getparam 1 .............................. <tSeconds>
+  [  2] pushint16 3600 .......................... <3600>
+  [  5] div ..................................... <tSeconds / 3600>
+  [  6] pusharglistnoret 1 ...................... <tSeconds / 3600>
+  [  8] extcall 20 .............................. return tSeconds / 3600
+  [ 10] ret
+end
+
+on getMinutes me, tSeconds
+  [  0] getparam 1 .............................. <tSeconds>
+  [  2] pushint8 60 ............................. <60>
+  [  4] div ..................................... <tSeconds / 60>
+  [  5] pusharglistnoret 1 ...................... <tSeconds / 60>
+  [  7] extcall 20 .............................. return tSeconds / 60
+  [  9] ret
+end
+
+on selectSlot me, tSlotIndex
+  [  0] getparam 1 .............................. <tSlotIndex>
+  [  2] pusharglist 1 ........................... <tSlotIndex>
+  [  4] extcall 194 ............................. <integer(tSlotIndex)>
+  [  6] setparam 1 .............................. tSlotIndex = integer(tSlotIndex)
+  [  8] getparam 1 .............................. <tSlotIndex>
+  [ 10] pushint8 1 .............................. <1>
+  [ 12] lt ...................................... <tSlotIndex < 1>
+  [ 13] getparam 1 .............................. <tSlotIndex>
+  [ 15] getprop 870 ............................. <pActiveEffects>
+  [ 18] getobjprop 162 .......................... <pActiveEffects.count>
+  [ 20] gt ...................................... <tSlotIndex > pActiveEffects.count>
+  [ 21] or ...................................... <(tSlotIndex < 1) or (tSlotIndex > pActiveEffects.count)>
+  [ 22] jmpifz [ 44] ............................ if (tSlotIndex < 1) or (tSlotIndex > pActiveEffects.count) then
+  [ 25] getparam 0 .............................. <me>
+  [ 27] pushcons 22 ............................. <"Slot index out of range">
+  [ 29] pushsymb 853 ............................ <#selectSlot>
+  [ 32] pushsymb 544 ............................ <#major>
+  [ 35] pusharglist 4 ........................... <me, "Slot index out of range", #selectSlot, #major>
+  [ 37] extcall 339 ............................. <error(me, "Slot index out of range", #selectSlot, #major)>
+  [ 40] pusharglistnoret 1 ...................... <error(me, "Slot index out of range", #selectSlot, #major)>
+  [ 42] extcall 20 .............................. return error(me, "Slot index out of range", #selectSlot, #major)
+  [ 44] getprop 871 ............................. <pActiveEffectIndex>
+  [ 47] getparam 1 .............................. <tSlotIndex>
+  [ 49] pusharglist 2 ........................... <pActiveEffectIndex, tSlotIndex>
+  [ 51] objcall 164 ............................. <pActiveEffectIndex[tSlotIndex]>
+  [ 53] setlocal 0 .............................. tBadgeID = pActiveEffectIndex[tSlotIndex]
+  [ 55] getlocal 0 .............................. <tBadgeID>
+  [ 57] pushzero ................................ <0>
+  [ 58] nteq .................................... <tBadgeID <> 0>
+  [ 59] jmpifz [ 71] ............................ if tBadgeID <> 0 then
+  [ 62] getparam 0 .............................. <me>
+  [ 64] getlocal 0 .............................. <tBadgeID>
+  [ 66] pusharglistnoret 2 ...................... <me, tBadgeID>
+  [ 68] objcall 887 ............................. me.selectBadge(tBadgeID)
+  [ 71] ret
+end
+
+on clearActiveSlot me
+  [  0] getprop 889 ............................. <pActiveSlot>
+  [  3] pushzero ................................ <0>
+  [  4] eq ...................................... <pActiveSlot = 0>
+  [  5] jmpifz [ 13] ............................ if pActiveSlot = 0 then
+  [  8] pushzero ................................ <0>
+  [  9] pusharglistnoret 1 ...................... <0>
+  [ 11] extcall 20 .............................. return 0
+  [ 13] getprop 889 ............................. <pActiveSlot>
+  [ 16] pusharglist 1 ........................... <[pActiveSlot]>
+  [ 18] pushlist ................................ <[pActiveSlot]>
+  [ 19] pushzero ................................ <0>
+  [ 20] eq ...................................... <[pActiveSlot] = 0>
+  [ 21] pusharglistnoret 1 ...................... <[pActiveSlot] = 0>
+  [ 23] extcall 890 ............................. pSelectedBadges([pActiveSlot] = 0)
+  [ 26] getparam 0 .............................. <me>
+  [ 28] pusharglistnoret 1 ...................... <me>
+  [ 30] objcall 891 ............................. me.updateBadgeView()
+  [ 33] ret
+end
+
+on updateSlots me
+  [  0] getprop 807 ............................. <pState>
+  [  3] not ..................................... <not pState>
+  [  4] jmpifz [ 13] ............................ if not pState then
+  [  7] pushint8 1 .............................. <1>
+  [  9] pusharglistnoret 1 ...................... <1>
+  [ 11] extcall 20 .............................. return 1
+  [ 13] getprop 872 ............................. <pBadgeWindowID>
+  [ 16] pusharglist 1 ........................... <pBadgeWindowID>
+  [ 18] extcall 75 .............................. <windowExists(pBadgeWindowID)>
+  [ 20] not ..................................... <not windowExists(pBadgeWindowID)>
+  [ 21] jmpifz [ 37] ............................ if not windowExists(pBadgeWindowID) then
+  [ 24] getparam 0 .............................. <me>
+  [ 26] pushzero ................................ <0>
+  [ 27] pusharglistnoret 2 ...................... <me, 0>
+  [ 29] objcall 859 ............................. me.setUpdateTimer(0)
+  [ 32] pushzero ................................ <0>
+  [ 33] pusharglistnoret 1 ...................... <0>
+  [ 35] extcall 20 .............................. return 0
+  [ 37] getprop 872 ............................. <pBadgeWindowID>
+  [ 40] pusharglist 1 ........................... <pBadgeWindowID>
+  [ 42] extcall 80 .............................. <getWindow(pBadgeWindowID)>
+  [ 44] setlocal 0 .............................. tWindow = getWindow(pBadgeWindowID)
+  [ 46] getlocal 0 .............................. <tWindow>
+  [ 48] pushcons 23 ............................. <"fx_slot_1">
+  [ 50] pusharglist 2 ........................... <tWindow, "fx_slot_1">
+  [ 52] objcall 100 ............................. <tWindow.elementExists("fx_slot_1")>
+  [ 54] not ..................................... <not tWindow.elementExists("fx_slot_1")>
+  [ 55] jmpifz [ 71] ............................ if not tWindow.elementExists("fx_slot_1") then
+  [ 58] getparam 0 .............................. <me>
+  [ 60] pushzero ................................ <0>
+  [ 61] pusharglistnoret 2 ...................... <me, 0>
+  [ 63] objcall 859 ............................. me.setUpdateTimer(0)
+  [ 66] pushzero ................................ <0>
+  [ 67] pusharglistnoret 1 ...................... <0>
+  [ 69] extcall 20 .............................. return 0
+  [ 71] getlocal 0 .............................. <tWindow>
+  [ 73] pushcons 24 ............................. <"slot_arrow_left">
+  [ 75] pusharglist 2 ........................... <tWindow, "slot_arrow_left">
+  [ 77] objcall 87 .............................. <tWindow.getElement("slot_arrow_left")>
+  [ 79] setlocal 1 .............................. tElem = tWindow.getElement("slot_arrow_left")
+  [ 81] getlocal 1 .............................. <tElem>
+  [ 83] pushzero ................................ <0>
+  [ 84] eq ...................................... <tElem = 0>
+  [ 85] jmpifz [ 93] ............................ if tElem = 0 then
+  [ 88] pushzero ................................ <0>
+  [ 89] pusharglistnoret 1 ...................... <0>
+  [ 91] extcall 20 .............................. return 0
+  [ 93] getprop 874 ............................. <pSlotOffset>
+  [ 96] pushint8 1 .............................. <1>
+  [ 98] lt ...................................... <pSlotOffset < 1>
+  [ 99] jmpifz [124] ............................ if pSlotOffset < 1 then / else
+  [102] getlocal 1 .............................. <tElem>
+  [104] pushsymb 88 ............................. <#member>
+  [106] pushcons 25 ............................. <"fxarrow.inactive.left">
+  [108] pusharglistnoret 3 ...................... <tElem, #member, "fxarrow.inactive.left">
+  [110] objcall 90 .............................. tElem.setProperty(#member, "fxarrow.inactive.left")
+  [112] getlocal 1 .............................. <tElem>
+  [114] pushsymb 152 ............................ <#cursor>
+  [116] pushzero ................................ <0>
+  [117] pusharglistnoret 3 ...................... <tElem, #cursor, 0>
+  [119] objcall 90 .............................. tElem.setProperty(#cursor, 0)
+  [121] jmp [144]
+  [124] getlocal 1 .............................. <tElem>
+  [126] pushsymb 88 ............................. <#member>
+  [128] pushcons 26 ............................. <"fxarrow.active.left">
+  [130] pusharglistnoret 3 ...................... <tElem, #member, "fxarrow.active.left">
+  [132] objcall 90 .............................. tElem.setProperty(#member, "fxarrow.active.left")
+  [134] getlocal 1 .............................. <tElem>
+  [136] pushsymb 152 ............................ <#cursor>
+  [138] pushcons 27 ............................. <"cursor.finger">
+  [140] pusharglistnoret 3 ...................... <tElem, #cursor, "cursor.finger">
+  [142] objcall 90 .............................. tElem.setProperty(#cursor, "cursor.finger")
+  [144] getlocal 0 .............................. <tWindow>
+  [146] pushcons 28 ............................. <"slot_arrow_right">
+  [148] pusharglist 2 ........................... <tWindow, "slot_arrow_right">
+  [150] objcall 87 .............................. <tWindow.getElement("slot_arrow_right")>
+  [152] setlocal 1 .............................. tElem = tWindow.getElement("slot_arrow_right")
+  [154] getlocal 1 .............................. <tElem>
+  [156] pushzero ................................ <0>
+  [157] eq ...................................... <tElem = 0>
+  [158] jmpifz [166] ............................ if tElem = 0 then
+  [161] pushzero ................................ <0>
+  [162] pusharglistnoret 1 ...................... <0>
+  [164] extcall 20 .............................. return 0
+  [166] getprop 874 ............................. <pSlotOffset>
+  [169] pushint8 5 .............................. <5>
+  [171] add ..................................... <pSlotOffset + 5>
+  [172] getprop 870 ............................. <pActiveEffects>
+  [175] getobjprop 162 .......................... <pActiveEffects.count>
+  [177] gteq .................................... <(pSlotOffset + 5) >= pActiveEffects.count>
+  [178] jmpifz [203] ............................ if (pSlotOffset + 5) >= pActiveEffects.count then / else
+  [181] getlocal 1 .............................. <tElem>
+  [183] pushsymb 88 ............................. <#member>
+  [185] pushcons 29 ............................. <"fxarrow.inactive.right">
+  [187] pusharglistnoret 3 ...................... <tElem, #member, "fxarrow.inactive.right">
+  [189] objcall 90 .............................. tElem.setProperty(#member, "fxarrow.inactive.right")
+  [191] getlocal 1 .............................. <tElem>
+  [193] pushsymb 152 ............................ <#cursor>
+  [195] pushzero ................................ <0>
+  [196] pusharglistnoret 3 ...................... <tElem, #cursor, 0>
+  [198] objcall 90 .............................. tElem.setProperty(#cursor, 0)
+  [200] jmp [223]
+  [203] getlocal 1 .............................. <tElem>
+  [205] pushsymb 88 ............................. <#member>
+  [207] pushcons 30 ............................. <"fxarrow.active.right">
+  [209] pusharglistnoret 3 ...................... <tElem, #member, "fxarrow.active.right">
+  [211] objcall 90 .............................. tElem.setProperty(#member, "fxarrow.active.right")
+  [213] getlocal 1 .............................. <tElem>
+  [215] pushsymb 152 ............................ <#cursor>
+  [217] pushcons 27 ............................. <"cursor.finger">
+  [219] pusharglistnoret 3 ...................... <tElem, #cursor, "cursor.finger">
+  [221] objcall 90 .............................. tElem.setProperty(#cursor, "cursor.finger")
+  [223] pushint8 1 .............................. <1>
+  [225] setlocal 2
+  [227] getlocal 2
+  [229] pushint8 5 .............................. <5>
+  [231] lteq
+  [232] jmpifz [647] ............................ repeat with tSlot = 1 to 5
+  [235] getlocal 0 .............................. <tWindow>
+  [237] pushcons 31 ............................. <"fx_slot_">
+  [239] getlocal 2 .............................. <tSlot>
+  [241] joinstr ................................. <"fx_slot_" & tSlot>
+  [242] pusharglist 2 ........................... <tWindow, "fx_slot_" & tSlot>
+  [244] objcall 100 ............................. <tWindow.elementExists("fx_slot_" & tSlot)>
+  [246] not ..................................... <not tWindow.elementExists("fx_slot_" & tSlot)>
+  [247] jmpifz [253] ............................ if not tWindow.elementExists("fx_slot_" & tSlot) then
+  [250] jmp [637] ............................... next repeat
+  [253] getlocal 0 .............................. <tWindow>
+  [255] pushcons 31 ............................. <"fx_slot_">
+  [257] getlocal 2 .............................. <tSlot>
+  [259] joinstr ................................. <"fx_slot_" & tSlot>
+  [260] pusharglist 2 ........................... <tWindow, "fx_slot_" & tSlot>
+  [262] objcall 87 .............................. <tWindow.getElement("fx_slot_" & tSlot)>
+  [264] setlocal 1 .............................. tElem = tWindow.getElement("fx_slot_" & tSlot)
+  [266] getprop 870 ............................. <pActiveEffects>
+  [269] getobjprop 162 .......................... <pActiveEffects.count>
+  [271] getlocal 2 .............................. <tSlot>
+  [273] getprop 874 ............................. <pSlotOffset>
+  [276] add ..................................... <tSlot + pSlotOffset>
+  [277] lt ...................................... <pActiveEffects.count < (tSlot + pSlotOffset)>
+  [278] jmpifz [344] ............................ if pActiveEffects.count < (tSlot + pSlotOffset) then
+  [281] getlocal 1 .............................. <tElem>
+  [283] pusharglistnoret 1 ...................... <tElem>
+  [285] objcall 101 ............................. tElem.hide()
+  [287] getlocal 0 .............................. <tWindow>
+  [289] pushcons 32 ............................. <"slot_bg_">
+  [291] getlocal 2 .............................. <tSlot>
+  [293] joinstr ................................. <"slot_bg_" & tSlot>
+  [294] pusharglist 2 ........................... <tWindow, "slot_bg_" & tSlot>
+  [296] objcall 87 .............................. <tWindow.getElement("slot_bg_" & tSlot)>
+  [298] setlocal 3 .............................. tSlotElem = tWindow.getElement("slot_bg_" & tSlot)
+  [300] getlocal 3 .............................. <tSlotElem>
+  [302] pushsymb 88 ............................. <#member>
+  [304] pushcons 33 ............................. <"slot">
+  [306] pusharglistnoret 3 ...................... <tSlotElem, #member, "slot">
+  [308] objcall 90 .............................. tSlotElem.setProperty(#member, "slot")
+  [310] getlocal 0 .............................. <tWindow>
+  [312] pushcons 31 ............................. <"fx_slot_">
+  [314] getlocal 2 .............................. <tSlot>
+  [316] joinstr ................................. <"fx_slot_" & tSlot>
+  [317] pushcons 34 ............................. <"_time">
+  [319] joinstr ................................. <"fx_slot_" & tSlot & "_time">
+  [320] pusharglist 2 ........................... <tWindow, "fx_slot_" & tSlot & "_time">
+  [322] objcall 87 .............................. <tWindow.getElement("fx_slot_" & tSlot & "_time")>
+  [324] setlocal 4 .............................. tTimeElem = tWindow.getElement("fx_slot_" & tSlot & "_time")
+  [326] getlocal 4 .............................. <tTimeElem>
+  [328] pushzero ................................ <0>
+  [329] nteq .................................... <tTimeElem <> 0>
+  [330] jmpifz [341] ............................ if tTimeElem <> 0 then
+  [333] getlocal 4 .............................. <tTimeElem>
+  [335] pushcons 35 ............................. <EMPTY>
+  [337] pusharglistnoret 2 ...................... <tTimeElem, EMPTY>
+  [339] objcall 110 ............................. tTimeElem.setText(EMPTY)
+  [341] jmp [637] ............................... next repeat
+  [344] getlocal 1 .............................. <tElem>
+  [346] pusharglistnoret 1 ...................... <tElem>
+  [348] objcall 141 ............................. tElem.show()
+  [350] getprop 870 ............................. <pActiveEffects>
+  [353] getlocal 2 .............................. <tSlot>
+  [355] getprop 874 ............................. <pSlotOffset>
+  [358] add ..................................... <tSlot + pSlotOffset>
+  [359] pusharglist 2 ........................... <pActiveEffects, tSlot + pSlotOffset>
+  [361] objcall 163 ............................. <pActiveEffects.getPropAt(tSlot + pSlotOffset)>
+  [363] setlocal 5 .............................. tBadgeID = pActiveEffects.getPropAt(tSlot + pSlotOffset)
+  [365] getprop 870 ............................. <pActiveEffects>
+  [368] getlocal 2 .............................. <tSlot>
+  [370] getprop 874 ............................. <pSlotOffset>
+  [373] add ..................................... <tSlot + pSlotOffset>
+  [374] pusharglist 2 ........................... <pActiveEffects, tSlot + pSlotOffset>
+  [376] objcall 164 ............................. <pActiveEffects[tSlot + pSlotOffset]>
+  [378] setlocal 6 .............................. tEndTime = pActiveEffects[tSlot + pSlotOffset]
+  [380] pushcons 36 ............................. <"ctlg_pic_small_fx_">
+  [382] getlocal 5 .............................. <tBadgeID>
+  [384] joinstr ................................. <"ctlg_pic_small_fx_" & tBadgeID>
+  [385] pusharglist 1 ........................... <"ctlg_pic_small_fx_" & tBadgeID>
+  [387] extcall 128 ............................. <getmemnum("ctlg_pic_small_fx_" & tBadgeID)>
+  [389] setlocal 7 .............................. tMemNum = getmemnum("ctlg_pic_small_fx_" & tBadgeID)
+  [391] getlocal 5 .............................. <tBadgeID>
+  [393] pushzero ................................ <0>
+  [394] eq ...................................... <tBadgeID = 0>
+  [395] getlocal 7 .............................. <tMemNum>
+  [397] pushzero ................................ <0>
+  [398] eq ...................................... <tMemNum = 0>
+  [399] or ...................................... <(tBadgeID = 0) or (tMemNum = 0)>
+  [400] jmpifz [418] ............................ if (tBadgeID = 0) or (tMemNum = 0) then / else
+  [403] pushint8 1 .............................. <1>
+  [405] pushint8 1 .............................. <1>
+  [407] pushint8 8 .............................. <8>
+  [409] pusharglist 3 ........................... <1, 1, 8>
+  [411] extcall 129 ............................. <image(1, 1, 8)>
+  [413] setlocal 8 .............................. tBadgeImage = image(1, 1, 8)
+  [415] jmp [428]
+  [418] getlocal 7 .............................. <tMemNum>
+  [420] pusharglist 1 ........................... <tMemNum>
+  [422] extcall 88 .............................. <member(tMemNum)>
+  [424] getobjprop 129 .......................... <member(tMemNum).image>
+  [426] setlocal 8 .............................. tBadgeImage = member(tMemNum).image
+  [428] getlocal 1 .............................. <tElem>
+  [430] pushsymb 138 ............................ <#width>
+  [432] pusharglist 2 ........................... <tElem, #width>
+  [434] objcall 139 ............................. <tElem.getProperty(#width)>
+  [436] setlocal 9 .............................. tWidth = tElem.getProperty(#width)
+  [438] getlocal 1 .............................. <tElem>
+  [440] pushsymb 146 ............................ <#height>
+  [442] pusharglist 2 ........................... <tElem, #height>
+  [444] objcall 139 ............................. <tElem.getProperty(#height)>
+  [446] setlocal 10 ............................. tHeight = tElem.getProperty(#height)
+  [448] getprop 876 ............................. <pListRenderer>
+  [451] getlocal 8 .............................. <tBadgeImage>
+  [453] pushzero ................................ <0>
+  [454] pushzero ................................ <0>
+  [455] getlocal 9 .............................. <tWidth>
+  [457] getlocal 10 ............................. <tHeight>
+  [459] pusharglist 4 ........................... <0, 0, tWidth, tHeight>
+  [461] extcall 218 ............................. <rect(0, 0, tWidth, tHeight)>
+  [463] pusharglist 3 ........................... <pListRenderer, tBadgeImage, rect(0, 0, tWidth, tHeight)>
+  [465] objcall 880 ............................. <pListRenderer.centerImage(tBadgeImage, rect(0, 0, tWidth, tHeight))>
+  [468] setlocal 11 ............................. tCenteredImage = pListRenderer.centerImage(tBadgeImage, rect(0, 0, tWidth, tHeight))
+  [470] getlocal 1 .............................. <tElem>
+  [472] getlocal 11 ............................. <tCenteredImage>
+  [474] pusharglistnoret 2 ...................... <tElem, tCenteredImage>
+  [476] objcall 130 ............................. tElem.feedImage(tCenteredImage)
+  [478] getlocal 0 .............................. <tWindow>
+  [480] pushcons 32 ............................. <"slot_bg_">
+  [482] getlocal 2 .............................. <tSlot>
+  [484] joinstr ................................. <"slot_bg_" & tSlot>
+  [485] pusharglist 2 ........................... <tWindow, "slot_bg_" & tSlot>
+  [487] objcall 100 ............................. <tWindow.elementExists("slot_bg_" & tSlot)>
+  [489] jmpifz [537] ............................ if tWindow.elementExists("slot_bg_" & tSlot) then
+  [492] getlocal 0 .............................. <tWindow>
+  [494] pushcons 32 ............................. <"slot_bg_">
+  [496] getlocal 2 .............................. <tSlot>
+  [498] joinstr ................................. <"slot_bg_" & tSlot>
+  [499] pusharglist 2 ........................... <tWindow, "slot_bg_" & tSlot>
+  [501] objcall 87 .............................. <tWindow.getElement("slot_bg_" & tSlot)>
+  [503] setlocal 3 .............................. tSlotElem = tWindow.getElement("slot_bg_" & tSlot)
+  [505] getlocal 5 .............................. <tBadgeID>
+  [507] getprop 878 ............................. <pSelectedEffectType>
+  [510] eq ...................................... <tBadgeID = pSelectedEffectType>
+  [511] jmpifz [527] ............................ if tBadgeID = pSelectedEffectType then / else
+  [514] getlocal 3 .............................. <tSlotElem>
+  [516] pushsymb 88 ............................. <#member>
+  [518] pushcons 37 ............................. <"slot_hilite">
+  [520] pusharglistnoret 3 ...................... <tSlotElem, #member, "slot_hilite">
+  [522] objcall 90 .............................. tSlotElem.setProperty(#member, "slot_hilite")
+  [524] jmp [537]
+  [527] getlocal 3 .............................. <tSlotElem>
+  [529] pushsymb 88 ............................. <#member>
+  [531] pushcons 33 ............................. <"slot">
+  [533] pusharglistnoret 3 ...................... <tSlotElem, #member, "slot">
+  [535] objcall 90 .............................. tSlotElem.setProperty(#member, "slot")
+  [537] getlocal 6 .............................. <tEndTime>
+  [539] getmovieprop 174 ........................ <the milliSeconds>
+  [541] sub ..................................... <tEndTime - the milliSeconds>
+  [542] pushint16 1000 .......................... <1000>
+  [545] div ..................................... <(tEndTime - the milliSeconds) / 1000>
+  [546] setlocal 12 ............................. tTimeInt = (tEndTime - the milliSeconds) / 1000
+  [548] getlocal 12 ............................. <tTimeInt>
+  [550] pushint8 60 ............................. <60>
+  [552] mod ..................................... <tTimeInt mod 60>
+  [553] setlocal 13 ............................. tMin = tTimeInt mod 60
+  [555] getlocal 12 ............................. <tTimeInt>
+  [557] getlocal 13 ............................. <tMin>
+  [559] sub ..................................... <tTimeInt - tMin>
+  [560] pushint8 60 ............................. <60>
+  [562] div ..................................... <(tTimeInt - tMin) / 60>
+  [563] setlocal 14 ............................. tHour = (tTimeInt - tMin) / 60
+  [565] getlocal 13 ............................. <tMin>
+  [567] pushint8 10 ............................. <10>
+  [569] lt ...................................... <tMin < 10>
+  [570] jmpifz [580] ............................ if tMin < 10 then
+  [573] pushcons 38 ............................. <"0">
+  [575] getlocal 13 ............................. <tMin>
+  [577] joinstr ................................. <"0" & tMin>
+  [578] setlocal 13 ............................. tMin = "0" & tMin
+  [580] getlocal 14 ............................. <tHour>
+  [582] pushint8 10 ............................. <10>
+  [584] lt ...................................... <tHour < 10>
+  [585] jmpifz [595] ............................ if tHour < 10 then
+  [588] pushcons 38 ............................. <"0">
+  [590] getlocal 14 ............................. <tHour>
+  [592] joinstr ................................. <"0" & tHour>
+  [593] setlocal 14 ............................. tHour = "0" & tHour
+  [595] getlocal 0 .............................. <tWindow>
+  [597] pushcons 31 ............................. <"fx_slot_">
+  [599] getlocal 2 .............................. <tSlot>
+  [601] joinstr ................................. <"fx_slot_" & tSlot>
+  [602] pushcons 34 ............................. <"_time">
+  [604] joinstr ................................. <"fx_slot_" & tSlot & "_time">
+  [605] pusharglist 2 ........................... <tWindow, "fx_slot_" & tSlot & "_time">
+  [607] objcall 87 .............................. <tWindow.getElement("fx_slot_" & tSlot & "_time")>
+  [609] setlocal 1 .............................. tElem = tWindow.getElement("fx_slot_" & tSlot & "_time")
+  [611] getlocal 1 .............................. <tElem>
+  [613] pushzero ................................ <0>
+  [614] eq ...................................... <tElem = 0>
+  [615] jmpifz [623] ............................ if tElem = 0 then
+  [618] pushzero ................................ <0>
+  [619] pusharglistnoret 1 ...................... <0>
+  [621] extcall 20 .............................. return 0
+  [623] getlocal 1 .............................. <tElem>
+  [625] getlocal 14 ............................. <tHour>
+  [627] pushcons 19 ............................. <":">
+  [629] joinstr ................................. <tHour & ":">
+  [630] getlocal 13 ............................. <tMin>
+  [632] joinstr ................................. <tHour & ":" & tMin>
+  [633] pusharglistnoret 2 ...................... <tElem, tHour & ":" & tMin>
+  [635] objcall 110 ............................. tElem.setText(tHour & ":" & tMin)
+  [637] pushint8 1
+  [639] getlocal 2
+  [641] add
+  [642] setlocal 2
+  [644] endrepeat [227]
+  [647] ret
+end
+
+on selectItem me, tBadgeID
+  [  0] getparam 1 .............................. <tBadgeID>
+  [  2] setprop 878 ............................. pSelectedEffectType = tBadgeID
+  [  5] getparam 0 .............................. <me>
+  [  7] pusharglistnoret 1 ...................... <me>
+  [  9] objcall 857 ............................. me.updateFxView()
+  [ 12] ret
+end
+
+on updateFxView me
+  [  0] getprop 807 ............................. <pState>
+  [  3] not ..................................... <not pState>
+  [  4] jmpifz [ 13] ............................ if not pState then
+  [  7] pushint8 1 .............................. <1>
+  [  9] pusharglistnoret 1 ...................... <1>
+  [ 11] extcall 20 .............................. return 1
+  [ 13] getprop 878 ............................. <pSelectedEffectType>
+  [ 16] pusharglist 1 ........................... <pSelectedEffectType>
+  [ 18] extcall 25 .............................. <voidp(pSelectedEffectType)>
+  [ 20] jmpifz [ 46] ............................ if voidp(pSelectedEffectType) then
+  [ 23] getprop 868 ............................. <pInventoryList>
+  [ 26] getobjprop 162 .......................... <pInventoryList.count>
+  [ 28] pushint8 1 .............................. <1>
+  [ 30] gt ...................................... <pInventoryList.count > 1>
+  [ 31] jmpifz [ 46] ............................ if pInventoryList.count > 1 then
+  [ 34] getprop 868 ............................. <pInventoryList>
+  [ 37] pushint8 1 .............................. <1>
+  [ 39] pusharglist 2 ........................... <pInventoryList, 1>
+  [ 41] objcall 163 ............................. <pInventoryList.getPropAt(1)>
+  [ 43] setprop 878 ............................. pSelectedEffectType = pInventoryList.getPropAt(1)
+  [ 46] getparam 0 .............................. <me>
+  [ 48] pusharglistnoret 1 ...................... <me>
+  [ 50] objcall 848 ............................. me.setCatalogLinkVisibility()
+  [ 53] getparam 0 .............................. <me>
+  [ 55] pusharglistnoret 1 ...................... <me>
+  [ 57] objcall 849 ............................. me.updateListImage()
+  [ 60] getparam 0 .............................. <me>
+  [ 62] pusharglistnoret 1 ...................... <me>
+  [ 64] objcall 850 ............................. me.updatePreview()
+  [ 67] getparam 0 .............................. <me>
+  [ 69] pusharglistnoret 1 ...................... <me>
+  [ 71] objcall 855 ............................. me.updateSlots()
+  [ 74] ret
+end
+
+on getWindowObj me
+  [  0] pushcons 39 ............................. <"fx_inv_window_title">
+  [  2] pusharglist 1 ........................... <"fx_inv_window_title">
+  [  4] extcall 109 ............................. <getText("fx_inv_window_title")>
+  [  6] setlocal 0 .............................. tTitleStr = getText("fx_inv_window_title")
+  [  8] getprop 872 ............................. <pBadgeWindowID>
+  [ 11] pusharglist 1 ........................... <pBadgeWindowID>
+  [ 13] extcall 75 .............................. <windowExists(pBadgeWindowID)>
+  [ 15] jmpifz [ 60] ............................ if windowExists(pBadgeWindowID) then
+  [ 18] getprop 872 ............................. <pBadgeWindowID>
+  [ 21] pusharglist 1 ........................... <pBadgeWindowID>
+  [ 23] extcall 80 .............................. <getWindow(pBadgeWindowID)>
+  [ 25] setlocal 1 .............................. tWndObj = getWindow(pBadgeWindowID)
+  [ 27] getlocal 1 .............................. <tWndObj>
+  [ 29] pushsymb 897 ............................ <#title>
+  [ 32] pusharglist 2 ........................... <tWndObj, #title>
+  [ 34] objcall 139 ............................. <tWndObj.getProperty(#title)>
+  [ 36] getlocal 0 .............................. <tTitleStr>
+  [ 38] eq ...................................... <tWndObj.getProperty(#title) = tTitleStr>
+  [ 39] jmpifz [ 53] ............................ if tWndObj.getProperty(#title) = tTitleStr then
+  [ 42] getprop 872 ............................. <pBadgeWindowID>
+  [ 45] pusharglist 1 ........................... <pBadgeWindowID>
+  [ 47] extcall 80 .............................. <getWindow(pBadgeWindowID)>
+  [ 49] pusharglistnoret 1 ...................... <getWindow(pBadgeWindowID)>
+  [ 51] extcall 20 .............................. return getWindow(pBadgeWindowID)
+  [ 53] getprop 872 ............................. <pBadgeWindowID>
+  [ 56] pusharglistnoret 1 ...................... <pBadgeWindowID>
+  [ 58] extcall 106 ............................. removeWindow(pBadgeWindowID)
+  [ 60] getprop 872 ............................. <pBadgeWindowID>
+  [ 63] pusharglist 1 ........................... <pBadgeWindowID>
+  [ 65] extcall 76 .............................. <createWindow(pBadgeWindowID)>
+  [ 67] not ..................................... <not createWindow(pBadgeWindowID)>
+  [ 68] jmpifz [ 90] ............................ if not createWindow(pBadgeWindowID) then
+  [ 71] getparam 0 .............................. <me>
+  [ 73] pushcons 40 ............................. <"Badge choice window not created!">
+  [ 75] pushsymb 434 ............................ <#getWindowObj>
+  [ 78] pushsymb 544 ............................ <#major>
+  [ 81] pusharglist 4 ........................... <me, "Badge choice window not created!", #getWindowObj, #major>
+  [ 83] extcall 339 ............................. <error(me, "Badge choice window not created!", #getWindowObj, #major)>
+  [ 86] pusharglistnoret 1 ...................... <error(me, "Badge choice window not created!", #getWindowObj, #major)>
+  [ 88] extcall 20 .............................. return error(me, "Badge choice window not created!", #getWindowObj, #major)
+  [ 90] getprop 872 ............................. <pBadgeWindowID>
+  [ 93] pusharglist 1 ........................... <pBadgeWindowID>
+  [ 95] extcall 80 .............................. <getWindow(pBadgeWindowID)>
+  [ 97] setlocal 1 .............................. tWndObj = getWindow(pBadgeWindowID)
+  [ 99] getlocal 1 .............................. <tWndObj>
+  [101] pushsymb 897 ............................ <#title>
+  [104] getlocal 0 .............................. <tTitleStr>
+  [106] pusharglistnoret 3 ...................... <tWndObj, #title, tTitleStr>
+  [108] objcall 90 .............................. tWndObj.setProperty(#title, tTitleStr)
+  [110] getlocal 1 .............................. <tWndObj>
+  [112] pushcons 41 ............................. <"habbo_basic.window">
+  [114] pusharglist 2 ........................... <tWndObj, "habbo_basic.window">
+  [116] objcall 85 .............................. <tWndObj.merge("habbo_basic.window")>
+  [118] setlocal 2 .............................. tMerged = tWndObj.merge("habbo_basic.window")
+  [120] getlocal 2 .............................. <tMerged>
+  [122] jmpifz [135] ............................ if tMerged then
+  [125] getlocal 1 .............................. <tWndObj>
+  [127] pushcons 42 ............................. <"FX.window">
+  [129] pusharglist 2 ........................... <tWndObj, "FX.window">
+  [131] objcall 85 .............................. <tWndObj.merge("FX.window")>
+  [133] setlocal 2 .............................. tMerged = tWndObj.merge("FX.window")
+  [135] getlocal 2 .............................. <tMerged>
+  [137] not ..................................... <not tMerged>
+  [138] jmpifz [167] ............................ if not tMerged then
+  [141] getprop 872 ............................. <pBadgeWindowID>
+  [144] pusharglistnoret 1 ...................... <pBadgeWindowID>
+  [146] extcall 106 ............................. removeWindow(pBadgeWindowID)
+  [148] getparam 0 .............................. <me>
+  [150] pushcons 43 ............................. <"FX Inventory selection window not merged!">
+  [152] pushsymb 434 ............................ <#getWindowObj>
+  [155] pushsymb 544 ............................ <#major>
+  [158] pusharglist 4 ........................... <me, "FX Inventory selection window not merged!", #getWindowObj, #major>
+  [160] extcall 339 ............................. <error(me, "FX Inventory selection window not merged!", #getWindowObj, #major)>
+  [163] pusharglistnoret 1 ...................... <error(me, "FX Inventory selection window not merged!", #getWindowObj, #major)>
+  [165] extcall 20 .............................. return error(me, "FX Inventory selection window not merged!", #getWindowObj, #major)
+  [167] getparam 0 .............................. <me>
+  [169] pusharglistnoret 1 ...................... <me>
+  [171] objcall 848 ............................. me.setCatalogLinkVisibility()
+  [174] pushsymb 310 ............................ <#leaveRoom>
+  [177] getlocal 1 .............................. <tWndObj>
+  [179] pusharglist 1 ........................... <tWndObj>
+  [181] objcall 19 .............................. <tWndObj.getID()>
+  [183] pushsymb 765 ............................ <#close>
+  [186] pusharglistnoret 3 ...................... <#leaveRoom, tWndObj.getID(), #close>
+  [188] extcall 17 .............................. registerMessage(#leaveRoom, tWndObj.getID(), #close)
+  [190] pushsymb 311 ............................ <#changeRoom>
+  [193] getlocal 1 .............................. <tWndObj>
+  [195] pusharglist 1 ........................... <tWndObj>
+  [197] objcall 19 .............................. <tWndObj.getID()>
+  [199] pushsymb 765 ............................ <#close>
+  [202] pusharglistnoret 3 ...................... <#changeRoom, tWndObj.getID(), #close>
+  [204] extcall 17 .............................. registerMessage(#changeRoom, tWndObj.getID(), #close)
+  [206] getlocal 1 .............................. <tWndObj>
+  [208] pushsymb 292 ............................ <#eventProc>
+  [211] getparam 0 .............................. <me>
+  [213] pusharglist 1 ........................... <me>
+  [215] objcall 19 .............................. <me.getID()>
+  [217] pushsymb 92 ............................. <#mouseUp>
+  [219] pusharglistnoret 4 ...................... <tWndObj, #eventProc, me.getID(), #mouseUp>
+  [221] objcall 93 .............................. tWndObj.registerProcedure(#eventProc, me.getID(), #mouseUp)
+  [223] getlocal 1 .............................. <tWndObj>
+  [225] pusharglistnoret 1 ...................... <tWndObj>
+  [227] extcall 20 .............................. return tWndObj
+  [229] ret
+end
+
+on removeWindowObj me
+  [  0] getprop 872 ............................. <pBadgeWindowID>
+  [  3] pusharglist 1 ........................... <pBadgeWindowID>
+  [  5] extcall 75 .............................. <windowExists(pBadgeWindowID)>
+  [  7] jmpifz [ 52] ............................ if windowExists(pBadgeWindowID) then
+  [ 10] getprop 872 ............................. <pBadgeWindowID>
+  [ 13] pusharglist 1 ........................... <pBadgeWindowID>
+  [ 15] extcall 80 .............................. <getWindow(pBadgeWindowID)>
+  [ 17] setlocal 0 .............................. tWndObj = getWindow(pBadgeWindowID)
+  [ 19] pushsymb 310 ............................ <#leaveRoom>
+  [ 22] getlocal 0 .............................. <tWndObj>
+  [ 24] pusharglist 1 ........................... <tWndObj>
+  [ 26] objcall 19 .............................. <tWndObj.getID()>
+  [ 28] pusharglistnoret 2 ...................... <#leaveRoom, tWndObj.getID()>
+  [ 30] extcall 22 .............................. unregisterMessage(#leaveRoom, tWndObj.getID())
+  [ 32] pushsymb 311 ............................ <#changeRoom>
+  [ 35] getlocal 0 .............................. <tWndObj>
+  [ 37] pusharglist 1 ........................... <tWndObj>
+  [ 39] objcall 19 .............................. <tWndObj.getID()>
+  [ 41] pusharglistnoret 2 ...................... <#changeRoom, tWndObj.getID()>
+  [ 43] extcall 22 .............................. unregisterMessage(#changeRoom, tWndObj.getID())
+  [ 45] getlocal 0 .............................. <tWndObj>
+  [ 47] pusharglistnoret 1 ...................... <tWndObj>
+  [ 49] objcall 765 ............................. tWndObj.close()
+  [ 52] ret
+end
+
+on setUpdateTimer me, tstate
+  [  0] getprop 807 ............................. <pState>
+  [  3] not ..................................... <not pState>
+  [  4] jmpifz [ 13] ............................ if not pState then
+  [  7] pushint8 1 .............................. <1>
+  [  9] pusharglistnoret 1 ...................... <1>
+  [ 11] extcall 20 .............................. return 1
+  [ 13] getparam 1 .............................. <tstate>
+  [ 15] jmpifz [ 56] ............................ if tstate then / else
+  [ 18] getprop 873 ............................. <pUpdateTimerId>
+  [ 21] pusharglist 1 ........................... <pUpdateTimerId>
+  [ 23] extcall 73 .............................. <timeoutExists(pUpdateTimerId)>
+  [ 25] jmpifz [ 34] ............................ if timeoutExists(pUpdateTimerId) then
+  [ 28] pushint8 1 .............................. <1>
+  [ 30] pusharglistnoret 1 ...................... <1>
+  [ 32] extcall 20 .............................. return 1
+  [ 34] getprop 873 ............................. <pUpdateTimerId>
+  [ 37] pushint16 10000 ......................... <10000>
+  [ 40] pushsymb 855 ............................ <#updateSlots>
+  [ 43] getparam 0 .............................. <me>
+  [ 45] pusharglist 1 ........................... <me>
+  [ 47] objcall 19 .............................. <me.getID()>
+  [ 49] pusharglistnoret 4 ...................... <pUpdateTimerId, 10000, #updateSlots, me.getID()>
+  [ 51] extcall 132 ............................. createTimeout(pUpdateTimerId, 10000, #updateSlots, me.getID())
+  [ 53] jmp [ 73]
+  [ 56] getprop 873 ............................. <pUpdateTimerId>
+  [ 59] pusharglist 1 ........................... <pUpdateTimerId>
+  [ 61] extcall 73 .............................. <timeoutExists(pUpdateTimerId)>
+  [ 63] jmpifz [ 73] ............................ if timeoutExists(pUpdateTimerId) then
+  [ 66] getprop 873 ............................. <pUpdateTimerId>
+  [ 69] pusharglistnoret 1 ...................... <pUpdateTimerId>
+  [ 71] extcall 74 .............................. removeTimeout(pUpdateTimerId)
+  [ 73] pushint8 1 .............................. <1>
+  [ 75] pusharglistnoret 1 ...................... <1>
+  [ 77] extcall 20 .............................. return 1
+  [ 79] ret
+end
+
+on send_use_avatar_effect me, ttype
+  [  0] getprop 807 ............................. <pState>
+  [  3] not ..................................... <not pState>
+  [  4] jmpifz [ 13] ............................ if not pState then
+  [  7] pushint8 1 .............................. <1>
+  [  9] pusharglistnoret 1 ...................... <1>
+  [ 11] extcall 20 .............................. return 1
+  [ 13] pushsymb 135 ............................ <#Info>
+  [ 15] pusharglist 1 ........................... <#Info>
+  [ 17] extcall 134 ............................. <getConnection(#Info)>
+  [ 19] setlocal 0 .............................. tConn = getConnection(#Info)
+  [ 21] getlocal 0 .............................. <tConn>
+  [ 23] pushzero ................................ <0>
+  [ 24] eq ...................................... <tConn = 0>
+  [ 25] jmpifz [ 33] ............................ if tConn = 0 then
+  [ 28] pushzero ................................ <0>
+  [ 29] pusharglistnoret 1 ...................... <0>
+  [ 31] extcall 20 .............................. return 0
+  [ 33] getlocal 0 .............................. <tConn>
+  [ 35] pushcons 44 ............................. <"USE_AVATAR_EFFECT">
+  [ 37] pushsymb 194 ............................ <#integer>
+  [ 39] getparam 1 .............................. <ttype>
+  [ 41] pusharglist 2 ........................... <[#integer: ttype]>
+  [ 43] pushproplist ............................ <[#integer: ttype]>
+  [ 44] pusharglist 3 ........................... <tConn, "USE_AVATAR_EFFECT", [#integer: ttype]>
+  [ 46] objcall 136 ............................. <tConn.send("USE_AVATAR_EFFECT", [#integer: ttype])>
+  [ 48] pusharglistnoret 1 ...................... <tConn.send("USE_AVATAR_EFFECT", [#integer: ttype])>
+  [ 50] extcall 20 .............................. return tConn.send("USE_AVATAR_EFFECT", [#integer: ttype])
+  [ 52] ret
+end
+
+on send_activate_avatar_effect me, ttype
+  [  0] pushsymb 135 ............................ <#Info>
+  [  2] pusharglist 1 ........................... <#Info>
+  [  4] extcall 134 ............................. <getConnection(#Info)>
+  [  6] setlocal 0 .............................. tConn = getConnection(#Info)
+  [  8] getlocal 0 .............................. <tConn>
+  [ 10] pushzero ................................ <0>
+  [ 11] eq ...................................... <tConn = 0>
+  [ 12] jmpifz [ 20] ............................ if tConn = 0 then
+  [ 15] pushzero ................................ <0>
+  [ 16] pusharglistnoret 1 ...................... <0>
+  [ 18] extcall 20 .............................. return 0
+  [ 20] getlocal 0 .............................. <tConn>
+  [ 22] pushcons 45 ............................. <"ACTIVATE_AVATAR_EFFECT">
+  [ 24] pushsymb 194 ............................ <#integer>
+  [ 26] getparam 1 .............................. <ttype>
+  [ 28] pusharglist 2 ........................... <[#integer: ttype]>
+  [ 30] pushproplist ............................ <[#integer: ttype]>
+  [ 31] pusharglist 3 ........................... <tConn, "ACTIVATE_AVATAR_EFFECT", [#integer: ttype]>
+  [ 33] objcall 136 ............................. <tConn.send("ACTIVATE_AVATAR_EFFECT", [#integer: ttype])>
+  [ 35] pusharglistnoret 1 ...................... <tConn.send("ACTIVATE_AVATAR_EFFECT", [#integer: ttype])>
+  [ 37] extcall 20 .............................. return tConn.send("ACTIVATE_AVATAR_EFFECT", [#integer: ttype])
+  [ 39] ret
+end
+
+on handle_avatar_effects me, tMsg
+  [  0] getparam 1 .............................. <tMsg>
+  [  2] pushsymb 900 ............................ <#connection>
+  [  5] pusharglist 2 ........................... <tMsg, #connection>
+  [  7] objcall 250 ............................. <tMsg.getaProp(#connection)>
+  [  9] setlocal 0 .............................. tConn = tMsg.getaProp(#connection)
+  [ 11] pusharglist 0 ........................... <[:]>
+  [ 13] pushproplist ............................ <[:]>
+  [ 14] setlocal 1 .............................. tList = [:]
+  [ 16] pusharglist 0 ........................... <[]>
+  [ 18] pushlist ................................ <[]>
+  [ 19] setlocal 2 .............................. tIndex = []
+  [ 21] pusharglist 0 ........................... <[]>
+  [ 23] pushlist ................................ <[]>
+  [ 24] setlocal 3 .............................. tActiveIndex = []
+  [ 26] pusharglist 0 ........................... <[:]>
+  [ 28] pushproplist ............................ <[:]>
+  [ 29] setlocal 4 .............................. tActiveList = [:]
+  [ 31] getlocal 0 .............................. <tConn>
+  [ 33] pusharglist 1 ........................... <tConn>
+  [ 35] objcall 901 ............................. <tConn.GetIntFrom()>
+  [ 38] setlocal 5 .............................. tTypeCount = tConn.GetIntFrom()
+  [ 40] pushint8 1 .............................. <1>
+  [ 42] setlocal 6
+  [ 44] getlocal 6
+  [ 46] getlocal 5 .............................. <tTypeCount>
+  [ 48] lteq
+  [ 49] jmpifz [197] ............................ repeat with i = 1 to tTypeCount
+  [ 52] getlocal 0 .............................. <tConn>
+  [ 54] pusharglist 1 ........................... <tConn>
+  [ 56] objcall 901 ............................. <tConn.GetIntFrom()>
+  [ 59] setlocal 7 .............................. ttype = tConn.GetIntFrom()
+  [ 61] pusharglist 0 ........................... <[:]>
+  [ 63] pushproplist ............................ <[:]>
+  [ 64] setlocal 8 .............................. tItem = [:]
+  [ 66] getlocal 8 .............................. <tItem>
+  [ 68] pushsymb 881 ............................ <#time_duration>
+  [ 71] getlocal 0 .............................. <tConn>
+  [ 73] pusharglist 1 ........................... <tConn>
+  [ 75] objcall 901 ............................. <tConn.GetIntFrom()>
+  [ 78] pusharglistnoret 3 ...................... <tItem, #time_duration, tConn.GetIntFrom()>
+  [ 80] objcall 426 ............................. tItem.setaProp(#time_duration, tConn.GetIntFrom())
+  [ 83] getlocal 8 .............................. <tItem>
+  [ 85] pushsymb 162 ............................ <#count>
+  [ 87] getlocal 0 .............................. <tConn>
+  [ 89] pusharglist 1 ........................... <tConn>
+  [ 91] objcall 901 ............................. <tConn.GetIntFrom()>
+  [ 94] pusharglistnoret 3 ...................... <tItem, #count, tConn.GetIntFrom()>
+  [ 96] objcall 426 ............................. tItem.setaProp(#count, tConn.GetIntFrom())
+  [ 99] getlocal 0 .............................. <tConn>
+  [101] pusharglist 1 ........................... <tConn>
+  [103] objcall 901 ............................. <tConn.GetIntFrom()>
+  [106] setlocal 9 .............................. tTimeLeft = tConn.GetIntFrom()
+  [108] getlocal 8 .............................. <tItem>
+  [110] pushsymb 902 ............................ <#time_left>
+  [113] getlocal 9 .............................. <tTimeLeft>
+  [115] pusharglistnoret 3 ...................... <tItem, #time_left, tTimeLeft>
+  [117] objcall 426 ............................. tItem.setaProp(#time_left, tTimeLeft)
+  [120] getlocal 1 .............................. <tList>
+  [122] getlocal 7 .............................. <ttype>
+  [124] getlocal 8 .............................. <tItem>
+  [126] pusharglistnoret 3 ...................... <tList, ttype, tItem>
+  [128] objcall 426 ............................. tList.setaProp(ttype, tItem)
+  [131] getlocal 2 .............................. <tIndex>
+  [133] getlocal 7 .............................. <ttype>
+  [135] pusharglistnoret 2 ...................... <tIndex, ttype>
+  [137] objcall 614 ............................. tIndex.append(ttype)
+  [140] getlocal 9 .............................. <tTimeLeft>
+  [142] pushzero ................................ <0>
+  [143] gt ...................................... <tTimeLeft > 0>
+  [144] jmpifz [188] ............................ if tTimeLeft > 0 then
+  [147] getlocal 3 .............................. <tActiveIndex>
+  [149] getlocal 7 .............................. <ttype>
+  [151] pusharglist 2 ........................... <tActiveIndex, ttype>
+  [153] objcall 770 ............................. <tActiveIndex.findPos(ttype)>
+  [156] pushzero ................................ <0>
+  [157] eq ...................................... <tActiveIndex.findPos(ttype) = 0>
+  [158] jmpifz [188] ............................ if tActiveIndex.findPos(ttype) = 0 then
+  [161] getlocal 3 .............................. <tActiveIndex>
+  [163] getlocal 7 .............................. <ttype>
+  [165] pusharglistnoret 2 ...................... <tActiveIndex, ttype>
+  [167] objcall 614 ............................. tActiveIndex.append(ttype)
+  [170] getlocal 4 .............................. <tActiveList>
+  [172] getlocal 7 .............................. <ttype>
+  [174] getmovieprop 174 ........................ <the milliSeconds>
+  [176] getlocal 9 .............................. <tTimeLeft>
+  [178] pushint16 1000 .......................... <1000>
+  [181] mul ..................................... <tTimeLeft * 1000>
+  [182] add ..................................... <the milliSeconds + (tTimeLeft * 1000)>
+  [183] pusharglistnoret 3 ...................... <tActiveList, ttype, the milliSeconds + (tTimeLeft * 1000)>
+  [185] objcall 426 ............................. tActiveList.setaProp(ttype, the milliSeconds + (tTimeLeft * 1000))
+  [188] pushint8 1
+  [190] getlocal 6
+  [192] add
+  [193] setlocal 6
+  [195] endrepeat [ 44]
+  [197] getlocal 1 .............................. <tList>
+  [199] setprop 868 ............................. pInventoryList = tList
+  [202] getlocal 2 .............................. <tIndex>
+  [204] setprop 869 ............................. pInventoryEffects = tIndex
+  [207] getlocal 4 .............................. <tActiveList>
+  [209] setprop 870 ............................. pActiveEffects = tActiveList
+  [212] getlocal 3 .............................. <tActiveIndex>
+  [214] setprop 871 ............................. pActiveEffectIndex = tActiveIndex
+  [217] pushsymb 171 ............................ <#session>
+  [219] pusharglist 1 ........................... <#session>
+  [221] extcall 24 .............................. <getObject(#session)>
+  [223] pushcons 2 .............................. <"active_fx">
+  [225] getprop 870 ............................. <pActiveEffects>
+  [228] pusharglistnoret 3 ...................... <getObject(#session), "active_fx", pActiveEffects>
+  [230] objcall 875 ............................. getObject(#session).set("active_fx", pActiveEffects)
+  [233] getlocal 5 .............................. <tTypeCount>
+  [235] pushzero ................................ <0>
+  [236] gt ...................................... <tTypeCount > 0>
+  [237] jmpifz [254] ............................ if tTypeCount > 0 then / else
+  [240] getlocal 2 .............................. <tIndex>
+  [242] pushint8 1 .............................. <1>
+  [244] pusharglist 2 ........................... <tIndex, 1>
+  [246] objcall 164 ............................. <tIndex[1]>
+  [248] setprop 878 ............................. pSelectedEffectType = tIndex[1]
+  [251] jmp [261]
+  [254] pusharglist 0 ........................... <>
+  [256] extcall 116 ............................. <VOID>
+  [258] setprop 878 ............................. pSelectedEffectType = VOID
+  [261] pushint8 1 .............................. <1>
+  [263] setprop 807 ............................. pState = 1
+  [266] pushsymb 171 ............................ <#session>
+  [268] pusharglist 1 ........................... <#session>
+  [270] extcall 24 .............................. <getObject(#session)>
+  [272] pushsymb 553 ............................ <#fx_on>
+  [275] pushint8 1 .............................. <1>
+  [277] pusharglistnoret 3 ...................... <getObject(#session), #fx_on, 1>
+  [279] objcall 875 ............................. getObject(#session).set(#fx_on, 1)
+  [282] getparam 0 .............................. <me>
+  [284] pusharglist 1 ........................... <me>
+  [286] objcall 857 ............................. <me.updateFxView()>
+  [289] pusharglistnoret 1 ...................... <me.updateFxView()>
+  [291] extcall 20 .............................. return me.updateFxView()
+  [293] ret
+end
+
+on handle_avatar_effect_added me, tMsg
+  [  0] getparam 1 .............................. <tMsg>
+  [  2] pushsymb 900 ............................ <#connection>
+  [  5] pusharglist 2 ........................... <tMsg, #connection>
+  [  7] objcall 250 ............................. <tMsg.getaProp(#connection)>
+  [  9] setlocal 0 .............................. tConn = tMsg.getaProp(#connection)
+  [ 11] pusharglist 0 ........................... <[:]>
+  [ 13] pushproplist ............................ <[:]>
+  [ 14] setlocal 1 .............................. tItem = [:]
+  [ 16] getlocal 0 .............................. <tConn>
+  [ 18] pusharglist 1 ........................... <tConn>
+  [ 20] objcall 901 ............................. <tConn.GetIntFrom()>
+  [ 23] setlocal 2 .............................. ttype = tConn.GetIntFrom()
+  [ 25] getprop 868 ............................. <pInventoryList>
+  [ 28] getlocal 2 .............................. <ttype>
+  [ 30] pusharglist 2 ........................... <pInventoryList, ttype>
+  [ 32] objcall 770 ............................. <pInventoryList.findPos(ttype)>
+  [ 35] pushzero ................................ <0>
+  [ 36] eq ...................................... <pInventoryList.findPos(ttype) = 0>
+  [ 37] jmpifz [ 87] ............................ if pInventoryList.findPos(ttype) = 0 then / else
+  [ 40] getlocal 1 .............................. <tItem>
+  [ 42] pushsymb 249 ............................ <#type>
+  [ 44] getlocal 2 .............................. <ttype>
+  [ 46] pusharglistnoret 3 ...................... <tItem, #type, ttype>
+  [ 48] objcall 426 ............................. tItem.setaProp(#type, ttype)
+  [ 51] getlocal 1 .............................. <tItem>
+  [ 53] pushsymb 162 ............................ <#count>
+  [ 55] pushint8 1 .............................. <1>
+  [ 57] pusharglistnoret 3 ...................... <tItem, #count, 1>
+  [ 59] objcall 426 ............................. tItem.setaProp(#count, 1)
+  [ 62] getprop 868 ............................. <pInventoryList>
+  [ 65] getlocal 2 .............................. <ttype>
+  [ 67] getlocal 1 .............................. <tItem>
+  [ 69] pusharglistnoret 3 ...................... <pInventoryList, ttype, tItem>
+  [ 71] objcall 426 ............................. pInventoryList.setaProp(ttype, tItem)
+  [ 74] getprop 869 ............................. <pInventoryEffects>
+  [ 77] getlocal 2 .............................. <ttype>
+  [ 79] pusharglistnoret 2 ...................... <pInventoryEffects, ttype>
+  [ 81] objcall 614 ............................. pInventoryEffects.append(ttype)
+  [ 84] jmp [118]
+  [ 87] getprop 868 ............................. <pInventoryList>
+  [ 90] getlocal 2 .............................. <ttype>
+  [ 92] pusharglist 2 ........................... <pInventoryList, ttype>
+  [ 94] objcall 250 ............................. <pInventoryList.getaProp(ttype)>
+  [ 96] setlocal 1 .............................. tItem = pInventoryList.getaProp(ttype)
+  [ 98] getlocal 1 .............................. <tItem>
+  [100] pushsymb 162 ............................ <#count>
+  [102] getlocal 1 .............................. <tItem>
+  [104] pushsymb 162 ............................ <#count>
+  [106] pusharglist 2 ........................... <tItem, #count>
+  [108] objcall 250 ............................. <tItem.getaProp(#count)>
+  [110] pushint8 1 .............................. <1>
+  [112] add ..................................... <tItem.getaProp(#count) + 1>
+  [113] pusharglistnoret 3 ...................... <tItem, #count, tItem.getaProp(#count) + 1>
+  [115] objcall 426 ............................. tItem.setaProp(#count, tItem.getaProp(#count) + 1)
+  [118] getlocal 0 .............................. <tConn>
+  [120] pusharglist 1 ........................... <tConn>
+  [122] objcall 901 ............................. <tConn.GetIntFrom()>
+  [125] setlocal 3 .............................. tTime = tConn.GetIntFrom()
+  [127] getlocal 1 .............................. <tItem>
+  [129] pushsymb 881 ............................ <#time_duration>
+  [132] getlocal 3 .............................. <tTime>
+  [134] pusharglistnoret 3 ...................... <tItem, #time_duration, tTime>
+  [136] objcall 426 ............................. tItem.setaProp(#time_duration, tTime)
+  [139] getlocal 1 .............................. <tItem>
+  [141] pushsymb 902 ............................ <#time_left>
+  [144] getlocal 3 .............................. <tTime>
+  [146] pusharglistnoret 3 ...................... <tItem, #time_left, tTime>
+  [148] objcall 426 ............................. tItem.setaProp(#time_left, tTime)
+  [151] getparam 0 .............................. <me>
+  [153] pusharglist 1 ........................... <me>
+  [155] objcall 857 ............................. <me.updateFxView()>
+  [158] pusharglistnoret 1 ...................... <me.updateFxView()>
+  [160] extcall 20 .............................. return me.updateFxView()
+  [162] ret
+end
+
+on handle_avatar_effect_activated me, tMsg
+  [  0] getparam 1 .............................. <tMsg>
+  [  2] pushsymb 900 ............................ <#connection>
+  [  5] pusharglist 2 ........................... <tMsg, #connection>
+  [  7] objcall 250 ............................. <tMsg.getaProp(#connection)>
+  [  9] setlocal 0 .............................. tConn = tMsg.getaProp(#connection)
+  [ 11] getlocal 0 .............................. <tConn>
+  [ 13] pusharglist 1 ........................... <tConn>
+  [ 15] objcall 901 ............................. <tConn.GetIntFrom()>
+  [ 18] setlocal 1 .............................. ttype = tConn.GetIntFrom()
+  [ 20] getlocal 0 .............................. <tConn>
+  [ 22] pusharglist 1 ........................... <tConn>
+  [ 24] objcall 901 ............................. <tConn.GetIntFrom()>
+  [ 27] setlocal 2 .............................. tTime = tConn.GetIntFrom()
+  [ 29] getprop 871 ............................. <pActiveEffectIndex>
+  [ 32] getlocal 1 .............................. <ttype>
+  [ 34] pusharglist 2 ........................... <pActiveEffectIndex, ttype>
+  [ 36] objcall 770 ............................. <pActiveEffectIndex.findPos(ttype)>
+  [ 39] pushzero ................................ <0>
+  [ 40] eq ...................................... <pActiveEffectIndex.findPos(ttype) = 0>
+  [ 41] jmpifz [ 73] ............................ if pActiveEffectIndex.findPos(ttype) = 0 then
+  [ 44] getprop 871 ............................. <pActiveEffectIndex>
+  [ 47] getlocal 1 .............................. <ttype>
+  [ 49] pusharglistnoret 2 ...................... <pActiveEffectIndex, ttype>
+  [ 51] objcall 394 ............................. pActiveEffectIndex.add(ttype)
+  [ 54] getprop 870 ............................. <pActiveEffects>
+  [ 57] getlocal 1 .............................. <ttype>
+  [ 59] getmovieprop 174 ........................ <the milliSeconds>
+  [ 61] getlocal 2 .............................. <tTime>
+  [ 63] pushint16 1000 .......................... <1000>
+  [ 66] mul ..................................... <tTime * 1000>
+  [ 67] add ..................................... <the milliSeconds + (tTime * 1000)>
+  [ 68] pusharglistnoret 3 ...................... <pActiveEffects, ttype, the milliSeconds + (tTime * 1000)>
+  [ 70] objcall 426 ............................. pActiveEffects.setaProp(ttype, the milliSeconds + (tTime * 1000))
+  [ 73] pushsymb 171 ............................ <#session>
+  [ 75] pusharglist 1 ........................... <#session>
+  [ 77] extcall 24 .............................. <getObject(#session)>
+  [ 79] pushcons 2 .............................. <"active_fx">
+  [ 81] getprop 870 ............................. <pActiveEffects>
+  [ 84] pusharglistnoret 3 ...................... <getObject(#session), "active_fx", pActiveEffects>
+  [ 86] objcall 875 ............................. getObject(#session).set("active_fx", pActiveEffects)
+  [ 89] pushint8 5 .............................. <5>
+  [ 91] setlocal 3 .............................. tSlotCount = 5
+  [ 93] getprop 871 ............................. <pActiveEffectIndex>
+  [ 96] getobjprop 162 .......................... <pActiveEffectIndex.count>
+  [ 98] getlocal 3 .............................. <tSlotCount>
+  [100] gt ...................................... <pActiveEffectIndex.count > tSlotCount>
+  [101] jmpifz [115] ............................ if pActiveEffectIndex.count > tSlotCount then
+  [104] getprop 871 ............................. <pActiveEffectIndex>
+  [107] getobjprop 162 .......................... <pActiveEffectIndex.count>
+  [109] getlocal 3 .............................. <tSlotCount>
+  [111] sub ..................................... <pActiveEffectIndex.count - tSlotCount>
+  [112] setprop 874 ............................. pSlotOffset = pActiveEffectIndex.count - tSlotCount
+  [115] getparam 0 .............................. <me>
+  [117] pusharglist 1 ........................... <me>
+  [119] objcall 857 ............................. <me.updateFxView()>
+  [122] pusharglistnoret 1 ...................... <me.updateFxView()>
+  [124] extcall 20 .............................. return me.updateFxView()
+  [126] ret
+end
+
+on handle_avatar_effect_expired me, tMsg, tTestType
+  [  0] getparam 1 .............................. <tMsg>
+  [  2] pusharglist 1 ........................... <tMsg>
+  [  4] extcall 25 .............................. <voidp(tMsg)>
+  [  6] jmpifz [ 34] ............................ if voidp(tMsg) then / else
+  [  9] getparam 2 .............................. <tTestType>
+  [ 11] pusharglist 1 ........................... <tTestType>
+  [ 13] extcall 25 .............................. <voidp(tTestType)>
+  [ 15] not ..................................... <not voidp(tTestType)>
+  [ 16] jmpifz [ 26] ............................ if not voidp(tTestType) then / else
+  [ 19] getparam 2 .............................. <tTestType>
+  [ 21] setlocal 0 .............................. ttype = tTestType
+  [ 23] jmp [ 31]
+  [ 26] pushzero ................................ <0>
+  [ 27] pusharglistnoret 1 ...................... <0>
+  [ 29] extcall 20 .............................. return 0
+  [ 31] jmp [ 54]
+  [ 34] getparam 1 .............................. <tMsg>
+  [ 36] pushsymb 900 ............................ <#connection>
+  [ 39] pusharglist 2 ........................... <tMsg, #connection>
+  [ 41] objcall 250 ............................. <tMsg.getaProp(#connection)>
+  [ 43] setlocal 1 .............................. tConn = tMsg.getaProp(#connection)
+  [ 45] getlocal 1 .............................. <tConn>
+  [ 47] pusharglist 1 ........................... <tConn>
+  [ 49] objcall 901 ............................. <tConn.GetIntFrom()>
+  [ 52] setlocal 0 .............................. ttype = tConn.GetIntFrom()
+  [ 54] getprop 870 ............................. <pActiveEffects>
+  [ 57] getlocal 0 .............................. <ttype>
+  [ 59] pusharglistnoret 2 ...................... <pActiveEffects, ttype>
+  [ 61] objcall 911 ............................. pActiveEffects.deleteProp(ttype)
+  [ 64] getprop 871 ............................. <pActiveEffectIndex>
+  [ 67] getlocal 0 .............................. <ttype>
+  [ 69] pusharglistnoret 2 ...................... <pActiveEffectIndex, ttype>
+  [ 71] objcall 912 ............................. pActiveEffectIndex.deleteOne(ttype)
+  [ 74] getprop 868 ............................. <pInventoryList>
+  [ 77] getlocal 0 .............................. <ttype>
+  [ 79] pusharglist 2 ........................... <pInventoryList, ttype>
+  [ 81] objcall 250 ............................. <pInventoryList.getaProp(ttype)>
+  [ 83] setlocal 2 .............................. tEffectListItem = pInventoryList.getaProp(ttype)
+  [ 85] getlocal 2 .............................. <tEffectListItem>
+  [ 87] pusharglist 1 ........................... <tEffectListItem>
+  [ 89] extcall 335 ............................. <ilk(tEffectListItem)>
+  [ 92] pushsymb 336 ............................ <#propList>
+  [ 95] eq ...................................... <ilk(tEffectListItem) = #propList>
+  [ 96] jmpifz [166] ............................ if ilk(tEffectListItem) = #propList then / else
+  [ 99] getlocal 2 .............................. <tEffectListItem>
+  [101] pushsymb 162 ............................ <#count>
+  [103] pusharglist 2 ........................... <tEffectListItem, #count>
+  [105] objcall 164 ............................. <tEffectListItem[#count]>
+  [107] pushint8 1 .............................. <1>
+  [109] gt ...................................... <tEffectListItem[#count] > 1>
+  [110] jmpifz [143] ............................ if tEffectListItem[#count] > 1 then / else
+  [113] getprop 868 ............................. <pInventoryList>
+  [116] getlocal 0 .............................. <ttype>
+  [118] pusharglist 2 ........................... <pInventoryList, ttype>
+  [120] objcall 250 ............................. <pInventoryList.getaProp(ttype)>
+  [122] pushsymb 162 ............................ <#count>
+  [124] getlocal 2 .............................. <tEffectListItem>
+  [126] pushsymb 162 ............................ <#count>
+  [128] pusharglist 2 ........................... <tEffectListItem, #count>
+  [130] objcall 164 ............................. <tEffectListItem[#count]>
+  [132] pushint8 1 .............................. <1>
+  [134] sub ..................................... <tEffectListItem[#count] - 1>
+  [135] pusharglistnoret 3 ...................... <pInventoryList.getaProp(ttype), #count, tEffectListItem[#count] - 1>
+  [137] objcall 397 ............................. pInventoryList.getaProp(ttype)[#count] = tEffectListItem[#count] - 1
+  [140] jmp [163]
+  [143] getprop 868 ............................. <pInventoryList>
+  [146] getlocal 0 .............................. <ttype>
+  [148] pusharglistnoret 2 ...................... <pInventoryList, ttype>
+  [150] objcall 911 ............................. pInventoryList.deleteProp(ttype)
+  [153] getprop 869 ............................. <pInventoryEffects>
+  [156] getlocal 0 .............................. <ttype>
+  [158] pusharglistnoret 2 ...................... <pInventoryEffects, ttype>
+  [160] objcall 912 ............................. pInventoryEffects.deleteOne(ttype)
+  [163] jmp [176]
+  [166] getprop 869 ............................. <pInventoryEffects>
+  [169] getlocal 0 .............................. <ttype>
+  [171] pusharglistnoret 2 ...................... <pInventoryEffects, ttype>
+  [173] objcall 912 ............................. pInventoryEffects.deleteOne(ttype)
+  [176] pushsymb 171 ............................ <#session>
+  [178] pusharglist 1 ........................... <#session>
+  [180] extcall 24 .............................. <getObject(#session)>
+  [182] pushcons 2 .............................. <"active_fx">
+  [184] getprop 870 ............................. <pActiveEffects>
+  [187] pusharglistnoret 3 ...................... <getObject(#session), "active_fx", pActiveEffects>
+  [189] objcall 875 ............................. getObject(#session).set("active_fx", pActiveEffects)
+  [192] getlocal 0 .............................. <ttype>
+  [194] getprop 878 ............................. <pSelectedEffectType>
+  [197] eq ...................................... <ttype = pSelectedEffectType>
+  [198] jmpifz [233] ............................ if ttype = pSelectedEffectType then
+  [201] getprop 869 ............................. <pInventoryEffects>
+  [204] getobjprop 162 .......................... <pInventoryEffects.count>
+  [206] pushzero ................................ <0>
+  [207] gt ...................................... <pInventoryEffects.count > 0>
+  [208] jmpifz [226] ............................ if pInventoryEffects.count > 0 then / else
+  [211] getprop 869 ............................. <pInventoryEffects>
+  [214] pushint8 1 .............................. <1>
+  [216] pusharglist 2 ........................... <pInventoryEffects, 1>
+  [218] objcall 164 ............................. <pInventoryEffects[1]>
+  [220] setprop 878 ............................. pSelectedEffectType = pInventoryEffects[1]
+  [223] jmp [233]
+  [226] pusharglist 0 ........................... <>
+  [228] extcall 116 ............................. <VOID>
+  [230] setprop 878 ............................. pSelectedEffectType = VOID
+  [233] pushsymb 306 ............................ <#updateInfostandAvatar>
+  [236] pusharglistnoret 1 ...................... <#updateInfostandAvatar>
+  [238] extcall 177 ............................. executeMessage(#updateInfostandAvatar)
+  [240] getparam 0 .............................. <me>
+  [242] pusharglist 1 ........................... <me>
+  [244] objcall 857 ............................. <me.updateFxView()>
+  [247] pusharglistnoret 1 ...................... <me.updateFxView()>
+  [249] extcall 20 .............................. return me.updateFxView()
+  [251] ret
+end
+
+on handle_avatar_effect_selected me, tMsg
+  [  0] getparam 1 .............................. <tMsg>
+  [  2] pushsymb 900 ............................ <#connection>
+  [  5] pusharglist 2 ........................... <tMsg, #connection>
+  [  7] objcall 250 ............................. <tMsg.getaProp(#connection)>
+  [  9] setlocal 0 .............................. tConn = tMsg.getaProp(#connection)
+  [ 11] getlocal 0 .............................. <tConn>
+  [ 13] pusharglist 1 ........................... <tConn>
+  [ 15] objcall 901 ............................. <tConn.GetIntFrom()>
+  [ 18] setlocal 1 .............................. ttype = tConn.GetIntFrom()
+  [ 20] pushsymb 915 ............................ <#fx_selected>
+  [ 23] getlocal 1 .............................. <ttype>
+  [ 25] pusharglistnoret 2 ...................... <#fx_selected, ttype>
+  [ 27] extcall 177 ............................. executeMessage(#fx_selected, ttype)
+  [ 29] getparam 0 .............................. <me>
+  [ 31] pusharglist 1 ........................... <me>
+  [ 33] objcall 857 ............................. <me.updateFxView()>
+  [ 36] pusharglistnoret 1 ...................... <me.updateFxView()>
+  [ 38] extcall 20 .............................. return me.updateFxView()
+  [ 40] ret
+end
+
+on regMsgList me, tBool
+  [  0] pusharglist 0 ........................... <[:]>
+  [  2] pushproplist ............................ <[:]>
+  [  3] setlocal 0 .............................. tMsgs = [:]
+  [  5] getlocal 0 .............................. <tMsgs>
+  [  7] pushint16 460 ........................... <460>
+  [ 10] pushsymb 862 ............................ <#handle_avatar_effects>
+  [ 13] pusharglistnoret 3 ...................... <tMsgs, 460, #handle_avatar_effects>
+  [ 15] objcall 426 ............................. tMsgs.setaProp(460, #handle_avatar_effects)
+  [ 18] getlocal 0 .............................. <tMsgs>
+  [ 20] pushint16 461 ........................... <461>
+  [ 23] pushsymb 863 ............................ <#handle_avatar_effect_added>
+  [ 26] pusharglistnoret 3 ...................... <tMsgs, 461, #handle_avatar_effect_added>
+  [ 28] objcall 426 ............................. tMsgs.setaProp(461, #handle_avatar_effect_added)
+  [ 31] getlocal 0 .............................. <tMsgs>
+  [ 33] pushint16 462 ........................... <462>
+  [ 36] pushsymb 864 ............................ <#handle_avatar_effect_activated>
+  [ 39] pusharglistnoret 3 ...................... <tMsgs, 462, #handle_avatar_effect_activated>
+  [ 41] objcall 426 ............................. tMsgs.setaProp(462, #handle_avatar_effect_activated)
+  [ 44] getlocal 0 .............................. <tMsgs>
+  [ 46] pushint16 463 ........................... <463>
+  [ 49] pushsymb 865 ............................ <#handle_avatar_effect_expired>
+  [ 52] pusharglistnoret 3 ...................... <tMsgs, 463, #handle_avatar_effect_expired>
+  [ 54] objcall 426 ............................. tMsgs.setaProp(463, #handle_avatar_effect_expired)
+  [ 57] getlocal 0 .............................. <tMsgs>
+  [ 59] pushint16 464 ........................... <464>
+  [ 62] pushsymb 866 ............................ <#handle_avatar_effect_selected>
+  [ 65] pusharglistnoret 3 ...................... <tMsgs, 464, #handle_avatar_effect_selected>
+  [ 67] objcall 426 ............................. tMsgs.setaProp(464, #handle_avatar_effect_selected)
+  [ 70] pusharglist 0 ........................... <[:]>
+  [ 72] pushproplist ............................ <[:]>
+  [ 73] setlocal 1 .............................. tCmds = [:]
+  [ 75] getlocal 1 .............................. <tCmds>
+  [ 77] pushcons 44 ............................. <"USE_AVATAR_EFFECT">
+  [ 79] pushint16 372 ........................... <372>
+  [ 82] pusharglistnoret 3 ...................... <tCmds, "USE_AVATAR_EFFECT", 372>
+  [ 84] objcall 426 ............................. tCmds.setaProp("USE_AVATAR_EFFECT", 372)
+  [ 87] getlocal 1 .............................. <tCmds>
+  [ 89] pushcons 45 ............................. <"ACTIVATE_AVATAR_EFFECT">
+  [ 91] pushint16 373 ........................... <373>
+  [ 94] pusharglistnoret 3 ...................... <tCmds, "ACTIVATE_AVATAR_EFFECT", 373>
+  [ 96] objcall 426 ............................. tCmds.setaProp("ACTIVATE_AVATAR_EFFECT", 373)
+  [ 99] getparam 1 .............................. <tBool>
+  [101] jmpifz [149] ............................ if tBool then / else
+  [104] pushcons 46 ............................. <"connection.info.id">
+  [106] pushsymb 135 ............................ <#Info>
+  [108] pusharglist 2 ........................... <"connection.info.id", #Info>
+  [110] extcall 121 ............................. <getVariable("connection.info.id", #Info)>
+  [112] getparam 0 .............................. <me>
+  [114] pusharglist 1 ........................... <me>
+  [116] objcall 19 .............................. <me.getID()>
+  [118] getlocal 0 .............................. <tMsgs>
+  [120] pusharglistnoret 3 ...................... <getVariable("connection.info.id", #Info), me.getID(), tMsgs>
+  [122] extcall 916 ............................. registerListener(getVariable("connection.info.id", #Info), me.getID(), tMsgs)
+  [125] pushcons 46 ............................. <"connection.info.id">
+  [127] pushsymb 135 ............................ <#Info>
+  [129] pusharglist 2 ........................... <"connection.info.id", #Info>
+  [131] extcall 121 ............................. <getVariable("connection.info.id", #Info)>
+  [133] getparam 0 .............................. <me>
+  [135] pusharglist 1 ........................... <me>
+  [137] objcall 19 .............................. <me.getID()>
+  [139] getlocal 1 .............................. <tCmds>
+  [141] pusharglistnoret 3 ...................... <getVariable("connection.info.id", #Info), me.getID(), tCmds>
+  [143] extcall 917 ............................. registerCommands(getVariable("connection.info.id", #Info), me.getID(), tCmds)
+  [146] jmp [191]
+  [149] pushcons 46 ............................. <"connection.info.id">
+  [151] pushsymb 135 ............................ <#Info>
+  [153] pusharglist 2 ........................... <"connection.info.id", #Info>
+  [155] extcall 121 ............................. <getVariable("connection.info.id", #Info)>
+  [157] getparam 0 .............................. <me>
+  [159] pusharglist 1 ........................... <me>
+  [161] objcall 19 .............................. <me.getID()>
+  [163] getlocal 0 .............................. <tMsgs>
+  [165] pusharglistnoret 3 ...................... <getVariable("connection.info.id", #Info), me.getID(), tMsgs>
+  [167] extcall 918 ............................. unregisterListener(getVariable("connection.info.id", #Info), me.getID(), tMsgs)
+  [170] pushcons 46 ............................. <"connection.info.id">
+  [172] pushsymb 135 ............................ <#Info>
+  [174] pusharglist 2 ........................... <"connection.info.id", #Info>
+  [176] extcall 121 ............................. <getVariable("connection.info.id", #Info)>
+  [178] getparam 0 .............................. <me>
+  [180] pusharglist 1 ........................... <me>
+  [182] objcall 19 .............................. <me.getID()>
+  [184] getlocal 1 .............................. <tCmds>
+  [186] pusharglistnoret 3 ...................... <getVariable("connection.info.id", #Info), me.getID(), tCmds>
+  [188] extcall 919 ............................. unregisterCommands(getVariable("connection.info.id", #Info), me.getID(), tCmds)
+  [191] pushint8 1 .............................. <1>
+  [193] pusharglistnoret 1 ...................... <1>
+  [195] extcall 20 .............................. return 1
+  [197] ret
+end
+
+on eventProc me, tEvent, tSprID, tParam, tWndID
+  [  0] getprop 807 ............................. <pState>
+  [  3] not ..................................... <not pState>
+  [  4] jmpifz [ 13] ............................ if not pState then
+  [  7] pushint8 1 .............................. <1>
+  [  9] pusharglistnoret 1 ...................... <1>
+  [ 11] extcall 20 .............................. return 1
+  [ 13] getparam 2 .............................. <tSprID>
+  [ 15] peek 0 .................................. case tSprID of
+  [ 17] pushcons 21 ............................. <"fx_activate_button">
+  [ 19] eq
+  [ 20] jmpifz [ 42] ............................ (case) "fx_activate_button":
+  [ 23] pop 1
+  [ 25] getparam 0 .............................. <me>
+  [ 27] getprop 878 ............................. <pSelectedEffectType>
+  [ 30] pusharglist 2 ........................... <me, pSelectedEffectType>
+  [ 32] objcall 861 ............................. <me.send_activate_avatar_effect(pSelectedEffectType)>
+  [ 35] pusharglistnoret 1 ...................... <me.send_activate_avatar_effect(pSelectedEffectType)>
+  [ 37] extcall 20 .............................. return me.send_activate_avatar_effect(pSelectedEffectType)
+  [ 39] jmp [431]
+  [ 42] peek 0
+  [ 44] pushcons 28 ............................. <"slot_arrow_right">
+  [ 46] eq
+  [ 47] jmpifz [ 98] ............................ (case) "slot_arrow_right":
+  [ 50] getprop 874 ............................. <pSlotOffset>
+  [ 53] getprop 871 ............................. <pActiveEffectIndex>
+  [ 56] getobjprop 162 .......................... <pActiveEffectIndex.count>
+  [ 58] pushint8 5 .............................. <5>
+  [ 60] sub ..................................... <pActiveEffectIndex.count - 5>
+  [ 61] gteq .................................... <pSlotOffset >= (pActiveEffectIndex.count - 5)>
+  [ 62] jmpifz [ 73] ............................ if pSlotOffset >= (pActiveEffectIndex.count - 5) then
+  [ 65] pop 1
+  [ 67] pushint8 1 .............................. <1>
+  [ 69] pusharglistnoret 1 ...................... <1>
+  [ 71] extcall 20 .............................. return 1
+  [ 73] getprop 874 ............................. <pSlotOffset>
+  [ 76] pushint8 1 .............................. <1>
+  [ 78] add ..................................... <pSlotOffset + 1>
+  [ 79] setprop 874 ............................. pSlotOffset = pSlotOffset + 1
+  [ 82] pop 1
+  [ 84] getparam 0 .............................. <me>
+  [ 86] pusharglist 1 ........................... <me>
+  [ 88] objcall 855 ............................. <me.updateSlots()>
+  [ 91] pusharglistnoret 1 ...................... <me.updateSlots()>
+  [ 93] extcall 20 .............................. return me.updateSlots()
+  [ 95] jmp [431]
+  [ 98] peek 0
+  [100] pushcons 24 ............................. <"slot_arrow_left">
+  [102] eq
+  [103] jmpifz [148] ............................ (case) "slot_arrow_left":
+  [106] getprop 874 ............................. <pSlotOffset>
+  [109] pushint8 1 .............................. <1>
+  [111] lt ...................................... <pSlotOffset < 1>
+  [112] jmpifz [123] ............................ if pSlotOffset < 1 then
+  [115] pop 1
+  [117] pushint8 1 .............................. <1>
+  [119] pusharglistnoret 1 ...................... <1>
+  [121] extcall 20 .............................. return 1
+  [123] getprop 874 ............................. <pSlotOffset>
+  [126] pushint8 1 .............................. <1>
+  [128] sub ..................................... <pSlotOffset - 1>
+  [129] setprop 874 ............................. pSlotOffset = pSlotOffset - 1
+  [132] pop 1
+  [134] getparam 0 .............................. <me>
+  [136] pusharglist 1 ........................... <me>
+  [138] objcall 855 ............................. <me.updateSlots()>
+  [141] pusharglistnoret 1 ...................... <me.updateSlots()>
+  [143] extcall 20 .............................. return me.updateSlots()
+  [145] jmp [431]
+  [148] peek 0
+  [150] pushcons 47 ............................. <"badges_tab">
+  [152] eq
+  [153] jmpifz [172] ............................ (case) "badges_tab":
+  [156] pop 1
+  [158] pushsymb 448 ............................ <#openBadgeWindow>
+  [161] pusharglist 1 ........................... <#openBadgeWindow>
+  [163] extcall 177 ............................. <executeMessage(#openBadgeWindow)>
+  [165] pusharglistnoret 1 ...................... <executeMessage(#openBadgeWindow)>
+  [167] extcall 20 .............................. return executeMessage(#openBadgeWindow)
+  [169] jmp [431]
+  [172] peek 0
+  [174] pushcons 48 ............................. <"achievements_tab">
+  [176] eq
+  [177] jmpifz [196] ............................ (case) "achievements_tab":
+  [180] pop 1
+  [182] pushsymb 923 ............................ <#openAchievementsWindow>
+  [185] pusharglist 1 ........................... <#openAchievementsWindow>
+  [187] extcall 177 ............................. <executeMessage(#openAchievementsWindow)>
+  [189] pusharglistnoret 1 ...................... <executeMessage(#openAchievementsWindow)>
+  [191] extcall 20 .............................. return executeMessage(#openAchievementsWindow)
+  [193] jmp [431]
+  [196] peek 0
+  [198] pushcons 7 .............................. <"fx_list">
+  [200] eq
+  [201] jmpifz [259] ............................ (case) "fx_list":
+  [204] getparam 3 .............................. <tParam>
+  [206] getobjprop 335 .......................... <tParam.ilk>
+  [209] pushsymb 210 ............................ <#point>
+  [211] nteq .................................... <tParam.ilk <> #point>
+  [212] jmpifz [222] ............................ if tParam.ilk <> #point then
+  [215] pop 1
+  [217] pushzero ................................ <0>
+  [218] pusharglistnoret 1 ...................... <0>
+  [220] extcall 20 .............................. return 0
+  [222] getprop 876 ............................. <pListRenderer>
+  [225] getparam 3 .............................. <tParam>
+  [227] pusharglist 2 ........................... <pListRenderer, tParam>
+  [229] objcall 924 ............................. <pListRenderer.getBadgeAt(tParam)>
+  [232] setlocal 0 .............................. tFXId = pListRenderer.getBadgeAt(tParam)
+  [234] getlocal 0 .............................. <tFXId>
+  [236] not ..................................... <not tFXId>
+  [237] jmpifz [247] ............................ if not tFXId then
+  [240] pop 1
+  [242] pushzero ................................ <0>
+  [243] pusharglistnoret 1 ...................... <0>
+  [245] extcall 20 .............................. return 0
+  [247] getparam 0 .............................. <me>
+  [249] getlocal 0 .............................. <tFXId>
+  [251] pusharglistnoret 2 ...................... <me, tFXId>
+  [253] objcall 856 ............................. me.selectItem(tFXId)
+  [256] jmp [431]
+  [259] peek 0
+  [261] pushcons 49 ............................. <"slot_bg_1">
+  [263] nteq
+  [264] jmpifz [339] ............................ (case) "slot_bg_1", ...
+  [267] peek 0
+  [269] pushcons 50 ............................. <"slot_bg_2">
+  [271] nteq
+  [272] jmpifz [339] ............................ (case) ..., "slot_bg_2", ...
+  [275] peek 0
+  [277] pushcons 51 ............................. <"slot_bg_3">
+  [279] nteq
+  [280] jmpifz [339] ............................ (case) ..., "slot_bg_3", ...
+  [283] peek 0
+  [285] pushcons 52 ............................. <"slot_bg_4">
+  [287] nteq
+  [288] jmpifz [339] ............................ (case) ..., "slot_bg_4", ...
+  [291] peek 0
+  [293] pushcons 53 ............................. <"slot_bg_5">
+  [295] nteq
+  [296] jmpifz [339] ............................ (case) ..., "slot_bg_5", ...
+  [299] peek 0
+  [301] pushcons 23 ............................. <"fx_slot_1">
+  [303] nteq
+  [304] jmpifz [339] ............................ (case) ..., "fx_slot_1", ...
+  [307] peek 0
+  [309] pushcons 54 ............................. <"fx_slot_2">
+  [311] nteq
+  [312] jmpifz [339] ............................ (case) ..., "fx_slot_2", ...
+  [315] peek 0
+  [317] pushcons 55 ............................. <"fx_slot_3">
+  [319] nteq
+  [320] jmpifz [339] ............................ (case) ..., "fx_slot_3", ...
+  [323] peek 0
+  [325] pushcons 56 ............................. <"fx_slot_4">
+  [327] nteq
+  [328] jmpifz [339] ............................ (case) ..., "fx_slot_4", ...
+  [331] peek 0
+  [333] pushcons 57 ............................. <"fx_slot_5">
+  [335] eq
+  [336] jmpifz [399] ............................ (case) ..., "fx_slot_5":
+  [339] getprop 874 ............................. <pSlotOffset>
+  [342] getparam 2 .............................. <tSprID>
+  [344] pushsymb 430 ............................ <#char>
+  [347] pushint8 9 .............................. <9>
+  [349] pusharglist 3 ........................... <tSprID, #char, 9>
+  [351] objcall 431 ............................. <tSprID.char[9]>
+  [354] pusharglist 1 ........................... <tSprID.char[9]>
+  [356] extcall 194 ............................. <integer(tSprID.char[9])>
+  [358] add ..................................... <pSlotOffset + integer(tSprID.char[9])>
+  [359] setlocal 1 .............................. tPos = pSlotOffset + integer(tSprID.char[9])
+  [361] getlocal 1 .............................. <tPos>
+  [363] getprop 871 ............................. <pActiveEffectIndex>
+  [366] getobjprop 162 .......................... <pActiveEffectIndex.count>
+  [368] gt ...................................... <tPos > pActiveEffectIndex.count>
+  [369] jmpifz [380] ............................ if tPos > pActiveEffectIndex.count then
+  [372] pop 1
+  [374] pushint8 1 .............................. <1>
+  [376] pusharglistnoret 1 ...................... <1>
+  [378] extcall 20 .............................. return 1
+  [380] getparam 0 .............................. <me>
+  [382] getprop 871 ............................. <pActiveEffectIndex>
+  [385] getlocal 1 .............................. <tPos>
+  [387] pusharglist 2 ........................... <pActiveEffectIndex, tPos>
+  [389] objcall 164 ............................. <pActiveEffectIndex[tPos]>
+  [391] pusharglistnoret 2 ...................... <me, pActiveEffectIndex[tPos]>
+  [393] objcall 856 ............................. me.selectItem(pActiveEffectIndex[tPos])
+  [396] jmp [431]
+  [399] peek 0
+  [401] pushcons 6 .............................. <"fx_catalog_link_text">
+  [403] eq
+  [404] jmpifz [431] ............................ (case) "fx_catalog_link_text":
+  [407] pushsymb 925 ............................ <#catalogue>
+  [410] pusharglist 1 ........................... <#catalogue>
+  [412] extcall 28 .............................. <getThread(#catalogue)>
+  [414] pusharglist 1 ........................... <getThread(#catalogue)>
+  [416] objcall 29 .............................. <getThread(#catalogue).getComponent()>
+  [418] pushcons 58 ............................. <"fx.catalog.link.nodename">
+  [420] pushcons 59 ............................. <"Special Effects">
+  [422] pusharglist 2 ........................... <"fx.catalog.link.nodename", "Special Effects">
+  [424] extcall 109 ............................. <getText("fx.catalog.link.nodename", "Special Effects")>
+  [426] pusharglistnoret 2 ...................... <getThread(#catalogue).getComponent(), getText("fx.catalog.link.nodename", "Special Effects")>
+  [428] objcall 926 ............................. getThread(#catalogue).getComponent().preparePageByName(getText("fx.catalog.link.nodename", "Special Effects"))
+  [431] pop 1 ................................... end case
+  [433] pushint8 1 .............................. <1>
+  [435] pusharglistnoret 1 ...................... <1>
+  [437] extcall 20 .............................. return 1
+  [439] ret
+end

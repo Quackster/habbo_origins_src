@@ -1,0 +1,274 @@
+property pWindowID, pElemName, pScrollOn, pMaxOffset, pOffset, pSpeed, pDelayLeft, pDelay
+
+on construct me
+  [  0] pushzero ................................ <0>
+  [  1] setprop 647 ............................. pScrollOn = 0
+  [  4] pushzero ................................ <0>
+  [  5] setprop 648 ............................. pOffset = 0
+  [  8] pushint8 1 .............................. <1>
+  [ 10] setprop 649 ............................. pSpeed = 1
+  [ 13] pushint8 36 ............................. <36>
+  [ 15] setprop 650 ............................. pDelay = 36
+  [ 18] pushint8 1 .............................. <1>
+  [ 20] pusharglistnoret 1 ...................... <1>
+  [ 22] extcall 20 .............................. return 1
+  [ 24] ret
+end
+
+on deconstruct me
+  [  0] pushint8 1 .............................. <1>
+  [  2] pusharglistnoret 1 ...................... <1>
+  [  4] extcall 20 .............................. return 1
+  [  6] ret
+end
+
+on registerElement me, tWindowID, tElementName
+  [  0] getparam 0 .............................. <me>
+  [  2] getparam 1 .............................. <tWindowID>
+  [  4] getparam 2 .............................. <tElementName>
+  [  6] pusharglist 3 ........................... <me, tWindowID, tElementName>
+  [  8] objcall 644 ............................. <me.checkWindowAndElemExistence(tWindowID, tElementName)>
+  [ 11] setlocal 0 .............................. tValidParams = me.checkWindowAndElemExistence(tWindowID, tElementName)
+  [ 13] getlocal 0 .............................. <tValidParams>
+  [ 15] not ..................................... <not tValidParams>
+  [ 16] jmpifz [ 24] ............................ if not tValidParams then
+  [ 19] pushzero ................................ <0>
+  [ 20] pusharglistnoret 1 ...................... <0>
+  [ 22] extcall 20 .............................. return 0
+  [ 24] getparam 1 .............................. <tWindowID>
+  [ 26] setprop 242 ............................. pWindowID = tWindowID
+  [ 28] getparam 2 .............................. <tElementName>
+  [ 30] setprop 651 ............................. pElemName = tElementName
+  [ 33] getparam 1 .............................. <tWindowID>
+  [ 35] pusharglist 1 ........................... <tWindowID>
+  [ 37] extcall 80 .............................. <getWindow(tWindowID)>
+  [ 39] getparam 2 .............................. <tElementName>
+  [ 41] pusharglist 2 ........................... <getWindow(tWindowID), tElementName>
+  [ 43] objcall 87 .............................. <getWindow(tWindowID).getElement(tElementName)>
+  [ 45] setlocal 1 .............................. tElem = getWindow(tWindowID).getElement(tElementName)
+  [ 47] getlocal 1 .............................. <tElem>
+  [ 49] pushsymb 129 ............................ <#image>
+  [ 51] pusharglist 2 ........................... <tElem, #image>
+  [ 53] objcall 139 ............................. <tElem.getProperty(#image)>
+  [ 55] setlocal 2 .............................. tImage = tElem.getProperty(#image)
+  [ 57] getlocal 2 .............................. <tImage>
+  [ 59] getobjprop 335 .......................... <tImage.ilk>
+  [ 62] pushsymb 129 ............................ <#image>
+  [ 64] nteq .................................... <tImage.ilk <> #image>
+  [ 65] jmpifz [ 73] ............................ if tImage.ilk <> #image then
+  [ 68] pushzero ................................ <0>
+  [ 69] pusharglistnoret 1 ...................... <0>
+  [ 71] extcall 20 .............................. return 0
+  [ 73] getlocal 2 .............................. <tImage>
+  [ 75] getobjprop 138 .......................... <tImage.width>
+  [ 77] getlocal 1 .............................. <tElem>
+  [ 79] pushsymb 138 ............................ <#width>
+  [ 81] pusharglist 2 ........................... <tElem, #width>
+  [ 83] objcall 139 ............................. <tElem.getProperty(#width)>
+  [ 85] sub ..................................... <tImage.width - tElem.getProperty(#width)>
+  [ 86] setprop 652 ............................. pMaxOffset = tImage.width - tElem.getProperty(#width)
+  [ 89] getprop 652 ............................. <pMaxOffset>
+  [ 92] pushzero ................................ <0>
+  [ 93] lt ...................................... <pMaxOffset < 0>
+  [ 94] jmpifz [104] ............................ if pMaxOffset < 0 then
+  [ 97] getparam 0 .............................. <me>
+  [ 99] pusharglistnoret 1 ...................... <me>
+  [101] objcall 643 ............................. me.centerText()
+  [104] pushint8 1 .............................. <1>
+  [106] pusharglistnoret 1 ...................... <1>
+  [108] extcall 20 .............................. return 1
+  [110] ret
+end
+
+on centerText me
+  [  0] getparam 0 .............................. <me>
+  [  2] pusharglist 1 ........................... <me>
+  [  4] objcall 644 ............................. <me.checkWindowAndElemExistence()>
+  [  7] not ..................................... <not me.checkWindowAndElemExistence()>
+  [  8] jmpifz [ 16] ............................ if not me.checkWindowAndElemExistence() then
+  [ 11] pushzero ................................ <0>
+  [ 12] pusharglistnoret 1 ...................... <0>
+  [ 14] extcall 20 .............................. return 0
+  [ 16] getprop 242 ............................. <pWindowID>
+  [ 18] pusharglist 1 ........................... <pWindowID>
+  [ 20] extcall 80 .............................. <getWindow(pWindowID)>
+  [ 22] getprop 651 ............................. <pElemName>
+  [ 25] pusharglist 2 ........................... <getWindow(pWindowID), pElemName>
+  [ 27] objcall 87 .............................. <getWindow(pWindowID).getElement(pElemName)>
+  [ 29] setlocal 0 .............................. tElem = getWindow(pWindowID).getElement(pElemName)
+  [ 31] getlocal 0 .............................. <tElem>
+  [ 33] getprop 652 ............................. <pMaxOffset>
+  [ 36] pushint8 2 .............................. <2>
+  [ 38] div ..................................... <pMaxOffset / 2>
+  [ 39] pushzero ................................ <0>
+  [ 40] pusharglistnoret 3 ...................... <tElem, pMaxOffset / 2, 0>
+  [ 42] objcall 655 ............................. tElem.adjustOffsetTo(pMaxOffset / 2, 0)
+  [ 45] pushint8 1 .............................. <1>
+  [ 47] pusharglistnoret 1 ...................... <1>
+  [ 49] extcall 20 .............................. return 1
+  [ 51] ret
+end
+
+on checkWindowAndElemExistence me, tWindowID, tElementName
+  [  0] getparam 1 .............................. <tWindowID>
+  [  2] pusharglist 1 ........................... <tWindowID>
+  [  4] extcall 25 .............................. <voidp(tWindowID)>
+  [  6] getparam 2 .............................. <tElementName>
+  [  8] pusharglist 1 ........................... <tElementName>
+  [ 10] extcall 25 .............................. <voidp(tElementName)>
+  [ 12] and ..................................... <voidp(tWindowID) and voidp(tElementName)>
+  [ 13] jmpifz [ 25] ............................ if voidp(tWindowID) and voidp(tElementName) then
+  [ 16] getprop 242 ............................. <pWindowID>
+  [ 18] setparam 1 .............................. tWindowID = pWindowID
+  [ 20] getprop 651 ............................. <pElemName>
+  [ 23] setparam 2 .............................. tElementName = pElemName
+  [ 25] getparam 1 .............................. <tWindowID>
+  [ 27] pusharglist 1 ........................... <tWindowID>
+  [ 29] extcall 75 .............................. <windowExists(tWindowID)>
+  [ 31] not ..................................... <not windowExists(tWindowID)>
+  [ 32] jmpifz [ 40] ............................ if not windowExists(tWindowID) then
+  [ 35] pushzero ................................ <0>
+  [ 36] pusharglistnoret 1 ...................... <0>
+  [ 38] extcall 20 .............................. return 0
+  [ 40] getparam 1 .............................. <tWindowID>
+  [ 42] pusharglist 1 ........................... <tWindowID>
+  [ 44] extcall 80 .............................. <getWindow(tWindowID)>
+  [ 46] setlocal 0 .............................. tWndObj = getWindow(tWindowID)
+  [ 48] getlocal 0 .............................. <tWndObj>
+  [ 50] getparam 2 .............................. <tElementName>
+  [ 52] pusharglist 2 ........................... <tWndObj, tElementName>
+  [ 54] objcall 100 ............................. <tWndObj.elementExists(tElementName)>
+  [ 56] not ..................................... <not tWndObj.elementExists(tElementName)>
+  [ 57] jmpifz [ 65] ............................ if not tWndObj.elementExists(tElementName) then
+  [ 60] pushzero ................................ <0>
+  [ 61] pusharglistnoret 1 ...................... <0>
+  [ 63] extcall 20 .............................. return 0
+  [ 65] pushint8 1 .............................. <1>
+  [ 67] pusharglistnoret 1 ...................... <1>
+  [ 69] extcall 20 .............................. return 1
+  [ 71] ret
+end
+
+on setScroll me, tScrollOn
+  [  0] getparam 0 .............................. <me>
+  [  2] getprop 242 ............................. <pWindowID>
+  [  4] getprop 651 ............................. <pElemName>
+  [  7] pusharglist 3 ........................... <me, pWindowID, pElemName>
+  [  9] objcall 644 ............................. <me.checkWindowAndElemExistence(pWindowID, pElemName)>
+  [ 12] not ..................................... <not me.checkWindowAndElemExistence(pWindowID, pElemName)>
+  [ 13] jmpifz [ 25] ............................ if not me.checkWindowAndElemExistence(pWindowID, pElemName) then
+  [ 16] pushzero ................................ <0>
+  [ 17] setprop 647 ............................. pScrollOn = 0
+  [ 20] pushzero ................................ <0>
+  [ 21] pusharglistnoret 1 ...................... <0>
+  [ 23] extcall 20 .............................. return 0
+  [ 25] getparam 1 .............................. <tScrollOn>
+  [ 27] jmpifz [ 69] ............................ if tScrollOn then / else
+  [ 30] getprop 652 ............................. <pMaxOffset>
+  [ 33] pushzero ................................ <0>
+  [ 34] lteq .................................... <pMaxOffset <= 0>
+  [ 35] jmpifz [ 43] ............................ if pMaxOffset <= 0 then
+  [ 38] pushzero ................................ <0>
+  [ 39] pusharglistnoret 1 ...................... <0>
+  [ 41] extcall 20 .............................. return 0
+  [ 43] pushint8 1 .............................. <1>
+  [ 45] setprop 647 ............................. pScrollOn = 1
+  [ 48] getparam 0 .............................. <me>
+  [ 50] pusharglistnoret 1 ...................... <me>
+  [ 52] objcall 645 ............................. me.resetScroll()
+  [ 55] getparam 0 .............................. <me>
+  [ 57] pusharglist 1 ........................... <me>
+  [ 59] objcall 19 .............................. <me.getID()>
+  [ 61] pusharglistnoret 1 ...................... <me.getID()>
+  [ 63] extcall 656 ............................. receiveUpdate(me.getID())
+  [ 66] jmp [ 84]
+  [ 69] pushzero ................................ <0>
+  [ 70] setprop 647 ............................. pScrollOn = 0
+  [ 73] getparam 0 .............................. <me>
+  [ 75] pusharglist 1 ........................... <me>
+  [ 77] objcall 19 .............................. <me.getID()>
+  [ 79] pusharglistnoret 1 ...................... <me.getID()>
+  [ 81] extcall 657 ............................. removeUpdate(me.getID())
+  [ 84] pushint8 1 .............................. <1>
+  [ 86] pusharglistnoret 1 ...................... <1>
+  [ 88] extcall 20 .............................. return 1
+  [ 90] ret
+end
+
+on resetScroll me
+  [  0] getprop 650 ............................. <pDelay>
+  [  3] setprop 659 ............................. pDelayLeft = pDelay
+  [  6] pushzero ................................ <0>
+  [  7] setprop 648 ............................. pOffset = 0
+  [ 10] pushint8 1 .............................. <1>
+  [ 12] setprop 649 ............................. pSpeed = 1
+  [ 15] ret
+end
+
+on update me
+  [  0] getprop 647 ............................. <pScrollOn>
+  [  3] not ..................................... <not pScrollOn>
+  [  4] jmpifz [ 12] ............................ if not pScrollOn then
+  [  7] pushzero ................................ <0>
+  [  8] pusharglistnoret 1 ...................... <0>
+  [ 10] extcall 20 .............................. return 0
+  [ 12] getprop 652 ............................. <pMaxOffset>
+  [ 15] pushzero ................................ <0>
+  [ 16] lt ...................................... <pMaxOffset < 0>
+  [ 17] jmpifz [ 25] ............................ if pMaxOffset < 0 then
+  [ 20] pushzero ................................ <0>
+  [ 21] pusharglistnoret 1 ...................... <0>
+  [ 23] extcall 20 .............................. return 0
+  [ 25] getprop 659 ............................. <pDelayLeft>
+  [ 28] pushzero ................................ <0>
+  [ 29] gt ...................................... <pDelayLeft > 0>
+  [ 30] jmpifz [ 48] ............................ if pDelayLeft > 0 then
+  [ 33] getprop 659 ............................. <pDelayLeft>
+  [ 36] pushint8 1 .............................. <1>
+  [ 38] sub ..................................... <pDelayLeft - 1>
+  [ 39] setprop 659 ............................. pDelayLeft = pDelayLeft - 1
+  [ 42] pushint8 1 .............................. <1>
+  [ 44] pusharglistnoret 1 ...................... <1>
+  [ 46] extcall 20 .............................. return 1
+  [ 48] getparam 0 .............................. <me>
+  [ 50] pusharglist 1 ........................... <me>
+  [ 52] objcall 644 ............................. <me.checkWindowAndElemExistence()>
+  [ 55] not ..................................... <not me.checkWindowAndElemExistence()>
+  [ 56] jmpifz [ 64] ............................ if not me.checkWindowAndElemExistence() then
+  [ 59] pushzero ................................ <0>
+  [ 60] pusharglistnoret 1 ...................... <0>
+  [ 62] extcall 20 .............................. return 0
+  [ 64] getprop 648 ............................. <pOffset>
+  [ 67] getprop 649 ............................. <pSpeed>
+  [ 70] add ..................................... <pOffset + pSpeed>
+  [ 71] setprop 648 ............................. pOffset = pOffset + pSpeed
+  [ 74] getprop 648 ............................. <pOffset>
+  [ 77] getprop 652 ............................. <pMaxOffset>
+  [ 80] gteq .................................... <pOffset >= pMaxOffset>
+  [ 81] getprop 648 ............................. <pOffset>
+  [ 84] pushzero ................................ <0>
+  [ 85] lteq .................................... <pOffset <= 0>
+  [ 86] or ...................................... <(pOffset >= pMaxOffset) or (pOffset <= 0)>
+  [ 87] jmpifz [103] ............................ if (pOffset >= pMaxOffset) or (pOffset <= 0) then
+  [ 90] getprop 649 ............................. <pSpeed>
+  [ 93] inv ..................................... <-pSpeed>
+  [ 94] setprop 649 ............................. pSpeed = -pSpeed
+  [ 97] getprop 650 ............................. <pDelay>
+  [100] setprop 659 ............................. pDelayLeft = pDelay
+  [103] getprop 242 ............................. <pWindowID>
+  [105] pusharglist 1 ........................... <pWindowID>
+  [107] extcall 80 .............................. <getWindow(pWindowID)>
+  [109] getprop 651 ............................. <pElemName>
+  [112] pusharglist 2 ........................... <getWindow(pWindowID), pElemName>
+  [114] objcall 87 .............................. <getWindow(pWindowID).getElement(pElemName)>
+  [116] setlocal 0 .............................. tElem = getWindow(pWindowID).getElement(pElemName)
+  [118] getlocal 0 .............................. <tElem>
+  [120] getprop 648 ............................. <pOffset>
+  [123] pushzero ................................ <0>
+  [124] pusharglistnoret 3 ...................... <tElem, pOffset, 0>
+  [126] objcall 655 ............................. tElem.adjustOffsetTo(pOffset, 0)
+  [129] pushint8 1 .............................. <1>
+  [131] pusharglistnoret 1 ...................... <1>
+  [133] extcall 20 .............................. return 1
+  [135] ret
+end

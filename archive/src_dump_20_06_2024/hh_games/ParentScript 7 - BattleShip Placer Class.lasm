@@ -1,0 +1,628 @@
+property pSpr, pGameBoardSpr, pReservedSquare, pSquareSize, pShipCount, pShipSize, pDirection
+
+on Init me, tGameBoardSpr, tlocz
+  [  0] getparam 0 .............................. <me>
+  [  2] pusharglist 1 ........................... <me>
+  [  4] objcall 167 ............................. <me.getID()>
+  [  6] pusharglist 1 ........................... <me.getID()>
+  [  8] extcall 272 ............................. <reserveSprite(me.getID())>
+  [ 11] pusharglist 1 ........................... <reserveSprite(me.getID())>
+  [ 13] extcall 232 ............................. <sprite(reserveSprite(me.getID()))>
+  [ 15] setprop 271 ............................. pSpr = sprite(reserveSprite(me.getID()))
+  [ 18] getprop 271 ............................. <pSpr>
+  [ 21] getobjprop 274 .......................... <pSpr.spriteNum>
+  [ 24] getparam 0 .............................. <me>
+  [ 26] pusharglist 1 ........................... <me>
+  [ 28] objcall 167 ............................. <me.getID()>
+  [ 30] pusharglistnoret 2 ...................... <pSpr.spriteNum, me.getID()>
+  [ 32] extcall 273 ............................. setEventBroker(pSpr.spriteNum, me.getID())
+  [ 35] pushsymb 168 ............................ <#registerClient>
+  [ 37] getprop 271 ............................. <pSpr>
+  [ 40] getobjprop 276 .......................... <pSpr.scriptInstanceList>
+  [ 43] getparam 0 .............................. <me>
+  [ 45] pusharglistnoret 3 ...................... <#registerClient, pSpr.scriptInstanceList, me>
+  [ 47] extcall 275 ............................. call(#registerClient, pSpr.scriptInstanceList, me)
+  [ 50] pushsymb 170 ............................ <#registerProcedure>
+  [ 52] getprop 271 ............................. <pSpr>
+  [ 55] getobjprop 276 .......................... <pSpr.scriptInstanceList>
+  [ 58] pushsymb 297 ............................ <#eventProcShipPlacer>
+  [ 61] getparam 0 .............................. <me>
+  [ 63] pusharglist 1 ........................... <me>
+  [ 65] objcall 167 ............................. <me.getID()>
+  [ 67] pushsymb 169 ............................ <#mouseUp>
+  [ 69] pusharglistnoret 5 ...................... <#registerProcedure, pSpr.scriptInstanceList, #eventProcShipPlacer, me.getID(), #mouseUp>
+  [ 71] extcall 275 ............................. call(#registerProcedure, pSpr.scriptInstanceList, #eventProcShipPlacer, me.getID(), #mouseUp)
+  [ 74] getprop 271 ............................. <pSpr>
+  [ 77] pushint8 8 .............................. <8>
+  [ 79] setobjprop 203 .......................... pSpr.ink = 8
+  [ 81] getprop 271 ............................. <pSpr>
+  [ 84] getparam 2 .............................. <tlocz>
+  [ 86] setobjprop 230 .......................... pSpr.locZ = tlocz
+  [ 88] getparam 1 .............................. <tGameBoardSpr>
+  [ 90] setprop 277 ............................. pGameBoardSpr = tGameBoardSpr
+  [ 93] pushint8 19 ............................. <19>
+  [ 95] setprop 302 ............................. pSquareSize = 19
+  [ 98] pushzero ................................ <0>
+  [ 99] setprop 303 ............................. pShipCount = 0
+  [102] pushzero ................................ <0>
+  [103] setprop 304 ............................. pShipSize = 0
+  [106] pushcons 0 .............................. <"horizontal">
+  [108] setprop 305 ............................. pDirection = "horizontal"
+  [111] pusharglist 0 ........................... <[]>
+  [113] pushlist ................................ <[]>
+  [114] setprop 306 ............................. pReservedSquare = []
+  [117] getparam 0 .............................. <me>
+  [119] pusharglistnoret 1 ...................... <me>
+  [121] objcall 298 ............................. me.getNextShip()
+  [124] getparam 0 .............................. <me>
+  [126] pusharglist 1 ........................... <me>
+  [128] objcall 167 ............................. <me.getID()>
+  [130] pusharglistnoret 1 ...................... <me.getID()>
+  [132] extcall 279 ............................. receiveUpdate(me.getID())
+  [135] ret
+end
+
+on deconstruct me
+  [  0] getparam 0 .............................. <me>
+  [  2] pusharglist 1 ........................... <me>
+  [  4] objcall 167 ............................. <me.getID()>
+  [  6] pusharglistnoret 1 ...................... <me.getID()>
+  [  8] extcall 282 ............................. removeUpdate(me.getID())
+  [ 11] getprop 271 ............................. <pSpr>
+  [ 14] getobjprop 274 .......................... <pSpr.spriteNum>
+  [ 17] pusharglistnoret 1 ...................... <pSpr.spriteNum>
+  [ 19] extcall 283 ............................. releaseSprite(pSpr.spriteNum)
+  [ 22] pusharglist 0 ........................... <>
+  [ 24] extcall 28 .............................. <VOID>
+  [ 26] setprop 271 ............................. pSpr = VOID
+  [ 29] ret
+end
+
+on eventProcShipPlacer me, tEvent, tSprID, tParam
+  [  0] getprop 271 ............................. <pSpr>
+  [  3] pushzero ................................ <0>
+  [  4] setobjprop 284 .......................... pSpr.visible = 0
+  [  7] pusharglist 0 ........................... <>
+  [  9] extcall 285 ............................. <rollover()>
+  [ 12] setlocal 0 .............................. tSprite = rollover()
+  [ 14] getprop 271 ............................. <pSpr>
+  [ 17] pushint8 1 .............................. <1>
+  [ 19] setobjprop 284 .......................... pSpr.visible = 1
+  [ 22] pushsymb 167 ............................ <#getID>
+  [ 24] getlocal 0 .............................. <tSprite>
+  [ 26] pusharglist 1 ........................... <tSprite>
+  [ 28] extcall 232 ............................. <sprite(tSprite)>
+  [ 30] getobjprop 276 .......................... <sprite(tSprite).scriptInstanceList>
+  [ 33] pusharglist 2 ........................... <#getID, sprite(tSprite).scriptInstanceList>
+  [ 35] extcall 275 ............................. <call(#getID, sprite(tSprite).scriptInstanceList)>
+  [ 38] setlocal 1 .............................. tid = call(#getID, sprite(tSprite).scriptInstanceList)
+  [ 40] getlocal 1 .............................. <tid>
+  [ 42] pushcons 1 .............................. <"close">
+  [ 44] eq ...................................... <tid = "close">
+  [ 45] getlocal 1 .............................. <tid>
+  [ 47] pushcons 2 .............................. <"turn">
+  [ 49] containsstr ............................. <tid contains "turn">
+  [ 50] or ...................................... <(tid = "close") or (tid contains "turn")>
+  [ 51] jmpifz [ 72] ............................ if (tid = "close") or (tid contains "turn") then
+  [ 54] pushsymb 61 ............................. <#games>
+  [ 56] pusharglist 1 ........................... <#games>
+  [ 58] extcall 60 .............................. <getThread(#games)>
+  [ 60] pusharglist 1 ........................... <getThread(#games)>
+  [ 62] objcall 46 .............................. <getThread(#games).getInterface()>
+  [ 64] getparam 1 .............................. <tEvent>
+  [ 66] getlocal 1 .............................. <tid>
+  [ 68] pusharglistnoret 3 ...................... <getThread(#games).getInterface(), tEvent, tid>
+  [ 70] objcall 155 ............................. getThread(#games).getInterface().eventProcBattleShip(tEvent, tid)
+  [ 72] ret
+end
+
+on getNextShip me
+  [  0] getprop 303 ............................. <pShipCount>
+  [  3] peek 0 .................................. case pShipCount of
+  [  5] pushzero ................................ <0>
+  [  6] eq
+  [  7] jmpifz [ 28] ............................ (case) 0:
+  [ 10] pushint8 5 .............................. <5>
+  [ 12] setprop 304 ............................. pShipSize = 5
+  [ 15] pushcons 3 .............................. <"game_bs_ship1">
+  [ 17] pushcons 4 .............................. <"An Aircraft Carrier">
+  [ 19] pusharglist 2 ........................... <"game_bs_ship1", "An Aircraft Carrier">
+  [ 21] extcall 67 .............................. <getText("game_bs_ship1", "An Aircraft Carrier")>
+  [ 23] setlocal 0 .............................. tShip = getText("game_bs_ship1", "An Aircraft Carrier")
+  [ 25] jmp [211]
+  [ 28] peek 0
+  [ 30] pushint8 1 .............................. <1>
+  [ 32] nteq
+  [ 33] jmpifz [ 44] ............................ (case) 1, ...
+  [ 36] peek 0
+  [ 38] pushint8 2 .............................. <2>
+  [ 40] eq
+  [ 41] jmpifz [ 73] ............................ (case) ..., 2:
+  [ 44] pushint8 4 .............................. <4>
+  [ 46] setprop 304 ............................. pShipSize = 4
+  [ 49] pushint8 3 .............................. <3>
+  [ 51] getprop 303 ............................. <pShipCount>
+  [ 54] sub ..................................... <3 - pShipCount>
+  [ 55] pusharglist 1 ........................... <3 - pShipCount>
+  [ 57] extcall 215 ............................. <string(3 - pShipCount)>
+  [ 59] pushcons 5 .............................. <"game_bs_ship2">
+  [ 61] pushcons 6 .............................. <"BattleShip(s)">
+  [ 63] pusharglist 2 ........................... <"game_bs_ship2", "BattleShip(s)">
+  [ 65] extcall 67 .............................. <getText("game_bs_ship2", "BattleShip(s)")>
+  [ 67] joinpadstr .............................. <string(3 - pShipCount) && getText("game_bs_ship2", "BattleShip(s)")>
+  [ 68] setlocal 0 .............................. tShip = string(3 - pShipCount) && getText("game_bs_ship2", "BattleShip(s)")
+  [ 70] jmp [211]
+  [ 73] peek 0
+  [ 75] pushint8 3 .............................. <3>
+  [ 77] nteq
+  [ 78] jmpifz [ 97] ............................ (case) 3, ...
+  [ 81] peek 0
+  [ 83] pushint8 4 .............................. <4>
+  [ 85] nteq
+  [ 86] jmpifz [ 97] ............................ (case) ..., 4, ...
+  [ 89] peek 0
+  [ 91] pushint8 5 .............................. <5>
+  [ 93] eq
+  [ 94] jmpifz [126] ............................ (case) ..., 5:
+  [ 97] pushint8 3 .............................. <3>
+  [ 99] setprop 304 ............................. pShipSize = 3
+  [102] pushint8 6 .............................. <6>
+  [104] getprop 303 ............................. <pShipCount>
+  [107] sub ..................................... <6 - pShipCount>
+  [108] pusharglist 1 ........................... <6 - pShipCount>
+  [110] extcall 215 ............................. <string(6 - pShipCount)>
+  [112] pushcons 7 .............................. <"game_bs_ship3">
+  [114] pushcons 8 .............................. <"Cruiser(s)">
+  [116] pusharglist 2 ........................... <"game_bs_ship3", "Cruiser(s)">
+  [118] extcall 67 .............................. <getText("game_bs_ship3", "Cruiser(s)")>
+  [120] joinpadstr .............................. <string(6 - pShipCount) && getText("game_bs_ship3", "Cruiser(s)")>
+  [121] setlocal 0 .............................. tShip = string(6 - pShipCount) && getText("game_bs_ship3", "Cruiser(s)")
+  [123] jmp [211]
+  [126] peek 0
+  [128] pushint8 6 .............................. <6>
+  [130] nteq
+  [131] jmpifz [158] ............................ (case) 6, ...
+  [134] peek 0
+  [136] pushint8 7 .............................. <7>
+  [138] nteq
+  [139] jmpifz [158] ............................ (case) ..., 7, ...
+  [142] peek 0
+  [144] pushint8 8 .............................. <8>
+  [146] nteq
+  [147] jmpifz [158] ............................ (case) ..., 8, ...
+  [150] peek 0
+  [152] pushint8 9 .............................. <9>
+  [154] eq
+  [155] jmpifz [187] ............................ (case) ..., 9:
+  [158] pushint8 2 .............................. <2>
+  [160] setprop 304 ............................. pShipSize = 2
+  [163] pushint8 10 ............................. <10>
+  [165] getprop 303 ............................. <pShipCount>
+  [168] sub ..................................... <10 - pShipCount>
+  [169] pusharglist 1 ........................... <10 - pShipCount>
+  [171] extcall 215 ............................. <string(10 - pShipCount)>
+  [173] pushcons 9 .............................. <"game_bs_ship4">
+  [175] pushcons 10 ............................. <"Destroyer(s)">
+  [177] pusharglist 2 ........................... <"game_bs_ship4", "Destroyer(s)">
+  [179] extcall 67 .............................. <getText("game_bs_ship4", "Destroyer(s)")>
+  [181] joinpadstr .............................. <string(10 - pShipCount) && getText("game_bs_ship4", "Destroyer(s)")>
+  [182] setlocal 0 .............................. tShip = string(10 - pShipCount) && getText("game_bs_ship4", "Destroyer(s)")
+  [184] jmp [211] ............................... (case) otherwise:
+  [187] getparam 0 .............................. <me>
+  [189] pusharglist 1 ........................... <me>
+  [191] objcall 167 ............................. <me.getID()>
+  [193] pusharglistnoret 1 ...................... <me.getID()>
+  [195] extcall 229 ............................. removeObject(me.getID())
+  [197] pushsymb 61 ............................. <#games>
+  [199] pusharglist 1 ........................... <#games>
+  [201] extcall 60 .............................. <getThread(#games)>
+  [203] pusharglist 1 ........................... <getThread(#games)>
+  [205] objcall 46 .............................. <getThread(#games).getInterface()>
+  [207] pusharglistnoret 1 ...................... <getThread(#games).getInterface()>
+  [209] objcall 154 ............................. getThread(#games).getInterface().battleShipWaitOtherPlayer()
+  [211] pop 1 ................................... end case
+  [213] getlocal 0 .............................. <tShip>
+  [215] pusharglist 1 ........................... <tShip>
+  [217] extcall 29 .............................. <voidp(tShip)>
+  [219] not ..................................... <not voidp(tShip)>
+  [220] jmpifz [246] ............................ if not voidp(tShip) then
+  [223] pushsymb 61 ............................. <#games>
+  [225] pusharglist 1 ........................... <#games>
+  [227] extcall 60 .............................. <getThread(#games)>
+  [229] pusharglist 1 ........................... <getThread(#games)>
+  [231] objcall 46 .............................. <getThread(#games).getInterface()>
+  [233] getlocal 0 .............................. <tShip>
+  [235] pusharglistnoret 2 ...................... <getThread(#games).getInterface(), tShip>
+  [237] objcall 150 ............................. getThread(#games).getInterface().showShipInfo(tShip)
+  [239] getparam 0 .............................. <me>
+  [241] pusharglistnoret 1 ...................... <me>
+  [243] objcall 299 ............................. me.setShipMember()
+  [246] ret
+end
+
+on setShipMember me
+  [  0] pushcons 11 ............................. <"game_bs_ship_">
+  [  2] getprop 304 ............................. <pShipSize>
+  [  5] joinstr ................................. <"game_bs_ship_" & pShipSize>
+  [  6] pushcons 12 ............................. <"_">
+  [  8] joinstr ................................. <"game_bs_ship_" & pShipSize & "_">
+  [  9] getprop 305 ............................. <pDirection>
+  [ 12] pushsymb 72 ............................. <#char>
+  [ 14] pushint8 1 .............................. <1>
+  [ 16] pusharglist 3 ........................... <pDirection, #char, 1>
+  [ 18] objcall 54 .............................. <pDirection.char[1]>
+  [ 20] joinstr ................................. <"game_bs_ship_" & pShipSize & "_" & pDirection.char[1]>
+  [ 21] setlocal 0 .............................. tMemName = "game_bs_ship_" & pShipSize & "_" & pDirection.char[1]
+  [ 23] getprop 271 ............................. <pSpr>
+  [ 26] getlocal 0 .............................. <tMemName>
+  [ 28] pusharglist 1 ........................... <tMemName>
+  [ 30] extcall 192 ............................. <getmemnum(tMemName)>
+  [ 32] pusharglist 1 ........................... <getmemnum(tMemName)>
+  [ 34] extcall 191 ............................. <member(getmemnum(tMemName))>
+  [ 36] setobjprop 191 .......................... pSpr.member = member(getmemnum(tMemName))
+  [ 38] ret
+end
+
+on getBoardSector me, tpoint
+  [  0] getparam 1 .............................. <tpoint>
+  [  2] pushint8 1 .............................. <1>
+  [  4] pusharglist 2 ........................... <tpoint, 1>
+  [  6] objcall 31 .............................. <tpoint[1]>
+  [  8] getprop 302 ............................. <pSquareSize>
+  [ 11] div ..................................... <tpoint[1] / pSquareSize>
+  [ 12] getparam 1 .............................. <tpoint>
+  [ 14] pushint8 2 .............................. <2>
+  [ 16] pusharglist 2 ........................... <tpoint, 2>
+  [ 18] objcall 31 .............................. <tpoint[2]>
+  [ 20] getprop 302 ............................. <pSquareSize>
+  [ 23] div ..................................... <tpoint[2] / pSquareSize>
+  [ 24] joinpadstr .............................. <tpoint[1] / pSquareSize && tpoint[2] / pSquareSize>
+  [ 25] pusharglist 1 ........................... <tpoint[1] / pSquareSize && tpoint[2] / pSquareSize>
+  [ 27] extcall 215 ............................. <string(tpoint[1] / pSquareSize && tpoint[2] / pSquareSize)>
+  [ 29] pusharglistnoret 1 ...................... <string(tpoint[1] / pSquareSize && tpoint[2] / pSquareSize)>
+  [ 31] extcall 26 .............................. return string(tpoint[1] / pSquareSize && tpoint[2] / pSquareSize)
+  [ 33] ret
+end
+
+on ShipPlace me, tPoint1, tPoint2
+  [  0] getparam 0 .............................. <me>
+  [  2] getparam 1 .............................. <tPoint1>
+  [  4] pusharglist 2 ........................... <me, tPoint1>
+  [  6] objcall 300 ............................. <me.getBoardSector(tPoint1)>
+  [  9] setlocal 0 .............................. tP1 = me.getBoardSector(tPoint1)
+  [ 11] getparam 0 .............................. <me>
+  [ 13] getparam 2 .............................. <tPoint2>
+  [ 15] pusharglist 2 ........................... <me, tPoint2>
+  [ 17] objcall 300 ............................. <me.getBoardSector(tPoint2)>
+  [ 20] setlocal 1 .............................. tP2 = me.getBoardSector(tPoint2)
+  [ 22] getlocal 0 .............................. <tP1>
+  [ 24] pushsymb 53 ............................. <#word>
+  [ 26] pushint8 1 .............................. <1>
+  [ 28] pusharglist 3 ........................... <tP1, #word, 1>
+  [ 30] objcall 54 .............................. <tP1.word[1]>
+  [ 32] pusharglist 1 ........................... <tP1.word[1]>
+  [ 34] extcall 84 .............................. <value(tP1.word[1])>
+  [ 36] setlocal 2 .............................. tX1 = value(tP1.word[1])
+  [ 38] getlocal 1 .............................. <tP2>
+  [ 40] pushsymb 53 ............................. <#word>
+  [ 42] pushint8 1 .............................. <1>
+  [ 44] pusharglist 3 ........................... <tP2, #word, 1>
+  [ 46] objcall 54 .............................. <tP2.word[1]>
+  [ 48] pusharglist 1 ........................... <tP2.word[1]>
+  [ 50] extcall 84 .............................. <value(tP2.word[1])>
+  [ 52] setlocal 3 .............................. tX2 = value(tP2.word[1])
+  [ 54] getlocal 0 .............................. <tP1>
+  [ 56] pushsymb 53 ............................. <#word>
+  [ 58] pushint8 2 .............................. <2>
+  [ 60] pusharglist 3 ........................... <tP1, #word, 2>
+  [ 62] objcall 54 .............................. <tP1.word[2]>
+  [ 64] pusharglist 1 ........................... <tP1.word[2]>
+  [ 66] extcall 84 .............................. <value(tP1.word[2])>
+  [ 68] setlocal 4 .............................. tY1 = value(tP1.word[2])
+  [ 70] getlocal 1 .............................. <tP2>
+  [ 72] pushsymb 53 ............................. <#word>
+  [ 74] pushint8 2 .............................. <2>
+  [ 76] pusharglist 3 ........................... <tP2, #word, 2>
+  [ 78] objcall 54 .............................. <tP2.word[2]>
+  [ 80] pusharglist 1 ........................... <tP2.word[2]>
+  [ 82] extcall 84 .............................. <value(tP2.word[2])>
+  [ 84] setlocal 5 .............................. tY2 = value(tP2.word[2])
+  [ 86] pusharglist 0 ........................... <[:]>
+  [ 88] pushproplist ............................ <[:]>
+  [ 89] setlocal 6 .............................. tSetSquares = [:]
+  [ 91] pushint8 1 .............................. <1>
+  [ 93] setlocal 7 .............................. tCanSet = 1
+  [ 95] getprop 305 ............................. <pDirection>
+  [ 98] pushcons 0 .............................. <"horizontal">
+  [100] eq ...................................... <pDirection = "horizontal">
+  [101] jmpifz [167] ............................ if pDirection = "horizontal" then / else
+  [104] getlocal 2 .............................. <tX1>
+  [106] setlocal 8
+  [108] getlocal 8
+  [110] getlocal 3 .............................. <tX2>
+  [112] lteq
+  [113] jmpifz [164] ............................ repeat with xxx = tX1 to tX2
+  [116] getprop 306 ............................. <pReservedSquare>
+  [119] getlocal 8 .............................. <xxx>
+  [121] getlocal 4 .............................. <tY1>
+  [123] joinstr ................................. <xxx & tY1>
+  [124] pusharglist 2 ........................... <pReservedSquare, xxx & tY1>
+  [126] objcall 105 ............................. <pReservedSquare.getOne(xxx & tY1)>
+  [128] pushzero ................................ <0>
+  [129] nteq .................................... <pReservedSquare.getOne(xxx & tY1) <> 0>
+  [130] jmpifz [142] ............................ if pReservedSquare.getOne(xxx & tY1) <> 0 then
+  [133] pushzero ................................ <0>
+  [134] setlocal 7 .............................. tCanSet = 0
+  [136] jmp [164] ............................... exit repeat
+  [139] jmp [155] ............................... next repeat
+  [142] getlocal 6 .............................. <tSetSquares>
+  [144] getlocal 8 .............................. <xxx>
+  [146] getlocal 4 .............................. <tY1>
+  [148] joinstr ................................. <xxx & tY1>
+  [149] pushint8 1 .............................. <1>
+  [151] pusharglistnoret 3 ...................... <tSetSquares, xxx & tY1, 1>
+  [153] objcall 39 .............................. tSetSquares[xxx & tY1] = 1
+  [155] pushint8 1
+  [157] getlocal 8
+  [159] add
+  [160] setlocal 8
+  [162] endrepeat [108]
+  [164] jmp [236]
+  [167] getprop 305 ............................. <pDirection>
+  [170] pushcons 13 ............................. <"vertical">
+  [172] eq ...................................... <pDirection = "vertical">
+  [173] jmpifz [236] ............................ if pDirection = "vertical" then
+  [176] getlocal 4 .............................. <tY1>
+  [178] setlocal 9
+  [180] getlocal 9
+  [182] getlocal 5 .............................. <tY2>
+  [184] lteq
+  [185] jmpifz [236] ............................ repeat with yyy = tY1 to tY2
+  [188] getprop 306 ............................. <pReservedSquare>
+  [191] getlocal 2 .............................. <tX1>
+  [193] getlocal 9 .............................. <yyy>
+  [195] joinstr ................................. <tX1 & yyy>
+  [196] pusharglist 2 ........................... <pReservedSquare, tX1 & yyy>
+  [198] objcall 105 ............................. <pReservedSquare.getOne(tX1 & yyy)>
+  [200] pushzero ................................ <0>
+  [201] nteq .................................... <pReservedSquare.getOne(tX1 & yyy) <> 0>
+  [202] jmpifz [214] ............................ if pReservedSquare.getOne(tX1 & yyy) <> 0 then
+  [205] pushzero ................................ <0>
+  [206] setlocal 7 .............................. tCanSet = 0
+  [208] jmp [236] ............................... exit repeat
+  [211] jmp [227] ............................... next repeat
+  [214] getlocal 6 .............................. <tSetSquares>
+  [216] getlocal 2 .............................. <tX1>
+  [218] getlocal 9 .............................. <yyy>
+  [220] joinstr ................................. <tX1 & yyy>
+  [221] pushint8 1 .............................. <1>
+  [223] pusharglistnoret 3 ...................... <tSetSquares, tX1 & yyy, 1>
+  [225] objcall 39 .............................. tSetSquares[tX1 & yyy] = 1
+  [227] pushint8 1
+  [229] getlocal 9
+  [231] add
+  [232] setlocal 9
+  [234] endrepeat [180]
+  [236] getlocal 7 .............................. <tCanSet>
+  [238] pushint8 1 .............................. <1>
+  [240] eq ...................................... <tCanSet = 1>
+  [241] jmpifz [422] ............................ if tCanSet = 1 then
+  [244] pushint8 1 .............................. <1>
+  [246] setlocal 10
+  [248] getlocal 10
+  [250] getlocal 6 .............................. <tSetSquares>
+  [252] getobjprop 56 ........................... <tSetSquares.count>
+  [254] lteq
+  [255] jmpifz [287] ............................ repeat with f = 1 to tSetSquares.count
+  [258] getlocal 6 .............................. <tSetSquares>
+  [260] getlocal 10 ............................. <f>
+  [262] pusharglist 2 ........................... <tSetSquares, f>
+  [264] objcall 308 ............................. <tSetSquares.getPropAt(f)>
+  [267] setlocal 11 ............................. tProp = tSetSquares.getPropAt(f)
+  [269] getprop 306 ............................. <pReservedSquare>
+  [272] getlocal 11 ............................. <tProp>
+  [274] pusharglistnoret 2 ...................... <pReservedSquare, tProp>
+  [276] objcall 85 .............................. pReservedSquare.add(tProp)
+  [278] pushint8 1
+  [280] getlocal 10
+  [282] add
+  [283] setlocal 10
+  [285] endrepeat [248]
+  [287] getparam 1 .............................. <tPoint1>
+  [289] getparam 2 .............................. <tPoint2>
+  [291] pusharglist 2 ........................... <tPoint1, tPoint2>
+  [293] extcall 181 ............................. <rect(tPoint1, tPoint2)>
+  [295] pushint8 1 .............................. <1>
+  [297] pushint8 1 .............................. <1>
+  [299] pushint8 1 .............................. <1>
+  [301] pushint8 1 .............................. <1>
+  [303] pusharglist 4 ........................... <1, 1, 1, 1>
+  [305] extcall 181 ............................. <rect(1, 1, 1, 1)>
+  [307] add ..................................... <rect(tPoint1, tPoint2) + rect(1, 1, 1, 1)>
+  [308] setlocal 12 ............................. tRect = rect(tPoint1, tPoint2) + rect(1, 1, 1, 1)
+  [310] getprop 305 ............................. <pDirection>
+  [313] pushcons 0 .............................. <"horizontal">
+  [315] eq ...................................... <pDirection = "horizontal">
+  [316] jmpifz [337] ............................ if pDirection = "horizontal" then / else
+  [319] getlocal 12 ............................. <tRect>
+  [321] pushzero ................................ <0>
+  [322] pushint8 1 .............................. <1>
+  [324] pushzero ................................ <0>
+  [325] pushint8 1 .............................. <1>
+  [327] pusharglist 4 ........................... <0, 1, 0, 1>
+  [329] extcall 181 ............................. <rect(0, 1, 0, 1)>
+  [331] add ..................................... <tRect + rect(0, 1, 0, 1)>
+  [332] setlocal 12 ............................. tRect = tRect + rect(0, 1, 0, 1)
+  [334] jmp [352]
+  [337] getlocal 12 ............................. <tRect>
+  [339] pushint8 1 .............................. <1>
+  [341] pushzero ................................ <0>
+  [342] pushint8 1 .............................. <1>
+  [344] pushzero ................................ <0>
+  [345] pusharglist 4 ........................... <1, 0, 1, 0>
+  [347] extcall 181 ............................. <rect(1, 0, 1, 0)>
+  [349] add ..................................... <tRect + rect(1, 0, 1, 0)>
+  [350] setlocal 12 ............................. tRect = tRect + rect(1, 0, 1, 0)
+  [352] pushsymb 61 ............................. <#games>
+  [354] pusharglist 1 ........................... <#games>
+  [356] extcall 60 .............................. <getThread(#games)>
+  [358] pusharglist 1 ........................... <getThread(#games)>
+  [360] objcall 46 .............................. <getThread(#games).getInterface()>
+  [362] getprop 271 ............................. <pSpr>
+  [365] getobjprop 191 .......................... <pSpr.member>
+  [367] getlocal 12 ............................. <tRect>
+  [369] pusharglistnoret 3 ...................... <getThread(#games).getInterface(), pSpr.member, tRect>
+  [371] objcall 151 ............................. getThread(#games).getInterface().placeShip(pSpr.member, tRect)
+  [373] getprop 304 ............................. <pShipSize>
+  [376] getlocal 2 .............................. <tX1>
+  [378] joinpadstr .............................. <pShipSize && tX1>
+  [379] getlocal 4 .............................. <tY1>
+  [381] joinpadstr .............................. <pShipSize && tX1 && tY1>
+  [382] getlocal 3 .............................. <tX2>
+  [384] joinpadstr .............................. <pShipSize && tX1 && tY1 && tX2>
+  [385] getlocal 5 .............................. <tY2>
+  [387] joinpadstr .............................. <pShipSize && tX1 && tY1 && tX2 && tY2>
+  [388] setlocal 13 ............................. tPlace = pShipSize && tX1 && tY1 && tX2 && tY2
+  [390] pushsymb 61 ............................. <#games>
+  [392] pusharglist 1 ........................... <#games>
+  [394] extcall 60 .............................. <getThread(#games)>
+  [396] pusharglist 1 ........................... <getThread(#games)>
+  [398] objcall 158 ............................. <getThread(#games).getComponent()>
+  [400] getlocal 13 ............................. <tPlace>
+  [402] pusharglistnoret 2 ...................... <getThread(#games).getComponent(), tPlace>
+  [404] objcall 18 .............................. getThread(#games).getComponent().sendBattleShipPlaceShip(tPlace)
+  [406] getprop 303 ............................. <pShipCount>
+  [409] pushint8 1 .............................. <1>
+  [411] add ..................................... <pShipCount + 1>
+  [412] setprop 303 ............................. pShipCount = pShipCount + 1
+  [415] getparam 0 .............................. <me>
+  [417] pusharglistnoret 1 ...................... <me>
+  [419] objcall 298 ............................. me.getNextShip()
+  [422] ret
+end
+
+on turnShip me
+  [  0] pushsymb 61 ............................. <#games>
+  [  2] pusharglist 1 ........................... <#games>
+  [  4] extcall 510 ............................. <threadExists(#games)>
+  [  7] not ..................................... <not threadExists(#games)>
+  [  8] jmpifz [ 25] ............................ if not threadExists(#games) then
+  [ 11] getparam 0 .............................. <me>
+  [ 13] pusharglist 1 ........................... <me>
+  [ 15] objcall 167 ............................. <me.getID()>
+  [ 17] pusharglist 1 ........................... <me.getID()>
+  [ 19] extcall 229 ............................. <removeObject(me.getID())>
+  [ 21] pusharglistnoret 1 ...................... <removeObject(me.getID())>
+  [ 23] extcall 26 .............................. return removeObject(me.getID())
+  [ 25] getprop 305 ............................. <pDirection>
+  [ 28] pushcons 0 .............................. <"horizontal">
+  [ 30] eq ...................................... <pDirection = "horizontal">
+  [ 31] jmpifz [ 42] ............................ if pDirection = "horizontal" then / else
+  [ 34] pushcons 13 ............................. <"vertical">
+  [ 36] setprop 305 ............................. pDirection = "vertical"
+  [ 39] jmp [ 47]
+  [ 42] pushcons 0 .............................. <"horizontal">
+  [ 44] setprop 305 ............................. pDirection = "horizontal"
+  [ 47] getparam 0 .............................. <me>
+  [ 49] pusharglistnoret 1 ...................... <me>
+  [ 51] objcall 299 ............................. me.setShipMember()
+  [ 54] ret
+end
+
+on update me
+  [  0] getprop 271 ............................. <pSpr>
+  [  3] getmovieprop 288 ........................ <the mouseLoc>
+  [  6] setobjprop 289 .......................... pSpr.loc = the mouseLoc
+  [  9] getprop 271 ............................. <pSpr>
+  [ 12] getobjprop 325 .......................... <pSpr.left>
+  [ 15] getprop 271 ............................. <pSpr>
+  [ 18] getobjprop 326 .......................... <pSpr.top>
+  [ 21] pusharglist 2 ........................... <pSpr.left, pSpr.top>
+  [ 23] extcall 180 ............................. <point(pSpr.left, pSpr.top)>
+  [ 25] setlocal 0 .............................. tUpPoint = point(pSpr.left, pSpr.top)
+  [ 27] getprop 271 ............................. <pSpr>
+  [ 30] getobjprop 327 .......................... <pSpr.right>
+  [ 33] getprop 271 ............................. <pSpr>
+  [ 36] getobjprop 328 .......................... <pSpr.bottom>
+  [ 39] pusharglist 2 ........................... <pSpr.right, pSpr.bottom>
+  [ 41] extcall 180 ............................. <point(pSpr.right, pSpr.bottom)>
+  [ 43] setlocal 1 .............................. tDownPoint = point(pSpr.right, pSpr.bottom)
+  [ 45] getlocal 0 .............................. <tUpPoint>
+  [ 47] getprop 277 ............................. <pGameBoardSpr>
+  [ 50] getobjprop 181 .......................... <pGameBoardSpr.rect>
+  [ 52] pusharglist 2 ........................... <tUpPoint, pGameBoardSpr.rect>
+  [ 54] objcall 329 ............................. <tUpPoint.inside(pGameBoardSpr.rect)>
+  [ 57] getlocal 1 .............................. <tDownPoint>
+  [ 59] getprop 277 ............................. <pGameBoardSpr>
+  [ 62] getobjprop 181 .......................... <pGameBoardSpr.rect>
+  [ 64] pusharglist 2 ........................... <tDownPoint, pGameBoardSpr.rect>
+  [ 66] objcall 329 ............................. <tDownPoint.inside(pGameBoardSpr.rect)>
+  [ 69] and ..................................... <tUpPoint.inside(pGameBoardSpr.rect) and tDownPoint.inside(pGameBoardSpr.rect)>
+  [ 70] jmpifz [211] ............................ if tUpPoint.inside(pGameBoardSpr.rect) and tDownPoint.inside(pGameBoardSpr.rect) then / else
+  [ 73] getprop 271 ............................. <pSpr>
+  [ 76] pushint8 100 ............................ <100>
+  [ 78] setobjprop 291 .......................... pSpr.blend = 100
+  [ 81] pusharglist 0 ........................... <>
+  [ 83] thebuiltin 292 .......................... <the mouseDown>
+  [ 86] jmpifz [208] ............................ if the mouseDown then
+  [ 89] getprop 271 ............................. <pSpr>
+  [ 92] getobjprop 325 .......................... <pSpr.left>
+  [ 95] getprop 277 ............................. <pGameBoardSpr>
+  [ 98] getobjprop 325 .......................... <pGameBoardSpr.left>
+  [101] sub ..................................... <pSpr.left - pGameBoardSpr.left>
+  [102] getprop 271 ............................. <pSpr>
+  [105] getobjprop 326 .......................... <pSpr.top>
+  [108] getprop 277 ............................. <pGameBoardSpr>
+  [111] getobjprop 326 .......................... <pGameBoardSpr.top>
+  [114] sub ..................................... <pSpr.top - pGameBoardSpr.top>
+  [115] pusharglist 2 ........................... <pSpr.left - pGameBoardSpr.left, pSpr.top - pGameBoardSpr.top>
+  [117] extcall 180 ............................. <point(pSpr.left - pGameBoardSpr.left, pSpr.top - pGameBoardSpr.top)>
+  [119] setlocal 2 .............................. tloc = point(pSpr.left - pGameBoardSpr.left, pSpr.top - pGameBoardSpr.top)
+  [121] getparam 0 .............................. <me>
+  [123] getlocal 2 .............................. <tloc>
+  [125] pusharglist 2 ........................... <me, tloc>
+  [127] objcall 300 ............................. <me.getBoardSector(tloc)>
+  [130] setlocal 3 .............................. tTempLoc = me.getBoardSector(tloc)
+  [132] getlocal 3 .............................. <tTempLoc>
+  [134] pushsymb 53 ............................. <#word>
+  [136] pushint8 1 .............................. <1>
+  [138] pusharglist 3 ........................... <tTempLoc, #word, 1>
+  [140] objcall 54 .............................. <tTempLoc.word[1]>
+  [142] pusharglist 1 ........................... <tTempLoc.word[1]>
+  [144] extcall 84 .............................. <value(tTempLoc.word[1])>
+  [146] getprop 302 ............................. <pSquareSize>
+  [149] mul ..................................... <value(tTempLoc.word[1]) * pSquareSize>
+  [150] getlocal 3 .............................. <tTempLoc>
+  [152] pushsymb 53 ............................. <#word>
+  [154] pushint8 2 .............................. <2>
+  [156] pusharglist 3 ........................... <tTempLoc, #word, 2>
+  [158] objcall 54 .............................. <tTempLoc.word[2]>
+  [160] pusharglist 1 ........................... <tTempLoc.word[2]>
+  [162] extcall 84 .............................. <value(tTempLoc.word[2])>
+  [164] getprop 302 ............................. <pSquareSize>
+  [167] mul ..................................... <value(tTempLoc.word[2]) * pSquareSize>
+  [168] pusharglist 2 ........................... <value(tTempLoc.word[1]) * pSquareSize, value(tTempLoc.word[2]) * pSquareSize>
+  [170] extcall 180 ............................. <point(value(tTempLoc.word[1]) * pSquareSize, value(tTempLoc.word[2]) * pSquareSize)>
+  [172] setlocal 4 .............................. tNewLoc = point(value(tTempLoc.word[1]) * pSquareSize, value(tTempLoc.word[2]) * pSquareSize)
+  [174] getlocal 4 .............................. <tNewLoc>
+  [176] setlocal 2 .............................. tloc = tNewLoc
+  [178] getlocal 4 .............................. <tNewLoc>
+  [180] getprop 271 ............................. <pSpr>
+  [183] getobjprop 177 .......................... <pSpr.width>
+  [185] getprop 271 ............................. <pSpr>
+  [188] getobjprop 178 .......................... <pSpr.height>
+  [190] pusharglist 2 ........................... <pSpr.width, pSpr.height>
+  [192] extcall 180 ............................. <point(pSpr.width, pSpr.height)>
+  [194] add ..................................... <tNewLoc + point(pSpr.width, pSpr.height)>
+  [195] setlocal 5 .............................. tLoc2 = tNewLoc + point(pSpr.width, pSpr.height)
+  [197] getparam 0 .............................. <me>
+  [199] getlocal 2 .............................. <tloc>
+  [201] getlocal 5 .............................. <tLoc2>
+  [203] pusharglistnoret 3 ...................... <me, tloc, tLoc2>
+  [205] objcall 301 ............................. me.ShipPlace(tloc, tLoc2)
+  [208] jmp [219]
+  [211] getprop 271 ............................. <pSpr>
+  [214] pushint8 50 ............................. <50>
+  [216] setobjprop 291 .......................... pSpr.blend = 50
+  [219] ret
+end

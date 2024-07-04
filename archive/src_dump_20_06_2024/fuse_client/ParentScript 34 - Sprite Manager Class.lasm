@@ -1,0 +1,520 @@
+property pTotalSprList, pFreeSprList, pClientList, pEventBroker
+
+on construct me
+  [  0] pusharglist 0 ........................... <>
+  [  2] extcall 32 .............................. <VOID>
+  [  4] setprop 863 ............................. pTotalSprList = VOID
+  [  7] pusharglist 0 ........................... <>
+  [  9] extcall 32 .............................. <VOID>
+  [ 11] setprop 864 ............................. pFreeSprList = VOID
+  [ 14] pusharglist 0 ........................... <>
+  [ 16] extcall 32 .............................. <VOID>
+  [ 18] setprop 865 ............................. pClientList = VOID
+  [ 21] pushcons 0 .............................. <"event.broker.behavior">
+  [ 23] pusharglist 1 ........................... <"event.broker.behavior">
+  [ 25] extcall 364 ............................. <getVariable("event.broker.behavior")>
+  [ 28] pusharglist 1 ........................... <getVariable("event.broker.behavior")>
+  [ 30] extcall 115 ............................. <script(getVariable("event.broker.behavior"))>
+  [ 32] setprop 866 ............................. pEventBroker = script(getVariable("event.broker.behavior"))
+  [ 35] getparam 0 .............................. <me>
+  [ 37] pusharglist 1 ........................... <me>
+  [ 39] objcall 862 ............................. <me.preIndexChannels()>
+  [ 42] pusharglistnoret 1 ...................... <me.preIndexChannels()>
+  [ 44] extcall 25 .............................. return me.preIndexChannels()
+  [ 46] ret
+end
+
+on deconstruct me
+  [  0] pushint8 1 .............................. <1>
+  [  2] pusharglistnoret 1 ...................... <1>
+  [  4] extcall 25 .............................. return 1
+  [  6] ret
+end
+
+on getProperty me, tPropID
+  [  0] getparam 1 .............................. <tPropID>
+  [  2] peek 0 .................................. case tPropID of
+  [  4] pushsymb 867 ............................ <#totalSprCount>
+  [  7] eq
+  [  8] jmpifz [ 25] ............................ (case) #totalSprCount:
+  [ 11] pop 1
+  [ 13] getprop 863 ............................. <pTotalSprList>
+  [ 16] getobjprop 22 ........................... <pTotalSprList.count>
+  [ 18] pusharglistnoret 1 ...................... <pTotalSprList.count>
+  [ 20] extcall 25 .............................. return pTotalSprList.count
+  [ 22] jmp [ 55]
+  [ 25] peek 0
+  [ 27] pushsymb 868 ............................ <#freeSprCount>
+  [ 30] eq
+  [ 31] jmpifz [ 48] ............................ (case) #freeSprCount:
+  [ 34] pop 1
+  [ 36] getprop 864 ............................. <pFreeSprList>
+  [ 39] getobjprop 22 ........................... <pFreeSprList.count>
+  [ 41] pusharglistnoret 1 ...................... <pFreeSprList.count>
+  [ 43] extcall 25 .............................. return pFreeSprList.count
+  [ 45] jmp [ 55] ............................... (case) otherwise:
+  [ 48] pop 1
+  [ 50] pushzero ................................ <0>
+  [ 51] pusharglistnoret 1 ...................... <0>
+  [ 53] extcall 25 .............................. return 0
+  [ 55] pop 1 ................................... end case
+  [ 57] ret
+end
+
+on setProperty me, tPropID, tValue
+  [  0] getparam 1 .............................. <tPropID>
+  [  2] jmp [ 12] ............................... case tPropID of / otherwise:
+  [  5] pop 1
+  [  7] pushzero ................................ <0>
+  [  8] pusharglistnoret 1 ...................... <0>
+  [ 10] extcall 25 .............................. return 0
+  [ 12] pop 1 ................................... end case
+  [ 14] ret
+end
+
+on reserveSprite me, tClientID
+  [  0] getprop 864 ............................. <pFreeSprList>
+  [  3] getobjprop 22 ........................... <pFreeSprList.count>
+  [  5] pushzero ................................ <0>
+  [  6] eq ...................................... <pFreeSprList.count = 0>
+  [  7] jmpifz [ 24] ............................ if pFreeSprList.count = 0 then
+  [ 10] getparam 0 .............................. <me>
+  [ 12] pushcons 1 .............................. <"Out of free sprite channels!">
+  [ 14] pushsymb 232 ............................ <#reserveSprite>
+  [ 16] pusharglist 3 ........................... <me, "Out of free sprite channels!", #reserveSprite>
+  [ 18] extcall 39 .............................. <error(me, "Out of free sprite channels!", #reserveSprite)>
+  [ 20] pusharglistnoret 1 ...................... <error(me, "Out of free sprite channels!", #reserveSprite)>
+  [ 22] extcall 25 .............................. return error(me, "Out of free sprite channels!", #reserveSprite)
+  [ 24] getprop 864 ............................. <pFreeSprList>
+  [ 27] pushint8 1 .............................. <1>
+  [ 29] pusharglist 2 ........................... <pFreeSprList, 1>
+  [ 31] objcall 54 .............................. <pFreeSprList[1]>
+  [ 33] setlocal 0 .............................. tSprNum = pFreeSprList[1]
+  [ 35] getlocal 0 .............................. <tSprNum>
+  [ 37] pusharglist 1 ........................... <tSprNum>
+  [ 39] extcall 36 .............................. <sprite(tSprNum)>
+  [ 41] setlocal 1 .............................. tsprite = sprite(tSprNum)
+  [ 43] getprop 864 ............................. <pFreeSprList>
+  [ 46] pushint8 1 .............................. <1>
+  [ 48] pusharglistnoret 2 ...................... <pFreeSprList, 1>
+  [ 50] objcall 716 ............................. pFreeSprList.deleteAt(1)
+  [ 53] getlocal 0 .............................. <tSprNum>
+  [ 55] pushint8 1 .............................. <1>
+  [ 57] pusharglistnoret 2 ...................... <tSprNum, 1>
+  [ 59] extcall 869 ............................. puppetSprite(tSprNum, 1)
+  [ 62] getlocal 1 .............................. <tsprite>
+  [ 64] pushzero ................................ <0>
+  [ 65] setobjprop 870 .......................... tsprite.stretch = 0
+  [ 68] getlocal 1 .............................. <tsprite>
+  [ 70] pushint16 1000 .......................... <1000>
+  [ 73] inv ..................................... <-1000>
+  [ 74] setobjprop 497 .......................... tsprite.locV = -1000
+  [ 77] getlocal 1 .............................. <tsprite>
+  [ 79] pushint8 1 .............................. <1>
+  [ 81] setobjprop 871 .......................... tsprite.visible = 1
+  [ 84] getprop 865 ............................. <pClientList>
+  [ 87] getlocal 0 .............................. <tSprNum>
+  [ 89] getparam 1 .............................. <tClientID>
+  [ 91] pusharglistnoret 3 ...................... <pClientList, tSprNum, tClientID>
+  [ 93] objcall 24 .............................. pClientList[tSprNum] = tClientID
+  [ 95] getlocal 0 .............................. <tSprNum>
+  [ 97] pusharglistnoret 1 ...................... <tSprNum>
+  [ 99] extcall 25 .............................. return tSprNum
+  [101] ret
+end
+
+on releaseSprite me, tSprNum
+  [  0] getprop 863 ............................. <pTotalSprList>
+  [  3] getparam 1 .............................. <tSprNum>
+  [  5] pusharglist 2 ........................... <pTotalSprList, tSprNum>
+  [  7] objcall 509 ............................. <pTotalSprList.getPos(tSprNum)>
+  [ 10] pushint8 1 .............................. <1>
+  [ 12] lt ...................................... <pTotalSprList.getPos(tSprNum) < 1>
+  [ 13] jmpifz [ 33] ............................ if pTotalSprList.getPos(tSprNum) < 1 then
+  [ 16] getparam 0 .............................. <me>
+  [ 18] pushcons 2 .............................. <"Sprite not marked as usable:">
+  [ 20] getparam 1 .............................. <tSprNum>
+  [ 22] joinpadstr .............................. <"Sprite not marked as usable:" && tSprNum>
+  [ 23] pushsymb 233 ............................ <#releaseSprite>
+  [ 25] pusharglist 3 ........................... <me, "Sprite not marked as usable:" && tSprNum, #releaseSprite>
+  [ 27] extcall 39 .............................. <error(me, "Sprite not marked as usable:" && tSprNum, #releaseSprite)>
+  [ 29] pusharglistnoret 1 ...................... <error(me, "Sprite not marked as usable:" && tSprNum, #releaseSprite)>
+  [ 31] extcall 25 .............................. return error(me, "Sprite not marked as usable:" && tSprNum, #releaseSprite)
+  [ 33] getprop 864 ............................. <pFreeSprList>
+  [ 36] getparam 1 .............................. <tSprNum>
+  [ 38] pusharglist 2 ........................... <pFreeSprList, tSprNum>
+  [ 40] objcall 509 ............................. <pFreeSprList.getPos(tSprNum)>
+  [ 43] pushzero ................................ <0>
+  [ 44] gt ...................................... <pFreeSprList.getPos(tSprNum) > 0>
+  [ 45] jmpifz [ 62] ............................ if pFreeSprList.getPos(tSprNum) > 0 then
+  [ 48] getparam 0 .............................. <me>
+  [ 50] pushcons 3 .............................. <"Attempting to release free sprite!">
+  [ 52] pushsymb 233 ............................ <#releaseSprite>
+  [ 54] pusharglist 3 ........................... <me, "Attempting to release free sprite!", #releaseSprite>
+  [ 56] extcall 39 .............................. <error(me, "Attempting to release free sprite!", #releaseSprite)>
+  [ 58] pusharglistnoret 1 ...................... <error(me, "Attempting to release free sprite!", #releaseSprite)>
+  [ 60] extcall 25 .............................. return error(me, "Attempting to release free sprite!", #releaseSprite)
+  [ 62] getparam 1 .............................. <tSprNum>
+  [ 64] pusharglist 1 ........................... <tSprNum>
+  [ 66] extcall 36 .............................. <sprite(tSprNum)>
+  [ 68] setlocal 0 .............................. tsprite = sprite(tSprNum)
+  [ 70] getlocal 0 .............................. <tsprite>
+  [ 72] pushzero ................................ <0>
+  [ 73] pusharglist 1 ........................... <0>
+  [ 75] extcall 41 .............................. <member(0)>
+  [ 77] setobjprop 41 ........................... tsprite.member = member(0)
+  [ 79] getlocal 0 .............................. <tsprite>
+  [ 81] pusharglist 0 ........................... <[]>
+  [ 83] pushlist ................................ <[]>
+  [ 84] setobjprop 873 .......................... tsprite.scriptInstanceList = []
+  [ 87] getlocal 0 .............................. <tsprite>
+  [ 89] pushzero ................................ <0>
+  [ 90] pushzero ................................ <0>
+  [ 91] pushint8 1 .............................. <1>
+  [ 93] pushint8 1 .............................. <1>
+  [ 95] pusharglist 4 ........................... <0, 0, 1, 1>
+  [ 97] extcall 547 ............................. <rect(0, 0, 1, 1)>
+  [100] setobjprop 547 .......................... tsprite.rect = rect(0, 0, 1, 1)
+  [103] getlocal 0 .............................. <tsprite>
+  [105] getparam 1 .............................. <tSprNum>
+  [107] setobjprop 874 .......................... tsprite.locZ = tSprNum
+  [110] getlocal 0 .............................. <tsprite>
+  [112] pushzero ................................ <0>
+  [113] setobjprop 871 .......................... tsprite.visible = 0
+  [116] getlocal 0 .............................. <tsprite>
+  [118] pushzero ................................ <0>
+  [119] setobjprop 875 .......................... tsprite.castNum = 0
+  [122] getlocal 0 .............................. <tsprite>
+  [124] pushzero ................................ <0>
+  [125] setobjprop 45 ........................... tsprite.cursor = 0
+  [127] getlocal 0 .............................. <tsprite>
+  [129] pushint8 100 ............................ <100>
+  [131] setobjprop 493 .......................... tsprite.blend = 100
+  [134] getparam 1 .............................. <tSprNum>
+  [136] pushzero ................................ <0>
+  [137] pusharglistnoret 2 ...................... <tSprNum, 0>
+  [139] extcall 869 ............................. puppetSprite(tSprNum, 0)
+  [142] getlocal 0 .............................. <tsprite>
+  [144] pusharglist 0 ........................... <>
+  [146] extcall 32 .............................. <VOID>
+  [148] setobjprop 874 .......................... tsprite.locZ = VOID
+  [151] getprop 864 ............................. <pFreeSprList>
+  [154] getparam 1 .............................. <tSprNum>
+  [156] pusharglistnoret 2 ...................... <pFreeSprList, tSprNum>
+  [158] objcall 657 ............................. pFreeSprList.append(tSprNum)
+  [161] getprop 865 ............................. <pClientList>
+  [164] getparam 1 .............................. <tSprNum>
+  [166] pushzero ................................ <0>
+  [167] pusharglistnoret 3 ...................... <pClientList, tSprNum, 0>
+  [169] objcall 24 .............................. pClientList[tSprNum] = 0
+  [171] pushint8 1 .............................. <1>
+  [173] pusharglistnoret 1 ...................... <1>
+  [175] extcall 25 .............................. return 1
+  [177] ret
+end
+
+on releaseAllSprites me
+  [  0] pusharglist 0 ........................... <[]>
+  [  2] pushlist ................................ <[]>
+  [  3] setprop 864 ............................. pFreeSprList = []
+  [  6] getprop 863 ............................. <pTotalSprList>
+  [  9] getobjprop 22 ........................... <pTotalSprList.count>
+  [ 11] peek 0
+  [ 13] pusharglist 1
+  [ 15] extcall 22
+  [ 17] pushint8 1
+  [ 19] peek 0
+  [ 21] peek 2
+  [ 23] lteq
+  [ 24] jmpifz [ 50] ............................ repeat with tSprNum in pTotalSprList.count
+  [ 27] peek 2
+  [ 29] peek 1
+  [ 31] pusharglist 2
+  [ 33] extcall 54
+  [ 35] setlocal 0
+  [ 37] getparam 0 .............................. <me>
+  [ 39] getlocal 0 .............................. <tSprNum>
+  [ 41] pusharglistnoret 2 ...................... <me, tSprNum>
+  [ 43] objcall 233 ............................. me.releaseSprite(tSprNum)
+  [ 45] pushint8 1
+  [ 47] add
+  [ 48] endrepeat [ 19]
+  [ 50] pop 3
+  [ 52] pushint8 1 .............................. <1>
+  [ 54] pusharglistnoret 1 ...................... <1>
+  [ 56] extcall 25 .............................. return 1
+  [ 58] ret
+end
+
+on setEventBroker me, tSprNum, tid
+  [  0] getprop 863 ............................. <pTotalSprList>
+  [  3] getparam 1 .............................. <tSprNum>
+  [  5] pusharglist 2 ........................... <pTotalSprList, tSprNum>
+  [  7] objcall 509 ............................. <pTotalSprList.getPos(tSprNum)>
+  [ 10] pushint8 1 .............................. <1>
+  [ 12] lt ...................................... <pTotalSprList.getPos(tSprNum) < 1>
+  [ 13] jmpifz [ 33] ............................ if pTotalSprList.getPos(tSprNum) < 1 then
+  [ 16] getparam 0 .............................. <me>
+  [ 18] pushcons 2 .............................. <"Sprite not marked as usable:">
+  [ 20] getparam 1 .............................. <tSprNum>
+  [ 22] joinpadstr .............................. <"Sprite not marked as usable:" && tSprNum>
+  [ 23] pushsymb 234 ............................ <#setEventBroker>
+  [ 25] pusharglist 3 ........................... <me, "Sprite not marked as usable:" && tSprNum, #setEventBroker>
+  [ 27] extcall 39 .............................. <error(me, "Sprite not marked as usable:" && tSprNum, #setEventBroker)>
+  [ 29] pusharglistnoret 1 ...................... <error(me, "Sprite not marked as usable:" && tSprNum, #setEventBroker)>
+  [ 31] extcall 25 .............................. return error(me, "Sprite not marked as usable:" && tSprNum, #setEventBroker)
+  [ 33] getprop 864 ............................. <pFreeSprList>
+  [ 36] getparam 1 .............................. <tSprNum>
+  [ 38] pusharglist 2 ........................... <pFreeSprList, tSprNum>
+  [ 40] objcall 509 ............................. <pFreeSprList.getPos(tSprNum)>
+  [ 43] pushzero ................................ <0>
+  [ 44] gt ...................................... <pFreeSprList.getPos(tSprNum) > 0>
+  [ 45] jmpifz [ 62] ............................ if pFreeSprList.getPos(tSprNum) > 0 then
+  [ 48] getparam 0 .............................. <me>
+  [ 50] pushcons 4 .............................. <"Attempted to modify non-reserved sprite!">
+  [ 52] pushsymb 234 ............................ <#setEventBroker>
+  [ 54] pusharglist 3 ........................... <me, "Attempted to modify non-reserved sprite!", #setEventBroker>
+  [ 56] extcall 39 .............................. <error(me, "Attempted to modify non-reserved sprite!", #setEventBroker)>
+  [ 58] pusharglistnoret 1 ...................... <error(me, "Attempted to modify non-reserved sprite!", #setEventBroker)>
+  [ 60] extcall 25 .............................. return error(me, "Attempted to modify non-reserved sprite!", #setEventBroker)
+  [ 62] getparam 1 .............................. <tSprNum>
+  [ 64] pusharglist 1 ........................... <tSprNum>
+  [ 66] extcall 36 .............................. <sprite(tSprNum)>
+  [ 68] setlocal 0 .............................. tsprite = sprite(tSprNum)
+  [ 70] getlocal 0 .............................. <tsprite>
+  [ 72] getprop 866 ............................. <pEventBroker>
+  [ 75] pusharglist 1 ........................... <pEventBroker>
+  [ 77] extcall 116 ............................. <new(pEventBroker)>
+  [ 79] pusharglist 1 ........................... <[new(pEventBroker)]>
+  [ 81] pushlist ................................ <[new(pEventBroker)]>
+  [ 82] setobjprop 873 .......................... tsprite.scriptInstanceList = [new(pEventBroker)]
+  [ 85] getlocal 0 .............................. <tsprite>
+  [ 87] getparam 2 .............................. <tid>
+  [ 89] pusharglistnoret 2 ...................... <tsprite, tid>
+  [ 91] objcall 4 ............................... tsprite.setID(tid)
+  [ 93] pushint8 1 .............................. <1>
+  [ 95] pusharglistnoret 1 ...................... <1>
+  [ 97] extcall 25 .............................. return 1
+  [ 99] ret
+end
+
+on removeEventBroker me, tSprNum
+  [  0] getprop 863 ............................. <pTotalSprList>
+  [  3] getparam 1 .............................. <tSprNum>
+  [  5] pusharglist 2 ........................... <pTotalSprList, tSprNum>
+  [  7] objcall 509 ............................. <pTotalSprList.getPos(tSprNum)>
+  [ 10] pushint8 1 .............................. <1>
+  [ 12] lt ...................................... <pTotalSprList.getPos(tSprNum) < 1>
+  [ 13] jmpifz [ 33] ............................ if pTotalSprList.getPos(tSprNum) < 1 then
+  [ 16] getparam 0 .............................. <me>
+  [ 18] pushcons 2 .............................. <"Sprite not marked as usable:">
+  [ 20] getparam 1 .............................. <tSprNum>
+  [ 22] joinpadstr .............................. <"Sprite not marked as usable:" && tSprNum>
+  [ 23] pushsymb 235 ............................ <#removeEventBroker>
+  [ 25] pusharglist 3 ........................... <me, "Sprite not marked as usable:" && tSprNum, #removeEventBroker>
+  [ 27] extcall 39 .............................. <error(me, "Sprite not marked as usable:" && tSprNum, #removeEventBroker)>
+  [ 29] pusharglistnoret 1 ...................... <error(me, "Sprite not marked as usable:" && tSprNum, #removeEventBroker)>
+  [ 31] extcall 25 .............................. return error(me, "Sprite not marked as usable:" && tSprNum, #removeEventBroker)
+  [ 33] getprop 864 ............................. <pFreeSprList>
+  [ 36] getparam 1 .............................. <tSprNum>
+  [ 38] pusharglist 2 ........................... <pFreeSprList, tSprNum>
+  [ 40] objcall 509 ............................. <pFreeSprList.getPos(tSprNum)>
+  [ 43] pushzero ................................ <0>
+  [ 44] gt ...................................... <pFreeSprList.getPos(tSprNum) > 0>
+  [ 45] jmpifz [ 62] ............................ if pFreeSprList.getPos(tSprNum) > 0 then
+  [ 48] getparam 0 .............................. <me>
+  [ 50] pushcons 5 .............................. <"Attempted to modify non reserved sprite!">
+  [ 52] pushsymb 235 ............................ <#removeEventBroker>
+  [ 54] pusharglist 3 ........................... <me, "Attempted to modify non reserved sprite!", #removeEventBroker>
+  [ 56] extcall 39 .............................. <error(me, "Attempted to modify non reserved sprite!", #removeEventBroker)>
+  [ 58] pusharglistnoret 1 ...................... <error(me, "Attempted to modify non reserved sprite!", #removeEventBroker)>
+  [ 60] extcall 25 .............................. return error(me, "Attempted to modify non reserved sprite!", #removeEventBroker)
+  [ 62] getparam 1 .............................. <tSprNum>
+  [ 64] pusharglist 1 ........................... <tSprNum>
+  [ 66] extcall 36 .............................. <sprite(tSprNum)>
+  [ 68] pusharglist 0 ........................... <[]>
+  [ 70] pushlist ................................ <[]>
+  [ 71] setobjprop 873 .......................... sprite(tSprNum).scriptInstanceList = []
+  [ 74] pushint8 1 .............................. <1>
+  [ 76] pusharglistnoret 1 ...................... <1>
+  [ 78] extcall 25 .............................. return 1
+  [ 80] ret
+end
+
+on print me, tCount
+  [  0] getparam 1 .............................. <tCount>
+  [  2] pusharglist 1 ........................... <tCount>
+  [  4] extcall 674 ............................. <integerp(tCount)>
+  [  7] jmpifz [121] ............................ if integerp(tCount) then / else
+  [ 10] getparam 1 .............................. <tCount>
+  [ 12] getmovieprop 876 ........................ <the lastChannel>
+  [ 15] gt ...................................... <tCount > the lastChannel>
+  [ 16] jmpifz [ 24] ............................ if tCount > the lastChannel then
+  [ 19] getmovieprop 876 ........................ <the lastChannel>
+  [ 22] setparam 1 .............................. tCount = the lastChannel
+  [ 24] pushint8 1 .............................. <1>
+  [ 26] setlocal 0
+  [ 28] getlocal 0
+  [ 30] getparam 1 .............................. <tCount>
+  [ 32] lteq
+  [ 33] jmpifz [118] ............................ repeat with i = 1 to tCount
+  [ 36] getlocal 0 .............................. <i>
+  [ 38] pusharglist 1 ........................... <i>
+  [ 40] extcall 36 .............................. <sprite(i)>
+  [ 42] getobjprop 37 ........................... <sprite(i).spriteNum>
+  [ 44] pushcons 6 .............................. <"--">
+  [ 46] joinpadstr .............................. <sprite(i).spriteNum && "--">
+  [ 47] getlocal 0 .............................. <i>
+  [ 49] pusharglist 1 ........................... <i>
+  [ 51] extcall 36 .............................. <sprite(i)>
+  [ 53] getchainedprop 41 ....................... <sprite(i).member>
+  [ 55] getobjprop 718 .......................... <sprite(i).member.name>
+  [ 58] joinpadstr .............................. <sprite(i).spriteNum && "--" && sprite(i).member.name>
+  [ 59] pushcons 6 .............................. <"--">
+  [ 61] joinpadstr .............................. <sprite(i).spriteNum && "--" && sprite(i).member.name && "--">
+  [ 62] getlocal 0 .............................. <i>
+  [ 64] pusharglist 1 ........................... <i>
+  [ 66] extcall 36 .............................. <sprite(i)>
+  [ 68] getobjprop 874 .......................... <sprite(i).locZ>
+  [ 71] joinpadstr .............................. <sprite(i).spriteNum && "--" && sprite(i).member.name && "--" && sprite(i).locZ>
+  [ 72] pushcons 6 .............................. <"--">
+  [ 74] joinpadstr .............................. <sprite(i).spriteNum && "--" && sprite(i).member.name && "--" && sprite(i).locZ && "--">
+  [ 75] getlocal 0 .............................. <i>
+  [ 77] pusharglist 1 ........................... <i>
+  [ 79] extcall 36 .............................. <sprite(i)>
+  [ 81] getobjprop 547 .......................... <sprite(i).rect>
+  [ 84] joinpadstr .............................. <sprite(i).spriteNum && "--" && sprite(i).member.name && "--" && sprite(i).locZ && "--" && sprite(i).rect>
+  [ 85] pushcons 6 .............................. <"--">
+  [ 87] joinpadstr .............................. <sprite(i).spriteNum && "--" && sprite(i).member.name && "--" && sprite(i).locZ && "--" && sprite(i).rect && "--">
+  [ 88] getprop 865 ............................. <pClientList>
+  [ 91] getlocal 0 .............................. <i>
+  [ 93] pusharglist 1 ........................... <i>
+  [ 95] extcall 36 .............................. <sprite(i)>
+  [ 97] getobjprop 37 ........................... <sprite(i).spriteNum>
+  [ 99] pusharglist 2 ........................... <pClientList, sprite(i).spriteNum>
+  [101] objcall 54 .............................. <pClientList[sprite(i).spriteNum]>
+  [103] joinpadstr .............................. <sprite(i).spriteNum && "--" && sprite(i).member.name && "--" && sprite(i).locZ && "--" && sprite(i).rect && "--" && pClientList[sprite(i).spriteNum]>
+  [104] pusharglistnoret 1 ...................... <sprite(i).spriteNum && "--" && sprite(i).member.name && "--" && sprite(i).locZ && "--" && sprite(i).rect && "--" && pClientList[sprite(i).spriteNum]>
+  [106] extcall 635 ............................. put sprite(i).spriteNum && "--" && sprite(i).member.name && "--" && sprite(i).locZ && "--" && sprite(i).rect && "--" && pClientList[sprite(i).spriteNum]
+  [109] pushint8 1
+  [111] getlocal 0
+  [113] add
+  [114] setlocal 0
+  [116] endrepeat [ 28]
+  [118] jmp [248]
+  [121] getprop 863 ............................. <pTotalSprList>
+  [124] peek 0
+  [126] pusharglist 1
+  [128] extcall 22
+  [130] pushint8 1
+  [132] peek 0
+  [134] peek 2
+  [136] lteq
+  [137] jmpifz [246] ............................ repeat with tNum in pTotalSprList
+  [140] peek 2
+  [142] peek 1
+  [144] pusharglist 2
+  [146] extcall 54
+  [148] setlocal 1
+  [150] getprop 864 ............................. <pFreeSprList>
+  [153] getlocal 1 .............................. <tNum>
+  [155] pusharglist 2 ........................... <pFreeSprList, tNum>
+  [157] objcall 509 ............................. <pFreeSprList.getPos(tNum)>
+  [160] pushint8 1 .............................. <1>
+  [162] lt ...................................... <pFreeSprList.getPos(tNum) < 1>
+  [163] jmpifz [173] ............................ if pFreeSprList.getPos(tNum) < 1 then / else
+  [166] pushcons 7 .............................. <"#">
+  [168] setlocal 2 .............................. tSymbol = "#"
+  [170] jmp [180]
+  [173] pusharglist 0 ........................... <>
+  [175] extcall 877 ............................. <SPACE>
+  [178] setlocal 2 .............................. tSymbol = SPACE
+  [180] getlocal 2 .............................. <tSymbol>
+  [182] getlocal 1 .............................. <tNum>
+  [184] joinstr ................................. <tSymbol & tNum>
+  [185] getlocal 1 .............................. <tNum>
+  [187] pusharglist 1 ........................... <tNum>
+  [189] extcall 36 .............................. <sprite(tNum)>
+  [191] getchainedprop 41 ....................... <sprite(tNum).member>
+  [193] getobjprop 718 .......................... <sprite(tNum).member.name>
+  [196] joinpadstr .............................. <tSymbol & tNum && sprite(tNum).member.name>
+  [197] pushcons 6 .............................. <"--">
+  [199] joinpadstr .............................. <tSymbol & tNum && sprite(tNum).member.name && "--">
+  [200] getlocal 1 .............................. <tNum>
+  [202] pusharglist 1 ........................... <tNum>
+  [204] extcall 36 .............................. <sprite(tNum)>
+  [206] getobjprop 874 .......................... <sprite(tNum).locZ>
+  [209] joinpadstr .............................. <tSymbol & tNum && sprite(tNum).member.name && "--" && sprite(tNum).locZ>
+  [210] pushcons 6 .............................. <"--">
+  [212] joinpadstr .............................. <tSymbol & tNum && sprite(tNum).member.name && "--" && sprite(tNum).locZ && "--">
+  [213] getlocal 1 .............................. <tNum>
+  [215] pusharglist 1 ........................... <tNum>
+  [217] extcall 36 .............................. <sprite(tNum)>
+  [219] getobjprop 547 .......................... <sprite(tNum).rect>
+  [222] joinpadstr .............................. <tSymbol & tNum && sprite(tNum).member.name && "--" && sprite(tNum).locZ && "--" && sprite(tNum).rect>
+  [223] pushcons 6 .............................. <"--">
+  [225] joinpadstr .............................. <tSymbol & tNum && sprite(tNum).member.name && "--" && sprite(tNum).locZ && "--" && sprite(tNum).rect && "--">
+  [226] getprop 865 ............................. <pClientList>
+  [229] getlocal 1 .............................. <tNum>
+  [231] pusharglist 2 ........................... <pClientList, tNum>
+  [233] objcall 54 .............................. <pClientList[tNum]>
+  [235] joinpadstr .............................. <tSymbol & tNum && sprite(tNum).member.name && "--" && sprite(tNum).locZ && "--" && sprite(tNum).rect && "--" && pClientList[tNum]>
+  [236] pusharglistnoret 1 ...................... <tSymbol & tNum && sprite(tNum).member.name && "--" && sprite(tNum).locZ && "--" && sprite(tNum).rect && "--" && pClientList[tNum]>
+  [238] extcall 635 ............................. put tSymbol & tNum && sprite(tNum).member.name && "--" && sprite(tNum).locZ && "--" && sprite(tNum).rect && "--" && pClientList[tNum]
+  [241] pushint8 1
+  [243] add
+  [244] endrepeat [132]
+  [246] pop 3
+  [248] ret
+end
+
+on preIndexChannels me
+  [  0] pusharglist 0 ........................... <[]>
+  [  2] pushlist ................................ <[]>
+  [  3] setprop 863 ............................. pTotalSprList = []
+  [  6] pusharglist 0 ........................... <[]>
+  [  8] pushlist ................................ <[]>
+  [  9] setprop 864 ............................. pFreeSprList = []
+  [ 12] pusharglist 0 ........................... <[]>
+  [ 14] pushlist ................................ <[]>
+  [ 15] setprop 865 ............................. pClientList = []
+  [ 18] pushint8 1 .............................. <1>
+  [ 20] setlocal 0
+  [ 22] getlocal 0
+  [ 24] getmovieprop 876 ........................ <the lastChannel>
+  [ 27] lteq
+  [ 28] jmpifz [ 76] ............................ repeat with i = 1 to the lastChannel
+  [ 31] getprop 863 ............................. <pTotalSprList>
+  [ 34] getlocal 0 .............................. <i>
+  [ 36] pusharglistnoret 2 ...................... <pTotalSprList, i>
+  [ 38] objcall 122 ............................. pTotalSprList.add(i)
+  [ 40] getprop 865 ............................. <pClientList>
+  [ 43] pushzero ................................ <0>
+  [ 44] pusharglistnoret 2 ...................... <pClientList, 0>
+  [ 46] objcall 122 ............................. pClientList.add(0)
+  [ 48] getlocal 0 .............................. <i>
+  [ 50] pushint8 1 .............................. <1>
+  [ 52] pusharglistnoret 2 ...................... <i, 1>
+  [ 54] extcall 869 ............................. puppetSprite(i, 1)
+  [ 57] getlocal 0 .............................. <i>
+  [ 59] pusharglist 1 ........................... <i>
+  [ 61] extcall 36 .............................. <sprite(i)>
+  [ 63] pushzero ................................ <0>
+  [ 64] setobjprop 871 .......................... sprite(i).visible = 0
+  [ 67] pushint8 1
+  [ 69] getlocal 0
+  [ 71] add
+  [ 72] setlocal 0
+  [ 74] endrepeat [ 22]
+  [ 76] getprop 863 ............................. <pTotalSprList>
+  [ 79] pusharglist 1 ........................... <pTotalSprList>
+  [ 81] objcall 544 ............................. <pTotalSprList.duplicate()>
+  [ 84] setprop 864 ............................. pFreeSprList = pTotalSprList.duplicate()
+  [ 87] getprop 863 ............................. <pTotalSprList>
+  [ 90] pusharglistnoret 1 ...................... <pTotalSprList>
+  [ 92] objcall 633 ............................. pTotalSprList.sort()
+  [ 95] pushint8 1 .............................. <1>
+  [ 97] pusharglistnoret 1 ...................... <1>
+  [ 99] extcall 25 .............................. return 1
+  [101] ret
+end

@@ -1,0 +1,121 @@
+property pMusicChannel
+
+on construct me
+  [  0] pushzero ................................ <0>
+  [  1] setprop 535 ............................. pMusicChannel = 0
+  [  4] pushint8 1 .............................. <1>
+  [  6] pusharglistnoret 1 ...................... <1>
+  [  8] extcall 28 .............................. return 1
+  [ 10] ret
+end
+
+on deconstruct me
+  [  0] getparam 0 .............................. <me>
+  [  2] pushzero ................................ <0>
+  [  3] pusharglistnoret 2 ...................... <me, 0>
+  [  5] objcall 532 ............................. me.setGameMusic(0)
+  [  8] pushint8 1 .............................. <1>
+  [ 10] pusharglistnoret 1 ...................... <1>
+  [ 12] extcall 28 .............................. return 1
+  [ 14] ret
+end
+
+on Refresh me, tTopic, tdata
+  [  0] getparam 1 .............................. <tTopic>
+  [  2] peek 0 .................................. case tTopic of
+  [  4] pushsymb 199 ............................ <#soundeffect>
+  [  6] eq
+  [  7] jmpifz [ 28] ............................ (case) #soundeffect:
+  [ 10] pop 1
+  [ 12] getparam 0 .............................. <me>
+  [ 14] getparam 2 .............................. <tdata>
+  [ 16] pusharglist 2 ........................... <me, tdata>
+  [ 18] objcall 531 ............................. <me.playGameSound(tdata)>
+  [ 21] pusharglistnoret 1 ...................... <me.playGameSound(tdata)>
+  [ 23] extcall 28 .............................. return me.playGameSound(tdata)
+  [ 25] jmp [ 86]
+  [ 28] peek 0
+  [ 30] pushsymb 536 ............................ <#musicstart>
+  [ 33] nteq
+  [ 34] jmpifz [ 46] ............................ (case) #musicstart, ...
+  [ 37] peek 0
+  [ 39] pushsymb 293 ............................ <#gamestart>
+  [ 42] eq
+  [ 43] jmpifz [ 64] ............................ (case) ..., #gamestart:
+  [ 46] pop 1
+  [ 48] getparam 0 .............................. <me>
+  [ 50] pushint8 1 .............................. <1>
+  [ 52] pusharglist 2 ........................... <me, 1>
+  [ 54] objcall 532 ............................. <me.setGameMusic(1)>
+  [ 57] pusharglistnoret 1 ...................... <me.setGameMusic(1)>
+  [ 59] extcall 28 .............................. return me.setGameMusic(1)
+  [ 61] jmp [ 86]
+  [ 64] peek 0
+  [ 66] pushsymb 207 ............................ <#gameend>
+  [ 68] eq
+  [ 69] jmpifz [ 86] ............................ (case) #gameend:
+  [ 72] pop 1
+  [ 74] getparam 0 .............................. <me>
+  [ 76] pushzero ................................ <0>
+  [ 77] pusharglist 2 ........................... <me, 0>
+  [ 79] objcall 532 ............................. <me.setGameMusic(0)>
+  [ 82] pusharglistnoret 1 ...................... <me.setGameMusic(0)>
+  [ 84] extcall 28 .............................. return me.setGameMusic(0)
+  [ 86] pop 1 ................................... end case
+  [ 88] ret
+end
+
+on playGameSound me, tdata
+  [  0] getparam 1 .............................. <tdata>
+  [  2] pusharglist 1 ........................... <tdata>
+  [  4] extcall 538 ............................. <playSound(tdata)>
+  [  7] pusharglistnoret 1 ...................... <playSound(tdata)>
+  [  9] extcall 28 .............................. return playSound(tdata)
+  [ 11] ret
+end
+
+on setGameMusic me, tstate
+  [  0] getparam 1 .............................. <tstate>
+  [  2] jmpifz [ 67] ............................ if tstate then / else
+  [  5] getparam 0 .............................. <me>
+  [  7] pusharglist 1 ........................... <me>
+  [  9] objcall 201 ............................. <me.getGameSystem()>
+  [ 11] pusharglist 1 ........................... <me.getGameSystem()>
+  [ 13] objcall 295 ............................. <me.getGameSystem().getGamestatus()>
+  [ 16] pushsymb 297 ............................ <#game_started>
+  [ 19] nteq .................................... <me.getGameSystem().getGamestatus() <> #game_started>
+  [ 20] jmpifz [ 29] ............................ if me.getGameSystem().getGamestatus() <> #game_started then
+  [ 23] pushint8 1 .............................. <1>
+  [ 25] pusharglistnoret 1 ...................... <1>
+  [ 27] extcall 28 .............................. return 1
+  [ 29] getprop 535 ............................. <pMusicChannel>
+  [ 32] pushzero ................................ <0>
+  [ 33] gt ...................................... <pMusicChannel > 0>
+  [ 34] jmpifz [ 43] ............................ if pMusicChannel > 0 then
+  [ 37] pushint8 1 .............................. <1>
+  [ 39] pusharglistnoret 1 ...................... <1>
+  [ 41] extcall 28 .............................. return 1
+  [ 43] pushcons 0 .............................. <"BB2-musicloop">
+  [ 45] pushsymb 539 ............................ <#cut>
+  [ 48] pushsymb 540 ............................ <#infiniteloop>
+  [ 51] pushint8 1 .............................. <1>
+  [ 53] pusharglist 2 ........................... <[#infiniteloop: 1]>
+  [ 55] pushproplist ............................ <[#infiniteloop: 1]>
+  [ 56] pusharglist 3 ........................... <"BB2-musicloop", #cut, [#infiniteloop: 1]>
+  [ 58] extcall 538 ............................. <playSound("BB2-musicloop", #cut, [#infiniteloop: 1])>
+  [ 61] setprop 535 ............................. pMusicChannel = playSound("BB2-musicloop", #cut, [#infiniteloop: 1])
+  [ 64] jmp [ 87]
+  [ 67] getprop 535 ............................. <pMusicChannel>
+  [ 70] pushzero ................................ <0>
+  [ 71] gt ...................................... <pMusicChannel > 0>
+  [ 72] jmpifz [ 83] ............................ if pMusicChannel > 0 then
+  [ 75] getprop 535 ............................. <pMusicChannel>
+  [ 78] pusharglistnoret 1 ...................... <pMusicChannel>
+  [ 80] extcall 541 ............................. stopSoundChannel(pMusicChannel)
+  [ 83] pushzero ................................ <0>
+  [ 84] setprop 535 ............................. pMusicChannel = 0
+  [ 87] pushint8 1 .............................. <1>
+  [ 89] pusharglistnoret 1 ...................... <1>
+  [ 91] extcall 28 .............................. return 1
+  [ 93] ret
+end

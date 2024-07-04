@@ -1,0 +1,781 @@
+property pFlagList, pFlagSetIndex, pCloseTimerList, pUpdateCounter, pUpdateInterval, pFlagCloseTimeout
+
+on construct me
+  [  0] pushint8 3 .............................. <3>
+  [  2] setprop 438 ............................. pUpdateInterval = 3
+  [  5] pushint8 4 .............................. <4>
+  [  7] setprop 1070 ............................ pFlagCloseTimeout = 4
+  [ 10] pusharglist 0 ........................... <[:]>
+  [ 12] pushproplist ............................ <[:]>
+  [ 13] setprop 1071 ............................ pFlagList = [:]
+  [ 16] pusharglist 0 ........................... <[:]>
+  [ 18] pushproplist ............................ <[:]>
+  [ 19] setprop 1072 ............................ pFlagSetIndex = [:]
+  [ 22] pusharglist 0 ........................... <[:]>
+  [ 24] pushproplist ............................ <[:]>
+  [ 25] setprop 1073 ............................ pCloseTimerList = [:]
+  [ 28] getparam 0 .............................. <me>
+  [ 30] pusharglist 1 ........................... <me>
+  [ 32] objcall 31 .............................. <me.getID()>
+  [ 34] pusharglistnoret 1 ...................... <me.getID()>
+  [ 36] extcall 441 ............................. receiveUpdate(me.getID())
+  [ 39] pushint8 1 .............................. <1>
+  [ 41] pusharglistnoret 1 ...................... <1>
+  [ 43] extcall 38 .............................. return 1
+  [ 45] ret
+end
+
+on deconstruct me
+  [  0] getparam 0 .............................. <me>
+  [  2] pusharglist 1 ........................... <me>
+  [  4] objcall 31 .............................. <me.getID()>
+  [  6] pusharglistnoret 1 ...................... <me.getID()>
+  [  8] extcall 442 ............................. removeUpdate(me.getID())
+  [ 11] getparam 0 .............................. <me>
+  [ 13] pusharglistnoret 1 ...................... <me>
+  [ 15] objcall 1065 ............................ me.reset()
+  [ 18] pushint8 1 .............................. <1>
+  [ 20] pusharglistnoret 1 ...................... <1>
+  [ 22] extcall 38 .............................. return 1
+  [ 24] ret
+end
+
+on toggle me, tID
+  [  0] getparam 0 .............................. <me>
+  [  2] getparam 1 .............................. <tID>
+  [  4] pusharglist 2 ........................... <me, tID>
+  [  6] objcall 1067 ............................ <me.getMatchingFlagId(tID)>
+  [  9] setparam 1 .............................. tID = me.getMatchingFlagId(tID)
+  [ 11] getparam 1 .............................. <tID>
+  [ 13] pusharglist 0 ........................... <>
+  [ 15] extcall 47 .............................. <VOID>
+  [ 17] eq ...................................... <tID = VOID>
+  [ 18] jmpifz [ 26] ............................ if tID = VOID then
+  [ 21] pushzero ................................ <0>
+  [ 22] pusharglistnoret 1 ...................... <0>
+  [ 24] extcall 38 .............................. return 0
+  [ 26] getparam 0 .............................. <me>
+  [ 28] getchainedprop 1071 ..................... <me.pFlagList>
+  [ 31] getparam 1 .............................. <tID>
+  [ 33] pusharglist 2 ........................... <me.pFlagList, tID>
+  [ 35] objcall 256 ............................. <me.pFlagList.getaProp(tID)>
+  [ 38] setlocal 0 .............................. tObject = me.pFlagList.getaProp(tID)
+  [ 40] getlocal 0 .............................. <tObject>
+  [ 42] pusharglist 1 ........................... <tObject>
+  [ 44] extcall 97 .............................. <objectp(tObject)>
+  [ 46] not ..................................... <not objectp(tObject)>
+  [ 47] jmpifz [ 55] ............................ if not objectp(tObject) then
+  [ 50] pushzero ................................ <0>
+  [ 51] pusharglistnoret 1 ...................... <0>
+  [ 53] extcall 38 .............................. return 0
+  [ 55] getlocal 0 .............................. <tObject>
+  [ 57] getparam 1 .............................. <tID>
+  [ 59] pusharglistnoret 2 ...................... <tObject, tID>
+  [ 61] objcall 65 .............................. tObject.toggle(tID)
+  [ 63] getparam 0 .............................. <me>
+  [ 65] pusharglistnoret 1 ...................... <me>
+  [ 67] objcall 1066 ............................ me.alignZ()
+  [ 70] pushint8 1 .............................. <1>
+  [ 72] pusharglistnoret 1 ...................... <1>
+  [ 74] extcall 38 .............................. return 1
+  [ 76] ret
+end
+
+on open me, tID
+  [  0] getprop 1073 ............................ <pCloseTimerList>
+  [  3] getparam 1 .............................. <tID>
+  [  5] pusharglist 2 ........................... <pCloseTimerList, tID>
+  [  7] objcall 255 ............................. <pCloseTimerList.findPos(tID)>
+  [  9] jmpifz [ 22] ............................ if pCloseTimerList.findPos(tID) then
+  [ 12] getprop 1073 ............................ <pCloseTimerList>
+  [ 15] getparam 1 .............................. <tID>
+  [ 17] pusharglistnoret 2 ...................... <pCloseTimerList, tID>
+  [ 19] objcall 395 ............................. pCloseTimerList.deleteProp(tID)
+  [ 22] pushint8 1 .............................. <1>
+  [ 24] setlocal 0
+  [ 26] getlocal 0
+  [ 28] getprop 1071 ............................ <pFlagList>
+  [ 31] getobjprop 180 .......................... <pFlagList.count>
+  [ 33] lteq
+  [ 34] jmpifz [108] ............................ repeat with i = 1 to pFlagList.count
+  [ 37] getprop 1071 ............................ <pFlagList>
+  [ 40] getlocal 0 .............................. <i>
+  [ 42] pusharglist 2 ........................... <pFlagList, i>
+  [ 44] objcall 181 ............................. <pFlagList[i]>
+  [ 46] setlocal 1 .............................. tObject = pFlagList[i]
+  [ 48] getparam 1 .............................. <tID>
+  [ 50] getprop 1071 ............................ <pFlagList>
+  [ 53] getlocal 0 .............................. <i>
+  [ 55] pusharglist 2 ........................... <pFlagList, i>
+  [ 57] objcall 380 ............................. <pFlagList.getPropAt(i)>
+  [ 60] containsstr ............................. <tID contains pFlagList.getPropAt(i)>
+  [ 61] jmpifz [ 92] ............................ if tID contains pFlagList.getPropAt(i) then
+  [ 64] getprop 1073 ............................ <pCloseTimerList>
+  [ 67] getprop 1071 ............................ <pFlagList>
+  [ 70] getlocal 0 .............................. <i>
+  [ 72] pusharglist 2 ........................... <pFlagList, i>
+  [ 74] objcall 380 ............................. <pFlagList.getPropAt(i)>
+  [ 77] pusharglistnoret 2 ...................... <pCloseTimerList, pFlagList.getPropAt(i)>
+  [ 79] objcall 395 ............................. pCloseTimerList.deleteProp(pFlagList.getPropAt(i))
+  [ 82] getlocal 1 .............................. <tObject>
+  [ 84] pusharglistnoret 1 ...................... <tObject>
+  [ 86] objcall 1025 ............................ tObject.open()
+  [ 89] jmp [ 99] ............................... next repeat
+  [ 92] getlocal 1 .............................. <tObject>
+  [ 94] pusharglistnoret 1 ...................... <tObject>
+  [ 96] objcall 1026 ............................ tObject.close()
+  [ 99] pushint8 1
+  [101] getlocal 0
+  [103] add
+  [104] setlocal 0
+  [106] endrepeat [ 26]
+  [108] getparam 0 .............................. <me>
+  [110] pusharglistnoret 1 ...................... <me>
+  [112] objcall 1066 ............................ me.alignZ()
+  [115] pushint8 1 .............................. <1>
+  [117] pusharglistnoret 1 ...................... <1>
+  [119] extcall 38 .............................. return 1
+  [121] ret
+end
+
+on close me, tID
+  [  0] getparam 1 .............................. <tID>
+  [  2] pusharglist 0 ........................... <>
+  [  4] extcall 47 .............................. <VOID>
+  [  6] eq ...................................... <tID = VOID>
+  [  7] jmpifz [ 77] ............................ if tID = VOID then / else
+  [ 10] pushint8 1 .............................. <1>
+  [ 12] setlocal 0
+  [ 14] getlocal 0
+  [ 16] getprop 1071 ............................ <pFlagList>
+  [ 19] getobjprop 180 .......................... <pFlagList.count>
+  [ 21] lteq
+  [ 22] jmpifz [ 74] ............................ repeat with i = 1 to pFlagList.count
+  [ 25] getprop 1071 ............................ <pFlagList>
+  [ 28] getlocal 0 .............................. <i>
+  [ 30] pusharglist 2 ........................... <pFlagList, i>
+  [ 32] objcall 181 ............................. <pFlagList[i]>
+  [ 34] setlocal 1 .............................. tObject = pFlagList[i]
+  [ 36] getprop 1071 ............................ <pFlagList>
+  [ 39] getlocal 0 .............................. <i>
+  [ 41] pusharglist 2 ........................... <pFlagList, i>
+  [ 43] objcall 380 ............................. <pFlagList.getPropAt(i)>
+  [ 46] setparam 1 .............................. tID = pFlagList.getPropAt(i)
+  [ 48] getprop 1073 ............................ <pCloseTimerList>
+  [ 51] getparam 1 .............................. <tID>
+  [ 53] getlocal 1 .............................. <tObject>
+  [ 55] getprop 1070 ............................ <pFlagCloseTimeout>
+  [ 58] pusharglist 2 ........................... <[tObject, pFlagCloseTimeout]>
+  [ 60] pushlist ................................ <[tObject, pFlagCloseTimeout]>
+  [ 61] pusharglistnoret 3 ...................... <pCloseTimerList, tID, [tObject, pFlagCloseTimeout]>
+  [ 63] objcall 220 ............................. pCloseTimerList.setaProp(tID, [tObject, pFlagCloseTimeout])
+  [ 65] pushint8 1
+  [ 67] getlocal 0
+  [ 69] add
+  [ 70] setlocal 0
+  [ 72] endrepeat [ 14]
+  [ 74] jmp [142]
+  [ 77] getparam 0 .............................. <me>
+  [ 79] getparam 1 .............................. <tID>
+  [ 81] pusharglist 2 ........................... <me, tID>
+  [ 83] objcall 1067 ............................ <me.getMatchingFlagId(tID)>
+  [ 86] setparam 1 .............................. tID = me.getMatchingFlagId(tID)
+  [ 88] getparam 0 .............................. <me>
+  [ 90] getchainedprop 1071 ..................... <me.pFlagList>
+  [ 93] getparam 1 .............................. <tID>
+  [ 95] pusharglist 2 ........................... <me.pFlagList, tID>
+  [ 97] objcall 256 ............................. <me.pFlagList.getaProp(tID)>
+  [100] setlocal 1 .............................. tObject = me.pFlagList.getaProp(tID)
+  [102] getlocal 1 .............................. <tObject>
+  [104] pusharglist 1 ........................... <tObject>
+  [106] extcall 97 .............................. <objectp(tObject)>
+  [108] jmpifz [142] ............................ if objectp(tObject) then
+  [111] getprop 1073 ............................ <pCloseTimerList>
+  [114] getparam 1 .............................. <tID>
+  [116] pusharglist 2 ........................... <pCloseTimerList, tID>
+  [118] objcall 255 ............................. <pCloseTimerList.findPos(tID)>
+  [120] pushzero ................................ <0>
+  [121] eq ...................................... <pCloseTimerList.findPos(tID) = 0>
+  [122] jmpifz [142] ............................ if pCloseTimerList.findPos(tID) = 0 then
+  [125] getprop 1073 ............................ <pCloseTimerList>
+  [128] getparam 1 .............................. <tID>
+  [130] getlocal 1 .............................. <tObject>
+  [132] getprop 1070 ............................ <pFlagCloseTimeout>
+  [135] pusharglist 2 ........................... <[tObject, pFlagCloseTimeout]>
+  [137] pushlist ................................ <[tObject, pFlagCloseTimeout]>
+  [138] pusharglistnoret 3 ...................... <pCloseTimerList, tID, [tObject, pFlagCloseTimeout]>
+  [140] objcall 220 ............................. pCloseTimerList.setaProp(tID, [tObject, pFlagCloseTimeout])
+  [142] pushint8 1 .............................. <1>
+  [144] pusharglistnoret 1 ...................... <1>
+  [146] extcall 38 .............................. return 1
+  [148] ret
+end
+
+on reset me
+  [  0] pusharglist 0 ........................... <>
+  [  2] localcall 15 ............................ <removeAllFlagObjects()>
+  [  4] pusharglistnoret 1 ...................... <removeAllFlagObjects()>
+  [  6] extcall 38 .............................. return removeAllFlagObjects()
+  [  8] ret
+end
+
+on getFlagState me, tID
+  [  0] getparam 0 .............................. <me>
+  [  2] getparam 1 .............................. <tID>
+  [  4] pusharglist 2 ........................... <me, tID>
+  [  6] objcall 1067 ............................ <me.getMatchingFlagId(tID)>
+  [  9] setparam 1 .............................. tID = me.getMatchingFlagId(tID)
+  [ 11] getprop 1071 ............................ <pFlagList>
+  [ 14] getparam 1 .............................. <tID>
+  [ 16] pusharglist 2 ........................... <pFlagList, tID>
+  [ 18] objcall 256 ............................. <pFlagList.getaProp(tID)>
+  [ 21] setlocal 0 .............................. tObject = pFlagList.getaProp(tID)
+  [ 23] getlocal 0 .............................. <tObject>
+  [ 25] pushzero ................................ <0>
+  [ 26] eq ...................................... <tObject = 0>
+  [ 27] jmpifz [ 35] ............................ if tObject = 0 then
+  [ 30] pushzero ................................ <0>
+  [ 31] pusharglistnoret 1 ...................... <0>
+  [ 33] extcall 38 .............................. return 0
+  [ 35] getlocal 0 .............................. <tObject>
+  [ 37] pusharglist 1 ........................... <tObject>
+  [ 39] objcall 1074 ............................ <tObject.getState()>
+  [ 42] pusharglistnoret 1 ...................... <tObject.getState()>
+  [ 44] extcall 38 .............................. return tObject.getState()
+  [ 46] ret
+end
+
+on alignZ me
+  [  0] getprop 1071 ............................ <pFlagList>
+  [  3] peek 0
+  [  5] pusharglist 1
+  [  7] extcall 180
+  [  9] pushint8 1
+  [ 11] peek 0
+  [ 13] peek 2
+  [ 15] lteq
+  [ 16] jmpifz [ 41] ............................ repeat with tObject in pFlagList
+  [ 19] peek 2
+  [ 21] peek 1
+  [ 23] pusharglist 2
+  [ 25] extcall 181
+  [ 27] setlocal 0
+  [ 29] getlocal 0 .............................. <tObject>
+  [ 31] pusharglistnoret 1 ...................... <tObject>
+  [ 33] objcall 1066 ............................ tObject.alignZ()
+  [ 36] pushint8 1
+  [ 38] add
+  [ 39] endrepeat [ 11]
+  [ 41] pop 3
+  [ 43] pushint8 1 .............................. <1>
+  [ 45] pusharglistnoret 1 ...................... <1>
+  [ 47] extcall 38 .............................. return 1
+  [ 49] ret
+end
+
+on update me
+  [  0] getprop 679 ............................. <pUpdateCounter>
+  [  3] pushint8 1 .............................. <1>
+  [  5] add ..................................... <pUpdateCounter + 1>
+  [  6] setprop 679 ............................. pUpdateCounter = pUpdateCounter + 1
+  [  9] getprop 679 ............................. <pUpdateCounter>
+  [ 12] getprop 438 ............................. <pUpdateInterval>
+  [ 15] lt ...................................... <pUpdateCounter < pUpdateInterval>
+  [ 16] jmpifz [ 25] ............................ if pUpdateCounter < pUpdateInterval then
+  [ 19] pushint8 1 .............................. <1>
+  [ 21] pusharglistnoret 1 ...................... <1>
+  [ 23] extcall 38 .............................. return 1
+  [ 25] pushzero ................................ <0>
+  [ 26] setprop 679 ............................. pUpdateCounter = 0
+  [ 29] getprop 1071 ............................ <pFlagList>
+  [ 32] getobjprop 180 .......................... <pFlagList.count>
+  [ 34] pushzero ................................ <0>
+  [ 35] eq ...................................... <pFlagList.count = 0>
+  [ 36] jmpifz [ 44] ............................ if pFlagList.count = 0 then
+  [ 39] pushzero ................................ <0>
+  [ 40] pusharglistnoret 1 ...................... <0>
+  [ 42] extcall 38 .............................. return 0
+  [ 44] getprop 1071 ............................ <pFlagList>
+  [ 47] peek 0
+  [ 49] pusharglist 1
+  [ 51] extcall 180
+  [ 53] pushint8 1
+  [ 55] peek 0
+  [ 57] peek 2
+  [ 59] lteq
+  [ 60] jmpifz [ 85] ............................ repeat with tObject in pFlagList
+  [ 63] peek 2
+  [ 65] peek 1
+  [ 67] pusharglist 2
+  [ 69] extcall 181
+  [ 71] setlocal 0
+  [ 73] getlocal 0 .............................. <tObject>
+  [ 75] pusharglistnoret 1 ...................... <tObject>
+  [ 77] objcall 418 ............................. tObject.update()
+  [ 80] pushint8 1
+  [ 82] add
+  [ 83] endrepeat [ 55]
+  [ 85] pop 3
+  [ 87] pushzero ................................ <0>
+  [ 88] setlocal 1 .............................. tChanges = 0
+  [ 90] pushint8 1 .............................. <1>
+  [ 92] setlocal 2 .............................. i = 1
+  [ 94] getlocal 2 .............................. <i>
+  [ 96] getprop 1073 ............................ <pCloseTimerList>
+  [ 99] getobjprop 180 .......................... <pCloseTimerList.count>
+  [101] lteq .................................... <i <= pCloseTimerList.count>
+  [102] jmpifz [199] ............................ repeat while i <= pCloseTimerList.count
+  [105] getprop 1073 ............................ <pCloseTimerList>
+  [108] getlocal 2 .............................. <i>
+  [110] pusharglist 2 ........................... <pCloseTimerList, i>
+  [112] objcall 181 ............................. <pCloseTimerList[i]>
+  [114] setlocal 3 .............................. tItem = pCloseTimerList[i]
+  [116] getlocal 3 .............................. <tItem>
+  [118] pushint8 2 .............................. <2>
+  [120] pusharglist 2 ........................... <tItem, 2>
+  [122] objcall 181 ............................. <tItem[2]>
+  [124] pushzero ................................ <0>
+  [125] eq ...................................... <tItem[2] = 0>
+  [126] jmpifz [163] ............................ if tItem[2] = 0 then
+  [129] getlocal 3 .............................. <tItem>
+  [131] pushint8 1 .............................. <1>
+  [133] pusharglist 2 ........................... <tItem, 1>
+  [135] objcall 181 ............................. <tItem[1]>
+  [137] setlocal 0 .............................. tObject = tItem[1]
+  [139] getlocal 0 .............................. <tObject>
+  [141] pusharglistnoret 1 ...................... <tObject>
+  [143] objcall 1026 ............................ tObject.close()
+  [146] getprop 1073 ............................ <pCloseTimerList>
+  [149] getlocal 2 .............................. <i>
+  [151] pusharglistnoret 2 ...................... <pCloseTimerList, i>
+  [153] objcall 517 ............................. pCloseTimerList.deleteAt(i)
+  [156] pushint8 1 .............................. <1>
+  [158] setlocal 1 .............................. tChanges = 1
+  [160] jmp [197] ............................... next repeat
+  [163] getprop 1073 ............................ <pCloseTimerList>
+  [166] getlocal 2 .............................. <i>
+  [168] pusharglist 2 ........................... <pCloseTimerList, i>
+  [170] objcall 181 ............................. <pCloseTimerList[i]>
+  [172] pushint8 2 .............................. <2>
+  [174] getlocal 3 .............................. <tItem>
+  [176] pushint8 2 .............................. <2>
+  [178] pusharglist 2 ........................... <tItem, 2>
+  [180] objcall 181 ............................. <tItem[2]>
+  [182] pushint8 1 .............................. <1>
+  [184] sub ..................................... <tItem[2] - 1>
+  [185] pusharglistnoret 3 ...................... <pCloseTimerList[i], 2, tItem[2] - 1>
+  [187] objcall 1008 ............................ pCloseTimerList[i][2] = tItem[2] - 1
+  [190] getlocal 2 .............................. <i>
+  [192] pushint8 1 .............................. <1>
+  [194] add ..................................... <i + 1>
+  [195] setlocal 2 .............................. i = i + 1
+  [197] endrepeat [ 94]
+  [199] getlocal 1 .............................. <tChanges>
+  [201] jmpifz [211] ............................ if tChanges then
+  [204] getparam 0 .............................. <me>
+  [206] pusharglistnoret 1 ...................... <me>
+  [208] objcall 1066 ............................ me.alignZ()
+  [211] pushint8 1 .............................. <1>
+  [213] pusharglistnoret 1 ...................... <1>
+  [215] extcall 38 .............................. return 1
+  [217] ret
+end
+
+on setInfoFlag me, tSetID, tID, tWndID, tElemID, tFlagType, tColor, tItemInfo
+  [  0] getparam 0 .............................. <me>
+  [  2] getparam 2 .............................. <tID>
+  [  4] pusharglist 2 ........................... <me, tID>
+  [  6] objcall 62 .............................. <me.exists(tID)>
+  [  8] jmpifz [ 17] ............................ if me.exists(tID) then
+  [ 11] pushint8 1 .............................. <1>
+  [ 13] pusharglistnoret 1 ...................... <1>
+  [ 15] extcall 38 .............................. return 1
+  [ 17] getparam 3 .............................. <tWndID>
+  [ 19] pusharglist 1 ........................... <tWndID>
+  [ 21] extcall 400 ............................. <getWindow(tWndID)>
+  [ 24] setlocal 0 .............................. tWndObj = getWindow(tWndID)
+  [ 26] getlocal 0 .............................. <tWndObj>
+  [ 28] pushzero ................................ <0>
+  [ 29] eq ...................................... <tWndObj = 0>
+  [ 30] jmpifz [ 51] ............................ if tWndObj = 0 then
+  [ 33] getparam 0 .............................. <me>
+  [ 35] pushcons 0 .............................. <"Reference window not found:">
+  [ 37] getparam 3 .............................. <tWndID>
+  [ 39] joinpadstr .............................. <"Reference window not found:" && tWndID>
+  [ 40] pushsymb 960 ............................ <#setInfoFlag>
+  [ 43] pusharglist 3 ........................... <me, "Reference window not found:" && tWndID, #setInfoFlag>
+  [ 45] extcall 210 ............................. <error(me, "Reference window not found:" && tWndID, #setInfoFlag)>
+  [ 47] pusharglistnoret 1 ...................... <error(me, "Reference window not found:" && tWndID, #setInfoFlag)>
+  [ 49] extcall 38 .............................. return error(me, "Reference window not found:" && tWndID, #setInfoFlag)
+  [ 51] getlocal 0 .............................. <tWndObj>
+  [ 53] getparam 4 .............................. <tElemID>
+  [ 55] pusharglist 2 ........................... <tWndObj, tElemID>
+  [ 57] objcall 401 ............................. <tWndObj.getElement(tElemID)>
+  [ 60] setlocal 1 .............................. tElem = tWndObj.getElement(tElemID)
+  [ 62] getlocal 1 .............................. <tElem>
+  [ 64] pushzero ................................ <0>
+  [ 65] eq ...................................... <tElem = 0>
+  [ 66] jmpifz [ 90] ............................ if tElem = 0 then
+  [ 69] getparam 0 .............................. <me>
+  [ 71] pushcons 1 .............................. <"Reference element not found in window:">
+  [ 73] getparam 3 .............................. <tWndID>
+  [ 75] joinpadstr .............................. <"Reference element not found in window:" && tWndID>
+  [ 76] getparam 4 .............................. <tElemID>
+  [ 78] joinpadstr .............................. <"Reference element not found in window:" && tWndID && tElemID>
+  [ 79] pushsymb 960 ............................ <#setInfoFlag>
+  [ 82] pusharglist 3 ........................... <me, "Reference element not found in window:" && tWndID && tElemID, #setInfoFlag>
+  [ 84] extcall 210 ............................. <error(me, "Reference element not found in window:" && tWndID && tElemID, #setInfoFlag)>
+  [ 86] pusharglistnoret 1 ...................... <error(me, "Reference element not found in window:" && tWndID && tElemID, #setInfoFlag)>
+  [ 88] extcall 38 .............................. return error(me, "Reference element not found in window:" && tWndID && tElemID, #setInfoFlag)
+  [ 90] getlocal 0 .............................. <tWndObj>
+  [ 92] pushsymb 952 ............................ <#locY>
+  [ 95] pusharglist 2 ........................... <tWndObj, #locY>
+  [ 97] objcall 63 .............................. <tWndObj.getProperty(#locY)>
+  [ 99] getlocal 1 .............................. <tElem>
+  [101] pushsymb 952 ............................ <#locY>
+  [104] pusharglist 2 ........................... <tElem, #locY>
+  [106] objcall 63 .............................. <tElem.getProperty(#locY)>
+  [108] add ..................................... <tWndObj.getProperty(#locY) + tElem.getProperty(#locY)>
+  [109] pushint8 7 .............................. <7>
+  [111] sub ..................................... <tWndObj.getProperty(#locY) + tElem.getProperty(#locY) - 7>
+  [112] setlocal 2 .............................. tLocV = tWndObj.getProperty(#locY) + tElem.getProperty(#locY) - 7
+  [114] getlocal 0 .............................. <tWndObj>
+  [116] pushsymb 531 ............................ <#locZ>
+  [119] pusharglist 2 ........................... <tWndObj, #locZ>
+  [121] objcall 63 .............................. <tWndObj.getProperty(#locZ)>
+  [123] getlocal 1 .............................. <tElem>
+  [125] pushsymb 952 ............................ <#locY>
+  [128] pusharglist 2 ........................... <tElem, #locY>
+  [130] objcall 63 .............................. <tElem.getProperty(#locY)>
+  [132] pushint8 10 ............................. <10>
+  [134] mul ..................................... <tElem.getProperty(#locY) * 10>
+  [135] add ..................................... <tWndObj.getProperty(#locZ) + (tElem.getProperty(#locY) * 10)>
+  [136] setlocal 3 .............................. tlocz = tWndObj.getProperty(#locZ) + (tElem.getProperty(#locY) * 10)
+  [138] getparam 0 .............................. <me>
+  [140] getparam 1 .............................. <tSetID>
+  [142] getparam 2 .............................. <tID>
+  [144] getparam 5 .............................. <tFlagType>
+  [146] pushint8 1 .............................. <1>
+  [148] pusharglist 5 ........................... <me, tSetID, tID, tFlagType, 1>
+  [150] objcall 1068 ............................ <me.getFlagObject(tSetID, tID, tFlagType, 1)>
+  [153] setlocal 4 .............................. tObject = me.getFlagObject(tSetID, tID, tFlagType, 1)
+  [155] getlocal 4 .............................. <tObject>
+  [157] getparam 2 .............................. <tID>
+  [159] getlocal 2 .............................. <tLocV>
+  [161] getlocal 3 .............................. <tlocz>
+  [163] getparam 6 .............................. <tColor>
+  [165] getparam 5 .............................. <tFlagType>
+  [167] getparam 7 .............................. <tItemInfo>
+  [169] pusharglistnoret 7 ...................... <tObject, tID, tLocV, tlocz, tColor, tFlagType, tItemInfo>
+  [171] objcall 450 ............................. tObject.define(tID, tLocV, tlocz, tColor, tFlagType, tItemInfo)
+  [174] getlocal 4 .............................. <tObject>
+  [176] getlocal 4 .............................. <tObject>
+  [178] pusharglistnoret 2 ...................... <tObject, tObject>
+  [180] objcall 1075 ............................ tObject.createWindows(tObject)
+  [183] pushint8 1 .............................. <1>
+  [185] pusharglistnoret 1 ...................... <1>
+  [187] extcall 38 .............................. return 1
+  [189] ret
+end
+
+on removeFlagSet me, tSetID
+  [  0] getprop 1072 ............................ <pFlagSetIndex>
+  [  3] getparam 1 .............................. <tSetID>
+  [  5] pusharglist 2 ........................... <pFlagSetIndex, tSetID>
+  [  7] objcall 255 ............................. <pFlagSetIndex.findPos(tSetID)>
+  [  9] pushzero ................................ <0>
+  [ 10] eq ...................................... <pFlagSetIndex.findPos(tSetID) = 0>
+  [ 11] jmpifz [ 20] ............................ if pFlagSetIndex.findPos(tSetID) = 0 then
+  [ 14] pushint8 1 .............................. <1>
+  [ 16] pusharglistnoret 1 ...................... <1>
+  [ 18] extcall 38 .............................. return 1
+  [ 20] getprop 1072 ............................ <pFlagSetIndex>
+  [ 23] getparam 1 .............................. <tSetID>
+  [ 25] pusharglist 2 ........................... <pFlagSetIndex, tSetID>
+  [ 27] objcall 256 ............................. <pFlagSetIndex.getaProp(tSetID)>
+  [ 30] setlocal 0 .............................. tFlagSet = pFlagSetIndex.getaProp(tSetID)
+  [ 32] getlocal 0 .............................. <tFlagSet>
+  [ 34] peek 0
+  [ 36] pusharglist 1
+  [ 38] extcall 180
+  [ 40] pushint8 1
+  [ 42] peek 0
+  [ 44] peek 2
+  [ 46] lteq
+  [ 47] jmpifz [ 74] ............................ repeat with tObjectId in tFlagSet
+  [ 50] peek 2
+  [ 52] peek 1
+  [ 54] pusharglist 2
+  [ 56] extcall 181
+  [ 58] setlocal 1
+  [ 60] getparam 0 .............................. <me>
+  [ 62] getlocal 1 .............................. <tObjectId>
+  [ 64] pusharglistnoret 2 ...................... <me, tObjectId>
+  [ 66] objcall 637 ............................. me.Remove(tObjectId)
+  [ 69] pushint8 1
+  [ 71] add
+  [ 72] endrepeat [ 42]
+  [ 74] pop 3
+  [ 76] getprop 1072 ............................ <pFlagSetIndex>
+  [ 79] getparam 1 .............................. <tSetID>
+  [ 81] pusharglistnoret 2 ...................... <pFlagSetIndex, tSetID>
+  [ 83] objcall 395 ............................. pFlagSetIndex.deleteProp(tSetID)
+  [ 86] pushint8 1 .............................. <1>
+  [ 88] pusharglistnoret 1 ...................... <1>
+  [ 90] extcall 38 .............................. return 1
+  [ 92] ret
+end
+
+on Remove me, tID
+  [  0] getparam 0 .............................. <me>
+  [  2] getparam 1 .............................. <tID>
+  [  4] pusharglist 2 ........................... <me, tID>
+  [  6] objcall 1067 ............................ <me.getMatchingFlagId(tID)>
+  [  9] setparam 1 .............................. tID = me.getMatchingFlagId(tID)
+  [ 11] getparam 1 .............................. <tID>
+  [ 13] pusharglist 0 ........................... <>
+  [ 15] extcall 47 .............................. <VOID>
+  [ 17] eq ...................................... <tID = VOID>
+  [ 18] jmpifz [ 26] ............................ if tID = VOID then
+  [ 21] pushzero ................................ <0>
+  [ 22] pusharglistnoret 1 ...................... <0>
+  [ 24] extcall 38 .............................. return 0
+  [ 26] getprop 1071 ............................ <pFlagList>
+  [ 29] getparam 1 .............................. <tID>
+  [ 31] pusharglist 2 ........................... <pFlagList, tID>
+  [ 33] objcall 256 ............................. <pFlagList.getaProp(tID)>
+  [ 36] setlocal 0 .............................. tObject = pFlagList.getaProp(tID)
+  [ 38] getlocal 0 .............................. <tObject>
+  [ 40] pushzero ................................ <0>
+  [ 41] nteq .................................... <tObject <> 0>
+  [ 42] jmpifz [ 51] ............................ if tObject <> 0 then
+  [ 45] getlocal 0 .............................. <tObject>
+  [ 47] pusharglistnoret 1 ...................... <tObject>
+  [ 49] objcall 1 ............................... tObject.deconstruct()
+  [ 51] getprop 1071 ............................ <pFlagList>
+  [ 54] getparam 1 .............................. <tID>
+  [ 56] pusharglistnoret 2 ...................... <pFlagList, tID>
+  [ 58] objcall 395 ............................. pFlagList.deleteProp(tID)
+  [ 61] getprop 1072 ............................ <pFlagSetIndex>
+  [ 64] getparam 1 .............................. <tID>
+  [ 66] pusharglistnoret 2 ...................... <pFlagSetIndex, tID>
+  [ 68] objcall 395 ............................. pFlagSetIndex.deleteProp(tID)
+  [ 71] getprop 1073 ............................ <pCloseTimerList>
+  [ 74] getparam 1 .............................. <tID>
+  [ 76] pusharglistnoret 2 ...................... <pCloseTimerList, tID>
+  [ 78] objcall 395 ............................. pCloseTimerList.deleteProp(tID)
+  [ 81] pushint8 1 .............................. <1>
+  [ 83] pusharglistnoret 1 ...................... <1>
+  [ 85] extcall 38 .............................. return 1
+  [ 87] ret
+end
+
+on exists me, tID
+  [  0] getparam 0 .............................. <me>
+  [  2] getparam 1 .............................. <tID>
+  [  4] pusharglist 2 ........................... <me, tID>
+  [  6] objcall 1067 ............................ <me.getMatchingFlagId(tID)>
+  [  9] setparam 1 .............................. tID = me.getMatchingFlagId(tID)
+  [ 11] getparam 1 .............................. <tID>
+  [ 13] pusharglist 0 ........................... <>
+  [ 15] extcall 47 .............................. <VOID>
+  [ 17] eq ...................................... <tID = VOID>
+  [ 18] jmpifz [ 26] ............................ if tID = VOID then
+  [ 21] pushzero ................................ <0>
+  [ 22] pusharglistnoret 1 ...................... <0>
+  [ 24] extcall 38 .............................. return 0
+  [ 26] getprop 1071 ............................ <pFlagList>
+  [ 29] getparam 1 .............................. <tID>
+  [ 31] pusharglist 2 ........................... <pFlagList, tID>
+  [ 33] objcall 255 ............................. <pFlagList.findPos(tID)>
+  [ 35] pushzero ................................ <0>
+  [ 36] gt ...................................... <pFlagList.findPos(tID) > 0>
+  [ 37] pusharglistnoret 1 ...................... <pFlagList.findPos(tID) > 0>
+  [ 39] extcall 38 .............................. return pFlagList.findPos(tID) > 0
+  [ 41] ret
+end
+
+on getMatchingFlagId me, tWndID
+  [  0] pushint8 1 .............................. <1>
+  [  2] setlocal 0
+  [  4] getlocal 0
+  [  6] getprop 1071 ............................ <pFlagList>
+  [  9] getobjprop 180 .......................... <pFlagList.count>
+  [ 11] lteq
+  [ 12] jmpifz [ 67] ............................ repeat with i = 1 to pFlagList.count
+  [ 15] getprop 1071 ............................ <pFlagList>
+  [ 18] getlocal 0 .............................. <i>
+  [ 20] pusharglist 2 ........................... <pFlagList, i>
+  [ 22] objcall 380 ............................. <pFlagList.getPropAt(i)>
+  [ 25] setlocal 1 .............................. tItemName = pFlagList.getPropAt(i)
+  [ 27] getparam 1 .............................. <tWndID>
+  [ 29] getlocal 1 .............................. <tItemName>
+  [ 31] eq ...................................... <tWndID = tItemName>
+  [ 32] getparam 1 .............................. <tWndID>
+  [ 34] getlocal 1 .............................. <tItemName>
+  [ 36] pushcons 2 .............................. <"_">
+  [ 38] joinstr ................................. <tItemName & "_">
+  [ 39] containsstr ............................. <tWndID contains tItemName & "_">
+  [ 40] or ...................................... <(tWndID = tItemName) or (tWndID contains tItemName & "_")>
+  [ 41] jmpifz [ 58] ............................ if (tWndID = tItemName) or (tWndID contains tItemName & "_") then
+  [ 44] getprop 1071 ............................ <pFlagList>
+  [ 47] getlocal 0 .............................. <i>
+  [ 49] pusharglist 2 ........................... <pFlagList, i>
+  [ 51] objcall 380 ............................. <pFlagList.getPropAt(i)>
+  [ 54] pusharglistnoret 1 ...................... <pFlagList.getPropAt(i)>
+  [ 56] extcall 38 .............................. return pFlagList.getPropAt(i)
+  [ 58] pushint8 1
+  [ 60] getlocal 0
+  [ 62] add
+  [ 63] setlocal 0
+  [ 65] endrepeat [  4]
+  [ 67] pushzero ................................ <0>
+  [ 68] pusharglistnoret 1 ...................... <0>
+  [ 70] extcall 38 .............................. return 0
+  [ 72] ret
+end
+
+on getFlagObject me, tSetID, tID, tFlagType, tAddIfMissing
+  [  0] getparam 1 .............................. <tSetID>
+  [  2] pusharglist 0 ........................... <>
+  [  4] extcall 47 .............................. <VOID>
+  [  6] eq ...................................... <tSetID = VOID>
+  [  7] jmpifz [ 15] ............................ if tSetID = VOID then
+  [ 10] pushzero ................................ <0>
+  [ 11] pusharglistnoret 1 ...................... <0>
+  [ 13] extcall 38 .............................. return 0
+  [ 15] getparam 2 .............................. <tID>
+  [ 17] pusharglist 0 ........................... <>
+  [ 19] extcall 47 .............................. <VOID>
+  [ 21] eq ...................................... <tID = VOID>
+  [ 22] jmpifz [ 30] ............................ if tID = VOID then
+  [ 25] pushzero ................................ <0>
+  [ 26] pusharglistnoret 1 ...................... <0>
+  [ 28] extcall 38 .............................. return 0
+  [ 30] getprop 1071 ............................ <pFlagList>
+  [ 33] getparam 2 .............................. <tID>
+  [ 35] pusharglist 2 ........................... <pFlagList, tID>
+  [ 37] objcall 256 ............................. <pFlagList.getaProp(tID)>
+  [ 40] setlocal 0 .............................. tObject = pFlagList.getaProp(tID)
+  [ 42] getlocal 0 .............................. <tObject>
+  [ 44] pushzero ................................ <0>
+  [ 45] nteq .................................... <tObject <> 0>
+  [ 46] jmpifz [ 55] ............................ if tObject <> 0 then
+  [ 49] getlocal 0 .............................. <tObject>
+  [ 51] pusharglistnoret 1 ...................... <tObject>
+  [ 53] extcall 38 .............................. return tObject
+  [ 55] getparam 4 .............................. <tAddIfMissing>
+  [ 57] not ..................................... <not tAddIfMissing>
+  [ 58] jmpifz [ 66] ............................ if not tAddIfMissing then
+  [ 61] pushzero ................................ <0>
+  [ 62] pusharglistnoret 1 ...................... <0>
+  [ 64] extcall 38 .............................. return 0
+  [ 66] pushcons 3 .............................. <"IG UIFlag">
+  [ 68] getparam 3 .............................. <tFlagType>
+  [ 70] joinpadstr .............................. <"IG UIFlag" && tFlagType>
+  [ 71] pusharglist 1 ........................... <"IG UIFlag" && tFlagType>
+  [ 73] extcall 390 ............................. <memberExists("IG UIFlag" && tFlagType)>
+  [ 76] jmpifz [103] ............................ if memberExists("IG UIFlag" && tFlagType) then / else
+  [ 79] pusharglist 0 ........................... <>
+  [ 81] extcall 544 ............................. <getUniqueID()>
+  [ 84] pushcons 4 .............................. <"IG UIFlag Class">
+  [ 86] pushcons 3 .............................. <"IG UIFlag">
+  [ 88] getparam 3 .............................. <tFlagType>
+  [ 90] joinpadstr .............................. <"IG UIFlag" && tFlagType>
+  [ 91] pusharglist 2 ........................... <["IG UIFlag Class", "IG UIFlag" && tFlagType]>
+  [ 93] pushlist ................................ <["IG UIFlag Class", "IG UIFlag" && tFlagType]>
+  [ 94] pusharglist 2 ........................... <getUniqueID(), ["IG UIFlag Class", "IG UIFlag" && tFlagType]>
+  [ 96] extcall 89 .............................. <createObject(getUniqueID(), ["IG UIFlag Class", "IG UIFlag" && tFlagType])>
+  [ 98] setlocal 0 .............................. tObject = createObject(getUniqueID(), ["IG UIFlag Class", "IG UIFlag" && tFlagType])
+  [100] jmp [116]
+  [103] pusharglist 0 ........................... <>
+  [105] extcall 544 ............................. <getUniqueID()>
+  [108] pushcons 4 .............................. <"IG UIFlag Class">
+  [110] pusharglist 2 ........................... <getUniqueID(), "IG UIFlag Class">
+  [112] extcall 89 .............................. <createObject(getUniqueID(), "IG UIFlag Class")>
+  [114] setlocal 0 .............................. tObject = createObject(getUniqueID(), "IG UIFlag Class")
+  [116] getlocal 0 .............................. <tObject>
+  [118] pushzero ................................ <0>
+  [119] eq ...................................... <tObject = 0>
+  [120] jmpifz [128] ............................ if tObject = 0 then
+  [123] pushzero ................................ <0>
+  [124] pusharglistnoret 1 ...................... <0>
+  [126] extcall 38 .............................. return 0
+  [128] getprop 1071 ............................ <pFlagList>
+  [131] getparam 2 .............................. <tID>
+  [133] getlocal 0 .............................. <tObject>
+  [135] pusharglistnoret 3 ...................... <pFlagList, tID, tObject>
+  [137] objcall 220 ............................. pFlagList.setaProp(tID, tObject)
+  [139] getprop 1072 ............................ <pFlagSetIndex>
+  [142] getparam 1 .............................. <tSetID>
+  [144] pusharglist 2 ........................... <pFlagSetIndex, tSetID>
+  [146] objcall 256 ............................. <pFlagSetIndex.getaProp(tSetID)>
+  [149] setlocal 1 .............................. tSetIndex = pFlagSetIndex.getaProp(tSetID)
+  [151] getlocal 1 .............................. <tSetIndex>
+  [153] pusharglist 1 ........................... <tSetIndex>
+  [155] extcall 377 ............................. <listp(tSetIndex)>
+  [158] not ..................................... <not listp(tSetIndex)>
+  [159] jmpifz [167] ............................ if not listp(tSetIndex) then
+  [162] pusharglist 0 ........................... <[]>
+  [164] pushlist ................................ <[]>
+  [165] setlocal 1 .............................. tSetIndex = []
+  [167] getlocal 1 .............................. <tSetIndex>
+  [169] getparam 2 .............................. <tID>
+  [171] pusharglistnoret 2 ...................... <tSetIndex, tID>
+  [173] objcall 224 ............................. tSetIndex.append(tID)
+  [175] getprop 1072 ............................ <pFlagSetIndex>
+  [178] getparam 1 .............................. <tSetID>
+  [180] getlocal 1 .............................. <tSetIndex>
+  [182] pusharglistnoret 3 ...................... <pFlagSetIndex, tSetID, tSetIndex>
+  [184] objcall 220 ............................. pFlagSetIndex.setaProp(tSetID, tSetIndex)
+  [186] getlocal 0 .............................. <tObject>
+  [188] pusharglistnoret 1 ...................... <tObject>
+  [190] extcall 38 .............................. return tObject
+  [192] ret
+end
+
+on removeAllFlagObjects me
+  [  0] getprop 1071 ............................ <pFlagList>
+  [  3] peek 0
+  [  5] pusharglist 1
+  [  7] extcall 180
+  [  9] pushint8 1
+  [ 11] peek 0
+  [ 13] peek 2
+  [ 15] lteq
+  [ 16] jmpifz [ 40] ............................ repeat with tObject in pFlagList
+  [ 19] peek 2
+  [ 21] peek 1
+  [ 23] pusharglist 2
+  [ 25] extcall 181
+  [ 27] setlocal 0
+  [ 29] getlocal 0 .............................. <tObject>
+  [ 31] pusharglistnoret 1 ...................... <tObject>
+  [ 33] objcall 1 ............................... tObject.deconstruct()
+  [ 35] pushint8 1
+  [ 37] add
+  [ 38] endrepeat [ 11]
+  [ 40] pop 3
+  [ 42] pusharglist 0 ........................... <[:]>
+  [ 44] pushproplist ............................ <[:]>
+  [ 45] setprop 1071 ............................ pFlagList = [:]
+  [ 48] pusharglist 0 ........................... <[:]>
+  [ 50] pushproplist ............................ <[:]>
+  [ 51] setprop 1072 ............................ pFlagSetIndex = [:]
+  [ 54] pusharglist 0 ........................... <[:]>
+  [ 56] pushproplist ............................ <[:]>
+  [ 57] setprop 1073 ............................ pCloseTimerList = [:]
+  [ 60] pushint8 1 .............................. <1>
+  [ 62] pusharglistnoret 1 ...................... <1>
+  [ 64] extcall 38 .............................. return 1
+  [ 66] ret
+end
+
+on getWindowWrapper me
+  [  0] pushsymb 506 ............................ <#ig_window_wrapper>
+  [  3] pusharglist 1 ........................... <#ig_window_wrapper>
+  [  5] extcall 85 .............................. <getObject(#ig_window_wrapper)>
+  [  7] pusharglistnoret 1 ...................... <getObject(#ig_window_wrapper)>
+  [  9] extcall 38 .............................. return getObject(#ig_window_wrapper)
+  [ 11] ret
+end

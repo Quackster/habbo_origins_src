@@ -1,0 +1,68 @@
+property pmode
+
+on construct me
+  [  0] pushsymb 580 ............................ <#close>
+  [  3] setprop 579 ............................. pmode = #close
+  [  6] pushint8 1 .............................. <1>
+  [  8] pusharglistnoret 1 ...................... <1>
+  [ 10] extcall 15 .............................. return 1
+  [ 12] ret
+end
+
+on setDoorMode me, tMode
+  [  0] getparam 1 .............................. <tMode>
+  [  2] pusharglist 1 ........................... <tMode>
+  [  4] extcall 483 ............................. <symbol(tMode)>
+  [  7] setprop 579 ............................. pmode = symbol(tMode)
+  [ 10] getparam 0 .............................. <me>
+  [ 12] pusharglistnoret 1 ...................... <me>
+  [ 14] objcall 578 ............................. me.updateDoor()
+  [ 17] ret
+end
+
+on updateDoor me
+  [  0] getprop 579 ............................. <pmode>
+  [  3] pushsymb 581 ............................ <#open>
+  [  6] eq ...................................... <pmode = #open>
+  [  7] jmpifz [ 25] ............................ if pmode = #open then / else
+  [ 10] pushcons 0 .............................. <"towerdoor_2">
+  [ 12] pusharglist 1 ........................... <"towerdoor_2">
+  [ 14] extcall 74 .............................. <getmemnum("towerdoor_2")>
+  [ 16] pusharglist 1 ........................... <getmemnum("towerdoor_2")>
+  [ 18] extcall 73 .............................. <member(getmemnum("towerdoor_2"))>
+  [ 20] setlocal 0 .............................. tMem = member(getmemnum("towerdoor_2"))
+  [ 22] jmp [ 37]
+  [ 25] pushcons 1 .............................. <"towerdoor_0">
+  [ 27] pusharglist 1 ........................... <"towerdoor_0">
+  [ 29] extcall 74 .............................. <getmemnum("towerdoor_0")>
+  [ 31] pusharglist 1 ........................... <getmemnum("towerdoor_0")>
+  [ 33] extcall 73 .............................. <member(getmemnum("towerdoor_0"))>
+  [ 35] setlocal 0 .............................. tMem = member(getmemnum("towerdoor_0"))
+  [ 37] pushsymb 24 ............................. <#room>
+  [ 39] pusharglist 1 ........................... <#room>
+  [ 41] extcall 23 .............................. <getThread(#room)>
+  [ 43] pusharglist 1 ........................... <getThread(#room)>
+  [ 45] objcall 25 .............................. <getThread(#room).getInterface()>
+  [ 47] pusharglist 1 ........................... <getThread(#room).getInterface()>
+  [ 49] objcall 143 ............................. <getThread(#room).getInterface().getRoomVisualizer()>
+  [ 51] setlocal 1 .............................. tRoomVis = getThread(#room).getInterface().getRoomVisualizer()
+  [ 53] getlocal 1 .............................. <tRoomVis>
+  [ 55] pushzero ................................ <0>
+  [ 56] eq ...................................... <tRoomVis = 0>
+  [ 57] getlocal 0 .............................. <tMem>
+  [ 59] pushzero ................................ <0>
+  [ 60] eq ...................................... <tMem = 0>
+  [ 61] or ...................................... <(tRoomVis = 0) or (tMem = 0)>
+  [ 62] jmpifz [ 70] ............................ if (tRoomVis = 0) or (tMem = 0) then
+  [ 65] pushzero ................................ <0>
+  [ 66] pusharglistnoret 1 ...................... <0>
+  [ 68] extcall 15 .............................. return 0
+  [ 70] getlocal 1 .............................. <tRoomVis>
+  [ 72] pushcons 2 .............................. <"lift_door">
+  [ 74] pusharglist 2 ........................... <tRoomVis, "lift_door">
+  [ 76] objcall 144 ............................. <tRoomVis.getSprById("lift_door")>
+  [ 78] getlocal 0 .............................. <tMem>
+  [ 80] pusharglistnoret 2 ...................... <tRoomVis.getSprById("lift_door"), tMem>
+  [ 82] objcall 327 ............................. tRoomVis.getSprById("lift_door").setMember(tMem)
+  [ 85] ret
+end

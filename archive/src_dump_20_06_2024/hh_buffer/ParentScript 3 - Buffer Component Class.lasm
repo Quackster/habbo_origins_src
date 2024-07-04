@@ -1,0 +1,1077 @@
+property pMessageBuffer, pPlaceHolderList, pDownloader, pTempTimeOutID, pTempDownloadList, pSimulatedDownload
+
+on construct me
+  [  0] pushsymb 8 .............................. <#leaveRoom>
+  [  2] getparam 0 .............................. <me>
+  [  4] pusharglist 1 ........................... <me>
+  [  6] objcall 13 .............................. <me.getID()>
+  [  8] pushsymb 8 .............................. <#leaveRoom>
+  [ 10] pusharglistnoret 3 ...................... <#leaveRoom, me.getID(), #leaveRoom>
+  [ 12] extcall 12 .............................. registerMessage(#leaveRoom, me.getID(), #leaveRoom)
+  [ 14] pushsymb 14 ............................. <#changeRoom>
+  [ 16] getparam 0 .............................. <me>
+  [ 18] pusharglist 1 ........................... <me>
+  [ 20] objcall 13 .............................. <me.getID()>
+  [ 22] pushsymb 8 .............................. <#leaveRoom>
+  [ 24] pusharglistnoret 3 ...................... <#changeRoom, me.getID(), #leaveRoom>
+  [ 26] extcall 12 .............................. registerMessage(#changeRoom, me.getID(), #leaveRoom)
+  [ 28] pushsymb 4 .............................. <#downloadObject>
+  [ 30] getparam 0 .............................. <me>
+  [ 32] pusharglist 1 ........................... <me>
+  [ 34] objcall 13 .............................. <me.getID()>
+  [ 36] pushsymb 4 .............................. <#downloadObject>
+  [ 38] pusharglistnoret 3 ...................... <#downloadObject, me.getID(), #downloadObject>
+  [ 40] extcall 12 .............................. registerMessage(#downloadObject, me.getID(), #downloadObject)
+  [ 42] pushcons 0 .............................. <"active">
+  [ 44] pusharglist 0 ........................... <[:]>
+  [ 46] pushproplist ............................ <[:]>
+  [ 47] pushcons 1 .............................. <"item">
+  [ 49] pusharglist 0 ........................... <[:]>
+  [ 51] pushproplist ............................ <[:]>
+  [ 52] pusharglist 4 ........................... <["active": [:], "item": [:]]>
+  [ 54] pushproplist ............................ <["active": [:], "item": [:]]>
+  [ 55] setprop 15 .............................. pPlaceHolderList = ["active": [:], "item": [:]]
+  [ 57] pushcons 0 .............................. <"active">
+  [ 59] pusharglist 0 ........................... <[:]>
+  [ 61] pushproplist ............................ <[:]>
+  [ 62] pushcons 1 .............................. <"item">
+  [ 64] pusharglist 0 ........................... <[:]>
+  [ 66] pushproplist ............................ <[:]>
+  [ 67] pusharglist 4 ........................... <["active": [:], "item": [:]]>
+  [ 69] pushproplist ............................ <["active": [:], "item": [:]]>
+  [ 70] setprop 16 .............................. pMessageBuffer = ["active": [:], "item": [:]]
+  [ 72] pushcons 2 .............................. <"temp_temp_timeout">
+  [ 74] setprop 17 .............................. pTempTimeOutID = "temp_temp_timeout"
+  [ 76] pusharglist 0 ........................... <[:]>
+  [ 78] pushproplist ............................ <[:]>
+  [ 79] setprop 18 .............................. pTempDownloadList = [:]
+  [ 81] pushzero ................................ <0>
+  [ 82] pushcons 3 .............................. <"buffer.simulateddownload">
+  [ 84] pushzero ................................ <0>
+  [ 85] pusharglist 2 ........................... <"buffer.simulateddownload", 0>
+  [ 87] extcall 21 .............................. <getIntVariable("buffer.simulateddownload", 0)>
+  [ 89] pusharglist 2 ........................... <0, getIntVariable("buffer.simulateddownload", 0)>
+  [ 91] extcall 20 .............................. <max(0, getIntVariable("buffer.simulateddownload", 0))>
+  [ 93] setprop 19 .............................. pSimulatedDownload = max(0, getIntVariable("buffer.simulateddownload", 0))
+  [ 95] pushint8 1 .............................. <1>
+  [ 97] pusharglistnoret 1 ...................... <1>
+  [ 99] extcall 22 .............................. return 1
+  [101] ret
+end
+
+on deconstruct me
+  [  0] pushsymb 8 .............................. <#leaveRoom>
+  [  2] getparam 0 .............................. <me>
+  [  4] pusharglist 1 ........................... <me>
+  [  6] objcall 13 .............................. <me.getID()>
+  [  8] pusharglistnoret 2 ...................... <#leaveRoom, me.getID()>
+  [ 10] extcall 24 .............................. unregisterMessage(#leaveRoom, me.getID())
+  [ 12] pushsymb 14 ............................. <#changeRoom>
+  [ 14] getparam 0 .............................. <me>
+  [ 16] pusharglist 1 ........................... <me>
+  [ 18] objcall 13 .............................. <me.getID()>
+  [ 20] pusharglistnoret 2 ...................... <#changeRoom, me.getID()>
+  [ 22] extcall 24 .............................. unregisterMessage(#changeRoom, me.getID())
+  [ 24] pushsymb 4 .............................. <#downloadObject>
+  [ 26] getparam 0 .............................. <me>
+  [ 28] pusharglist 1 ........................... <me>
+  [ 30] objcall 13 .............................. <me.getID()>
+  [ 32] pusharglistnoret 2 ...................... <#downloadObject, me.getID()>
+  [ 34] extcall 24 .............................. unregisterMessage(#downloadObject, me.getID())
+  [ 36] pusharglist 0 ........................... <[:]>
+  [ 38] pushproplist ............................ <[:]>
+  [ 39] setprop 15 .............................. pPlaceHolderList = [:]
+  [ 41] pusharglist 0 ........................... <[:]>
+  [ 43] pushproplist ............................ <[:]>
+  [ 44] setprop 16 .............................. pMessageBuffer = [:]
+  [ 46] getprop 17 .............................. <pTempTimeOutID>
+  [ 48] pusharglist 1 ........................... <pTempTimeOutID>
+  [ 50] extcall 25 .............................. <timeoutExists(pTempTimeOutID)>
+  [ 52] jmpifz [ 61] ............................ if timeoutExists(pTempTimeOutID) then
+  [ 55] getprop 17 .............................. <pTempTimeOutID>
+  [ 57] pusharglistnoret 1 ...................... <pTempTimeOutID>
+  [ 59] extcall 26 .............................. removeTimeout(pTempTimeOutID)
+  [ 61] pushint8 1 .............................. <1>
+  [ 63] pusharglistnoret 1 ...................... <1>
+  [ 65] extcall 22 .............................. return 1
+  [ 67] ret
+end
+
+on processObject me, tObj, ttype
+  [  0] getparam 0 .............................. <me>
+  [  2] getparam 1 .............................. <tObj>
+  [  4] pushsymb 27 ............................. <#class>
+  [  6] pusharglist 2 ........................... <tObj, #class>
+  [  8] objcall 28 .............................. <tObj[#class]>
+  [ 10] getparam 1 .............................. <tObj>
+  [ 12] pushsymb 29 ............................. <#type>
+  [ 14] pusharglist 2 ........................... <tObj, #type>
+  [ 16] objcall 28 .............................. <tObj[#type]>
+  [ 18] pusharglist 3 ........................... <me, tObj[#class], tObj[#type]>
+  [ 20] objcall 9 ............................... <me.getClassName(tObj[#class], tObj[#type])>
+  [ 22] setlocal 0 .............................. tClass = me.getClassName(tObj[#class], tObj[#type])
+  [ 24] getparam 1 .............................. <tObj>
+  [ 26] pushsymb 30 ............................. <#id>
+  [ 28] pusharglist 2 ........................... <tObj, #id>
+  [ 30] objcall 28 .............................. <tObj[#id]>
+  [ 32] setlocal 1 .............................. tID = tObj[#id]
+  [ 34] getlocal 0 .............................. <tClass>
+  [ 36] pusharglist 1 ........................... <tClass>
+  [ 38] extcall 31 .............................. <voidp(tClass)>
+  [ 40] getlocal 1 .............................. <tID>
+  [ 42] pusharglist 1 ........................... <tID>
+  [ 44] extcall 31 .............................. <voidp(tID)>
+  [ 46] or ...................................... <voidp(tClass) or voidp(tID)>
+  [ 47] jmpifz [ 56] ............................ if voidp(tClass) or voidp(tID) then
+  [ 50] getparam 1 .............................. <tObj>
+  [ 52] pusharglistnoret 1 ...................... <tObj>
+  [ 54] extcall 22 .............................. return tObj
+  [ 56] getparam 2 .............................. <ttype>
+  [ 58] pushcons 0 .............................. <"active">
+  [ 60] nteq .................................... <ttype <> "active">
+  [ 61] getparam 2 .............................. <ttype>
+  [ 63] pushcons 1 .............................. <"item">
+  [ 65] nteq .................................... <ttype <> "item">
+  [ 66] and ..................................... <(ttype <> "active") and (ttype <> "item")>
+  [ 67] jmpifz [ 76] ............................ if (ttype <> "active") and (ttype <> "item") then
+  [ 70] getparam 1 .............................. <tObj>
+  [ 72] pusharglistnoret 1 ...................... <tObj>
+  [ 74] extcall 22 .............................. return tObj
+  [ 76] getprop 19 .............................. <pSimulatedDownload>
+  [ 78] jmpifz [ 94] ............................ if pSimulatedDownload then / else
+  [ 81] getprop 18 .............................. <pTempDownloadList>
+  [ 83] getlocal 0 .............................. <tClass>
+  [ 85] pusharglist 2 ........................... <pTempDownloadList, tClass>
+  [ 87] objcall 28 .............................. <pTempDownloadList[tClass]>
+  [ 89] setlocal 2 .............................. tIsDownloaded = pTempDownloadList[tClass]
+  [ 91] jmp [130]
+  [ 94] pushsymb 33 ............................. <#dynamicdownloader>
+  [ 96] pusharglist 1 ........................... <#dynamicdownloader>
+  [ 98] extcall 32 .............................. <getThread(#dynamicdownloader)>
+  [100] pushzero ................................ <0>
+  [101] eq ...................................... <getThread(#dynamicdownloader) = 0>
+  [102] jmpifz [112] ............................ if getThread(#dynamicdownloader) = 0 then / else
+  [105] pushint8 1 .............................. <1>
+  [107] setlocal 2 .............................. tIsDownloaded = 1
+  [109] jmp [130]
+  [112] pushsymb 33 ............................. <#dynamicdownloader>
+  [114] pusharglist 1 ........................... <#dynamicdownloader>
+  [116] extcall 32 .............................. <getThread(#dynamicdownloader)>
+  [118] pusharglist 1 ........................... <getThread(#dynamicdownloader)>
+  [120] objcall 34 .............................. <getThread(#dynamicdownloader).getComponent()>
+  [122] getlocal 0 .............................. <tClass>
+  [124] pusharglist 2 ........................... <getThread(#dynamicdownloader).getComponent(), tClass>
+  [126] objcall 35 .............................. <getThread(#dynamicdownloader).getComponent().isAssetDownloaded(tClass)>
+  [128] setlocal 2 .............................. tIsDownloaded = getThread(#dynamicdownloader).getComponent().isAssetDownloaded(tClass)
+  [130] getlocal 2 .............................. <tIsDownloaded>
+  [132] not ..................................... <not tIsDownloaded>
+  [133] jmpifz [312] ............................ if not tIsDownloaded then
+  [136] getprop 15 .............................. <pPlaceHolderList>
+  [138] getparam 2 .............................. <ttype>
+  [140] pusharglist 2 ........................... <pPlaceHolderList, ttype>
+  [142] objcall 28 .............................. <pPlaceHolderList[ttype]>
+  [144] pusharglist 1 ........................... <pPlaceHolderList[ttype]>
+  [146] extcall 31 .............................. <voidp(pPlaceHolderList[ttype])>
+  [148] jmpifz [162] ............................ if voidp(pPlaceHolderList[ttype]) then
+  [151] getprop 15 .............................. <pPlaceHolderList>
+  [153] getparam 2 .............................. <ttype>
+  [155] pusharglist 0 ........................... <[:]>
+  [157] pushproplist ............................ <[:]>
+  [158] pusharglistnoret 3 ...................... <pPlaceHolderList, ttype, [:]>
+  [160] objcall 36 .............................. pPlaceHolderList[ttype] = [:]
+  [162] getparam 1 .............................. <tObj>
+  [164] pusharglist 1 ........................... <tObj>
+  [166] objcall 37 .............................. <tObj.duplicate()>
+  [168] setlocal 3 .............................. tObjCopy = tObj.duplicate()
+  [170] getprop 15 .............................. <pPlaceHolderList>
+  [172] getparam 2 .............................. <ttype>
+  [174] pusharglist 2 ........................... <pPlaceHolderList, ttype>
+  [176] objcall 28 .............................. <pPlaceHolderList[ttype]>
+  [178] getlocal 1 .............................. <tID>
+  [180] pusharglist 2 ........................... <pPlaceHolderList[ttype], tID>
+  [182] objcall 38 .............................. <pPlaceHolderList[ttype].findPos(tID)>
+  [184] pusharglist 1 ........................... <pPlaceHolderList[ttype].findPos(tID)>
+  [186] extcall 31 .............................. <voidp(pPlaceHolderList[ttype].findPos(tID))>
+  [188] jmpifz [210] ............................ if voidp(pPlaceHolderList[ttype].findPos(tID)) then / else
+  [191] getprop 15 .............................. <pPlaceHolderList>
+  [193] getparam 2 .............................. <ttype>
+  [195] pusharglist 2 ........................... <pPlaceHolderList, ttype>
+  [197] objcall 28 .............................. <pPlaceHolderList[ttype]>
+  [199] getlocal 1 .............................. <tID>
+  [201] getlocal 3 .............................. <tObjCopy>
+  [203] pusharglistnoret 3 ...................... <pPlaceHolderList[ttype], tID, tObjCopy>
+  [205] objcall 39 .............................. pPlaceHolderList[ttype].addProp(tID, tObjCopy)
+  [207] jmp [226]
+  [210] getprop 15 .............................. <pPlaceHolderList>
+  [212] getparam 2 .............................. <ttype>
+  [214] pusharglist 2 ........................... <pPlaceHolderList, ttype>
+  [216] objcall 28 .............................. <pPlaceHolderList[ttype]>
+  [218] getlocal 1 .............................. <tID>
+  [220] getlocal 3 .............................. <tObjCopy>
+  [222] pusharglistnoret 3 ...................... <pPlaceHolderList[ttype], tID, tObjCopy>
+  [224] objcall 36 .............................. pPlaceHolderList[ttype][tID] = tObjCopy
+  [226] pushcons 4 .............................. <EMPTY>
+  [228] setlocal 4 .............................. tAssetType = EMPTY
+  [230] getparam 2 .............................. <ttype>
+  [232] pushcons 0 .............................. <"active">
+  [234] eq ...................................... <ttype = "active">
+  [235] jmpifz [270] ............................ if ttype = "active" then / else
+  [238] getparam 1 .............................. <tObj>
+  [240] pushsymb 40 ............................. <#dimensions>
+  [242] pushint8 1 .............................. <1>
+  [244] pushint8 1 .............................. <1>
+  [246] pusharglist 2 ........................... <[1, 1]>
+  [248] pushlist ................................ <[1, 1]>
+  [249] pusharglistnoret 3 ...................... <tObj, #dimensions, [1, 1]>
+  [251] objcall 36 .............................. tObj[#dimensions] = [1, 1]
+  [253] getparam 1 .............................. <tObj>
+  [255] pushsymb 27 ............................. <#class>
+  [257] pushcons 5 .............................. <"active_placeholder">
+  [259] pusharglistnoret 3 ...................... <tObj, #class, "active_placeholder">
+  [261] objcall 36 .............................. tObj[#class] = "active_placeholder"
+  [263] pushsymb 41 ............................. <#Active>
+  [265] setlocal 4 .............................. tAssetType = #Active
+  [267] jmp [302]
+  [270] getparam 2 .............................. <ttype>
+  [272] pushcons 1 .............................. <"item">
+  [274] eq ...................................... <ttype = "item">
+  [275] jmpifz [302] ............................ if ttype = "item" then
+  [278] getparam 1 .............................. <tObj>
+  [280] pushsymb 27 ............................. <#class>
+  [282] pushcons 6 .............................. <"item_placeholder">
+  [284] pusharglistnoret 3 ...................... <tObj, #class, "item_placeholder">
+  [286] objcall 36 .............................. tObj[#class] = "item_placeholder"
+  [288] getparam 1 .............................. <tObj>
+  [290] pushsymb 29 ............................. <#type>
+  [292] pushcons 4 .............................. <EMPTY>
+  [294] pusharglistnoret 3 ...................... <tObj, #type, EMPTY>
+  [296] objcall 36 .............................. tObj[#type] = EMPTY
+  [298] pushsymb 42 ............................. <#item>
+  [300] setlocal 4 .............................. tAssetType = #item
+  [302] getparam 0 .............................. <me>
+  [304] getlocal 0 .............................. <tClass>
+  [306] getlocal 4 .............................. <tAssetType>
+  [308] pusharglistnoret 3 ...................... <me, tClass, tAssetType>
+  [310] objcall 10 .............................. me.downloadClass(tClass, tAssetType)
+  [312] getparam 1 .............................. <tObj>
+  [314] pusharglistnoret 1 ...................... <tObj>
+  [316] extcall 22 .............................. return tObj
+  [318] ret
+end
+
+on downloadCompleted me, tClassID, tSuccess
+  [  0] pushint8 1 .............................. <1>
+  [  2] setlocal 0
+  [  4] getlocal 0
+  [  6] getprop 15 .............................. <pPlaceHolderList>
+  [  8] getobjprop 50 ........................... <pPlaceHolderList.count>
+  [ 10] lteq
+  [ 11] jmpifz [431] ............................ repeat with ttype = 1 to pPlaceHolderList.count
+  [ 14] pushzero ................................ <0>
+  [ 15] setlocal 1 .............................. tUpdated = 0
+  [ 17] getprop 15 .............................. <pPlaceHolderList>
+  [ 19] getlocal 0 .............................. <ttype>
+  [ 21] pusharglist 2 ........................... <pPlaceHolderList, ttype>
+  [ 23] objcall 51 .............................. <pPlaceHolderList.getPropAt(ttype)>
+  [ 25] setlocal 2 .............................. tTypeName = pPlaceHolderList.getPropAt(ttype)
+  [ 27] getprop 15 .............................. <pPlaceHolderList>
+  [ 29] getlocal 0 .............................. <ttype>
+  [ 31] pusharglist 2 ........................... <pPlaceHolderList, ttype>
+  [ 33] objcall 28 .............................. <pPlaceHolderList[ttype]>
+  [ 35] setlocal 3 .............................. tPlaceHolderList = pPlaceHolderList[ttype]
+  [ 37] getlocal 3 .............................. <tPlaceHolderList>
+  [ 39] getobjprop 50 ........................... <tPlaceHolderList.count>
+  [ 41] setlocal 4
+  [ 43] getlocal 4
+  [ 45] pushint8 1 .............................. <1>
+  [ 47] gteq
+  [ 48] jmpifz [385] ............................ repeat with tIndex = tPlaceHolderList.count down to 1
+  [ 51] getlocal 3 .............................. <tPlaceHolderList>
+  [ 53] getlocal 4 .............................. <tIndex>
+  [ 55] pusharglist 2 ........................... <tPlaceHolderList, tIndex>
+  [ 57] objcall 28 .............................. <tPlaceHolderList[tIndex]>
+  [ 59] setlocal 5 .............................. tObj = tPlaceHolderList[tIndex]
+  [ 61] getparam 0 .............................. <me>
+  [ 63] getlocal 5 .............................. <tObj>
+  [ 65] pushsymb 27 ............................. <#class>
+  [ 67] pusharglist 2 ........................... <tObj, #class>
+  [ 69] objcall 28 .............................. <tObj[#class]>
+  [ 71] getlocal 5 .............................. <tObj>
+  [ 73] pushsymb 29 ............................. <#type>
+  [ 75] pusharglist 2 ........................... <tObj, #type>
+  [ 77] objcall 28 .............................. <tObj[#type]>
+  [ 79] pusharglist 3 ........................... <me, tObj[#class], tObj[#type]>
+  [ 81] objcall 9 ............................... <me.getClassName(tObj[#class], tObj[#type])>
+  [ 83] setlocal 6 .............................. tClass = me.getClassName(tObj[#class], tObj[#type])
+  [ 85] getlocal 6 .............................. <tClass>
+  [ 87] getparam 1 .............................. <tClassID>
+  [ 89] eq ...................................... <tClass = tClassID>
+  [ 90] jmpifz [375] ............................ if tClass = tClassID then
+  [ 93] getlocal 5 .............................. <tObj>
+  [ 95] pushsymb 30 ............................. <#id>
+  [ 97] pusharglist 2 ........................... <tObj, #id>
+  [ 99] objcall 28 .............................. <tObj[#id]>
+  [101] setlocal 7 .............................. tID = tObj[#id]
+  [103] pushzero ................................ <0>
+  [104] setlocal 8 .............................. tExists = 0
+  [106] getlocal 2 .............................. <tTypeName>
+  [108] pushcons 0 .............................. <"active">
+  [110] eq ...................................... <tTypeName = "active">
+  [111] jmpifz [135] ............................ if tTypeName = "active" then / else
+  [114] pushsymb 52 ............................. <#room>
+  [116] pusharglist 1 ........................... <#room>
+  [118] extcall 32 .............................. <getThread(#room)>
+  [120] pusharglist 1 ........................... <getThread(#room)>
+  [122] objcall 34 .............................. <getThread(#room).getComponent()>
+  [124] getlocal 7 .............................. <tID>
+  [126] pusharglist 2 ........................... <getThread(#room).getComponent(), tID>
+  [128] objcall 53 .............................. <getThread(#room).getComponent().activeObjectExists(tID)>
+  [130] setlocal 8 .............................. tExists = getThread(#room).getComponent().activeObjectExists(tID)
+  [132] jmp [161]
+  [135] getlocal 2 .............................. <tTypeName>
+  [137] pushcons 1 .............................. <"item">
+  [139] eq ...................................... <tTypeName = "item">
+  [140] jmpifz [161] ............................ if tTypeName = "item" then
+  [143] pushsymb 52 ............................. <#room>
+  [145] pusharglist 1 ........................... <#room>
+  [147] extcall 32 .............................. <getThread(#room)>
+  [149] pusharglist 1 ........................... <getThread(#room)>
+  [151] objcall 34 .............................. <getThread(#room).getComponent()>
+  [153] getlocal 7 .............................. <tID>
+  [155] pusharglist 2 ........................... <getThread(#room).getComponent(), tID>
+  [157] objcall 54 .............................. <getThread(#room).getComponent().itemObjectExists(tID)>
+  [159] setlocal 8 .............................. tExists = getThread(#room).getComponent().itemObjectExists(tID)
+  [161] getlocal 8 .............................. <tExists>
+  [163] getparam 2 .............................. <tSuccess>
+  [165] and ..................................... <tExists and tSuccess>
+  [166] jmpifz [337] ............................ if tExists and tSuccess then / else
+  [169] getlocal 2 .............................. <tTypeName>
+  [171] pushcons 0 .............................. <"active">
+  [173] eq ...................................... <tTypeName = "active">
+  [174] jmpifz [242] ............................ if tTypeName = "active" then / else
+  [177] pushsymb 52 ............................. <#room>
+  [179] pusharglist 1 ........................... <#room>
+  [181] extcall 32 .............................. <getThread(#room)>
+  [183] pusharglist 1 ........................... <getThread(#room)>
+  [185] objcall 34 .............................. <getThread(#room).getComponent()>
+  [187] getlocal 5 .............................. <tObj>
+  [189] pusharglistnoret 2 ...................... <getThread(#room).getComponent(), tObj>
+  [191] objcall 55 .............................. getThread(#room).getComponent().validateActiveObjects(tObj)
+  [193] getlocal 5 .............................. <tObj>
+  [195] pushsymb 56 ............................. <#stripId>
+  [197] pusharglist 2 ........................... <tObj, #stripId>
+  [199] objcall 38 .............................. <tObj.findPos(#stripId)>
+  [201] pusharglist 1 ........................... <tObj.findPos(#stripId)>
+  [203] extcall 31 .............................. <voidp(tObj.findPos(#stripId))>
+  [205] not ..................................... <not voidp(tObj.findPos(#stripId))>
+  [206] jmpifz [239] ............................ if not voidp(tObj.findPos(#stripId)) then
+  [209] pushsymb 52 ............................. <#room>
+  [211] pusharglist 1 ........................... <#room>
+  [213] extcall 32 .............................. <getThread(#room)>
+  [215] pusharglist 1 ........................... <getThread(#room)>
+  [217] objcall 34 .............................. <getThread(#room).getComponent()>
+  [219] getlocal 7 .............................. <tID>
+  [221] pusharglist 2 ........................... <getThread(#room).getComponent(), tID>
+  [223] objcall 57 .............................. <getThread(#room).getComponent().getActiveObject(tID)>
+  [225] pushsymb 56 ............................. <#stripId>
+  [227] getlocal 5 .............................. <tObj>
+  [229] pushsymb 56 ............................. <#stripId>
+  [231] pusharglist 2 ........................... <tObj, #stripId>
+  [233] objcall 28 .............................. <tObj[#stripId]>
+  [235] pusharglistnoret 3 ...................... <getThread(#room).getComponent().getActiveObject(tID), #stripId, tObj[#stripId]>
+  [237] objcall 58 .............................. getThread(#room).getComponent().getActiveObject(tID).setaProp(#stripId, tObj[#stripId])
+  [239] jmp [312]
+  [242] getlocal 2 .............................. <tTypeName>
+  [244] pushcons 1 .............................. <"item">
+  [246] eq ...................................... <tTypeName = "item">
+  [247] jmpifz [312] ............................ if tTypeName = "item" then
+  [250] pushsymb 52 ............................. <#room>
+  [252] pusharglist 1 ........................... <#room>
+  [254] extcall 32 .............................. <getThread(#room)>
+  [256] pusharglist 1 ........................... <getThread(#room)>
+  [258] objcall 34 .............................. <getThread(#room).getComponent()>
+  [260] getlocal 5 .............................. <tObj>
+  [262] pusharglistnoret 2 ...................... <getThread(#room).getComponent(), tObj>
+  [264] objcall 59 .............................. getThread(#room).getComponent().validateItemObjects(tObj)
+  [266] getlocal 5 .............................. <tObj>
+  [268] pushsymb 56 ............................. <#stripId>
+  [270] pusharglist 2 ........................... <tObj, #stripId>
+  [272] objcall 38 .............................. <tObj.findPos(#stripId)>
+  [274] pusharglist 1 ........................... <tObj.findPos(#stripId)>
+  [276] extcall 31 .............................. <voidp(tObj.findPos(#stripId))>
+  [278] not ..................................... <not voidp(tObj.findPos(#stripId))>
+  [279] jmpifz [312] ............................ if not voidp(tObj.findPos(#stripId)) then
+  [282] pushsymb 52 ............................. <#room>
+  [284] pusharglist 1 ........................... <#room>
+  [286] extcall 32 .............................. <getThread(#room)>
+  [288] pusharglist 1 ........................... <getThread(#room)>
+  [290] objcall 34 .............................. <getThread(#room).getComponent()>
+  [292] getlocal 7 .............................. <tID>
+  [294] pusharglist 2 ........................... <getThread(#room).getComponent(), tID>
+  [296] objcall 60 .............................. <getThread(#room).getComponent().getItemObject(tID)>
+  [298] pushsymb 56 ............................. <#stripId>
+  [300] getlocal 5 .............................. <tObj>
+  [302] pushsymb 56 ............................. <#stripId>
+  [304] pusharglist 2 ........................... <tObj, #stripId>
+  [306] objcall 28 .............................. <tObj[#stripId]>
+  [308] pusharglistnoret 3 ...................... <getThread(#room).getComponent().getItemObject(tID), #stripId, tObj[#stripId]>
+  [310] objcall 58 .............................. getThread(#room).getComponent().getItemObject(tID).setaProp(#stripId, tObj[#stripId])
+  [312] getparam 0 .............................. <me>
+  [314] getlocal 7 .............................. <tID>
+  [316] getlocal 0 .............................. <ttype>
+  [318] pusharglistnoret 3 ...................... <me, tID, ttype>
+  [320] objcall 7 ............................... me.processMessageBuffer(tID, ttype)
+  [322] pushint8 1 .............................. <1>
+  [324] setlocal 1 .............................. tUpdated = 1
+  [326] pushsymb 62 ............................. <#objectFinalized>
+  [328] getlocal 7 .............................. <tID>
+  [330] pusharglistnoret 2 ...................... <#objectFinalized, tID>
+  [332] extcall 61 .............................. executeMessage(#objectFinalized, tID)
+  [334] jmp [367]
+  [337] getprop 16 .............................. <pMessageBuffer>
+  [339] getlocal 0 .............................. <ttype>
+  [341] pusharglist 2 ........................... <pMessageBuffer, ttype>
+  [343] objcall 28 .............................. <pMessageBuffer[ttype]>
+  [345] pusharglist 1 ........................... <pMessageBuffer[ttype]>
+  [347] extcall 31 .............................. <voidp(pMessageBuffer[ttype])>
+  [349] not ..................................... <not voidp(pMessageBuffer[ttype])>
+  [350] jmpifz [367] ............................ if not voidp(pMessageBuffer[ttype]) then
+  [353] getprop 16 .............................. <pMessageBuffer>
+  [355] getlocal 0 .............................. <ttype>
+  [357] pusharglist 2 ........................... <pMessageBuffer, ttype>
+  [359] objcall 28 .............................. <pMessageBuffer[ttype]>
+  [361] getlocal 7 .............................. <tID>
+  [363] pusharglistnoret 2 ...................... <pMessageBuffer[ttype], tID>
+  [365] objcall 63 .............................. pMessageBuffer[ttype].deleteProp(tID)
+  [367] getlocal 3 .............................. <tPlaceHolderList>
+  [369] getlocal 4 .............................. <tIndex>
+  [371] pusharglistnoret 2 ...................... <tPlaceHolderList, tIndex>
+  [373] objcall 64 .............................. tPlaceHolderList.deleteAt(tIndex)
+  [375] pushint8 -1
+  [377] getlocal 4
+  [379] add
+  [380] setlocal 4
+  [382] endrepeat [ 43]
+  [385] getlocal 1 .............................. <tUpdated>
+  [387] jmpifz [421] ............................ if tUpdated then
+  [390] getlocal 2 .............................. <tTypeName>
+  [392] pushcons 0 .............................. <"active">
+  [394] eq ...................................... <tTypeName = "active">
+  [395] jmpifz [407] ............................ if tTypeName = "active" then
+  [398] pushsymb 65 ............................. <#activeObjectsUpdated>
+  [400] pusharglistnoret 1 ...................... <#activeObjectsUpdated>
+  [402] extcall 61 .............................. executeMessage(#activeObjectsUpdated)
+  [404] jmp [421] ............................... next repeat
+  [407] getlocal 2 .............................. <tTypeName>
+  [409] pushcons 1 .............................. <"item">
+  [411] eq ...................................... <tTypeName = "item">
+  [412] jmpifz [421] ............................ if tTypeName = "item" then
+  [415] pushsymb 66 ............................. <#itemObjectsUpdated>
+  [417] pusharglistnoret 1 ...................... <#itemObjectsUpdated>
+  [419] extcall 61 .............................. executeMessage(#itemObjectsUpdated)
+  [421] pushint8 1
+  [423] getlocal 0
+  [425] add
+  [426] setlocal 0
+  [428] endrepeat [  4]
+  [431] ret
+end
+
+on downloadObject me, tdata
+  [  0] getparam 1 .............................. <tdata>
+  [  2] pusharglist 1 ........................... <tdata>
+  [  4] extcall 74 .............................. <ilk(tdata)>
+  [  6] pushsymb 75 ............................. <#propList>
+  [  8] nteq .................................... <ilk(tdata) <> #propList>
+  [  9] jmpifz [ 17] ............................ if ilk(tdata) <> #propList then
+  [ 12] pushzero ................................ <0>
+  [ 13] pusharglistnoret 1 ...................... <0>
+  [ 15] extcall 22 .............................. return 0
+  [ 17] getparam 0 .............................. <me>
+  [ 19] getparam 1 .............................. <tdata>
+  [ 21] pushsymb 27 ............................. <#class>
+  [ 23] pusharglist 2 ........................... <tdata, #class>
+  [ 25] objcall 28 .............................. <tdata[#class]>
+  [ 27] getparam 1 .............................. <tdata>
+  [ 29] pushsymb 29 ............................. <#type>
+  [ 31] pusharglist 2 ........................... <tdata, #type>
+  [ 33] objcall 28 .............................. <tdata[#type]>
+  [ 35] pusharglist 3 ........................... <me, tdata[#class], tdata[#type]>
+  [ 37] objcall 9 ............................... <me.getClassName(tdata[#class], tdata[#type])>
+  [ 39] setlocal 0 .............................. tClass = me.getClassName(tdata[#class], tdata[#type])
+  [ 41] pushsymb 33 ............................. <#dynamicdownloader>
+  [ 43] pusharglist 1 ........................... <#dynamicdownloader>
+  [ 45] extcall 32 .............................. <getThread(#dynamicdownloader)>
+  [ 47] pushzero ................................ <0>
+  [ 48] eq ...................................... <getThread(#dynamicdownloader) = 0>
+  [ 49] jmpifz [ 59] ............................ if getThread(#dynamicdownloader) = 0 then / else
+  [ 52] pushint8 1 .............................. <1>
+  [ 54] setlocal 1 .............................. tIsDownloaded = 1
+  [ 56] jmp [ 77]
+  [ 59] pushsymb 33 ............................. <#dynamicdownloader>
+  [ 61] pusharglist 1 ........................... <#dynamicdownloader>
+  [ 63] extcall 32 .............................. <getThread(#dynamicdownloader)>
+  [ 65] pusharglist 1 ........................... <getThread(#dynamicdownloader)>
+  [ 67] objcall 34 .............................. <getThread(#dynamicdownloader).getComponent()>
+  [ 69] getlocal 0 .............................. <tClass>
+  [ 71] pusharglist 2 ........................... <getThread(#dynamicdownloader).getComponent(), tClass>
+  [ 73] objcall 35 .............................. <getThread(#dynamicdownloader).getComponent().isAssetDownloaded(tClass)>
+  [ 75] setlocal 1 .............................. tIsDownloaded = getThread(#dynamicdownloader).getComponent().isAssetDownloaded(tClass)
+  [ 77] getlocal 1 .............................. <tIsDownloaded>
+  [ 79] jmpifz [ 98] ............................ if tIsDownloaded then
+  [ 82] getparam 1 .............................. <tdata>
+  [ 84] pushsymb 76 ............................. <#ready>
+  [ 86] pushint8 1 .............................. <1>
+  [ 88] pusharglistnoret 3 ...................... <tdata, #ready, 1>
+  [ 90] objcall 36 .............................. tdata[#ready] = 1
+  [ 92] pushint8 1 .............................. <1>
+  [ 94] pusharglistnoret 1 ...................... <1>
+  [ 96] extcall 22 .............................. return 1
+  [ 98] getparam 1 .............................. <tdata>
+  [100] pushsymb 76 ............................. <#ready>
+  [102] pushzero ................................ <0>
+  [103] pusharglistnoret 3 ...................... <tdata, #ready, 0>
+  [105] objcall 36 .............................. tdata[#ready] = 0
+  [107] getparam 0 .............................. <me>
+  [109] getlocal 0 .............................. <tClass>
+  [111] getparam 1 .............................. <tdata>
+  [113] pushsymb 29 ............................. <#type>
+  [115] pusharglist 2 ........................... <tdata, #type>
+  [117] objcall 28 .............................. <tdata[#type]>
+  [119] pusharglistnoret 3 ...................... <me, tClass, tdata[#type]>
+  [121] objcall 10 .............................. me.downloadClass(tClass, tdata[#type])
+  [123] pushint8 1 .............................. <1>
+  [125] pusharglistnoret 1 ...................... <1>
+  [127] extcall 22 .............................. return 1
+  [129] ret
+end
+
+on removeObject me, tID, ttype
+  [  0] getprop 15 .............................. <pPlaceHolderList>
+  [  2] getparam 2 .............................. <ttype>
+  [  4] pusharglist 2 ........................... <pPlaceHolderList, ttype>
+  [  6] objcall 28 .............................. <pPlaceHolderList[ttype]>
+  [  8] pusharglist 1 ........................... <pPlaceHolderList[ttype]>
+  [ 10] extcall 31 .............................. <voidp(pPlaceHolderList[ttype])>
+  [ 12] not ..................................... <not voidp(pPlaceHolderList[ttype])>
+  [ 13] jmpifz [ 30] ............................ if not voidp(pPlaceHolderList[ttype]) then
+  [ 16] getprop 15 .............................. <pPlaceHolderList>
+  [ 18] getparam 2 .............................. <ttype>
+  [ 20] pusharglist 2 ........................... <pPlaceHolderList, ttype>
+  [ 22] objcall 28 .............................. <pPlaceHolderList[ttype]>
+  [ 24] getparam 1 .............................. <tID>
+  [ 26] pusharglistnoret 2 ...................... <pPlaceHolderList[ttype], tID>
+  [ 28] objcall 63 .............................. pPlaceHolderList[ttype].deleteProp(tID)
+  [ 30] getprop 16 .............................. <pMessageBuffer>
+  [ 32] getparam 2 .............................. <ttype>
+  [ 34] pusharglist 2 ........................... <pMessageBuffer, ttype>
+  [ 36] objcall 28 .............................. <pMessageBuffer[ttype]>
+  [ 38] pusharglist 1 ........................... <pMessageBuffer[ttype]>
+  [ 40] extcall 31 .............................. <voidp(pMessageBuffer[ttype])>
+  [ 42] not ..................................... <not voidp(pMessageBuffer[ttype])>
+  [ 43] jmpifz [ 60] ............................ if not voidp(pMessageBuffer[ttype]) then
+  [ 46] getprop 16 .............................. <pMessageBuffer>
+  [ 48] getparam 2 .............................. <ttype>
+  [ 50] pusharglist 2 ........................... <pMessageBuffer, ttype>
+  [ 52] objcall 28 .............................. <pMessageBuffer[ttype]>
+  [ 54] getparam 1 .............................. <tID>
+  [ 56] pusharglistnoret 2 ...................... <pMessageBuffer[ttype], tID>
+  [ 58] objcall 63 .............................. pMessageBuffer[ttype].deleteProp(tID)
+  [ 60] ret
+end
+
+on bufferMessage me, tMsg, tID, ttype
+  [  0] getparam 1 .............................. <tMsg>
+  [  2] pusharglist 1 ........................... <tMsg>
+  [  4] extcall 78 .............................. <listp(tMsg)>
+  [  6] not ..................................... <not listp(tMsg)>
+  [  7] jmpifz [ 15] ............................ if not listp(tMsg) then
+  [ 10] pushzero ................................ <0>
+  [ 11] pusharglistnoret 1 ...................... <0>
+  [ 13] extcall 22 .............................. return 0
+  [ 15] getparam 1 .............................. <tMsg>
+  [ 17] pushsymb 79 ............................. <#subject>
+  [ 19] pusharglist 2 ........................... <tMsg, #subject>
+  [ 21] objcall 28 .............................. <tMsg[#subject]>
+  [ 23] setlocal 0 .............................. tSubject = tMsg[#subject]
+  [ 25] getparam 2 .............................. <tID>
+  [ 27] pusharglist 1 ........................... <tID>
+  [ 29] extcall 31 .............................. <voidp(tID)>
+  [ 31] getparam 3 .............................. <ttype>
+  [ 33] pusharglist 1 ........................... <ttype>
+  [ 35] extcall 31 .............................. <voidp(ttype)>
+  [ 37] or ...................................... <voidp(tID) or voidp(ttype)>
+  [ 38] getlocal 0 .............................. <tSubject>
+  [ 40] pusharglist 1 ........................... <tSubject>
+  [ 42] extcall 31 .............................. <voidp(tSubject)>
+  [ 44] or ...................................... <voidp(tID) or voidp(ttype) or voidp(tSubject)>
+  [ 45] jmpifz [ 53] ............................ if voidp(tID) or voidp(ttype) or voidp(tSubject) then
+  [ 48] pushzero ................................ <0>
+  [ 49] pusharglistnoret 1 ...................... <0>
+  [ 51] extcall 22 .............................. return 0
+  [ 53] getprop 15 .............................. <pPlaceHolderList>
+  [ 55] getparam 3 .............................. <ttype>
+  [ 57] pusharglist 2 ........................... <pPlaceHolderList, ttype>
+  [ 59] objcall 28 .............................. <pPlaceHolderList[ttype]>
+  [ 61] pusharglist 1 ........................... <pPlaceHolderList[ttype]>
+  [ 63] extcall 31 .............................. <voidp(pPlaceHolderList[ttype])>
+  [ 65] getprop 16 .............................. <pMessageBuffer>
+  [ 67] getparam 3 .............................. <ttype>
+  [ 69] pusharglist 2 ........................... <pMessageBuffer, ttype>
+  [ 71] objcall 28 .............................. <pMessageBuffer[ttype]>
+  [ 73] pusharglist 1 ........................... <pMessageBuffer[ttype]>
+  [ 75] extcall 31 .............................. <voidp(pMessageBuffer[ttype])>
+  [ 77] or ...................................... <voidp(pPlaceHolderList[ttype]) or voidp(pMessageBuffer[ttype])>
+  [ 78] jmpifz [ 86] ............................ if voidp(pPlaceHolderList[ttype]) or voidp(pMessageBuffer[ttype]) then
+  [ 81] pushzero ................................ <0>
+  [ 82] pusharglistnoret 1 ...................... <0>
+  [ 84] extcall 22 .............................. return 0
+  [ 86] getprop 15 .............................. <pPlaceHolderList>
+  [ 88] getparam 3 .............................. <ttype>
+  [ 90] pusharglist 2 ........................... <pPlaceHolderList, ttype>
+  [ 92] objcall 28 .............................. <pPlaceHolderList[ttype]>
+  [ 94] getparam 2 .............................. <tID>
+  [ 96] pusharglist 2 ........................... <pPlaceHolderList[ttype], tID>
+  [ 98] objcall 38 .............................. <pPlaceHolderList[ttype].findPos(tID)>
+  [100] pusharglist 1 ........................... <pPlaceHolderList[ttype].findPos(tID)>
+  [102] extcall 31 .............................. <voidp(pPlaceHolderList[ttype].findPos(tID))>
+  [104] not ..................................... <not voidp(pPlaceHolderList[ttype].findPos(tID))>
+  [105] jmpifz [244] ............................ if not voidp(pPlaceHolderList[ttype].findPos(tID)) then
+  [108] getprop 16 .............................. <pMessageBuffer>
+  [110] getparam 3 .............................. <ttype>
+  [112] pusharglist 2 ........................... <pMessageBuffer, ttype>
+  [114] objcall 28 .............................. <pMessageBuffer[ttype]>
+  [116] getparam 2 .............................. <tID>
+  [118] pusharglist 2 ........................... <pMessageBuffer[ttype], tID>
+  [120] objcall 38 .............................. <pMessageBuffer[ttype].findPos(tID)>
+  [122] pusharglist 1 ........................... <pMessageBuffer[ttype].findPos(tID)>
+  [124] extcall 31 .............................. <voidp(pMessageBuffer[ttype].findPos(tID))>
+  [126] jmpifz [146] ............................ if voidp(pMessageBuffer[ttype].findPos(tID)) then
+  [129] getprop 16 .............................. <pMessageBuffer>
+  [131] getparam 3 .............................. <ttype>
+  [133] pusharglist 2 ........................... <pMessageBuffer, ttype>
+  [135] objcall 28 .............................. <pMessageBuffer[ttype]>
+  [137] getparam 2 .............................. <tID>
+  [139] pusharglist 0 ........................... <[]>
+  [141] pushlist ................................ <[]>
+  [142] pusharglistnoret 3 ...................... <pMessageBuffer[ttype], tID, []>
+  [144] objcall 36 .............................. pMessageBuffer[ttype][tID] = []
+  [146] getprop 16 .............................. <pMessageBuffer>
+  [148] getparam 3 .............................. <ttype>
+  [150] pusharglist 2 ........................... <pMessageBuffer, ttype>
+  [152] objcall 28 .............................. <pMessageBuffer[ttype]>
+  [154] getparam 2 .............................. <tID>
+  [156] pusharglist 2 ........................... <pMessageBuffer[ttype], tID>
+  [158] objcall 28 .............................. <pMessageBuffer[ttype][tID]>
+  [160] setlocal 1 .............................. tBuffer = pMessageBuffer[ttype][tID]
+  [162] pushint8 1 .............................. <1>
+  [164] setlocal 2
+  [166] getlocal 2
+  [168] getlocal 1 .............................. <tBuffer>
+  [170] getobjprop 50 ........................... <tBuffer.count>
+  [172] lteq
+  [173] jmpifz [224] ............................ repeat with tIndex = 1 to tBuffer.count
+  [176] getlocal 1 .............................. <tBuffer>
+  [178] getlocal 2 .............................. <tIndex>
+  [180] pusharglist 2 ........................... <tBuffer, tIndex>
+  [182] objcall 28 .............................. <tBuffer[tIndex]>
+  [184] setlocal 3 .............................. tMsg_old = tBuffer[tIndex]
+  [186] getlocal 3 .............................. <tMsg_old>
+  [188] pushsymb 79 ............................. <#subject>
+  [190] pusharglist 2 ........................... <tMsg_old, #subject>
+  [192] objcall 28 .............................. <tMsg_old[#subject]>
+  [194] setlocal 4 .............................. tSubjectOld = tMsg_old[#subject]
+  [196] getlocal 0 .............................. <tSubject>
+  [198] getlocal 4 .............................. <tSubjectOld>
+  [200] eq ...................................... <tSubject = tSubjectOld>
+  [201] jmpifz [215] ............................ if tSubject = tSubjectOld then
+  [204] getlocal 1 .............................. <tBuffer>
+  [206] getlocal 2 .............................. <tIndex>
+  [208] pusharglistnoret 2 ...................... <tBuffer, tIndex>
+  [210] objcall 64 .............................. tBuffer.deleteAt(tIndex)
+  [212] jmp [224] ............................... exit repeat
+  [215] pushint8 1
+  [217] getlocal 2
+  [219] add
+  [220] setlocal 2
+  [222] endrepeat [166]
+  [224] getprop 16 .............................. <pMessageBuffer>
+  [226] getparam 3 .............................. <ttype>
+  [228] pusharglist 2 ........................... <pMessageBuffer, ttype>
+  [230] objcall 28 .............................. <pMessageBuffer[ttype]>
+  [232] getparam 2 .............................. <tID>
+  [234] pusharglist 2 ........................... <pMessageBuffer[ttype], tID>
+  [236] objcall 28 .............................. <pMessageBuffer[ttype][tID]>
+  [238] getparam 1 .............................. <tMsg>
+  [240] pusharglistnoret 2 ...................... <pMessageBuffer[ttype][tID], tMsg>
+  [242] objcall 80 .............................. pMessageBuffer[ttype][tID].add(tMsg)
+  [244] ret
+end
+
+on processMessageBuffer me, tID, ttype
+  [  0] getparam 1 .............................. <tID>
+  [  2] pusharglist 1 ........................... <tID>
+  [  4] extcall 31 .............................. <voidp(tID)>
+  [  6] getparam 2 .............................. <ttype>
+  [  8] pusharglist 1 ........................... <ttype>
+  [ 10] extcall 31 .............................. <voidp(ttype)>
+  [ 12] or ...................................... <voidp(tID) or voidp(ttype)>
+  [ 13] jmpifz [ 21] ............................ if voidp(tID) or voidp(ttype) then
+  [ 16] pushzero ................................ <0>
+  [ 17] pusharglistnoret 1 ...................... <0>
+  [ 19] extcall 22 .............................. return 0
+  [ 21] getprop 16 .............................. <pMessageBuffer>
+  [ 23] getparam 2 .............................. <ttype>
+  [ 25] pusharglist 2 ........................... <pMessageBuffer, ttype>
+  [ 27] objcall 28 .............................. <pMessageBuffer[ttype]>
+  [ 29] pusharglist 1 ........................... <pMessageBuffer[ttype]>
+  [ 31] extcall 31 .............................. <voidp(pMessageBuffer[ttype])>
+  [ 33] jmpifz [ 41] ............................ if voidp(pMessageBuffer[ttype]) then
+  [ 36] pushzero ................................ <0>
+  [ 37] pusharglistnoret 1 ...................... <0>
+  [ 39] extcall 22 .............................. return 0
+  [ 41] getprop 16 .............................. <pMessageBuffer>
+  [ 43] getparam 2 .............................. <ttype>
+  [ 45] pusharglist 2 ........................... <pMessageBuffer, ttype>
+  [ 47] objcall 28 .............................. <pMessageBuffer[ttype]>
+  [ 49] getparam 1 .............................. <tID>
+  [ 51] pusharglist 2 ........................... <pMessageBuffer[ttype], tID>
+  [ 53] objcall 86 .............................. <pMessageBuffer[ttype].getaProp(tID)>
+  [ 55] setlocal 0 .............................. tBuffer = pMessageBuffer[ttype].getaProp(tID)
+  [ 57] getlocal 0 .............................. <tBuffer>
+  [ 59] pusharglist 1 ........................... <tBuffer>
+  [ 61] extcall 31 .............................. <voidp(tBuffer)>
+  [ 63] not ..................................... <not voidp(tBuffer)>
+  [ 64] jmpifz [368] ............................ if not voidp(tBuffer) then
+  [ 67] getlocal 0 .............................. <tBuffer>
+  [ 69] peek 0
+  [ 71] pusharglist 1
+  [ 73] extcall 50
+  [ 75] pushint8 1
+  [ 77] peek 0
+  [ 79] peek 2
+  [ 81] lteq
+  [ 82] jmpifz [352] ............................ repeat with tMsg in tBuffer
+  [ 85] peek 2
+  [ 87] peek 1
+  [ 89] pusharglist 2
+  [ 91] extcall 28
+  [ 93] setlocal 1
+  [ 95] getlocal 1 .............................. <tMsg>
+  [ 97] pushsymb 79 ............................. <#subject>
+  [ 99] pusharglist 2 ........................... <tMsg, #subject>
+  [101] objcall 28 .............................. <tMsg[#subject]>
+  [103] setlocal 2 .............................. tSubject = tMsg[#subject]
+  [105] getlocal 1 .............................. <tMsg>
+  [107] getobjprop 87 ........................... <tMsg.content>
+  [109] setlocal 3 .............................. tContent = tMsg.content
+  [111] getlocal 1 .............................. <tMsg>
+  [113] getobjprop 88 ........................... <tMsg.connection>
+  [115] setlocal 4 .............................. tConn = tMsg.connection
+  [117] getlocal 4 .............................. <tConn>
+  [119] pusharglist 1 ........................... <tConn>
+  [121] extcall 31 .............................. <voidp(tConn)>
+  [123] not ..................................... <not voidp(tConn)>
+  [124] jmpifz [346] ............................ if not voidp(tConn) then
+  [127] getlocal 4 .............................. <tConn>
+  [129] pushsymb 89 ............................. <#message>
+  [131] pusharglist 2 ........................... <tConn, #message>
+  [133] objcall 90 .............................. <tConn.getProperty(#message)>
+  [135] setlocal 5 .............................. tMsgStr = tConn.getProperty(#message)
+  [137] pusharglist 0 ........................... <[:]>
+  [139] pushproplist ............................ <[:]>
+  [140] setlocal 6 .............................. tMsgCopy = [:]
+  [142] pushint8 1 .............................. <1>
+  [144] setlocal 7
+  [146] getlocal 7
+  [148] getlocal 5 .............................. <tMsgStr>
+  [150] getobjprop 50 ........................... <tMsgStr.count>
+  [152] lteq
+  [153] jmpifz [211] ............................ repeat with tIndex = 1 to tMsgStr.count
+  [156] getlocal 5 .............................. <tMsgStr>
+  [158] getlocal 7 .............................. <tIndex>
+  [160] pusharglist 2 ........................... <tMsgStr, tIndex>
+  [162] objcall 51 .............................. <tMsgStr.getPropAt(tIndex)>
+  [164] setlocal 8 .............................. tProp = tMsgStr.getPropAt(tIndex)
+  [166] getlocal 5 .............................. <tMsgStr>
+  [168] getlocal 7 .............................. <tIndex>
+  [170] pusharglist 2 ........................... <tMsgStr, tIndex>
+  [172] objcall 28 .............................. <tMsgStr[tIndex]>
+  [174] setlocal 9 .............................. tValue = tMsgStr[tIndex]
+  [176] getlocal 6 .............................. <tMsgCopy>
+  [178] getlocal 8 .............................. <tProp>
+  [180] getlocal 9 .............................. <tValue>
+  [182] pusharglistnoret 3 ...................... <tMsgCopy, tProp, tValue>
+  [184] objcall 36 .............................. tMsgCopy[tProp] = tValue
+  [186] getlocal 5 .............................. <tMsgStr>
+  [188] getlocal 8 .............................. <tProp>
+  [190] getlocal 1 .............................. <tMsg>
+  [192] getlocal 8 .............................. <tProp>
+  [194] pusharglist 2 ........................... <tMsg, tProp>
+  [196] objcall 86 .............................. <tMsg.getaProp(tProp)>
+  [198] pusharglistnoret 3 ...................... <tMsgStr, tProp, tMsg.getaProp(tProp)>
+  [200] objcall 36 .............................. tMsgStr[tProp] = tMsg.getaProp(tProp)
+  [202] pushint8 1
+  [204] getlocal 7
+  [206] add
+  [207] setlocal 7
+  [209] endrepeat [146]
+  [211] getlocal 2 .............................. <tSubject>
+  [213] peek 0 .................................. case tSubject of
+  [215] pushcons 7 .............................. <"88">
+  [217] eq
+  [218] jmpifz [240] ............................ (case) "88":
+  [221] pushsymb 52 ............................. <#room>
+  [223] pusharglist 1 ........................... <#room>
+  [225] extcall 32 .............................. <getThread(#room)>
+  [227] pusharglist 1 ........................... <getThread(#room)>
+  [229] objcall 91 .............................. <getThread(#room).getHandler()>
+  [231] getlocal 1 .............................. <tMsg>
+  [233] pusharglistnoret 2 ...................... <getThread(#room).getHandler(), tMsg>
+  [235] objcall 92 .............................. getThread(#room).getHandler().handle_stuffdataupdate(tMsg)
+  [237] jmp [291]
+  [240] peek 0
+  [242] pushcons 8 .............................. <"95">
+  [244] eq
+  [245] jmpifz [267] ............................ (case) "95":
+  [248] pushsymb 52 ............................. <#room>
+  [250] pusharglist 1 ........................... <#room>
+  [252] extcall 32 .............................. <getThread(#room)>
+  [254] pusharglist 1 ........................... <getThread(#room)>
+  [256] objcall 91 .............................. <getThread(#room).getHandler()>
+  [258] getlocal 1 .............................. <tMsg>
+  [260] pusharglistnoret 2 ...................... <getThread(#room).getHandler(), tMsg>
+  [262] objcall 93 .............................. getThread(#room).getHandler().handle_activeobject_update(tMsg)
+  [264] jmp [291]
+  [267] peek 0
+  [269] pushcons 9 .............................. <"85">
+  [271] eq
+  [272] jmpifz [291] ............................ (case) "85":
+  [275] pushsymb 52 ............................. <#room>
+  [277] pusharglist 1 ........................... <#room>
+  [279] extcall 32 .............................. <getThread(#room)>
+  [281] pusharglist 1 ........................... <getThread(#room)>
+  [283] objcall 91 .............................. <getThread(#room).getHandler()>
+  [285] getlocal 1 .............................. <tMsg>
+  [287] pusharglistnoret 2 ...................... <getThread(#room).getHandler(), tMsg>
+  [289] objcall 94 .............................. getThread(#room).getHandler().handle_updateitem(tMsg)
+  [291] pop 1 ................................... end case
+  [293] pushint8 1 .............................. <1>
+  [295] setlocal 7
+  [297] getlocal 7
+  [299] getlocal 6 .............................. <tMsgCopy>
+  [301] getobjprop 50 ........................... <tMsgCopy.count>
+  [303] lteq
+  [304] jmpifz [346] ............................ repeat with tIndex = 1 to tMsgCopy.count
+  [307] getlocal 6 .............................. <tMsgCopy>
+  [309] getlocal 7 .............................. <tIndex>
+  [311] pusharglist 2 ........................... <tMsgCopy, tIndex>
+  [313] objcall 51 .............................. <tMsgCopy.getPropAt(tIndex)>
+  [315] setlocal 8 .............................. tProp = tMsgCopy.getPropAt(tIndex)
+  [317] getlocal 6 .............................. <tMsgCopy>
+  [319] getlocal 7 .............................. <tIndex>
+  [321] pusharglist 2 ........................... <tMsgCopy, tIndex>
+  [323] objcall 28 .............................. <tMsgCopy[tIndex]>
+  [325] setlocal 9 .............................. tValue = tMsgCopy[tIndex]
+  [327] getlocal 5 .............................. <tMsgStr>
+  [329] getlocal 8 .............................. <tProp>
+  [331] getlocal 9 .............................. <tValue>
+  [333] pusharglistnoret 3 ...................... <tMsgStr, tProp, tValue>
+  [335] objcall 36 .............................. tMsgStr[tProp] = tValue
+  [337] pushint8 1
+  [339] getlocal 7
+  [341] add
+  [342] setlocal 7
+  [344] endrepeat [297]
+  [346] pushint8 1
+  [348] add
+  [349] endrepeat [ 77]
+  [352] pop 3
+  [354] getprop 16 .............................. <pMessageBuffer>
+  [356] getparam 2 .............................. <ttype>
+  [358] pusharglist 2 ........................... <pMessageBuffer, ttype>
+  [360] objcall 28 .............................. <pMessageBuffer[ttype]>
+  [362] getparam 1 .............................. <tID>
+  [364] pusharglistnoret 2 ...................... <pMessageBuffer[ttype], tID>
+  [366] objcall 63 .............................. pMessageBuffer[ttype].deleteProp(tID)
+  [368] pushint8 1 .............................. <1>
+  [370] pusharglistnoret 1 ...................... <1>
+  [372] extcall 22 .............................. return 1
+  [374] ret
+end
+
+on leaveRoom me
+  [  0] pushcons 0 .............................. <"active">
+  [  2] pusharglist 0 ........................... <[:]>
+  [  4] pushproplist ............................ <[:]>
+  [  5] pushcons 1 .............................. <"item">
+  [  7] pusharglist 0 ........................... <[:]>
+  [  9] pushproplist ............................ <[:]>
+  [ 10] pusharglist 4 ........................... <["active": [:], "item": [:]]>
+  [ 12] pushproplist ............................ <["active": [:], "item": [:]]>
+  [ 13] setprop 15 .............................. pPlaceHolderList = ["active": [:], "item": [:]]
+  [ 15] pushcons 0 .............................. <"active">
+  [ 17] pusharglist 0 ........................... <[:]>
+  [ 19] pushproplist ............................ <[:]>
+  [ 20] pushcons 1 .............................. <"item">
+  [ 22] pusharglist 0 ........................... <[:]>
+  [ 24] pushproplist ............................ <[:]>
+  [ 25] pusharglist 4 ........................... <["active": [:], "item": [:]]>
+  [ 27] pushproplist ............................ <["active": [:], "item": [:]]>
+  [ 28] setprop 16 .............................. pMessageBuffer = ["active": [:], "item": [:]]
+  [ 30] ret
+end
+
+on getClassName me, tClass, ttype
+  [  0] getparam 1 .............................. <tClass>
+  [  2] setlocal 0 .............................. tName = tClass
+  [  4] getlocal 0 .............................. <tName>
+  [  6] pushcons 10 ............................. <"*">
+  [  8] containsstr ............................. <tName contains "*">
+  [  9] jmpifz [ 36] ............................ if tName contains "*" then
+  [ 12] getmovieprop 101 ........................ <the itemDelimiter>
+  [ 14] setlocal 1 .............................. tDelim = the itemDelimiter
+  [ 16] pushcons 10 ............................. <"*">
+  [ 18] setmovieprop 101 ........................ the itemDelimiter = "*"
+  [ 20] getlocal 0 .............................. <tName>
+  [ 22] pushsymb 42 ............................. <#item>
+  [ 24] pushint8 1 .............................. <1>
+  [ 26] pusharglist 3 ........................... <tName, #item, 1>
+  [ 28] objcall 102 ............................. <tName.item[1]>
+  [ 30] setlocal 0 .............................. tName = tName.item[1]
+  [ 32] getlocal 1 .............................. <tDelim>
+  [ 34] setmovieprop 101 ........................ the itemDelimiter = tDelim
+  [ 36] pushsymb 52 ............................. <#room>
+  [ 38] pusharglist 1 ........................... <#room>
+  [ 40] extcall 32 .............................. <getThread(#room)>
+  [ 42] pusharglist 1 ........................... <getThread(#room)>
+  [ 44] objcall 103 ............................. <getThread(#room).getInterface()>
+  [ 46] pusharglist 1 ........................... <getThread(#room).getInterface()>
+  [ 48] objcall 104 ............................. <getThread(#room).getInterface().getGeometry()>
+  [ 50] pusharglist 1 ........................... <getThread(#room).getInterface().getGeometry()>
+  [ 52] objcall 105 ............................. <getThread(#room).getInterface().getGeometry().getTileWidth()>
+  [ 54] pushint8 64 ............................. <64>
+  [ 56] lt ...................................... <getThread(#room).getInterface().getGeometry().getTileWidth() < 64>
+  [ 57] jmpifz [ 67] ............................ if getThread(#room).getInterface().getGeometry().getTileWidth() < 64 then
+  [ 60] pushcons 11 ............................. <"s_">
+  [ 62] getlocal 0 .............................. <tName>
+  [ 64] joinstr ................................. <"s_" & tName>
+  [ 65] setlocal 0 .............................. tName = "s_" & tName
+  [ 67] getparam 2 .............................. <ttype>
+  [ 69] pusharglist 1 ........................... <ttype>
+  [ 71] extcall 31 .............................. <voidp(ttype)>
+  [ 73] not ..................................... <not voidp(ttype)>
+  [ 74] getparam 2 .............................. <ttype>
+  [ 76] pushcons 4 .............................. <EMPTY>
+  [ 78] nteq .................................... <ttype <> EMPTY>
+  [ 79] and ..................................... <not voidp(ttype) and (ttype <> EMPTY)>
+  [ 80] getparam 1 .............................. <tClass>
+  [ 82] pushcons 12 ............................. <"poster">
+  [ 84] eq ...................................... <tClass = "poster">
+  [ 85] and ..................................... <not voidp(ttype) and (ttype <> EMPTY) and (tClass = "poster")>
+  [ 86] jmpifz [100] ............................ if not voidp(ttype) and (ttype <> EMPTY) and (tClass = "poster") then
+  [ 89] getlocal 0 .............................. <tName>
+  [ 91] getparam 2 .............................. <ttype>
+  [ 93] pusharglist 1 ........................... <ttype>
+  [ 95] extcall 106 ............................. <string(ttype)>
+  [ 97] joinpadstr .............................. <tName && string(ttype)>
+  [ 98] setlocal 0 .............................. tName = tName && string(ttype)
+  [100] getlocal 0 .............................. <tName>
+  [102] pusharglistnoret 1 ...................... <tName>
+  [104] extcall 22 .............................. return tName
+  [106] ret
+end
+
+on downloadClass me, tClass, ttype
+  [  0] getprop 19 .............................. <pSimulatedDownload>
+  [  2] jmpifz [ 69] ............................ if pSimulatedDownload then / else
+  [  5] getprop 18 .............................. <pTempDownloadList>
+  [  7] getparam 1 .............................. <tClass>
+  [  9] pusharglist 2 ........................... <pTempDownloadList, tClass>
+  [ 11] objcall 38 .............................. <pTempDownloadList.findPos(tClass)>
+  [ 13] pusharglist 1 ........................... <pTempDownloadList.findPos(tClass)>
+  [ 15] extcall 31 .............................. <voidp(pTempDownloadList.findPos(tClass))>
+  [ 17] jmpifz [ 29] ............................ if voidp(pTempDownloadList.findPos(tClass)) then
+  [ 20] getprop 18 .............................. <pTempDownloadList>
+  [ 22] getparam 1 .............................. <tClass>
+  [ 24] pushzero ................................ <0>
+  [ 25] pusharglistnoret 3 ...................... <pTempDownloadList, tClass, 0>
+  [ 27] objcall 39 .............................. pTempDownloadList.addProp(tClass, 0)
+  [ 29] getprop 17 .............................. <pTempTimeOutID>
+  [ 31] pusharglist 1 ........................... <pTempTimeOutID>
+  [ 33] extcall 25 .............................. <timeoutExists(pTempTimeOutID)>
+  [ 35] jmpifz [ 44] ............................ if timeoutExists(pTempTimeOutID) then
+  [ 38] getprop 17 .............................. <pTempTimeOutID>
+  [ 40] pusharglistnoret 1 ...................... <pTempTimeOutID>
+  [ 42] extcall 26 .............................. removeTimeout(pTempTimeOutID)
+  [ 44] getprop 17 .............................. <pTempTimeOutID>
+  [ 46] getprop 19 .............................. <pSimulatedDownload>
+  [ 48] pushsymb 11 ............................. <#tempCallback>
+  [ 50] getparam 0 .............................. <me>
+  [ 52] pusharglist 1 ........................... <me>
+  [ 54] objcall 13 .............................. <me.getID()>
+  [ 56] pusharglist 0 ........................... <>
+  [ 58] extcall 110 ............................. <VOID>
+  [ 60] pushint8 1 .............................. <1>
+  [ 62] pusharglistnoret 6 ...................... <pTempTimeOutID, pSimulatedDownload, #tempCallback, me.getID(), VOID, 1>
+  [ 64] extcall 109 ............................. createTimeout(pTempTimeOutID, pSimulatedDownload, #tempCallback, me.getID(), VOID, 1)
+  [ 66] jmp [ 95]
+  [ 69] pushsymb 33 ............................. <#dynamicdownloader>
+  [ 71] pusharglist 1 ........................... <#dynamicdownloader>
+  [ 73] extcall 32 .............................. <getThread(#dynamicdownloader)>
+  [ 75] pusharglist 1 ........................... <getThread(#dynamicdownloader)>
+  [ 77] objcall 34 .............................. <getThread(#dynamicdownloader).getComponent()>
+  [ 79] getparam 1 .............................. <tClass>
+  [ 81] getparam 2 .............................. <ttype>
+  [ 83] getparam 0 .............................. <me>
+  [ 85] pusharglist 1 ........................... <me>
+  [ 87] objcall 13 .............................. <me.getID()>
+  [ 89] pushsymb 3 .............................. <#downloadCompleted>
+  [ 91] pusharglistnoret 5 ...................... <getThread(#dynamicdownloader).getComponent(), tClass, ttype, me.getID(), #downloadCompleted>
+  [ 93] objcall 111 ............................. getThread(#dynamicdownloader).getComponent().downloadCastDynamically(tClass, ttype, me.getID(), #downloadCompleted)
+  [ 95] ret
+end
+
+on tempCallback me
+  [  0] getprop 18 .............................. <pTempDownloadList>
+  [  2] pushzero ................................ <0>
+  [  3] pusharglist 2 ........................... <pTempDownloadList, 0>
+  [  5] objcall 112 ............................. <pTempDownloadList.getPos(0)>
+  [  7] setlocal 0 .............................. tIndex = pTempDownloadList.getPos(0)
+  [  9] getlocal 0 .............................. <tIndex>
+  [ 11] pushzero ................................ <0>
+  [ 12] gt ...................................... <tIndex > 0>
+  [ 13] jmpifz [ 79] ............................ if tIndex > 0 then
+  [ 16] getprop 18 .............................. <pTempDownloadList>
+  [ 18] getlocal 0 .............................. <tIndex>
+  [ 20] pushint8 1 .............................. <1>
+  [ 22] pusharglistnoret 3 ...................... <pTempDownloadList, tIndex, 1>
+  [ 24] objcall 36 .............................. pTempDownloadList[tIndex] = 1
+  [ 26] getparam 0 .............................. <me>
+  [ 28] getprop 18 .............................. <pTempDownloadList>
+  [ 30] getlocal 0 .............................. <tIndex>
+  [ 32] pusharglist 2 ........................... <pTempDownloadList, tIndex>
+  [ 34] objcall 51 .............................. <pTempDownloadList.getPropAt(tIndex)>
+  [ 36] pushint8 1 .............................. <1>
+  [ 38] pusharglistnoret 3 ...................... <me, pTempDownloadList.getPropAt(tIndex), 1>
+  [ 40] objcall 3 ............................... me.downloadCompleted(pTempDownloadList.getPropAt(tIndex), 1)
+  [ 42] getprop 17 .............................. <pTempTimeOutID>
+  [ 44] pusharglist 1 ........................... <pTempTimeOutID>
+  [ 46] extcall 25 .............................. <timeoutExists(pTempTimeOutID)>
+  [ 48] jmpifz [ 57] ............................ if timeoutExists(pTempTimeOutID) then
+  [ 51] getprop 17 .............................. <pTempTimeOutID>
+  [ 53] pusharglistnoret 1 ...................... <pTempTimeOutID>
+  [ 55] extcall 26 .............................. removeTimeout(pTempTimeOutID)
+  [ 57] getprop 17 .............................. <pTempTimeOutID>
+  [ 59] getprop 19 .............................. <pSimulatedDownload>
+  [ 61] pushsymb 11 ............................. <#tempCallback>
+  [ 63] getparam 0 .............................. <me>
+  [ 65] pusharglist 1 ........................... <me>
+  [ 67] objcall 13 .............................. <me.getID()>
+  [ 69] pusharglist 0 ........................... <>
+  [ 71] extcall 110 ............................. <VOID>
+  [ 73] pushint8 1 .............................. <1>
+  [ 75] pusharglistnoret 6 ...................... <pTempTimeOutID, pSimulatedDownload, #tempCallback, me.getID(), VOID, 1>
+  [ 77] extcall 109 ............................. createTimeout(pTempTimeOutID, pSimulatedDownload, #tempCallback, me.getID(), VOID, 1)
+  [ 79] ret
+end

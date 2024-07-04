@@ -1,0 +1,2137 @@
+property direction, memberPrefix, memberModels, moving, destLScreen, startLScreen, moveStart, moveTime, talking, pModels, pDirections, pSprites, pInks, lParts, pActions, pColors, pLocZShifts, counter, pAnimFixH, pAnimFixV, pFlipped, mainAction, restingHeight, controller, userController, myEy, pLocFix, iLocZFix, swimSuitModels, swim, swimSdHeight, swimAnimCountDir, StayAndSwim, sign, signSpr, signDir, pModLevel, isModerator, name, pPelleImg, jumpAction, jumpAnimFrame, runAnimList, AnimListCounter, pSmallJumpList, changes, plastPressKey, pSpeed, pStatus, pnewLocV, pJumpSpeed, pVelocityV, pjumpBoardEnd, pjumpBoardStart, locX, locY, height, pMyLoc, pStartloc, pJumpDirection, pJumpLastDirection, pJumpMode, pJumpLoop, pJumpMaxAnimFrames, pJumpData, pPlayerMode, pLastJumpDirection, myLocZ, pScreenUpOrDown, pRemoveJumperTime, pBgScreenBuffer, pSpr, pXFactor, pYFactor, pPeopleSize, pMyName, pPelleBgImg, pJumpReady, pBigSplash, pBigSplashActive, pPelleKeys
+
+on deconstruct me
+  [  0] getprop 11 .............................. <pSpr>
+  [  2] pushsymb 12 ............................. <#sprite>
+  [  4] pusharglist 2 ........................... <pSpr, #sprite>
+  [  6] extcall 10 .............................. <ilk(pSpr, #sprite)>
+  [  8] jmpifz [ 19] ............................ if ilk(pSpr, #sprite) then
+  [ 11] getprop 11 .............................. <pSpr>
+  [ 13] getobjprop 14 ........................... <pSpr.spriteNum>
+  [ 15] pusharglistnoret 1 ...................... <pSpr.spriteNum>
+  [ 17] extcall 13 .............................. releaseSprite(pSpr.spriteNum)
+  [ 19] pushint8 1 .............................. <1>
+  [ 21] pusharglistnoret 1 ...................... <1>
+  [ 23] extcall 15 .............................. return 1
+  [ 25] ret
+end
+
+on Init me, tName, tMemberModels, tplayerMode, tKeyList
+  [  0] pushzero ................................ <0>
+  [  1] setprop 17 .............................. pJumpReady = 0
+  [  3] pushzero ................................ <0>
+  [  4] setprop 18 .............................. pBigSplashActive = 0
+  [  6] pushsymb 21 ............................. <#session>
+  [  8] pusharglist 1 ........................... <#session>
+  [ 10] extcall 20 .............................. <getObject(#session)>
+  [ 12] pushcons 0 .............................. <"user_name">
+  [ 14] pusharglist 2 ........................... <getObject(#session), "user_name">
+  [ 16] objcall 22 .............................. <getObject(#session).get("user_name")>
+  [ 18] setprop 19 .............................. pMyName = getObject(#session).get("user_name")
+  [ 20] pushsymb 24 ............................. <#room>
+  [ 22] pusharglist 1 ........................... <#room>
+  [ 24] extcall 23 .............................. <getThread(#room)>
+  [ 26] pusharglist 1 ........................... <getThread(#room)>
+  [ 28] objcall 25 .............................. <getThread(#room).getInterface()>
+  [ 30] pusharglist 1 ........................... <getThread(#room).getInterface()>
+  [ 32] objcall 26 .............................. <getThread(#room).getInterface().getGeometry()>
+  [ 34] setlocal 0 .............................. pGeometry = getThread(#room).getInterface().getGeometry()
+  [ 36] getlocal 0 .............................. <pGeometry>
+  [ 38] getobjprop 27 ........................... <pGeometry.pXFactor>
+  [ 40] setprop 27 .............................. pXFactor = pGeometry.pXFactor
+  [ 42] getlocal 0 .............................. <pGeometry>
+  [ 44] getobjprop 28 ........................... <pGeometry.pYFactor>
+  [ 46] setprop 28 .............................. pYFactor = pGeometry.pYFactor
+  [ 48] getparam 1 .............................. <tName>
+  [ 50] setprop 29 .............................. name = tName
+  [ 52] pushcons 1 .............................. <"h">
+  [ 54] setprop 30 .............................. memberPrefix = "h"
+  [ 56] getparam 2 .............................. <tMemberModels>
+  [ 58] setprop 31 .............................. memberModels = tMemberModels
+  [ 60] pushzero ................................ <0>
+  [ 61] setprop 32 .............................. counter = 0
+  [ 63] pusharglist 0 ........................... <[:]>
+  [ 65] pushproplist ............................ <[:]>
+  [ 66] setprop 33 .............................. pModels = [:]
+  [ 68] pusharglist 0 ........................... <[:]>
+  [ 70] pushproplist ............................ <[:]>
+  [ 71] setprop 34 .............................. pColors = [:]
+  [ 73] pusharglist 0 ........................... <[:]>
+  [ 75] pushproplist ............................ <[:]>
+  [ 76] setprop 35 .............................. pInks = [:]
+  [ 78] pusharglist 0 ........................... <[:]>
+  [ 80] pushproplist ............................ <[:]>
+  [ 81] setprop 36 .............................. pFlipped = [:]
+  [ 83] getprop 35 .............................. <pInks>
+  [ 85] pusharglistnoret 1 ...................... <pInks>
+  [ 87] extcall 37 .............................. sort(pInks)
+  [ 89] getprop 34 .............................. <pColors>
+  [ 91] pusharglistnoret 1 ...................... <pColors>
+  [ 93] extcall 37 .............................. sort(pColors)
+  [ 95] getprop 33 .............................. <pModels>
+  [ 97] pusharglistnoret 1 ...................... <pModels>
+  [ 99] extcall 37 .............................. sort(pModels)
+  [101] pusharglist 0 ........................... <[]>
+  [103] pushlist ................................ <[]>
+  [104] setprop 38 .............................. lParts = []
+  [106] pusharglist 0 ........................... <[:]>
+  [108] pushproplist ............................ <[:]>
+  [109] setprop 39 .............................. pSprites = [:]
+  [111] pushzero ................................ <0>
+  [112] pushzero ................................ <0>
+  [113] pusharglist 2 ........................... <0, 0>
+  [115] extcall 41 .............................. <point(0, 0)>
+  [117] setprop 40 .............................. pLocFix = point(0, 0)
+  [119] pushzero ................................ <0>
+  [120] setprop 42 .............................. iLocZFix = 0
+  [122] getparam 3 .............................. <tplayerMode>
+  [124] setprop 43 .............................. pPlayerMode = tplayerMode
+  [126] pushzero ................................ <0>
+  [127] setprop 44 .............................. changes = 0
+  [129] pushsymb 46 ............................. <#Run>
+  [131] setprop 45 .............................. pStatus = #Run
+  [133] pushcons 2 .............................. <EMPTY>
+  [135] setlocal 1 .............................. lastPressKey = EMPTY
+  [137] getmovieprop 48 ......................... <the milliSeconds>
+  [139] setprop 47 .............................. pRemoveJumperTime = the milliSeconds
+  [141] pushzero ................................ <0>
+  [142] setprop 49 .............................. pSpeed = 0
+  [144] pushcons 3 .............................. <"std">
+  [146] setprop 50 .............................. jumpAction = "std"
+  [148] pushzero ................................ <0>
+  [149] pushint8 1 .............................. <1>
+  [151] pushint8 2 .............................. <2>
+  [153] pushint8 3 .............................. <3>
+  [155] pushint8 3 .............................. <3>
+  [157] pushint8 2 .............................. <2>
+  [159] pushint8 1 .............................. <1>
+  [161] pushzero ................................ <0>
+  [162] pusharglist 8 ........................... <[0, 1, 2, 3, 3, 2, 1, 0]>
+  [164] pushlist ................................ <[0, 1, 2, 3, 3, 2, 1, 0]>
+  [165] setprop 51 .............................. runAnimList = [0, 1, 2, 3, 3, 2, 1, 0]
+  [167] pushint8 1 .............................. <1>
+  [169] pushint8 1 .............................. <1>
+  [171] pushint8 1 .............................. <1>
+  [173] pushint8 2 .............................. <2>
+  [175] pushint8 2 .............................. <2>
+  [177] pushint8 2 .............................. <2>
+  [179] pushint8 2 .............................. <2>
+  [181] pushint8 2 .............................. <2>
+  [183] pushzero ................................ <0>
+  [184] pushzero ................................ <0>
+  [185] pushint8 1 .............................. <1>
+  [187] pusharglist 11 .......................... <[1, 1, 1, 2, 2, 2, 2, 2, 0, 0, 1]>
+  [189] pushlist ................................ <[1, 1, 1, 2, 2, 2, 2, 2, 0, 0, 1]>
+  [190] setprop 52 .............................. pSmallJumpList = [1, 1, 1, 2, 2, 2, 2, 2, 0, 0, 1]
+  [192] pushzero ................................ <0>
+  [193] setprop 53 .............................. jumpAnimFrame = 0
+  [195] pushint8 1 .............................. <1>
+  [197] setprop 54 .............................. AnimListCounter = 1
+  [199] pushcons 4 .............................. <"u">
+  [201] setprop 55 .............................. pJumpDirection = "u"
+  [203] pushcons 5 .............................. <"d">
+  [205] setprop 56 .............................. pLastJumpDirection = "d"
+  [207] getprop 55 .............................. <pJumpDirection>
+  [209] setprop 57 .............................. pJumpLastDirection = pJumpDirection
+  [211] pushzero ................................ <0>
+  [212] setprop 58 .............................. pJumpLoop = 0
+  [214] pushint16 545 ........................... <545>
+  [217] pushint8 99 ............................. <99>
+  [219] pusharglist 2 ........................... <545, 99>
+  [221] extcall 41 .............................. <point(545, 99)>
+  [223] setprop 59 .............................. pStartloc = point(545, 99)
+  [225] getparam 0 .............................. <me>
+  [227] pusharglist 1 ........................... <me>
+  [229] objcall 61 .............................. <me.getID()>
+  [231] pusharglist 1 ........................... <me.getID()>
+  [233] extcall 60 .............................. <reserveSprite(me.getID())>
+  [235] pusharglist 1 ........................... <reserveSprite(me.getID())>
+  [237] extcall 12 .............................. <sprite(reserveSprite(me.getID()))>
+  [239] setprop 11 .............................. pSpr = sprite(reserveSprite(me.getID()))
+  [241] getprop 11 .............................. <pSpr>
+  [243] getprop 59 .............................. <pStartloc>
+  [245] setobjprop 62 ........................... pSpr.loc = pStartloc
+  [247] getprop 11 .............................. <pSpr>
+  [249] getobjprop 64 ........................... <pSpr.locH>
+  [251] setprop 63 .............................. locX = pSpr.locH
+  [253] getprop 11 .............................. <pSpr>
+  [255] getobjprop 66 ........................... <pSpr.locV>
+  [257] setprop 65 .............................. locY = pSpr.locV
+  [259] getprop 11 .............................. <pSpr>
+  [261] getobjprop 62 ........................... <pSpr.loc>
+  [263] setprop 67 .............................. pMyLoc = pSpr.loc
+  [265] getprop 11 .............................. <pSpr>
+  [267] getobjprop 66 ........................... <pSpr.locV>
+  [269] setprop 68 .............................. pnewLocV = pSpr.locV
+  [271] getprop 11 .............................. <pSpr>
+  [273] pushint8 1 .............................. <1>
+  [275] setobjprop 69 ........................... pSpr.flipH = 1
+  [277] getprop 11 .............................. <pSpr>
+  [279] pushzero ................................ <0>
+  [280] setobjprop 70 ........................... pSpr.flipV = 0
+  [282] pushint32 20000000 ...................... <20000000>
+  [287] setprop 71 .............................. myLocZ = 20000000
+  [289] getprop 11 .............................. <pSpr>
+  [291] pushint8 36 ............................. <36>
+  [293] setobjprop 72 ........................... pSpr.ink = 36
+  [295] getprop 11 .............................. <pSpr>
+  [297] pushcons 6 .............................. <"JumpingPelle">
+  [299] pusharglist 1 ........................... <"JumpingPelle">
+  [301] extcall 74 .............................. <getmemnum("JumpingPelle")>
+  [303] pusharglist 1 ........................... <getmemnum("JumpingPelle")>
+  [305] extcall 73 .............................. <member(getmemnum("JumpingPelle"))>
+  [307] setobjprop 73 ........................... pSpr.member = member(getmemnum("JumpingPelle"))
+  [309] pushsymb 76 ............................. <#up>
+  [311] setprop 75 .............................. pScreenUpOrDown = #up
+  [313] pushfloat32 1.5 ......................... <1.5>
+  [318] setprop 77 .............................. pVelocityV = 1.5
+  [320] pushint16 393 ........................... <393>
+  [323] setprop 78 .............................. pjumpBoardEnd = 393
+  [325] pushint16 523 ........................... <523>
+  [328] setprop 79 .............................. pjumpBoardStart = 523
+  [330] pushint8 2 .............................. <2>
+  [332] setprop 80 .............................. pJumpSpeed = 2
+  [334] pushzero ................................ <0>
+  [335] pushzero ................................ <0>
+  [336] pushint8 1 .............................. <1>
+  [338] pushzero ................................ <0>
+  [339] pusharglist 4 ........................... <[0, 0, 1, 0]>
+  [341] pushlist ................................ <[0, 0, 1, 0]>
+  [342] pushzero ................................ <0>
+  [343] pushint8 1 .............................. <1>
+  [345] pushzero ................................ <0>
+  [346] pushint8 1 .............................. <1>
+  [348] pusharglist 4 ........................... <[0, 1, 0, 1]>
+  [350] pushlist ................................ <[0, 1, 0, 1]>
+  [351] pushzero ................................ <0>
+  [352] pushint8 1 .............................. <1>
+  [354] pushzero ................................ <0>
+  [355] pushint8 1 .............................. <1>
+  [357] pusharglist 4 ........................... <[0, 1, 0, 1]>
+  [359] pushlist ................................ <[0, 1, 0, 1]>
+  [360] pushzero ................................ <0>
+  [361] pushzero ................................ <0>
+  [362] pushzero ................................ <0>
+  [363] pushzero ................................ <0>
+  [364] pusharglist 4 ........................... <[0, 0, 0, 0]>
+  [366] pushlist ................................ <[0, 0, 0, 0]>
+  [367] pushzero ................................ <0>
+  [368] pushint8 1 .............................. <1>
+  [370] pushzero ................................ <0>
+  [371] pushint8 1 .............................. <1>
+  [373] pusharglist 4 ........................... <[0, 1, 0, 1]>
+  [375] pushlist ................................ <[0, 1, 0, 1]>
+  [376] pushzero ................................ <0>
+  [377] pushint8 1 .............................. <1>
+  [379] pushzero ................................ <0>
+  [380] pushint8 1 .............................. <1>
+  [382] pusharglist 4 ........................... <[0, 1, 0, 1]>
+  [384] pushlist ................................ <[0, 1, 0, 1]>
+  [385] pushzero ................................ <0>
+  [386] pushzero ................................ <0>
+  [387] pushzero ................................ <0>
+  [388] pushint8 1 .............................. <1>
+  [390] pusharglist 4 ........................... <[0, 0, 0, 1]>
+  [392] pushlist ................................ <[0, 0, 0, 1]>
+  [393] pushzero ................................ <0>
+  [394] pushzero ................................ <0>
+  [395] pushzero ................................ <0>
+  [396] pushzero ................................ <0>
+  [397] pusharglist 4 ........................... <[0, 0, 0, 0]>
+  [399] pushlist ................................ <[0, 0, 0, 0]>
+  [400] pusharglist 8 ........................... <[[0, 0, 1, 0], [0, 1, 0, 1], [0, 1, 0, 1], [0, 0, 0, 0], [0, 1, 0, 1], [0, 1, 0, 1], [0, 0, 0, 1], [0, 0, 0, 0]]>
+  [402] pushlist ................................ <[[0, 0, 1, 0], [0, 1, 0, 1], [0, 1, 0, 1], [0, 0, 0, 0], [0, 1, 0, 1], [0, 1, 0, 1], [0, 0, 0, 1], [0, 0, 0, 0]]>
+  [403] setprop 81 .............................. pAnimFixV = [[0, 0, 1, 0], [0, 1, 0, 1], [0, 1, 0, 1], [0, 0, 0, 0], [0, 1, 0, 1], [0, 1, 0, 1], [0, 0, 0, 1], [0, 0, 0, 0]]
+  [405] pushcons 7 .............................. <"lh">
+  [407] pushcons 8 .............................. <"bd">
+  [409] pushcons 9 .............................. <"ch">
+  [411] pushcons 10 ............................. <"hd">
+  [413] pushcons 11 ............................. <"fc">
+  [415] pushcons 12 ............................. <"hr">
+  [417] pushcons 13 ............................. <"rh">
+  [419] pusharglist 7 ........................... <["lh", "bd", "ch", "hd", "fc", "hr", "rh"]>
+  [421] pushlist ................................ <["lh", "bd", "ch", "hd", "fc", "hr", "rh"]>
+  [422] peek 0
+  [424] pusharglist 1
+  [426] extcall 82
+  [428] pushint8 1
+  [430] peek 0
+  [432] peek 2
+  [434] lteq
+  [435] jmpifz [497] ............................ repeat with tParts in ["lh", "bd", "ch", "hd", "fc", "hr", "rh"]
+  [438] peek 2
+  [440] peek 1
+  [442] pusharglist 2
+  [444] extcall 83
+  [446] setlocal 2
+  [448] getprop 33 .............................. <pModels>
+  [450] getlocal 2 .............................. <tParts>
+  [452] getparam 2 .............................. <tMemberModels>
+  [454] getlocal 2 .............................. <tParts>
+  [456] pusharglist 2 ........................... <tMemberModels, tParts>
+  [458] objcall 83 .............................. <tMemberModels[tParts]>
+  [460] pushcons 14 ............................. <"model">
+  [462] pusharglist 2 ........................... <tMemberModels[tParts], "model">
+  [464] objcall 83 .............................. <tMemberModels[tParts]["model"]>
+  [466] pusharglistnoret 3 ...................... <pModels, tParts, tMemberModels[tParts]["model"]>
+  [468] objcall 84 .............................. pModels[tParts] = tMemberModels[tParts]["model"]
+  [470] getprop 34 .............................. <pColors>
+  [472] getlocal 2 .............................. <tParts>
+  [474] getparam 2 .............................. <tMemberModels>
+  [476] getlocal 2 .............................. <tParts>
+  [478] pusharglist 2 ........................... <tMemberModels, tParts>
+  [480] objcall 83 .............................. <tMemberModels[tParts]>
+  [482] pushcons 15 ............................. <"color">
+  [484] pusharglist 2 ........................... <tMemberModels[tParts], "color">
+  [486] objcall 83 .............................. <tMemberModels[tParts]["color"]>
+  [488] pusharglistnoret 3 ...................... <pColors, tParts, tMemberModels[tParts]["color"]>
+  [490] objcall 84 .............................. pColors[tParts] = tMemberModels[tParts]["color"]
+  [492] pushint8 1
+  [494] add
+  [495] endrepeat [430]
+  [497] pop 3
+  [499] pushint8 60 ............................. <60>
+  [501] pushint8 60 ............................. <60>
+  [503] pushint8 32 ............................. <32>
+  [505] pushint16 155 ........................... <155>
+  [508] pushint16 155 ........................... <155>
+  [511] pushint16 255 ........................... <255>
+  [514] pusharglist 3 ........................... <155, 155, 255>
+  [516] extcall 87 .............................. <rgb(155, 155, 255)>
+  [518] pusharglist 4 ........................... <60, 60, 32, rgb(155, 155, 255)>
+  [520] extcall 86 .............................. <image(60, 60, 32, rgb(155, 155, 255))>
+  [522] setprop 85 .............................. pPelleImg = image(60, 60, 32, rgb(155, 155, 255))
+  [524] pushint8 108 ............................ <108>
+  [526] pushint8 102 ............................ <102>
+  [528] pushint8 16 ............................. <16>
+  [530] pushint16 157 ........................... <157>
+  [533] pushint16 206 ........................... <206>
+  [536] pushint16 255 ........................... <255>
+  [539] pusharglist 3 ........................... <157, 206, 255>
+  [541] extcall 87 .............................. <rgb(157, 206, 255)>
+  [543] pusharglist 4 ........................... <108, 102, 16, rgb(157, 206, 255)>
+  [545] extcall 86 .............................. <image(108, 102, 16, rgb(157, 206, 255))>
+  [547] setprop 88 .............................. pPelleBgImg = image(108, 102, 16, rgb(157, 206, 255))
+  [549] pushcons 16 ............................. <"pelle_bg3">
+  [551] pusharglist 1 ........................... <"pelle_bg3">
+  [553] extcall 74 .............................. <getmemnum("pelle_bg3")>
+  [555] pusharglist 1 ........................... <getmemnum("pelle_bg3")>
+  [557] extcall 73 .............................. <member(getmemnum("pelle_bg3"))>
+  [559] getobjprop 90 ........................... <member(getmemnum("pelle_bg3")).width>
+  [561] pushcons 16 ............................. <"pelle_bg3">
+  [563] pusharglist 1 ........................... <"pelle_bg3">
+  [565] extcall 74 .............................. <getmemnum("pelle_bg3")>
+  [567] pusharglist 1 ........................... <getmemnum("pelle_bg3")>
+  [569] extcall 73 .............................. <member(getmemnum("pelle_bg3"))>
+  [571] getobjprop 91 ........................... <member(getmemnum("pelle_bg3")).height>
+  [573] pushint8 16 ............................. <16>
+  [575] pushint16 157 ........................... <157>
+  [578] pushint16 206 ........................... <206>
+  [581] pushint16 255 ........................... <255>
+  [584] pusharglist 3 ........................... <157, 206, 255>
+  [586] extcall 87 .............................. <rgb(157, 206, 255)>
+  [588] pusharglist 4 ........................... <member(getmemnum("pelle_bg3")).width, member(getmemnum("pelle_bg3")).height, 16, rgb(157, 206, 255)>
+  [590] extcall 86 .............................. <image(member(getmemnum("pelle_bg3")).width, member(getmemnum("pelle_bg3")).height, 16, rgb(157, 206, 255))>
+  [592] setprop 89 .............................. pBgScreenBuffer = image(member(getmemnum("pelle_bg3")).width, member(getmemnum("pelle_bg3")).height, 16, rgb(157, 206, 255))
+  [594] getprop 89 .............................. <pBgScreenBuffer>
+  [596] getprop 89 .............................. <pBgScreenBuffer>
+  [598] getobjprop 92 ........................... <pBgScreenBuffer.rect>
+  [600] pushint16 157 ........................... <157>
+  [603] pushint16 206 ........................... <206>
+  [606] pushint16 255 ........................... <255>
+  [609] pusharglist 3 ........................... <157, 206, 255>
+  [611] extcall 87 .............................. <rgb(157, 206, 255)>
+  [613] pusharglistnoret 3 ...................... <pBgScreenBuffer, pBgScreenBuffer.rect, rgb(157, 206, 255)>
+  [615] objcall 93 .............................. pBgScreenBuffer.fill(pBgScreenBuffer.rect, rgb(157, 206, 255))
+  [617] pushint16 141 ........................... <141>
+  [620] pushint16 250 ........................... <250>
+  [623] pusharglist 1 ........................... <250>
+  [625] extcall 94 .............................. <random(250)>
+  [627] add ..................................... <141 + random(250)>
+  [628] pushint8 100 ............................ <100>
+  [630] pusharglist 1 ........................... <100>
+  [632] extcall 94 .............................. <random(100)>
+  [634] pusharglist 2 ........................... <141 + random(250), random(100)>
+  [636] extcall 41 .............................. <point(141 + random(250), random(100))>
+  [638] pushint16 141 ........................... <141>
+  [641] pushint16 250 ........................... <250>
+  [644] pusharglist 1 ........................... <250>
+  [646] extcall 94 .............................. <random(250)>
+  [648] add ..................................... <141 + random(250)>
+  [649] pushint8 30 ............................. <30>
+  [651] pusharglist 1 ........................... <30>
+  [653] extcall 94 .............................. <random(30)>
+  [655] pushint16 150 ........................... <150>
+  [658] add ..................................... <random(30) + 150>
+  [659] pusharglist 2 ........................... <141 + random(250), random(30) + 150>
+  [661] extcall 41 .............................. <point(141 + random(250), random(30) + 150)>
+  [663] pushint16 141 ........................... <141>
+  [666] pushint16 250 ........................... <250>
+  [669] pusharglist 1 ........................... <250>
+  [671] extcall 94 .............................. <random(250)>
+  [673] add ..................................... <141 + random(250)>
+  [674] pushint8 20 ............................. <20>
+  [676] pusharglist 1 ........................... <20>
+  [678] extcall 94 .............................. <random(20)>
+  [680] pushint16 240 ........................... <240>
+  [683] add ..................................... <random(20) + 240>
+  [684] pusharglist 2 ........................... <141 + random(250), random(20) + 240>
+  [686] extcall 41 .............................. <point(141 + random(250), random(20) + 240)>
+  [688] pusharglist 3 ........................... <[point(141 + random(250), random(100)), point(141 + random(250), random(30) + 150), point(141 + random(250), random(20) + 240)]>
+  [690] pushlist ................................ <[point(141 + random(250), random(100)), point(141 + random(250), random(30) + 150), point(141 + random(250), random(20) + 240)]>
+  [691] setlocal 3 .............................. tPilvet = [point(141 + random(250), random(100)), point(141 + random(250), random(30) + 150), point(141 + random(250), random(20) + 240)]
+  [693] getlocal 3 .............................. <tPilvet>
+  [695] peek 0
+  [697] pusharglist 1
+  [699] extcall 82
+  [701] pushint8 1
+  [703] peek 0
+  [705] peek 2
+  [707] lteq
+  [708] jmpifz [805] ............................ repeat with tPilvi in tPilvet
+  [711] peek 2
+  [713] peek 1
+  [715] pusharglist 2
+  [717] extcall 83
+  [719] setlocal 4
+  [721] pushcons 17 ............................. <"pilvi">
+  [723] pushint8 5 .............................. <5>
+  [725] pusharglist 1 ........................... <5>
+  [727] extcall 94 .............................. <random(5)>
+  [729] joinstr ................................. <"pilvi" & random(5)>
+  [730] pusharglist 1 ........................... <"pilvi" & random(5)>
+  [732] extcall 74 .............................. <getmemnum("pilvi" & random(5))>
+  [734] pusharglist 1 ........................... <getmemnum("pilvi" & random(5))>
+  [736] extcall 73 .............................. <member(getmemnum("pilvi" & random(5)))>
+  [738] setlocal 5 .............................. tCloud = member(getmemnum("pilvi" & random(5)))
+  [740] getlocal 5 .............................. <tCloud>
+  [742] getobjprop 92 ........................... <tCloud.rect>
+  [744] getlocal 4 .............................. <tPilvi>
+  [746] getobjprop 64 ........................... <tPilvi.locH>
+  [748] getlocal 4 .............................. <tPilvi>
+  [750] getobjprop 66 ........................... <tPilvi.locV>
+  [752] getlocal 4 .............................. <tPilvi>
+  [754] getobjprop 64 ........................... <tPilvi.locH>
+  [756] getlocal 4 .............................. <tPilvi>
+  [758] getobjprop 66 ........................... <tPilvi.locV>
+  [760] pusharglist 4 ........................... <tPilvi.locH, tPilvi.locV, tPilvi.locH, tPilvi.locV>
+  [762] extcall 92 .............................. <rect(tPilvi.locH, tPilvi.locV, tPilvi.locH, tPilvi.locV)>
+  [764] add ..................................... <tCloud.rect + rect(tPilvi.locH, tPilvi.locV, tPilvi.locH, tPilvi.locV)>
+  [765] setlocal 6 .............................. tRect = tCloud.rect + rect(tPilvi.locH, tPilvi.locV, tPilvi.locH, tPilvi.locV)
+  [767] getprop 89 .............................. <pBgScreenBuffer>
+  [769] getlocal 5 .............................. <tCloud>
+  [771] getobjprop 86 ........................... <tCloud.image>
+  [773] getlocal 6 .............................. <tRect>
+  [775] getlocal 5 .............................. <tCloud>
+  [777] getobjprop 92 ........................... <tCloud.rect>
+  [779] pushsymb 95 ............................. <#maskImage>
+  [781] getlocal 5 .............................. <tCloud>
+  [783] getchainedprop 86 ....................... <tCloud.image>
+  [785] pusharglist 1 ........................... <tCloud.image>
+  [787] objcall 96 .............................. <tCloud.image.createMatte()>
+  [789] pushsymb 72 ............................. <#ink>
+  [791] pushint8 8 .............................. <8>
+  [793] pusharglist 4 ........................... <[#maskImage: tCloud.image.createMatte(), #ink: 8]>
+  [795] pushproplist ............................ <[#maskImage: tCloud.image.createMatte(), #ink: 8]>
+  [796] pusharglistnoret 5 ...................... <pBgScreenBuffer, tCloud.image, tRect, tCloud.rect, [#maskImage: tCloud.image.createMatte(), #ink: 8]>
+  [798] objcall 97 .............................. pBgScreenBuffer.copyPixels(tCloud.image, tRect, tCloud.rect, [#maskImage: tCloud.image.createMatte(), #ink: 8])
+  [800] pushint8 1
+  [802] add
+  [803] endrepeat [703]
+  [805] pop 3
+  [807] getprop 89 .............................. <pBgScreenBuffer>
+  [809] pushcons 16 ............................. <"pelle_bg3">
+  [811] pusharglist 1 ........................... <"pelle_bg3">
+  [813] extcall 74 .............................. <getmemnum("pelle_bg3")>
+  [815] pusharglist 1 ........................... <getmemnum("pelle_bg3")>
+  [817] extcall 73 .............................. <member(getmemnum("pelle_bg3"))>
+  [819] getobjprop 86 ........................... <member(getmemnum("pelle_bg3")).image>
+  [821] getprop 89 .............................. <pBgScreenBuffer>
+  [823] getobjprop 92 ........................... <pBgScreenBuffer.rect>
+  [825] getprop 89 .............................. <pBgScreenBuffer>
+  [827] getobjprop 92 ........................... <pBgScreenBuffer.rect>
+  [829] pushsymb 95 ............................. <#maskImage>
+  [831] pushcons 16 ............................. <"pelle_bg3">
+  [833] pusharglist 1 ........................... <"pelle_bg3">
+  [835] extcall 74 .............................. <getmemnum("pelle_bg3")>
+  [837] pusharglist 1 ........................... <getmemnum("pelle_bg3")>
+  [839] extcall 73 .............................. <member(getmemnum("pelle_bg3"))>
+  [841] getchainedprop 86 ....................... <member(getmemnum("pelle_bg3")).image>
+  [843] pusharglist 1 ........................... <member(getmemnum("pelle_bg3")).image>
+  [845] objcall 96 .............................. <member(getmemnum("pelle_bg3")).image.createMatte()>
+  [847] pushsymb 72 ............................. <#ink>
+  [849] pushint8 8 .............................. <8>
+  [851] pusharglist 4 ........................... <[#maskImage: member(getmemnum("pelle_bg3")).image.createMatte(), #ink: 8]>
+  [853] pushproplist ............................ <[#maskImage: member(getmemnum("pelle_bg3")).image.createMatte(), #ink: 8]>
+  [854] pusharglistnoret 5 ...................... <pBgScreenBuffer, member(getmemnum("pelle_bg3")).image, pBgScreenBuffer.rect, pBgScreenBuffer.rect, [#maskImage: member(getmemnum("pelle_bg3")).image.createMatte(), #ink: 8]>
+  [856] objcall 97 .............................. pBgScreenBuffer.copyPixels(member(getmemnum("pelle_bg3")).image, pBgScreenBuffer.rect, pBgScreenBuffer.rect, [#maskImage: member(getmemnum("pelle_bg3")).image.createMatte(), #ink: 8])
+  [858] pushzero ................................ <0>
+  [859] setlocal 7 .............................. pKeyTimerStat = 0
+  [861] getparam 0 .............................. <me>
+  [863] pusharglistnoret 1 ...................... <me>
+  [865] objcall 4 ............................... me.UpdatePelle()
+  [867] pushcons 18 ............................. <"swimjump.key.list">
+  [869] pusharglist 1 ........................... <"swimjump.key.list">
+  [871] extcall 99 .............................. <getVariableValue("swimjump.key.list")>
+  [873] setprop 98 .............................. pPelleKeys = getVariableValue("swimjump.key.list")
+  [875] getprop 98 .............................. <pPelleKeys>
+  [877] getobjprop 10 ........................... <pPelleKeys.ilk>
+  [879] pushsymb 100 ............................ <#propList>
+  [881] nteq .................................... <pPelleKeys.ilk <> #propList>
+  [882] jmpifz [940] ............................ if pPelleKeys.ilk <> #propList then
+  [885] getparam 0 .............................. <me>
+  [887] pushcons 19 ............................. <"Couldn't retrieve keymap for jump! Using default keys.">
+  [889] pushsymb 102 ............................ <#jumpingPlaceOk>
+  [891] pusharglistnoret 3 ...................... <me, "Couldn't retrieve keymap for jump! Using default keys.", #jumpingPlaceOk>
+  [893] extcall 101 ............................. error(me, "Couldn't retrieve keymap for jump! Using default keys.", #jumpingPlaceOk)
+  [895] pushsymb 103 ............................ <#run1>
+  [897] pushcons 20 ............................. <"A">
+  [899] pushsymb 104 ............................ <#run2>
+  [901] pushcons 21 ............................. <"D">
+  [903] pushsymb 105 ............................ <#dive1>
+  [905] pushcons 22 ............................. <"W">
+  [907] pushsymb 106 ............................ <#dive2>
+  [909] pushcons 23 ............................. <"E">
+  [911] pushsymb 107 ............................ <#dive3>
+  [913] pushcons 20 ............................. <"A">
+  [915] pushsymb 108 ............................ <#dive4>
+  [917] pushcons 24 ............................. <"S">
+  [919] pushsymb 109 ............................ <#dive5>
+  [921] pushcons 21 ............................. <"D">
+  [923] pushsymb 110 ............................ <#dive6>
+  [925] pushcons 25 ............................. <"Z">
+  [927] pushsymb 111 ............................ <#dive7>
+  [929] pushcons 26 ............................. <"X">
+  [931] pushsymb 112 ............................ <#jump>
+  [933] pushcons 27 ............................. <"SPACE">
+  [935] pusharglist 20 .......................... <[#run1: "A", #run2: "D", #dive1: "W", #dive2: "E", #dive3: "A", #dive4: "S", #dive5: "D", #dive6: "Z", #dive7: "X", #jump: "SPACE"]>
+  [937] pushproplist ............................ <[#run1: "A", #run2: "D", #dive1: "W", #dive2: "E", #dive3: "A", #dive4: "S", #dive5: "D", #dive6: "Z", #dive7: "X", #jump: "SPACE"]>
+  [938] setprop 98 .............................. pPelleKeys = [#run1: "A", #run2: "D", #dive1: "W", #dive2: "E", #dive3: "A", #dive4: "S", #dive5: "D", #dive6: "Z", #dive7: "X", #jump: "SPACE"]
+  [940] pushint8 1 .............................. <1>
+  [942] pusharglistnoret 1 ...................... <1>
+  [944] extcall 15 .............................. return 1
+  [946] ret
+end
+
+on StopRunnig me
+  [  0] getprop 45 .............................. <pStatus>
+  [  2] pushsymb 46 ............................. <#Run>
+  [  4] eq ...................................... <pStatus = #Run>
+  [  5] jmpifz [ 32] ............................ if pStatus = #Run then
+  [  8] getprop 49 .............................. <pSpeed>
+  [ 10] pushcons 28 ............................. <0.10000000000000001>
+  [ 12] sub ..................................... <pSpeed - 0.10000000000000001>
+  [ 13] setprop 49 .............................. pSpeed = pSpeed - 0.10000000000000001
+  [ 15] getprop 49 .............................. <pSpeed>
+  [ 17] pushzero ................................ <0>
+  [ 18] lteq .................................... <pSpeed <= 0>
+  [ 19] jmpifz [ 32] ............................ if pSpeed <= 0 then
+  [ 22] pushcons 3 .............................. <"std">
+  [ 24] setprop 50 .............................. jumpAction = "std"
+  [ 26] pushzero ................................ <0>
+  [ 27] setprop 53 .............................. jumpAnimFrame = 0
+  [ 29] pushzero ................................ <0>
+  [ 30] setprop 49 .............................. pSpeed = 0
+  [ 32] ret
+end
+
+on StopJumping me
+  [  0] getprop 67 .............................. <pMyLoc>
+  [  2] getobjprop 66 ........................... <pMyLoc.locV>
+  [  4] pushint16 511 ........................... <511>
+  [  7] gt ...................................... <pMyLoc.locV > 511>
+  [  8] jmpifz [106] ............................ if pMyLoc.locV > 511 then / else
+  [ 11] getprop 75 .............................. <pScreenUpOrDown>
+  [ 13] pushsymb 76 ............................. <#up>
+  [ 15] eq ...................................... <pScreenUpOrDown = #up>
+  [ 16] jmpifz [103] ............................ if pScreenUpOrDown = #up then
+  [ 19] pushsymb 125 ............................ <#down>
+  [ 21] setprop 75 .............................. pScreenUpOrDown = #down
+  [ 23] getprop 67 .............................. <pMyLoc>
+  [ 25] pushint8 20 ............................. <20>
+  [ 27] inv ..................................... <-20>
+  [ 28] setobjprop 66 ........................... pMyLoc.locV = -20
+  [ 30] getprop 67 .............................. <pMyLoc>
+  [ 32] getobjprop 66 ........................... <pMyLoc.locV>
+  [ 34] setprop 68 .............................. pnewLocV = pMyLoc.locV
+  [ 36] pushcons 29 ............................. <"window.default.locz">
+  [ 38] pushzero ................................ <0>
+  [ 39] pusharglist 2 ........................... <"window.default.locz", 0>
+  [ 41] extcall 126 ............................. <getIntVariable("window.default.locz", 0)>
+  [ 43] pushint8 10 ............................. <10>
+  [ 45] sub ..................................... <getIntVariable("window.default.locz", 0) - 10>
+  [ 46] setprop 71 .............................. myLocZ = getIntVariable("window.default.locz", 0) - 10
+  [ 48] getprop 29 .............................. <name>
+  [ 50] getprop 19 .............................. <pMyName>
+  [ 52] eq ...................................... <name = pMyName>
+  [ 53] jmpifz [103] ............................ if name = pMyName then
+  [ 56] pushsymb 127 ............................ <#pellehyppy>
+  [ 58] pusharglist 1 ........................... <#pellehyppy>
+  [ 60] extcall 23 .............................. <getThread(#pellehyppy)>
+  [ 62] pusharglist 1 ........................... <getThread(#pellehyppy)>
+  [ 64] objcall 128 ............................. <getThread(#pellehyppy).getComponent()>
+  [ 66] pusharglistnoret 1 ...................... <getThread(#pellehyppy).getComponent()>
+  [ 68] objcall 129 ............................. getThread(#pellehyppy).getComponent().poolDownView()
+  [ 70] pushsymb 24 ............................. <#room>
+  [ 72] pusharglist 1 ........................... <#room>
+  [ 74] extcall 23 .............................. <getThread(#room)>
+  [ 76] pusharglist 1 ........................... <getThread(#room)>
+  [ 78] objcall 128 ............................. <getThread(#room).getComponent()>
+  [ 80] getobjprop 130 .......................... <getThread(#room).getComponent().pBalloonId>
+  [ 82] setlocal 0 .............................. tBalloonId = getThread(#room).getComponent().pBalloonId
+  [ 84] getlocal 0 .............................. <tBalloonId>
+  [ 86] pusharglist 1 ........................... <tBalloonId>
+  [ 88] extcall 131 ............................. <objectExists(tBalloonId)>
+  [ 90] jmpifz [103] ............................ if objectExists(tBalloonId) then
+  [ 93] getlocal 0 .............................. <tBalloonId>
+  [ 95] pusharglist 1 ........................... <tBalloonId>
+  [ 97] extcall 20 .............................. <getObject(tBalloonId)>
+  [ 99] pusharglistnoret 1 ...................... <getObject(tBalloonId)>
+  [101] objcall 132 ............................. getObject(tBalloonId).showBalloons()
+  [103] jmp [482]
+  [106] getprop 75 .............................. <pScreenUpOrDown>
+  [108] pushsymb 125 ............................ <#down>
+  [110] eq ...................................... <pScreenUpOrDown = #down>
+  [111] jmpifz [482] ............................ if pScreenUpOrDown = #down then
+  [114] pushint16 429 ........................... <429>
+  [117] pushint16 310 ........................... <310>
+  [120] pusharglist 2 ........................... <429, 310>
+  [122] extcall 41 .............................. <point(429, 310)>
+  [124] setlocal 1 .............................. pJumStoploc = point(429, 310)
+  [126] getlocal 1 .............................. <pJumStoploc>
+  [128] getobjprop 66 ........................... <pJumStoploc.locV>
+  [130] getlocal 1 .............................. <pJumStoploc>
+  [132] getobjprop 64 ........................... <pJumStoploc.locH>
+  [134] getprop 67 .............................. <pMyLoc>
+  [136] getobjprop 64 ........................... <pMyLoc.locH>
+  [138] sub ..................................... <pJumStoploc.locH - pMyLoc.locH>
+  [139] pushint8 2 .............................. <2>
+  [141] div ..................................... <(pJumStoploc.locH - pMyLoc.locH) / 2>
+  [142] add ..................................... <pJumStoploc.locV + ((pJumStoploc.locH - pMyLoc.locH) / 2)>
+  [143] setlocal 2 .............................. jumpReadyV = pJumStoploc.locV + ((pJumStoploc.locH - pMyLoc.locH) / 2)
+  [145] getprop 18 .............................. <pBigSplashActive>
+  [147] pushzero ................................ <0>
+  [148] eq ...................................... <pBigSplashActive = 0>
+  [149] getprop 67 .............................. <pMyLoc>
+  [151] getobjprop 66 ........................... <pMyLoc.locV>
+  [153] getlocal 2 .............................. <jumpReadyV>
+  [155] pushint8 40 ............................. <40>
+  [157] sub ..................................... <jumpReadyV - 40>
+  [158] gteq .................................... <pMyLoc.locV >= (jumpReadyV - 40)>
+  [159] and ..................................... <(pBigSplashActive = 0) and (pMyLoc.locV >= (jumpReadyV - 40))>
+  [160] jmpifz [291] ............................ if (pBigSplashActive = 0) and (pMyLoc.locV >= (jumpReadyV - 40)) then
+  [163] pushint8 1 .............................. <1>
+  [165] setprop 18 .............................. pBigSplashActive = 1
+  [167] pushsymb 133 ............................ <#pool_bigSplash>
+  [169] pusharglist 1 ........................... <#pool_bigSplash>
+  [171] extcall 131 ............................. <objectExists(#pool_bigSplash)>
+  [173] not ..................................... <not objectExists(#pool_bigSplash)>
+  [174] jmpifz [187] ............................ if not objectExists(#pool_bigSplash) then
+  [177] pushsymb 133 ............................ <#pool_bigSplash>
+  [179] pushcons 30 ............................. <"AnimSprite Class">
+  [181] pushcons 31 ............................. <"BigSplash Class">
+  [183] pusharglistnoret 3 ...................... <#pool_bigSplash, "AnimSprite Class", "BigSplash Class">
+  [185] extcall 134 ............................. createObject(#pool_bigSplash, "AnimSprite Class", "BigSplash Class")
+  [187] pusharglist 0 ........................... <[:]>
+  [189] pushproplist ............................ <[:]>
+  [190] setlocal 3 .............................. tProps = [:]
+  [192] getlocal 3 .............................. <tProps>
+  [194] pushsymb 135 ............................ <#visible>
+  [196] pushzero ................................ <0>
+  [197] pusharglistnoret 3 ...................... <tProps, #visible, 0>
+  [199] objcall 84 .............................. tProps[#visible] = 0
+  [201] getlocal 3 .............................. <tProps>
+  [203] pushsymb 136 ............................ <#AnimFrames>
+  [205] pushint8 20 ............................. <20>
+  [207] pusharglistnoret 3 ...................... <tProps, #AnimFrames, 20>
+  [209] objcall 84 .............................. tProps[#AnimFrames] = 20
+  [211] getlocal 3 .............................. <tProps>
+  [213] pushsymb 137 ............................ <#startFrame>
+  [215] pushzero ................................ <0>
+  [216] pusharglistnoret 3 ...................... <tProps, #startFrame, 0>
+  [218] objcall 84 .............................. tProps[#startFrame] = 0
+  [220] getlocal 3 .............................. <tProps>
+  [222] pushsymb 138 ............................ <#MemberName>
+  [224] pushcons 32 ............................. <"big_splash_">
+  [226] pusharglistnoret 3 ...................... <tProps, #MemberName, "big_splash_">
+  [228] objcall 84 .............................. tProps[#MemberName] = "big_splash_"
+  [230] getlocal 3 .............................. <tProps>
+  [232] pushsymb 139 ............................ <#id>
+  [234] pushcons 33 ............................. <"bigsplash">
+  [236] pusharglistnoret 3 ...................... <tProps, #id, "bigsplash">
+  [238] objcall 84 .............................. tProps[#id] = "bigsplash"
+  [240] getlocal 3 .............................. <tProps>
+  [242] pushsymb 62 ............................. <#loc>
+  [244] getprop 67 .............................. <pMyLoc>
+  [246] pushint8 15 ............................. <15>
+  [248] pushint8 15 ............................. <15>
+  [250] pusharglist 2 ........................... <15, 15>
+  [252] extcall 41 .............................. <point(15, 15)>
+  [254] sub ..................................... <pMyLoc - point(15, 15)>
+  [255] pusharglistnoret 3 ...................... <tProps, #loc, pMyLoc - point(15, 15)>
+  [257] objcall 84 .............................. tProps[#loc] = pMyLoc - point(15, 15)
+  [259] pushsymb 133 ............................ <#pool_bigSplash>
+  [261] pusharglist 1 ........................... <#pool_bigSplash>
+  [263] extcall 20 .............................. <getObject(#pool_bigSplash)>
+  [265] getlocal 3 .............................. <tProps>
+  [267] pusharglistnoret 2 ...................... <getObject(#pool_bigSplash), tProps>
+  [269] objcall 140 ............................. getObject(#pool_bigSplash).setData(tProps)
+  [271] pushsymb 133 ............................ <#pool_bigSplash>
+  [273] pusharglist 1 ........................... <#pool_bigSplash>
+  [275] extcall 20 .............................. <getObject(#pool_bigSplash)>
+  [277] pusharglistnoret 1 ...................... <getObject(#pool_bigSplash)>
+  [279] objcall 141 ............................. getObject(#pool_bigSplash).Activate()
+  [281] pushsymb 133 ............................ <#pool_bigSplash>
+  [283] pusharglist 1 ........................... <#pool_bigSplash>
+  [285] extcall 20 .............................. <getObject(#pool_bigSplash)>
+  [287] pusharglistnoret 1 ...................... <getObject(#pool_bigSplash)>
+  [289] objcall 142 ............................. getObject(#pool_bigSplash).StartUpdateBigSplash()
+  [291] getprop 67 .............................. <pMyLoc>
+  [293] getobjprop 66 ........................... <pMyLoc.locV>
+  [295] getlocal 2 .............................. <jumpReadyV>
+  [297] pushint8 20 ............................. <20>
+  [299] sub ..................................... <jumpReadyV - 20>
+  [300] gteq .................................... <pMyLoc.locV >= (jumpReadyV - 20)>
+  [301] jmpifz [331] ............................ if pMyLoc.locV >= (jumpReadyV - 20) then
+  [304] pushsymb 24 ............................. <#room>
+  [306] pusharglist 1 ........................... <#room>
+  [308] extcall 23 .............................. <getThread(#room)>
+  [310] pusharglist 1 ........................... <getThread(#room)>
+  [312] objcall 25 .............................. <getThread(#room).getInterface()>
+  [314] pusharglist 1 ........................... <getThread(#room).getInterface()>
+  [316] objcall 143 ............................. <getThread(#room).getInterface().getRoomVisualizer()>
+  [318] pushcons 34 ............................. <"vesi2">
+  [320] pusharglist 2 ........................... <getThread(#room).getInterface().getRoomVisualizer(), "vesi2">
+  [322] objcall 144 ............................. <getThread(#room).getInterface().getRoomVisualizer().getSprById("vesi2")>
+  [324] getobjprop 145 .......................... <getThread(#room).getInterface().getRoomVisualizer().getSprById("vesi2").locZ>
+  [326] pushint8 1 .............................. <1>
+  [328] sub ..................................... <getThread(#room).getInterface().getRoomVisualizer().getSprById("vesi2").locZ - 1>
+  [329] setprop 71 .............................. myLocZ = getThread(#room).getInterface().getRoomVisualizer().getSprById("vesi2").locZ - 1
+  [331] getprop 67 .............................. <pMyLoc>
+  [333] getobjprop 66 ........................... <pMyLoc.locV>
+  [335] getlocal 2 .............................. <jumpReadyV>
+  [337] gteq .................................... <pMyLoc.locV >= jumpReadyV>
+  [338] jmpifz [482] ............................ if pMyLoc.locV >= jumpReadyV then
+  [341] getprop 67 .............................. <pMyLoc>
+  [343] getlocal 2 .............................. <jumpReadyV>
+  [345] setobjprop 66 ........................... pMyLoc.locV = jumpReadyV
+  [347] getprop 43 .............................. <pPlayerMode>
+  [349] pushzero ................................ <0>
+  [350] eq ...................................... <pPlayerMode = 0>
+  [351] jmpifz [466] ............................ if pPlayerMode = 0 then / else
+  [354] pushsymb 146 ............................ <#ready>
+  [356] setprop 45 .............................. pStatus = #ready
+  [358] getprop 29 .............................. <name>
+  [360] getprop 19 .............................. <pMyName>
+  [362] eq ...................................... <name = pMyName>
+  [363] jmpifz [463] ............................ if name = pMyName then
+  [366] pushint8 1 .............................. <1>
+  [368] setlocal 4
+  [370] getlocal 4
+  [372] getprop 148 ............................. <pJumpData>
+  [374] pusharglist 1 ........................... <pJumpData>
+  [376] extcall 147 ............................. <length(pJumpData)>
+  [378] lteq
+  [379] jmpifz [414] ............................ repeat with f = 1 to length(pJumpData)
+  [382] getlocal 4 .............................. <f>
+  [384] setlocal 5 .............................. temp = f
+  [386] getprop 148 ............................. <pJumpData>
+  [388] pushsymb 149 ............................ <#char>
+  [390] getlocal 4 .............................. <f>
+  [392] pusharglist 3 ........................... <pJumpData, #char, f>
+  [394] objcall 150 ............................. <pJumpData.char[f]>
+  [396] pushcons 35 ............................. <"0">
+  [398] nteq .................................... <pJumpData.char[f] <> "0">
+  [399] jmpifz [405] ............................ if pJumpData.char[f] <> "0" then
+  [402] jmp [414] ............................... exit repeat
+  [405] pushint8 1
+  [407] getlocal 4
+  [409] add
+  [410] setlocal 4
+  [412] endrepeat [370]
+  [414] pushcons 35 ............................. <"0">
+  [416] getprop 148 ............................. <pJumpData>
+  [418] pushsymb 149 ............................ <#char>
+  [420] getlocal 5 .............................. <temp>
+  [422] getprop 148 ............................. <pJumpData>
+  [424] pusharglist 1 ........................... <pJumpData>
+  [426] extcall 147 ............................. <length(pJumpData)>
+  [428] pusharglist 4 ........................... <pJumpData, #char, temp, length(pJumpData)>
+  [430] objcall 150 ............................. <pJumpData.char[temp..length(pJumpData)]>
+  [432] joinstr ................................. <"0" & pJumpData.char[temp..length(pJumpData)]>
+  [433] setprop 148 ............................. pJumpData = "0" & pJumpData.char[temp..length(pJumpData)]
+  [435] getprop 148 ............................. <pJumpData>
+  [437] pusharglist 1 ........................... <pJumpData>
+  [439] extcall 151 ............................. <compressString(pJumpData)>
+  [441] setlocal 6 .............................. sendJumpData = compressString(pJumpData)
+  [443] pushsymb 127 ............................ <#pellehyppy>
+  [445] pusharglist 1 ........................... <#pellehyppy>
+  [447] extcall 23 .............................. <getThread(#pellehyppy)>
+  [449] pusharglist 1 ........................... <getThread(#pellehyppy)>
+  [451] objcall 128 ............................. <getThread(#pellehyppy).getComponent()>
+  [453] getlocal 6 .............................. <sendJumpData>
+  [455] pusharglistnoret 2 ...................... <getThread(#pellehyppy).getComponent(), sendJumpData>
+  [457] objcall 152 ............................. getThread(#pellehyppy).getComponent().sendJumpPerf(sendJumpData)
+  [459] pushcons 2 .............................. <EMPTY>
+  [461] setprop 148 ............................. pJumpData = EMPTY
+  [463] jmp [470]
+  [466] pushsymb 153 ............................ <#dive>
+  [468] setprop 45 .............................. pStatus = #dive
+  [470] getprop 75 .............................. <pScreenUpOrDown>
+  [472] pushsymb 125 ............................ <#down>
+  [474] eq ...................................... <pScreenUpOrDown = #down>
+  [475] jmpifz [482] ............................ if pScreenUpOrDown = #down then
+  [478] pushint8 1 .............................. <1>
+  [480] setprop 17 .............................. pJumpReady = 1
+  [482] ret
+end
+
+on UpdatePelle me
+  [  0] getprop 85 .............................. <pPelleImg>
+  [  2] getprop 85 .............................. <pPelleImg>
+  [  4] getobjprop 92 ........................... <pPelleImg.rect>
+  [  6] pushint16 255 ........................... <255>
+  [  9] pushint16 255 ........................... <255>
+  [ 12] pushint16 255 ........................... <255>
+  [ 15] pusharglist 3 ........................... <255, 255, 255>
+  [ 17] extcall 87 .............................. <rgb(255, 255, 255)>
+  [ 19] pusharglistnoret 3 ...................... <pPelleImg, pPelleImg.rect, rgb(255, 255, 255)>
+  [ 21] objcall 93 .............................. pPelleImg.fill(pPelleImg.rect, rgb(255, 255, 255))
+  [ 23] pushcons 8 .............................. <"bd">
+  [ 25] pushcons 7 .............................. <"lh">
+  [ 27] pushcons 10 ............................. <"hd">
+  [ 29] pushcons 11 ............................. <"fc">
+  [ 31] pushcons 12 ............................. <"hr">
+  [ 33] pushcons 9 .............................. <"ch">
+  [ 35] pushcons 13 ............................. <"rh">
+  [ 37] pusharglist 7 ........................... <["bd", "lh", "hd", "fc", "hr", "ch", "rh"]>
+  [ 39] pushlist ................................ <["bd", "lh", "hd", "fc", "hr", "ch", "rh"]>
+  [ 40] peek 0
+  [ 42] pusharglist 1
+  [ 44] extcall 82
+  [ 46] pushint8 1
+  [ 48] peek 0
+  [ 50] peek 2
+  [ 52] lteq
+  [ 53] jmpifz [456] ............................ repeat with f in ["bd", "lh", "hd", "fc", "hr", "ch", "rh"]
+  [ 56] peek 2
+  [ 58] peek 1
+  [ 60] pusharglist 2
+  [ 62] extcall 83
+  [ 64] setlocal 0
+  [ 66] getlocal 0 .............................. <f>
+  [ 68] peek 0 .................................. case f of
+  [ 70] pushcons 36 ............................. <"ey">
+  [ 72] eq
+  [ 73] jmpifz [ 83] ............................ (case) "ey":
+  [ 76] pushint8 36 ............................. <36>
+  [ 78] setlocal 1 .............................. pInk = 36
+  [ 80] jmp [117]
+  [ 83] peek 0
+  [ 85] pushcons 9 .............................. <"ch">
+  [ 87] eq
+  [ 88] jmpifz [ 98] ............................ (case) "ch":
+  [ 91] pushint8 41 ............................. <41>
+  [ 93] setlocal 1 .............................. pInk = 41
+  [ 95] jmp [117]
+  [ 98] peek 0
+  [100] pushcons 37 ............................. <"sd">
+  [102] eq
+  [103] jmpifz [113] ............................ (case) "sd":
+  [106] pushint8 32 ............................. <32>
+  [108] setlocal 1 .............................. pInk = 32
+  [110] jmp [117] ............................... (case) otherwise:
+  [113] pushint8 41 ............................. <41>
+  [115] setlocal 1 .............................. pInk = 41
+  [117] pop 1 ................................... end case
+  [119] getprop 34 .............................. <pColors>
+  [121] getlocal 0 .............................. <f>
+  [123] pusharglist 2 ........................... <pColors, f>
+  [125] objcall 150 ............................. <pColors.getProp(f)>
+  [127] setlocal 2 .............................. tColor = pColors.getProp(f)
+  [129] getlocal 0 .............................. <f>
+  [131] pushcons 8 .............................. <"bd">
+  [133] eq ...................................... <f = "bd">
+  [134] getlocal 0 .............................. <f>
+  [136] pushcons 7 .............................. <"lh">
+  [138] eq ...................................... <f = "lh">
+  [139] or ...................................... <(f = "bd") or (f = "lh")>
+  [140] getlocal 0 .............................. <f>
+  [142] pushcons 9 .............................. <"ch">
+  [144] eq ...................................... <f = "ch">
+  [145] or ...................................... <(f = "bd") or (f = "lh") or (f = "ch")>
+  [146] getlocal 0 .............................. <f>
+  [148] pushcons 13 ............................. <"rh">
+  [150] eq ...................................... <f = "rh">
+  [151] or ...................................... <(f = "bd") or (f = "lh") or (f = "ch") or (f = "rh")>
+  [152] jmpifz [264] ............................ if (f = "bd") or (f = "lh") or (f = "ch") or (f = "rh") then / else
+  [155] getprop 50 .............................. <jumpAction>
+  [157] pushcons 38 ............................. <"jd">
+  [159] containsstr ............................. <jumpAction contains "jd">
+  [160] jmpifz [169] ............................ if jumpAction contains "jd" then / else
+  [163] pushzero ................................ <0>
+  [164] setlocal 3 .............................. dir = 0
+  [166] jmp [173]
+  [169] pushint8 2 .............................. <2>
+  [171] setlocal 3 .............................. dir = 2
+  [173] pushcons 39 ............................. <"sh_">
+  [175] getprop 50 .............................. <jumpAction>
+  [177] joinstr ................................. <"sh_" & jumpAction>
+  [178] pushcons 40 ............................. <"_">
+  [180] joinstr ................................. <"sh_" & jumpAction & "_">
+  [181] getlocal 0 .............................. <f>
+  [183] joinstr ................................. <"sh_" & jumpAction & "_" & f>
+  [184] pushcons 40 ............................. <"_">
+  [186] joinstr ................................. <"sh_" & jumpAction & "_" & f & "_">
+  [187] getprop 33 .............................. <pModels>
+  [189] getlocal 0 .............................. <f>
+  [191] pusharglist 2 ........................... <pModels, f>
+  [193] objcall 150 ............................. <pModels.getProp(f)>
+  [195] joinstr ................................. <"sh_" & jumpAction & "_" & f & "_" & pModels.getProp(f)>
+  [196] pushcons 40 ............................. <"_">
+  [198] joinstr ................................. <"sh_" & jumpAction & "_" & f & "_" & pModels.getProp(f) & "_">
+  [199] getlocal 3 .............................. <dir>
+  [201] joinstr ................................. <"sh_" & jumpAction & "_" & f & "_" & pModels.getProp(f) & "_" & dir>
+  [202] pushcons 40 ............................. <"_">
+  [204] joinstr ................................. <"sh_" & jumpAction & "_" & f & "_" & pModels.getProp(f) & "_" & dir & "_">
+  [205] getprop 53 .............................. <jumpAnimFrame>
+  [207] joinstr ................................. <"sh_" & jumpAction & "_" & f & "_" & pModels.getProp(f) & "_" & dir & "_" & jumpAnimFrame>
+  [208] pusharglist 1 ........................... <"sh_" & jumpAction & "_" & f & "_" & pModels.getProp(f) & "_" & dir & "_" & jumpAnimFrame>
+  [210] extcall 74 .............................. <getmemnum("sh_" & jumpAction & "_" & f & "_" & pModels.getProp(f) & "_" & dir & "_" & jumpAnimFrame)>
+  [212] setlocal 4 .............................. tMemNum = getmemnum("sh_" & jumpAction & "_" & f & "_" & pModels.getProp(f) & "_" & dir & "_" & jumpAnimFrame)
+  [214] getlocal 4 .............................. <tMemNum>
+  [216] pushzero ................................ <0>
+  [217] lt ...................................... <tMemNum < 0>
+  [218] jmpifz [261] ............................ if tMemNum < 0 then
+  [221] pushcons 39 ............................. <"sh_">
+  [223] pushcons 3 .............................. <"std">
+  [225] joinstr ................................. <"sh_" & "std">
+  [226] pushcons 40 ............................. <"_">
+  [228] joinstr ................................. <"sh_" & "std" & "_">
+  [229] getlocal 0 .............................. <f>
+  [231] joinstr ................................. <"sh_" & "std" & "_" & f>
+  [232] pushcons 40 ............................. <"_">
+  [234] joinstr ................................. <"sh_" & "std" & "_" & f & "_">
+  [235] getprop 33 .............................. <pModels>
+  [237] getlocal 0 .............................. <f>
+  [239] pusharglist 2 ........................... <pModels, f>
+  [241] objcall 150 ............................. <pModels.getProp(f)>
+  [243] joinstr ................................. <"sh_" & "std" & "_" & f & "_" & pModels.getProp(f)>
+  [244] pushcons 40 ............................. <"_">
+  [246] joinstr ................................. <"sh_" & "std" & "_" & f & "_" & pModels.getProp(f) & "_">
+  [247] pushint8 2 .............................. <2>
+  [249] joinstr ................................. <"sh_" & "std" & "_" & f & "_" & pModels.getProp(f) & "_" & 2>
+  [250] pushcons 40 ............................. <"_">
+  [252] joinstr ................................. <"sh_" & "std" & "_" & f & "_" & pModels.getProp(f) & "_" & 2 & "_">
+  [253] pushzero ................................ <0>
+  [254] joinstr ................................. <"sh_" & "std" & "_" & f & "_" & pModels.getProp(f) & "_" & 2 & "_" & 0>
+  [255] pusharglist 1 ........................... <"sh_" & "std" & "_" & f & "_" & pModels.getProp(f) & "_" & 2 & "_" & 0>
+  [257] extcall 74 .............................. <getmemnum("sh_" & "std" & "_" & f & "_" & pModels.getProp(f) & "_" & 2 & "_" & 0)>
+  [259] setlocal 4 .............................. tMemNum = getmemnum("sh_" & "std" & "_" & f & "_" & pModels.getProp(f) & "_" & 2 & "_" & 0)
+  [261] jmp [332]
+  [264] getprop 55 .............................. <pJumpDirection>
+  [266] pushcons 5 .............................. <"d">
+  [268] eq ...................................... <pJumpDirection = "d">
+  [269] getprop 50 .............................. <jumpAction>
+  [271] pushcons 41 ............................. <"jus">
+  [273] containsstr ............................. <jumpAction contains "jus">
+  [274] getprop 53 .............................. <jumpAnimFrame>
+  [276] pushint8 2 .............................. <2>
+  [278] eq ...................................... <jumpAnimFrame = 2>
+  [279] and ..................................... <(jumpAction contains "jus") and (jumpAnimFrame = 2)>
+  [280] or ...................................... <(pJumpDirection = "d") or ((jumpAction contains "jus") and (jumpAnimFrame = 2))>
+  [281] jmpifz [290] ............................ if (pJumpDirection = "d") or ((jumpAction contains "jus") and (jumpAnimFrame = 2)) then / else
+  [284] pushzero ................................ <0>
+  [285] setlocal 3 .............................. dir = 0
+  [287] jmp [294]
+  [290] pushint8 2 .............................. <2>
+  [292] setlocal 3 .............................. dir = 2
+  [294] pushcons 39 ............................. <"sh_">
+  [296] pushcons 3 .............................. <"std">
+  [298] joinstr ................................. <"sh_" & "std">
+  [299] pushcons 40 ............................. <"_">
+  [301] joinstr ................................. <"sh_" & "std" & "_">
+  [302] getlocal 0 .............................. <f>
+  [304] joinstr ................................. <"sh_" & "std" & "_" & f>
+  [305] pushcons 40 ............................. <"_">
+  [307] joinstr ................................. <"sh_" & "std" & "_" & f & "_">
+  [308] getprop 33 .............................. <pModels>
+  [310] getlocal 0 .............................. <f>
+  [312] pusharglist 2 ........................... <pModels, f>
+  [314] objcall 150 ............................. <pModels.getProp(f)>
+  [316] joinstr ................................. <"sh_" & "std" & "_" & f & "_" & pModels.getProp(f)>
+  [317] pushcons 40 ............................. <"_">
+  [319] joinstr ................................. <"sh_" & "std" & "_" & f & "_" & pModels.getProp(f) & "_">
+  [320] getlocal 3 .............................. <dir>
+  [322] joinstr ................................. <"sh_" & "std" & "_" & f & "_" & pModels.getProp(f) & "_" & dir>
+  [323] pushcons 42 ............................. <"_0">
+  [325] joinstr ................................. <"sh_" & "std" & "_" & f & "_" & pModels.getProp(f) & "_" & dir & "_0">
+  [326] pusharglist 1 ........................... <"sh_" & "std" & "_" & f & "_" & pModels.getProp(f) & "_" & dir & "_0">
+  [328] extcall 74 .............................. <getmemnum("sh_" & "std" & "_" & f & "_" & pModels.getProp(f) & "_" & dir & "_0")>
+  [330] setlocal 4 .............................. tMemNum = getmemnum("sh_" & "std" & "_" & f & "_" & pModels.getProp(f) & "_" & dir & "_0")
+  [332] getlocal 4 .............................. <tMemNum>
+  [334] pushzero ................................ <0>
+  [335] nteq .................................... <tMemNum <> 0>
+  [336] jmpifz [450] ............................ if tMemNum <> 0 then
+  [339] getlocal 4 .............................. <tMemNum>
+  [341] pusharglist 1 ........................... <tMemNum>
+  [343] extcall 73 .............................. <member(tMemNum)>
+  [345] getobjprop 86 ........................... <member(tMemNum).image>
+  [347] setlocal 5 .............................. tImage = member(tMemNum).image
+  [349] getlocal 4 .............................. <tMemNum>
+  [351] pusharglist 1 ........................... <tMemNum>
+  [353] extcall 73 .............................. <member(tMemNum)>
+  [355] getobjprop 162 .......................... <member(tMemNum).regPoint>
+  [357] setlocal 6 .............................. tRegPoint = member(tMemNum).regPoint
+  [359] getlocal 6 .............................. <tRegPoint>
+  [361] pushint8 1 .............................. <1>
+  [363] pusharglist 2 ........................... <tRegPoint, 1>
+  [365] objcall 83 .............................. <tRegPoint[1]>
+  [367] inv ..................................... <-tRegPoint[1]>
+  [368] pushint8 10 ............................. <10>
+  [370] add ..................................... <-tRegPoint[1] + 10>
+  [371] setlocal 7 .............................. tX = -tRegPoint[1] + 10
+  [373] getprop 85 .............................. <pPelleImg>
+  [375] getchainedprop 92 ....................... <pPelleImg.rect>
+  [377] getobjprop 91 ........................... <pPelleImg.rect.height>
+  [379] getlocal 6 .............................. <tRegPoint>
+  [381] pushint8 2 .............................. <2>
+  [383] pusharglist 2 ........................... <tRegPoint, 2>
+  [385] objcall 83 .............................. <tRegPoint[2]>
+  [387] sub ..................................... <pPelleImg.rect.height - tRegPoint[2]>
+  [388] pushint8 8 .............................. <8>
+  [390] sub ..................................... <pPelleImg.rect.height - tRegPoint[2] - 8>
+  [391] setlocal 8 .............................. tY = pPelleImg.rect.height - tRegPoint[2] - 8
+  [393] getlocal 7 .............................. <tX>
+  [395] getlocal 8 .............................. <tY>
+  [397] getlocal 7 .............................. <tX>
+  [399] getlocal 5 .............................. <tImage>
+  [401] getobjprop 90 ........................... <tImage.width>
+  [403] add ..................................... <tX + tImage.width>
+  [404] getlocal 8 .............................. <tY>
+  [406] getlocal 5 .............................. <tImage>
+  [408] getobjprop 91 ........................... <tImage.height>
+  [410] add ..................................... <tY + tImage.height>
+  [411] pusharglist 4 ........................... <tX, tY, tX + tImage.width, tY + tImage.height>
+  [413] extcall 92 .............................. <rect(tX, tY, tX + tImage.width, tY + tImage.height)>
+  [415] setlocal 9 .............................. tRect = rect(tX, tY, tX + tImage.width, tY + tImage.height)
+  [417] getprop 85 .............................. <pPelleImg>
+  [419] getlocal 5 .............................. <tImage>
+  [421] getlocal 9 .............................. <tRect>
+  [423] getlocal 5 .............................. <tImage>
+  [425] getobjprop 92 ........................... <tImage.rect>
+  [427] pushsymb 95 ............................. <#maskImage>
+  [429] getlocal 5 .............................. <tImage>
+  [431] pusharglist 1 ........................... <tImage>
+  [433] objcall 96 .............................. <tImage.createMatte()>
+  [435] pushsymb 72 ............................. <#ink>
+  [437] getlocal 1 .............................. <pInk>
+  [439] pushsymb 163 ............................ <#bgColor>
+  [441] getlocal 2 .............................. <tColor>
+  [443] pusharglist 6 ........................... <[#maskImage: tImage.createMatte(), #ink: pInk, #bgColor: tColor]>
+  [445] pushproplist ............................ <[#maskImage: tImage.createMatte(), #ink: pInk, #bgColor: tColor]>
+  [446] pusharglistnoret 5 ...................... <pPelleImg, tImage, tRect, tImage.rect, [#maskImage: tImage.createMatte(), #ink: pInk, #bgColor: tColor]>
+  [448] objcall 97 .............................. pPelleImg.copyPixels(tImage, tRect, tImage.rect, [#maskImage: tImage.createMatte(), #ink: pInk, #bgColor: tColor])
+  [450] pushint8 1
+  [452] add
+  [453] endrepeat [ 48]
+  [456] pop 3
+  [458] pushcons 6 .............................. <"JumpingPelle">
+  [460] pusharglist 1 ........................... <"JumpingPelle">
+  [462] extcall 74 .............................. <getmemnum("JumpingPelle")>
+  [464] pusharglist 1 ........................... <getmemnum("JumpingPelle")>
+  [466] extcall 73 .............................. <member(getmemnum("JumpingPelle"))>
+  [468] setlocal 10 ............................. tPelleMem = member(getmemnum("JumpingPelle"))
+  [470] getlocal 10 ............................. <tPelleMem>
+  [472] getchainedprop 86 ....................... <tPelleMem.image>
+  [474] getprop 85 .............................. <pPelleImg>
+  [476] getprop 85 .............................. <pPelleImg>
+  [478] getobjprop 92 ........................... <pPelleImg.rect>
+  [480] getprop 85 .............................. <pPelleImg>
+  [482] getobjprop 92 ........................... <pPelleImg.rect>
+  [484] pusharglistnoret 4 ...................... <tPelleMem.image, pPelleImg, pPelleImg.rect, pPelleImg.rect>
+  [486] objcall 97 .............................. tPelleMem.image.copyPixels(pPelleImg, pPelleImg.rect, pPelleImg.rect)
+  [488] ret
+end
+
+on JumpingExitFrame me
+  [  0] getprop 45 .............................. <pStatus>
+  [  2] pushsymb 46 ............................. <#Run>
+  [  4] eq ...................................... <pStatus = #Run>
+  [  5] jmpifz [165] ............................ if pStatus = #Run then / else
+  [  8] getprop 50 .............................. <jumpAction>
+  [ 10] pushcons 43 ............................. <"run">
+  [ 12] eq ...................................... <jumpAction = "run">
+  [ 13] jmpifz [105] ............................ if jumpAction = "run" then
+  [ 16] getprop 54 .............................. <AnimListCounter>
+  [ 18] pushint8 1 .............................. <1>
+  [ 20] add ..................................... <AnimListCounter + 1>
+  [ 21] setprop 54 .............................. AnimListCounter = AnimListCounter + 1
+  [ 23] getprop 54 .............................. <AnimListCounter>
+  [ 25] getprop 51 .............................. <runAnimList>
+  [ 27] getobjprop 82 ........................... <runAnimList.count>
+  [ 29] gt ...................................... <AnimListCounter > runAnimList.count>
+  [ 30] jmpifz [ 37] ............................ if AnimListCounter > runAnimList.count then
+  [ 33] pushint8 1 .............................. <1>
+  [ 35] setprop 54 .............................. AnimListCounter = 1
+  [ 37] getprop 51 .............................. <runAnimList>
+  [ 39] getprop 54 .............................. <AnimListCounter>
+  [ 41] pusharglist 2 ........................... <runAnimList, AnimListCounter>
+  [ 43] objcall 83 .............................. <runAnimList[AnimListCounter]>
+  [ 45] setprop 53 .............................. jumpAnimFrame = runAnimList[AnimListCounter]
+  [ 47] getprop 67 .............................. <pMyLoc>
+  [ 49] getprop 67 .............................. <pMyLoc>
+  [ 51] getobjprop 64 ........................... <pMyLoc.locH>
+  [ 53] pushint8 2 .............................. <2>
+  [ 55] getprop 49 .............................. <pSpeed>
+  [ 57] pusharglist 1 ........................... <pSpeed>
+  [ 59] extcall 173 ............................. <integer(pSpeed)>
+  [ 61] mul ..................................... <2 * integer(pSpeed)>
+  [ 62] sub ..................................... <pMyLoc.locH - (2 * integer(pSpeed))>
+  [ 63] setobjprop 64 ........................... pMyLoc.locH = pMyLoc.locH - (2 * integer(pSpeed))
+  [ 65] getprop 68 .............................. <pnewLocV>
+  [ 67] pushint8 1 .............................. <1>
+  [ 69] getprop 49 .............................. <pSpeed>
+  [ 71] pusharglist 1 ........................... <pSpeed>
+  [ 73] extcall 173 ............................. <integer(pSpeed)>
+  [ 75] mul ..................................... <1 * integer(pSpeed)>
+  [ 76] add ..................................... <pnewLocV + (1 * integer(pSpeed))>
+  [ 77] setprop 68 .............................. pnewLocV = pnewLocV + (1 * integer(pSpeed))
+  [ 79] getprop 49 .............................. <pSpeed>
+  [ 81] pushint8 1 .............................. <1>
+  [ 83] gt ...................................... <pSpeed > 1>
+  [ 84] jmpifz [ 99] ............................ if pSpeed > 1 then / else
+  [ 87] getprop 67 .............................. <pMyLoc>
+  [ 89] getprop 68 .............................. <pnewLocV>
+  [ 91] getprop 53 .............................. <jumpAnimFrame>
+  [ 93] sub ..................................... <pnewLocV - jumpAnimFrame>
+  [ 94] setobjprop 66 ........................... pMyLoc.locV = pnewLocV - jumpAnimFrame
+  [ 96] jmp [105]
+  [ 99] getprop 67 .............................. <pMyLoc>
+  [101] getprop 68 .............................. <pnewLocV>
+  [103] setobjprop 66 ........................... pMyLoc.locV = pnewLocV
+  [105] getparam 0 .............................. <me>
+  [107] pusharglistnoret 1 ...................... <me>
+  [109] objcall 4 ............................... me.UpdatePelle()
+  [111] getprop 67 .............................. <pMyLoc>
+  [113] getobjprop 64 ........................... <pMyLoc.locH>
+  [115] getprop 78 .............................. <pjumpBoardEnd>
+  [117] pushint8 3 .............................. <3>
+  [119] add ..................................... <pjumpBoardEnd + 3>
+  [120] lteq .................................... <pMyLoc.locH <= (pjumpBoardEnd + 3)>
+  [121] jmpifz [139] ............................ if pMyLoc.locH <= (pjumpBoardEnd + 3) then / else
+  [124] pushint8 1 .............................. <1>
+  [126] setprop 53 .............................. jumpAnimFrame = 1
+  [128] pushsymb 112 ............................ <#jump>
+  [130] setprop 45 .............................. pStatus = #jump
+  [132] pushint8 1 .............................. <1>
+  [134] setprop 80 .............................. pJumpSpeed = 1
+  [136] jmp [156]
+  [139] getprop 49 .............................. <pSpeed>
+  [141] pushcons 44 ............................. <0.05>
+  [143] sub ..................................... <pSpeed - 0.05>
+  [144] setprop 49 .............................. pSpeed = pSpeed - 0.05
+  [146] getprop 49 .............................. <pSpeed>
+  [148] pushzero ................................ <0>
+  [149] lt ...................................... <pSpeed < 0>
+  [150] jmpifz [156] ............................ if pSpeed < 0 then
+  [153] pushzero ................................ <0>
+  [154] setprop 49 .............................. pSpeed = 0
+  [156] getparam 0 .............................. <me>
+  [158] pusharglistnoret 1 ...................... <me>
+  [160] objcall 2 ............................... me.StopRunnig()
+  [162] jmp [665]
+  [165] getprop 45 .............................. <pStatus>
+  [167] pushsymb 112 ............................ <#jump>
+  [169] eq ...................................... <pStatus = #jump>
+  [170] jmpifz [665] ............................ if pStatus = #jump then
+  [173] getprop 67 .............................. <pMyLoc>
+  [175] getprop 67 .............................. <pMyLoc>
+  [177] getobjprop 64 ........................... <pMyLoc.locH>
+  [179] pushint8 2 .............................. <2>
+  [181] getprop 49 .............................. <pSpeed>
+  [183] pusharglist 1 ........................... <pSpeed>
+  [185] extcall 173 ............................. <integer(pSpeed)>
+  [187] mul ..................................... <2 * integer(pSpeed)>
+  [188] sub ..................................... <pMyLoc.locH - (2 * integer(pSpeed))>
+  [189] setobjprop 64 ........................... pMyLoc.locH = pMyLoc.locH - (2 * integer(pSpeed))
+  [191] getprop 68 .............................. <pnewLocV>
+  [193] pushint8 1 .............................. <1>
+  [195] getprop 49 .............................. <pSpeed>
+  [197] pusharglist 1 ........................... <pSpeed>
+  [199] extcall 173 ............................. <integer(pSpeed)>
+  [201] mul ..................................... <1 * integer(pSpeed)>
+  [202] add ..................................... <pnewLocV + (1 * integer(pSpeed))>
+  [203] getprop 80 .............................. <pJumpSpeed>
+  [205] sub ..................................... <pnewLocV + (1 * integer(pSpeed)) - pJumpSpeed>
+  [206] setprop 68 .............................. pnewLocV = pnewLocV + (1 * integer(pSpeed)) - pJumpSpeed
+  [208] getprop 67 .............................. <pMyLoc>
+  [210] getprop 68 .............................. <pnewLocV>
+  [212] setobjprop 66 ........................... pMyLoc.locV = pnewLocV
+  [214] getprop 80 .............................. <pJumpSpeed>
+  [216] getprop 77 .............................. <pVelocityV>
+  [218] sub ..................................... <pJumpSpeed - pVelocityV>
+  [219] setprop 80 .............................. pJumpSpeed = pJumpSpeed - pVelocityV
+  [221] getprop 67 .............................. <pMyLoc>
+  [223] getobjprop 64 ........................... <pMyLoc.locH>
+  [225] getprop 78 .............................. <pjumpBoardEnd>
+  [227] gt ...................................... <pMyLoc.locH > pjumpBoardEnd>
+  [228] jmpifz [289] ............................ if pMyLoc.locH > pjumpBoardEnd then / else
+  [231] getprop 59 .............................. <pStartloc>
+  [233] getobjprop 66 ........................... <pStartloc.locV>
+  [235] getprop 59 .............................. <pStartloc>
+  [237] getobjprop 64 ........................... <pStartloc.locH>
+  [239] getprop 67 .............................. <pMyLoc>
+  [241] getobjprop 64 ........................... <pMyLoc.locH>
+  [243] sub ..................................... <pStartloc.locH - pMyLoc.locH>
+  [244] pushint8 2 .............................. <2>
+  [246] div ..................................... <(pStartloc.locH - pMyLoc.locH) / 2>
+  [247] add ..................................... <pStartloc.locV + ((pStartloc.locH - pMyLoc.locH) / 2)>
+  [248] setlocal 0 .............................. jumpBoardColV = pStartloc.locV + ((pStartloc.locH - pMyLoc.locH) / 2)
+  [250] getprop 67 .............................. <pMyLoc>
+  [252] getobjprop 66 ........................... <pMyLoc.locV>
+  [254] getlocal 0 .............................. <jumpBoardColV>
+  [256] gteq .................................... <pMyLoc.locV >= jumpBoardColV>
+  [257] jmpifz [286] ............................ if pMyLoc.locV >= jumpBoardColV then
+  [260] getprop 67 .............................. <pMyLoc>
+  [262] getlocal 0 .............................. <jumpBoardColV>
+  [264] setobjprop 66 ........................... pMyLoc.locV = jumpBoardColV
+  [266] pushsymb 46 ............................. <#Run>
+  [268] setprop 45 .............................. pStatus = #Run
+  [270] pushcons 3 .............................. <"std">
+  [272] setprop 50 .............................. jumpAction = "std"
+  [274] pushzero ................................ <0>
+  [275] setprop 53 .............................. jumpAnimFrame = 0
+  [277] getparam 0 .............................. <me>
+  [279] pusharglistnoret 1 ...................... <me>
+  [281] localcall 2 ............................. StopRunnig(me)
+  [283] pushzero ................................ <0>
+  [284] setprop 80 .............................. pJumpSpeed = 0
+  [286] jmp [320]
+  [289] getprop 80 .............................. <pJumpSpeed>
+  [291] pushint8 12 ............................. <12>
+  [293] inv ..................................... <-12>
+  [294] lt ...................................... <pJumpSpeed < -12>
+  [295] jmpifz [303] ............................ if pJumpSpeed < -12 then
+  [298] pushint8 12 ............................. <12>
+  [300] inv ..................................... <-12>
+  [301] setprop 80 .............................. pJumpSpeed = -12
+  [303] getprop 49 .............................. <pSpeed>
+  [305] pushcons 45 ............................. <0.08>
+  [307] sub ..................................... <pSpeed - 0.08>
+  [308] setprop 49 .............................. pSpeed = pSpeed - 0.08
+  [310] getprop 49 .............................. <pSpeed>
+  [312] pushzero ................................ <0>
+  [313] lt ...................................... <pSpeed < 0>
+  [314] jmpifz [320] ............................ if pSpeed < 0 then
+  [317] pushzero ................................ <0>
+  [318] setprop 49 .............................. pSpeed = 0
+  [320] getparam 0 .............................. <me>
+  [322] pusharglistnoret 1 ...................... <me>
+  [324] objcall 4 ............................... me.UpdatePelle()
+  [326] getprop 45 .............................. <pStatus>
+  [328] pushsymb 112 ............................ <#jump>
+  [330] eq ...................................... <pStatus = #jump>
+  [331] jmpifz [665] ............................ if pStatus = #jump then
+  [334] getprop 67 .............................. <pMyLoc>
+  [336] getobjprop 64 ........................... <pMyLoc.locH>
+  [338] getprop 78 .............................. <pjumpBoardEnd>
+  [340] gt ...................................... <pMyLoc.locH > pjumpBoardEnd>
+  [341] getprop 67 .............................. <pMyLoc>
+  [343] getobjprop 66 ........................... <pMyLoc.locV>
+  [345] pushint8 3 .............................. <3>
+  [347] sub ..................................... <pMyLoc.locV - 3>
+  [348] getlocal 0 .............................. <jumpBoardColV>
+  [350] gt ...................................... <(pMyLoc.locV - 3) > jumpBoardColV>
+  [351] and ..................................... <(pMyLoc.locH > pjumpBoardEnd) and ((pMyLoc.locV - 3) > jumpBoardColV)>
+  [352] jmpifz [359] ............................ if (pMyLoc.locH > pjumpBoardEnd) and ((pMyLoc.locV - 3) > jumpBoardColV) then
+  [355] pushsymb 175 ............................ <#goinactive>
+  [357] setprop 174 ............................. pJumpMode = #goinactive
+  [359] getprop 174 ............................. <pJumpMode>
+  [361] pushsymb 176 ............................ <#Active>
+  [363] eq ...................................... <pJumpMode = #Active>
+  [364] getprop 58 .............................. <pJumpLoop>
+  [366] pushzero ................................ <0>
+  [367] eq ...................................... <pJumpLoop = 0>
+  [368] and ..................................... <(pJumpMode = #Active) and (pJumpLoop = 0)>
+  [369] getprop 177 ............................. <plastPressKey>
+  [371] getprop 50 .............................. <jumpAction>
+  [373] pushsymb 149 ............................ <#char>
+  [375] pushint8 3 .............................. <3>
+  [377] pusharglist 3 ........................... <jumpAction, #char, 3>
+  [379] objcall 150 ............................. <jumpAction.char[3]>
+  [381] nteq .................................... <plastPressKey <> jumpAction.char[3]>
+  [382] and ..................................... <(pJumpMode = #Active) and (pJumpLoop = 0) and (plastPressKey <> jumpAction.char[3])>
+  [383] jmpifz [390] ............................ if (pJumpMode = #Active) and (pJumpLoop = 0) and (plastPressKey <> jumpAction.char[3]) then
+  [386] pushsymb 175 ............................ <#goinactive>
+  [388] setprop 174 ............................. pJumpMode = #goinactive
+  [390] getprop 50 .............................. <jumpAction>
+  [392] pushcons 41 ............................. <"jus">
+  [394] eq ...................................... <jumpAction = "jus">
+  [395] getprop 50 .............................. <jumpAction>
+  [397] pushcons 46 ............................. <"jds">
+  [399] eq ...................................... <jumpAction = "jds">
+  [400] or ...................................... <(jumpAction = "jus") or (jumpAction = "jds")>
+  [401] jmpifz [408] ............................ if (jumpAction = "jus") or (jumpAction = "jds") then
+  [404] pushsymb 176 ............................ <#Active>
+  [406] setprop 174 ............................. pJumpMode = #Active
+  [408] getprop 174 ............................. <pJumpMode>
+  [410] pushsymb 176 ............................ <#Active>
+  [412] eq ...................................... <pJumpMode = #Active>
+  [413] jmpifz [511] ............................ if pJumpMode = #Active then / else
+  [416] getprop 53 .............................. <jumpAnimFrame>
+  [418] pushint8 1 .............................. <1>
+  [420] add ..................................... <jumpAnimFrame + 1>
+  [421] setprop 53 .............................. jumpAnimFrame = jumpAnimFrame + 1
+  [423] getprop 53 .............................. <jumpAnimFrame>
+  [425] getprop 178 ............................. <pJumpMaxAnimFrames>
+  [427] gt ...................................... <jumpAnimFrame > pJumpMaxAnimFrames>
+  [428] jmpifz [449] ............................ if jumpAnimFrame > pJumpMaxAnimFrames then
+  [431] getprop 58 .............................. <pJumpLoop>
+  [433] pushint8 1 .............................. <1>
+  [435] eq ...................................... <pJumpLoop = 1>
+  [436] jmpifz [445] ............................ if pJumpLoop = 1 then / else
+  [439] pushzero ................................ <0>
+  [440] setprop 53 .............................. jumpAnimFrame = 0
+  [442] jmp [449]
+  [445] getprop 178 ............................. <pJumpMaxAnimFrames>
+  [447] setprop 53 .............................. jumpAnimFrame = pJumpMaxAnimFrames
+  [449] getprop 53 .............................. <jumpAnimFrame>
+  [451] getprop 178 ............................. <pJumpMaxAnimFrames>
+  [453] eq ...................................... <jumpAnimFrame = pJumpMaxAnimFrames>
+  [454] jmpifz [508] ............................ if jumpAnimFrame = pJumpMaxAnimFrames then
+  [457] getprop 50 .............................. <jumpAction>
+  [459] pushcons 41 ............................. <"jus">
+  [461] eq ...................................... <jumpAction = "jus">
+  [462] getprop 50 .............................. <jumpAction>
+  [464] pushcons 46 ............................. <"jds">
+  [466] eq ...................................... <jumpAction = "jds">
+  [467] or ...................................... <(jumpAction = "jus") or (jumpAction = "jds")>
+  [468] jmpifz [508] ............................ if (jumpAction = "jus") or (jumpAction = "jds") then
+  [471] pushint8 1 .............................. <1>
+  [473] setprop 53 .............................. jumpAnimFrame = 1
+  [475] pushint8 1 .............................. <1>
+  [477] setprop 178 ............................. pJumpMaxAnimFrames = 1
+  [479] getprop 55 .............................. <pJumpDirection>
+  [481] pushcons 4 .............................. <"u">
+  [483] eq ...................................... <pJumpDirection = "u">
+  [484] jmpifz [494] ............................ if pJumpDirection = "u" then / else
+  [487] pushcons 5 .............................. <"d">
+  [489] setprop 55 .............................. pJumpDirection = "d"
+  [491] jmp [498]
+  [494] pushcons 4 .............................. <"u">
+  [496] setprop 55 .............................. pJumpDirection = "u"
+  [498] pushcons 47 ............................. <"j">
+  [500] getprop 55 .............................. <pJumpDirection>
+  [502] joinstr ................................. <"j" & pJumpDirection>
+  [503] pushcons 48 ............................. <"n">
+  [505] joinstr ................................. <"j" & pJumpDirection & "n">
+  [506] setprop 50 .............................. jumpAction = "j" & pJumpDirection & "n"
+  [508] jmp [635]
+  [511] getprop 174 ............................. <pJumpMode>
+  [513] pushsymb 175 ............................ <#goinactive>
+  [515] eq ...................................... <pJumpMode = #goinactive>
+  [516] jmpifz [579] ............................ if pJumpMode = #goinactive then / else
+  [519] getprop 58 .............................. <pJumpLoop>
+  [521] pushint8 1 .............................. <1>
+  [523] eq ...................................... <pJumpLoop = 1>
+  [524] jmpifz [537] ............................ if pJumpLoop = 1 then / else
+  [527] pushzero ................................ <0>
+  [528] setprop 53 .............................. jumpAnimFrame = 0
+  [530] pushsymb 179 ............................ <#inactive>
+  [532] setprop 174 ............................. pJumpMode = #inactive
+  [534] jmp [558]
+  [537] getprop 53 .............................. <jumpAnimFrame>
+  [539] pushint8 1 .............................. <1>
+  [541] sub ..................................... <jumpAnimFrame - 1>
+  [542] setprop 53 .............................. jumpAnimFrame = jumpAnimFrame - 1
+  [544] getprop 53 .............................. <jumpAnimFrame>
+  [546] pushzero ................................ <0>
+  [547] lt ...................................... <jumpAnimFrame < 0>
+  [548] jmpifz [558] ............................ if jumpAnimFrame < 0 then
+  [551] pushzero ................................ <0>
+  [552] setprop 53 .............................. jumpAnimFrame = 0
+  [554] pushsymb 179 ............................ <#inactive>
+  [556] setprop 174 ............................. pJumpMode = #inactive
+  [558] getprop 50 .............................. <jumpAction>
+  [560] pushcons 49 ............................. <"jun">
+  [562] eq ...................................... <jumpAction = "jun">
+  [563] getprop 50 .............................. <jumpAction>
+  [565] pushcons 50 ............................. <"jdn">
+  [567] eq ...................................... <jumpAction = "jdn">
+  [568] or ...................................... <(jumpAction = "jun") or (jumpAction = "jdn")>
+  [569] jmpifz [576] ............................ if (jumpAction = "jun") or (jumpAction = "jdn") then
+  [572] pushint8 1 .............................. <1>
+  [574] setprop 53 .............................. jumpAnimFrame = 1
+  [576] jmp [635]
+  [579] getprop 174 ............................. <pJumpMode>
+  [581] pushsymb 179 ............................ <#inactive>
+  [583] eq ...................................... <pJumpMode = #inactive>
+  [584] jmpifz [635] ............................ if pJumpMode = #inactive then
+  [587] pushcons 51 ............................. <"jmp">
+  [589] setprop 50 .............................. jumpAction = "jmp"
+  [591] getprop 80 .............................. <pJumpSpeed>
+  [593] pushzero ................................ <0>
+  [594] gt ...................................... <pJumpSpeed > 0>
+  [595] jmpifz [605] ............................ if pJumpSpeed > 0 then / else
+  [598] pushint8 2 .............................. <2>
+  [600] setprop 53 .............................. jumpAnimFrame = 2
+  [602] jmp [608]
+  [605] pushzero ................................ <0>
+  [606] setprop 53 .............................. jumpAnimFrame = 0
+  [608] getprop 80 .............................. <pJumpSpeed>
+  [610] pushint8 5 .............................. <5>
+  [612] inv ..................................... <-5>
+  [613] lt ...................................... <pJumpSpeed < -5>
+  [614] jmpifz [635] ............................ if pJumpSpeed < -5 then
+  [617] pushint8 1 .............................. <1>
+  [619] setprop 53 .............................. jumpAnimFrame = 1
+  [621] pushint8 1 .............................. <1>
+  [623] setprop 178 ............................. pJumpMaxAnimFrames = 1
+  [625] pushcons 47 ............................. <"j">
+  [627] getprop 55 .............................. <pJumpDirection>
+  [629] joinstr ................................. <"j" & pJumpDirection>
+  [630] pushcons 48 ............................. <"n">
+  [632] joinstr ................................. <"j" & pJumpDirection & "n">
+  [633] setprop 50 .............................. jumpAction = "j" & pJumpDirection & "n"
+  [635] getprop 67 .............................. <pMyLoc>
+  [637] getobjprop 66 ........................... <pMyLoc.locV>
+  [639] pushint16 511 ........................... <511>
+  [642] gt ...................................... <pMyLoc.locV > 511>
+  [643] jmpifz [659] ............................ if pMyLoc.locV > 511 then
+  [646] pushsymb 46 ............................. <#Run>
+  [648] setprop 45 .............................. pStatus = #Run
+  [650] pushzero ................................ <0>
+  [651] setprop 49 .............................. pSpeed = 0
+  [653] getparam 0 .............................. <me>
+  [655] pusharglistnoret 1 ...................... <me>
+  [657] localcall 3 ............................. StopJumping(me)
+  [659] getparam 0 .............................. <me>
+  [661] pusharglistnoret 1 ...................... <me>
+  [663] objcall 3 ............................... me.StopJumping()
+  [665] getprop 57 .............................. <pJumpLastDirection>
+  [667] getprop 55 .............................. <pJumpDirection>
+  [669] nteq .................................... <pJumpLastDirection <> pJumpDirection>
+  [670] jmpifz [706] ............................ if pJumpLastDirection <> pJumpDirection then
+  [673] getprop 55 .............................. <pJumpDirection>
+  [675] pushcons 4 .............................. <"u">
+  [677] eq ...................................... <pJumpDirection = "u">
+  [678] jmpifz [695] ............................ if pJumpDirection = "u" then / else
+  [681] getprop 11 .............................. <pSpr>
+  [683] pushint8 1 .............................. <1>
+  [685] setobjprop 69 ........................... pSpr.flipH = 1
+  [687] getprop 11 .............................. <pSpr>
+  [689] pushzero ................................ <0>
+  [690] setobjprop 70 ........................... pSpr.flipV = 0
+  [692] jmp [706]
+  [695] getprop 11 .............................. <pSpr>
+  [697] pushzero ................................ <0>
+  [698] setobjprop 69 ........................... pSpr.flipH = 0
+  [700] getprop 11 .............................. <pSpr>
+  [702] pushint8 1 .............................. <1>
+  [704] setobjprop 70 ........................... pSpr.flipV = 1
+  [706] getprop 55 .............................. <pJumpDirection>
+  [708] setprop 57 .............................. pJumpLastDirection = pJumpDirection
+  [710] getprop 11 .............................. <pSpr>
+  [712] getprop 67 .............................. <pMyLoc>
+  [714] setobjprop 62 ........................... pSpr.loc = pMyLoc
+  [716] getprop 11 .............................. <pSpr>
+  [718] getprop 71 .............................. <myLocZ>
+  [720] setobjprop 145 .......................... pSpr.locZ = myLocZ
+  [722] getprop 29 .............................. <name>
+  [724] getprop 19 .............................. <pMyName>
+  [726] nteq .................................... <name <> pMyName>
+  [727] getprop 43 .............................. <pPlayerMode>
+  [729] and ..................................... <(name <> pMyName) and pPlayerMode>
+  [730] getprop 75 .............................. <pScreenUpOrDown>
+  [732] pushsymb 76 ............................. <#up>
+  [734] eq ...................................... <pScreenUpOrDown = #up>
+  [735] and ..................................... <(name <> pMyName) and pPlayerMode and (pScreenUpOrDown = #up)>
+  [736] jmpifz [1003] ........................... if (name <> pMyName) and pPlayerMode and (pScreenUpOrDown = #up) then
+  [739] getprop 11 .............................. <pSpr>
+  [741] pushint16 660 ........................... <660>
+  [744] pushint8 72 ............................. <72>
+  [746] pusharglist 2 ........................... <660, 72>
+  [748] extcall 41 .............................. <point(660, 72)>
+  [750] setobjprop 62 ........................... pSpr.loc = point(660, 72)
+  [752] pushsymb 180 ............................ <#room_interface>
+  [754] pusharglist 1 ........................... <#room_interface>
+  [756] extcall 20 .............................. <getObject(#room_interface)>
+  [758] setlocal 1 .............................. tInt = getObject(#room_interface)
+  [760] getlocal 1 .............................. <tInt>
+  [762] pushzero ................................ <0>
+  [763] nteq .................................... <tInt <> 0>
+  [764] jmpifz [810] ............................ if tInt <> 0 then
+  [767] getlocal 1 .............................. <tInt>
+  [769] pusharglist 1 ........................... <tInt>
+  [771] objcall 143 ............................. <tInt.getRoomVisualizer()>
+  [773] setlocal 2 .............................. tVis = tInt.getRoomVisualizer()
+  [775] getlocal 2 .............................. <tVis>
+  [777] pushzero ................................ <0>
+  [778] nteq .................................... <tVis <> 0>
+  [779] jmpifz [810] ............................ if tVis <> 0 then
+  [782] getlocal 2 .............................. <tVis>
+  [784] pushcons 52 ............................. <"cam1">
+  [786] pusharglist 2 ........................... <tVis, "cam1">
+  [788] objcall 144 ............................. <tVis.getSprById("cam1")>
+  [790] setlocal 3 .............................. tsprite = tVis.getSprById("cam1")
+  [792] getlocal 3 .............................. <tsprite>
+  [794] pushzero ................................ <0>
+  [795] nteq .................................... <tsprite <> 0>
+  [796] jmpifz [810] ............................ if tsprite <> 0 then
+  [799] getprop 11 .............................. <pSpr>
+  [801] getlocal 3 .............................. <tsprite>
+  [803] getobjprop 145 .......................... <tsprite.locZ>
+  [805] pushint8 1 .............................. <1>
+  [807] add ..................................... <tsprite.locZ + 1>
+  [808] setobjprop 145 .......................... pSpr.locZ = tsprite.locZ + 1
+  [810] getprop 88 .............................. <pPelleBgImg>
+  [812] pusharglist 1 ........................... <pPelleBgImg>
+  [814] extcall 181 ............................. <voidp(pPelleBgImg)>
+  [816] jmpifz [826] ............................ if voidp(pPelleBgImg) then
+  [819] getprop 11 .............................. <pSpr>
+  [821] pushint16 1000 .......................... <1000>
+  [824] setobjprop 64 ........................... pSpr.locH = 1000
+  [826] getprop 88 .............................. <pPelleBgImg>
+  [828] pushzero ................................ <0>
+  [829] pushzero ................................ <0>
+  [830] pushint8 108 ............................ <108>
+  [832] pushint8 102 ............................ <102>
+  [834] pusharglist 4 ........................... <0, 0, 108, 102>
+  [836] extcall 92 .............................. <rect(0, 0, 108, 102)>
+  [838] pushint16 157 ........................... <157>
+  [841] pushint16 206 ........................... <206>
+  [844] pushint16 255 ........................... <255>
+  [847] pusharglist 3 ........................... <157, 206, 255>
+  [849] extcall 87 .............................. <rgb(157, 206, 255)>
+  [851] pusharglistnoret 3 ...................... <pPelleBgImg, rect(0, 0, 108, 102), rgb(157, 206, 255)>
+  [853] objcall 93 .............................. pPelleBgImg.fill(rect(0, 0, 108, 102), rgb(157, 206, 255))
+  [855] getprop 85 .............................. <pPelleImg>
+  [857] getobjprop 91 ........................... <pPelleImg.height>
+  [859] pushint8 4 .............................. <4>
+  [861] sub ..................................... <pPelleImg.height - 4>
+  [862] setlocal 4 .............................. h = pPelleImg.height - 4
+  [864] getprop 85 .............................. <pPelleImg>
+  [866] getobjprop 90 ........................... <pPelleImg.width>
+  [868] pushint8 6 .............................. <6>
+  [870] sub ..................................... <pPelleImg.width - 6>
+  [871] setlocal 5 .............................. w = pPelleImg.width - 6
+  [873] getprop 88 .............................. <pPelleBgImg>
+  [875] getobjprop 92 ........................... <pPelleBgImg.rect>
+  [877] getprop 67 .............................. <pMyLoc>
+  [879] getobjprop 64 ........................... <pMyLoc.locH>
+  [881] getlocal 5 .............................. <w>
+  [883] sub ..................................... <pMyLoc.locH - w>
+  [884] getprop 67 .............................. <pMyLoc>
+  [886] getobjprop 66 ........................... <pMyLoc.locV>
+  [888] getlocal 4 .............................. <h>
+  [890] sub ..................................... <pMyLoc.locV - h>
+  [891] getprop 67 .............................. <pMyLoc>
+  [893] getobjprop 64 ........................... <pMyLoc.locH>
+  [895] getlocal 5 .............................. <w>
+  [897] sub ..................................... <pMyLoc.locH - w>
+  [898] getprop 67 .............................. <pMyLoc>
+  [900] getobjprop 66 ........................... <pMyLoc.locV>
+  [902] getlocal 4 .............................. <h>
+  [904] sub ..................................... <pMyLoc.locV - h>
+  [905] pusharglist 4 ........................... <pMyLoc.locH - w, pMyLoc.locV - h, pMyLoc.locH - w, pMyLoc.locV - h>
+  [907] extcall 92 .............................. <rect(pMyLoc.locH - w, pMyLoc.locV - h, pMyLoc.locH - w, pMyLoc.locV - h)>
+  [909] add ..................................... <pPelleBgImg.rect + rect(pMyLoc.locH - w, pMyLoc.locV - h, pMyLoc.locH - w, pMyLoc.locV - h)>
+  [910] setlocal 6 .............................. BgsourceRect = pPelleBgImg.rect + rect(pMyLoc.locH - w, pMyLoc.locV - h, pMyLoc.locH - w, pMyLoc.locV - h)
+  [912] getprop 89 .............................. <pBgScreenBuffer>
+  [914] pushcons 53 ............................. <"pomppulauta_4">
+  [916] pusharglist 1 ........................... <"pomppulauta_4">
+  [918] extcall 74 .............................. <getmemnum("pomppulauta_4")>
+  [920] pusharglist 1 ........................... <getmemnum("pomppulauta_4")>
+  [922] extcall 73 .............................. <member(getmemnum("pomppulauta_4"))>
+  [924] getobjprop 86 ........................... <member(getmemnum("pomppulauta_4")).image>
+  [926] pushint16 393 ........................... <393>
+  [929] pushint16 131 ........................... <131>
+  [932] pushint16 523 ........................... <523>
+  [935] pushint16 199 ........................... <199>
+  [938] pusharglist 4 ........................... <393, 131, 523, 199>
+  [940] extcall 92 .............................. <rect(393, 131, 523, 199)>
+  [942] pushcons 53 ............................. <"pomppulauta_4">
+  [944] pusharglist 1 ........................... <"pomppulauta_4">
+  [946] extcall 74 .............................. <getmemnum("pomppulauta_4")>
+  [948] pusharglist 1 ........................... <getmemnum("pomppulauta_4")>
+  [950] extcall 73 .............................. <member(getmemnum("pomppulauta_4"))>
+  [952] getobjprop 92 ........................... <member(getmemnum("pomppulauta_4")).rect>
+  [954] pushsymb 95 ............................. <#maskImage>
+  [956] pushcons 53 ............................. <"pomppulauta_4">
+  [958] pusharglist 1 ........................... <"pomppulauta_4">
+  [960] extcall 74 .............................. <getmemnum("pomppulauta_4")>
+  [962] pusharglist 1 ........................... <getmemnum("pomppulauta_4")>
+  [964] extcall 73 .............................. <member(getmemnum("pomppulauta_4"))>
+  [966] getchainedprop 86 ....................... <member(getmemnum("pomppulauta_4")).image>
+  [968] pusharglist 1 ........................... <member(getmemnum("pomppulauta_4")).image>
+  [970] objcall 96 .............................. <member(getmemnum("pomppulauta_4")).image.createMatte()>
+  [972] pushsymb 72 ............................. <#ink>
+  [974] pushint8 8 .............................. <8>
+  [976] pusharglist 4 ........................... <[#maskImage: member(getmemnum("pomppulauta_4")).image.createMatte(), #ink: 8]>
+  [978] pushproplist ............................ <[#maskImage: member(getmemnum("pomppulauta_4")).image.createMatte(), #ink: 8]>
+  [979] pusharglistnoret 5 ...................... <pBgScreenBuffer, member(getmemnum("pomppulauta_4")).image, rect(393, 131, 523, 199), member(getmemnum("pomppulauta_4")).rect, [#maskImage: member(getmemnum("pomppulauta_4")).image.createMatte(), #ink: 8]>
+  [981] objcall 97 .............................. pBgScreenBuffer.copyPixels(member(getmemnum("pomppulauta_4")).image, rect(393, 131, 523, 199), member(getmemnum("pomppulauta_4")).rect, [#maskImage: member(getmemnum("pomppulauta_4")).image.createMatte(), #ink: 8])
+  [983] getprop 88 .............................. <pPelleBgImg>
+  [985] getprop 89 .............................. <pBgScreenBuffer>
+  [987] pushzero ................................ <0>
+  [988] pushzero ................................ <0>
+  [989] pushint8 108 ............................ <108>
+  [991] pushint8 102 ............................ <102>
+  [993] pusharglist 4 ........................... <0, 0, 108, 102>
+  [995] extcall 92 .............................. <rect(0, 0, 108, 102)>
+  [997] getlocal 6 .............................. <BgsourceRect>
+  [999] pusharglistnoret 4 ...................... <pPelleBgImg, pBgScreenBuffer, rect(0, 0, 108, 102), BgsourceRect>
+  [1001] objcall 97 ............................. pPelleBgImg.copyPixels(pBgScreenBuffer, rect(0, 0, 108, 102), BgsourceRect)
+  [1003] ret
+end
+
+on jumpBoardCollisionD me, tNum
+  [  0] getprop 59 .............................. <pStartloc>
+  [  2] getobjprop 66 ........................... <pStartloc.locV>
+  [  4] getprop 59 .............................. <pStartloc>
+  [  6] getobjprop 64 ........................... <pStartloc.locH>
+  [  8] getparam 1 .............................. <tNum>
+  [ 10] sub ..................................... <pStartloc.locH - tNum>
+  [ 11] pushint8 2 .............................. <2>
+  [ 13] div ..................................... <(pStartloc.locH - tNum) / 2>
+  [ 14] pusharglist 1 ........................... <(pStartloc.locH - tNum) / 2>
+  [ 16] extcall 173 ............................. <integer((pStartloc.locH - tNum) / 2)>
+  [ 18] add ..................................... <pStartloc.locV + integer((pStartloc.locH - tNum) / 2)>
+  [ 19] pusharglistnoret 1 ...................... <pStartloc.locV + integer((pStartloc.locH - tNum) / 2)>
+  [ 21] extcall 15 .............................. return pStartloc.locV + integer((pStartloc.locH - tNum) / 2)
+  [ 23] ret
+end
+
+on translateKey me, tPelleKey
+  [  0] getparam 1 .............................. <tPelleKey>
+  [  2] pusharglist 0 ........................... <>
+  [  4] extcall 190 ............................. <SPACE>
+  [  6] eq ...................................... <tPelleKey = SPACE>
+  [  7] jmpifz [ 18] ............................ if tPelleKey = SPACE then
+  [ 10] pusharglist 0 ........................... <>
+  [ 12] extcall 190 ............................. <SPACE>
+  [ 14] pusharglistnoret 1 ...................... <SPACE>
+  [ 16] extcall 15 .............................. return SPACE
+  [ 18] pushcons 54 ............................. <"a">
+  [ 20] pushcons 5 .............................. <"d">
+  [ 22] pushcons 55 ............................. <"w">
+  [ 24] pushcons 56 ............................. <"e">
+  [ 26] pushcons 54 ............................. <"a">
+  [ 28] pushcons 57 ............................. <"s">
+  [ 30] pushcons 5 .............................. <"d">
+  [ 32] pushcons 58 ............................. <"z">
+  [ 34] pushcons 59 ............................. <"x">
+  [ 36] pusharglist 9 ........................... <["a", "d", "w", "e", "a", "s", "d", "z", "x"]>
+  [ 38] pushlist ................................ <["a", "d", "w", "e", "a", "s", "d", "z", "x"]>
+  [ 39] setlocal 0 .............................. tKeyList = ["a", "d", "w", "e", "a", "s", "d", "z", "x"]
+  [ 41] pushint8 1 .............................. <1>
+  [ 43] setlocal 1
+  [ 45] getlocal 1
+  [ 47] getprop 98 .............................. <pPelleKeys>
+  [ 49] getobjprop 82 ........................... <pPelleKeys.count>
+  [ 51] lteq
+  [ 52] jmpifz [ 90] ............................ repeat with i = 1 to pPelleKeys.count
+  [ 55] getparam 1 .............................. <tPelleKey>
+  [ 57] getprop 98 .............................. <pPelleKeys>
+  [ 59] getlocal 1 .............................. <i>
+  [ 61] pusharglist 2 ........................... <pPelleKeys, i>
+  [ 63] objcall 83 .............................. <pPelleKeys[i]>
+  [ 65] eq ...................................... <tPelleKey = pPelleKeys[i]>
+  [ 66] jmpifz [ 81] ............................ if tPelleKey = pPelleKeys[i] then
+  [ 69] getlocal 0 .............................. <tKeyList>
+  [ 71] getlocal 1 .............................. <i>
+  [ 73] pusharglist 2 ........................... <tKeyList, i>
+  [ 75] objcall 83 .............................. <tKeyList[i]>
+  [ 77] pusharglistnoret 1 ...................... <tKeyList[i]>
+  [ 79] extcall 15 .............................. return tKeyList[i]
+  [ 81] pushint8 1
+  [ 83] getlocal 1
+  [ 85] add
+  [ 86] setlocal 1
+  [ 88] endrepeat [ 45]
+  [ 90] pushcons 35 ............................. <"0">
+  [ 92] pusharglistnoret 1 ...................... <"0">
+  [ 94] extcall 15 .............................. return "0"
+  [ 96] ret
+end
+
+on MykeyDown me, tPelleKey, tTimeElapsed, tNoTranslation
+  [  0] getparam 3 .............................. <tNoTranslation>
+  [  2] not ..................................... <not tNoTranslation>
+  [  3] jmpifz [ 16] ............................ if not tNoTranslation then
+  [  6] getparam 0 .............................. <me>
+  [  8] getparam 1 .............................. <tPelleKey>
+  [ 10] pusharglist 2 ........................... <me, tPelleKey>
+  [ 12] objcall 7 ............................... <me.translateKey(tPelleKey)>
+  [ 14] setparam 1 .............................. tPelleKey = me.translateKey(tPelleKey)
+  [ 16] getprop 45 .............................. <pStatus>
+  [ 18] pushsymb 46 ............................. <#Run>
+  [ 20] eq ...................................... <pStatus = #Run>
+  [ 21] jmpifz [244] ............................ if pStatus = #Run then / else
+  [ 24] getparam 1 .............................. <tPelleKey>
+  [ 26] peek 0 .................................. case tPelleKey of
+  [ 28] pushcons 54 ............................. <"a">
+  [ 30] nteq
+  [ 31] jmpifz [ 42] ............................ (case) "a", ...
+  [ 34] peek 0
+  [ 36] pushcons 5 .............................. <"d">
+  [ 38] eq
+  [ 39] jmpifz [102] ............................ (case) ..., "d":
+  [ 42] getparam 1 .............................. <tPelleKey>
+  [ 44] getprop 177 ............................. <plastPressKey>
+  [ 46] nteq .................................... <tPelleKey <> plastPressKey>
+  [ 47] jmpifz [ 54] ............................ if tPelleKey <> plastPressKey then
+  [ 50] pushint8 1 .............................. <1>
+  [ 52] setlocal 0 .............................. tRunOK = 1
+  [ 54] getlocal 0 .............................. <tRunOK>
+  [ 56] jmpifz [ 92] ............................ if tRunOK then / else
+  [ 59] pushcons 43 ............................. <"run">
+  [ 61] setprop 50 .............................. jumpAction = "run"
+  [ 63] getprop 49 .............................. <pSpeed>
+  [ 65] pushcons 60 ............................. <0.59999999999999998>
+  [ 67] add ..................................... <pSpeed + 0.59999999999999998>
+  [ 68] setprop 49 .............................. pSpeed = pSpeed + 0.59999999999999998
+  [ 70] getprop 49 .............................. <pSpeed>
+  [ 72] pushint8 4 .............................. <4>
+  [ 74] gt ...................................... <pSpeed > 4>
+  [ 75] jmpifz [ 82] ............................ if pSpeed > 4 then
+  [ 78] pushint8 4 .............................. <4>
+  [ 80] setprop 49 .............................. pSpeed = 4
+  [ 82] getprop 148 ............................. <pJumpData>
+  [ 84] getparam 1 .............................. <tPelleKey>
+  [ 86] joinstr ................................. <pJumpData & tPelleKey>
+  [ 87] setprop 148 ............................. pJumpData = pJumpData & tPelleKey
+  [ 89] jmp [ 99]
+  [ 92] getprop 148 ............................. <pJumpData>
+  [ 94] pushcons 35 ............................. <"0">
+  [ 96] joinstr ................................. <pJumpData & "0">
+  [ 97] setprop 148 ............................. pJumpData = pJumpData & "0"
+  [ 99] jmp [239]
+  [102] peek 0
+  [104] pusharglist 0 ........................... <>
+  [106] extcall 190 ............................. <SPACE>
+  [108] eq
+  [109] jmpifz [215] ............................ (case) SPACE:
+  [112] getprop 45 .............................. <pStatus>
+  [114] pushsymb 112 ............................ <#jump>
+  [116] nteq .................................... <pStatus <> #jump>
+  [117] jmpifz [187] ............................ if pStatus <> #jump then
+  [120] pushsymb 179 ............................ <#inactive>
+  [122] setlocal 1 .............................. ppJumpMode = #inactive
+  [124] pushint8 1 .............................. <1>
+  [126] setprop 58 .............................. pJumpLoop = 1
+  [128] pushcons 51 ............................. <"jmp">
+  [130] setprop 50 .............................. jumpAction = "jmp"
+  [132] pushint8 1 .............................. <1>
+  [134] setprop 53 .............................. jumpAnimFrame = 1
+  [136] pushsymb 112 ............................ <#jump>
+  [138] setprop 45 .............................. pStatus = #jump
+  [140] pushzero ................................ <0>
+  [141] setprop 80 .............................. pJumpSpeed = 0
+  [143] getprop 67 .............................. <pMyLoc>
+  [145] getobjprop 64 ........................... <pMyLoc.locH>
+  [147] getprop 79 .............................. <pjumpBoardStart>
+  [149] lt ...................................... <pMyLoc.locH < pjumpBoardStart>
+  [150] getprop 67 .............................. <pMyLoc>
+  [152] getobjprop 64 ........................... <pMyLoc.locH>
+  [154] getprop 78 .............................. <pjumpBoardEnd>
+  [156] gt ...................................... <pMyLoc.locH > pjumpBoardEnd>
+  [157] and ..................................... <(pMyLoc.locH < pjumpBoardStart) and (pMyLoc.locH > pjumpBoardEnd)>
+  [158] jmpifz [176] ............................ if (pMyLoc.locH < pjumpBoardStart) and (pMyLoc.locH > pjumpBoardEnd) then
+  [161] getprop 79 .............................. <pjumpBoardStart>
+  [163] getprop 67 .............................. <pMyLoc>
+  [165] getobjprop 64 ........................... <pMyLoc.locH>
+  [167] sub ..................................... <pjumpBoardStart - pMyLoc.locH>
+  [168] pushint8 22 ............................. <22>
+  [170] div ..................................... <(pjumpBoardStart - pMyLoc.locH) / 22>
+  [171] getprop 49 .............................. <pSpeed>
+  [173] mul ..................................... <(pjumpBoardStart - pMyLoc.locH) / 22 * pSpeed>
+  [174] setprop 80 .............................. pJumpSpeed = (pjumpBoardStart - pMyLoc.locH) / 22 * pSpeed
+  [176] getprop 80 .............................. <pJumpSpeed>
+  [178] pushint8 5 .............................. <5>
+  [180] add ..................................... <pJumpSpeed + 5>
+  [181] setprop 80 .............................. pJumpSpeed = pJumpSpeed + 5
+  [183] pushcons 4 .............................. <"u">
+  [185] setprop 55 .............................. pJumpDirection = "u"
+  [187] getprop 49 .............................. <pSpeed>
+  [189] pushint8 1 .............................. <1>
+  [191] lt ...................................... <pSpeed < 1>
+  [192] jmpifz [205] ............................ if pSpeed < 1 then
+  [195] getprop 49 .............................. <pSpeed>
+  [197] pushfloat32 0.5 ......................... <0.5>
+  [202] add ..................................... <pSpeed + 0.5>
+  [203] setprop 49 .............................. pSpeed = pSpeed + 0.5
+  [205] getprop 148 ............................. <pJumpData>
+  [207] getparam 1 .............................. <tPelleKey>
+  [209] joinstr ................................. <pJumpData & tPelleKey>
+  [210] setprop 148 ............................. pJumpData = pJumpData & tPelleKey
+  [212] jmp [239] ............................... (case) otherwise:
+  [215] getprop 49 .............................. <pSpeed>
+  [217] pushcons 61 ............................. <0.20000000000000001>
+  [219] sub ..................................... <pSpeed - 0.20000000000000001>
+  [220] setprop 49 .............................. pSpeed = pSpeed - 0.20000000000000001
+  [222] getprop 49 .............................. <pSpeed>
+  [224] pushzero ................................ <0>
+  [225] lt ...................................... <pSpeed < 0>
+  [226] jmpifz [232] ............................ if pSpeed < 0 then
+  [229] pushzero ................................ <0>
+  [230] setprop 49 .............................. pSpeed = 0
+  [232] getprop 148 ............................. <pJumpData>
+  [234] pushcons 35 ............................. <"0">
+  [236] joinstr ................................. <pJumpData & "0">
+  [237] setprop 148 ............................. pJumpData = pJumpData & "0"
+  [239] pop 1 ................................... end case
+  [241] jmp [763]
+  [244] getprop 45 .............................. <pStatus>
+  [246] pushsymb 112 ............................ <#jump>
+  [248] eq ...................................... <pStatus = #jump>
+  [249] jmpifz [763] ............................ if pStatus = #jump then
+  [252] pushzero ................................ <0>
+  [253] setlocal 2 .............................. hyppyKesken = 0
+  [255] getprop 58 .............................. <pJumpLoop>
+  [257] pushzero ................................ <0>
+  [258] eq ...................................... <pJumpLoop = 0>
+  [259] getparam 1 .............................. <tPelleKey>
+  [261] getprop 50 .............................. <jumpAction>
+  [263] pushsymb 149 ............................ <#char>
+  [265] pushint8 3 .............................. <3>
+  [267] pusharglist 3 ........................... <jumpAction, #char, 3>
+  [269] objcall 150 ............................. <jumpAction.char[3]>
+  [271] nteq .................................... <tPelleKey <> jumpAction.char[3]>
+  [272] and ..................................... <(pJumpLoop = 0) and (tPelleKey <> jumpAction.char[3])>
+  [273] jmpifz [294] ............................ if (pJumpLoop = 0) and (tPelleKey <> jumpAction.char[3]) then
+  [276] getprop 50 .............................. <jumpAction>
+  [278] pushcons 49 ............................. <"jun">
+  [280] nteq .................................... <jumpAction <> "jun">
+  [281] getprop 50 .............................. <jumpAction>
+  [283] pushcons 50 ............................. <"jdn">
+  [285] nteq .................................... <jumpAction <> "jdn">
+  [286] and ..................................... <(jumpAction <> "jun") and (jumpAction <> "jdn")>
+  [287] jmpifz [294] ............................ if (jumpAction <> "jun") and (jumpAction <> "jdn") then
+  [290] pushint8 1 .............................. <1>
+  [292] setlocal 2 .............................. hyppyKesken = 1
+  [294] getlocal 2 .............................. <hyppyKesken>
+  [296] pushzero ................................ <0>
+  [297] eq ...................................... <hyppyKesken = 0>
+  [298] jmpifz [756] ............................ if hyppyKesken = 0 then / else
+  [301] getparam 1 .............................. <tPelleKey>
+  [303] peek 0 .................................. case tPelleKey of
+  [305] pushcons 55 ............................. <"w">
+  [307] eq
+  [308] jmpifz [359] ............................ (case) "w":
+  [311] getprop 50 .............................. <jumpAction>
+  [313] pushcons 47 ............................. <"j">
+  [315] getprop 55 .............................. <pJumpDirection>
+  [317] joinstr ................................. <"j" & pJumpDirection>
+  [318] pushcons 55 ............................. <"w">
+  [320] joinstr ................................. <"j" & pJumpDirection & "w">
+  [321] nteq .................................... <jumpAction <> ("j" & pJumpDirection & "w")>
+  [322] jmpifz [328] ............................ if jumpAction <> ("j" & pJumpDirection & "w") then
+  [325] pushzero ................................ <0>
+  [326] setprop 53 .............................. jumpAnimFrame = 0
+  [328] pushcons 47 ............................. <"j">
+  [330] getprop 55 .............................. <pJumpDirection>
+  [332] joinstr ................................. <"j" & pJumpDirection>
+  [333] pushcons 55 ............................. <"w">
+  [335] joinstr ................................. <"j" & pJumpDirection & "w">
+  [336] setprop 50 .............................. jumpAction = "j" & pJumpDirection & "w"
+  [338] pushzero ................................ <0>
+  [339] setprop 58 .............................. pJumpLoop = 0
+  [341] pushsymb 176 ............................ <#Active>
+  [343] setprop 174 ............................. pJumpMode = #Active
+  [345] getprop 148 ............................. <pJumpData>
+  [347] getparam 1 .............................. <tPelleKey>
+  [349] joinstr ................................. <pJumpData & tPelleKey>
+  [350] setprop 148 ............................. pJumpData = pJumpData & tPelleKey
+  [352] pushint8 1 .............................. <1>
+  [354] setprop 178 ............................. pJumpMaxAnimFrames = 1
+  [356] jmp [751]
+  [359] peek 0
+  [361] pushcons 54 ............................. <"a">
+  [363] eq
+  [364] jmpifz [431] ............................ (case) "a":
+  [367] getprop 50 .............................. <jumpAction>
+  [369] pushcons 47 ............................. <"j">
+  [371] getprop 55 .............................. <pJumpDirection>
+  [373] joinstr ................................. <"j" & pJumpDirection>
+  [374] pushcons 54 ............................. <"a">
+  [376] joinstr ................................. <"j" & pJumpDirection & "a">
+  [377] nteq .................................... <jumpAction <> ("j" & pJumpDirection & "a")>
+  [378] jmpifz [384] ............................ if jumpAction <> ("j" & pJumpDirection & "a") then
+  [381] pushzero ................................ <0>
+  [382] setprop 53 .............................. jumpAnimFrame = 0
+  [384] pushcons 47 ............................. <"j">
+  [386] getprop 55 .............................. <pJumpDirection>
+  [388] joinstr ................................. <"j" & pJumpDirection>
+  [389] pushcons 54 ............................. <"a">
+  [391] joinstr ................................. <"j" & pJumpDirection & "a">
+  [392] setprop 50 .............................. jumpAction = "j" & pJumpDirection & "a"
+  [394] pushint8 1 .............................. <1>
+  [396] setprop 58 .............................. pJumpLoop = 1
+  [398] pushsymb 176 ............................ <#Active>
+  [400] setprop 174 ............................. pJumpMode = #Active
+  [402] getprop 148 ............................. <pJumpData>
+  [404] getparam 1 .............................. <tPelleKey>
+  [406] joinstr ................................. <pJumpData & tPelleKey>
+  [407] setprop 148 ............................. pJumpData = pJumpData & tPelleKey
+  [409] getprop 55 .............................. <pJumpDirection>
+  [411] pushcons 4 .............................. <"u">
+  [413] eq ...................................... <pJumpDirection = "u">
+  [414] jmpifz [424] ............................ if pJumpDirection = "u" then / else
+  [417] pushint8 4 .............................. <4>
+  [419] setprop 178 ............................. pJumpMaxAnimFrames = 4
+  [421] jmp [428]
+  [424] pushint8 7 .............................. <7>
+  [426] setprop 178 ............................. pJumpMaxAnimFrames = 7
+  [428] jmp [751]
+  [431] peek 0
+  [433] pushcons 5 .............................. <"d">
+  [435] eq
+  [436] jmpifz [503] ............................ (case) "d":
+  [439] getprop 50 .............................. <jumpAction>
+  [441] pushcons 47 ............................. <"j">
+  [443] getprop 55 .............................. <pJumpDirection>
+  [445] joinstr ................................. <"j" & pJumpDirection>
+  [446] pushcons 5 .............................. <"d">
+  [448] joinstr ................................. <"j" & pJumpDirection & "d">
+  [449] nteq .................................... <jumpAction <> ("j" & pJumpDirection & "d")>
+  [450] jmpifz [456] ............................ if jumpAction <> ("j" & pJumpDirection & "d") then
+  [453] pushzero ................................ <0>
+  [454] setprop 53 .............................. jumpAnimFrame = 0
+  [456] pushcons 47 ............................. <"j">
+  [458] getprop 55 .............................. <pJumpDirection>
+  [460] joinstr ................................. <"j" & pJumpDirection>
+  [461] pushcons 5 .............................. <"d">
+  [463] joinstr ................................. <"j" & pJumpDirection & "d">
+  [464] setprop 50 .............................. jumpAction = "j" & pJumpDirection & "d"
+  [466] pushint8 1 .............................. <1>
+  [468] setprop 58 .............................. pJumpLoop = 1
+  [470] pushsymb 176 ............................ <#Active>
+  [472] setprop 174 ............................. pJumpMode = #Active
+  [474] getprop 148 ............................. <pJumpData>
+  [476] getparam 1 .............................. <tPelleKey>
+  [478] joinstr ................................. <pJumpData & tPelleKey>
+  [479] setprop 148 ............................. pJumpData = pJumpData & tPelleKey
+  [481] getprop 55 .............................. <pJumpDirection>
+  [483] pushcons 4 .............................. <"u">
+  [485] eq ...................................... <pJumpDirection = "u">
+  [486] jmpifz [496] ............................ if pJumpDirection = "u" then / else
+  [489] pushint8 6 .............................. <6>
+  [491] setprop 178 ............................. pJumpMaxAnimFrames = 6
+  [493] jmp [500]
+  [496] pushint8 5 .............................. <5>
+  [498] setprop 178 ............................. pJumpMaxAnimFrames = 5
+  [500] jmp [751]
+  [503] peek 0
+  [505] pushcons 56 ............................. <"e">
+  [507] eq
+  [508] jmpifz [559] ............................ (case) "e":
+  [511] getprop 50 .............................. <jumpAction>
+  [513] pushcons 47 ............................. <"j">
+  [515] getprop 55 .............................. <pJumpDirection>
+  [517] joinstr ................................. <"j" & pJumpDirection>
+  [518] pushcons 56 ............................. <"e">
+  [520] joinstr ................................. <"j" & pJumpDirection & "e">
+  [521] nteq .................................... <jumpAction <> ("j" & pJumpDirection & "e")>
+  [522] jmpifz [528] ............................ if jumpAction <> ("j" & pJumpDirection & "e") then
+  [525] pushzero ................................ <0>
+  [526] setprop 53 .............................. jumpAnimFrame = 0
+  [528] pushcons 47 ............................. <"j">
+  [530] getprop 55 .............................. <pJumpDirection>
+  [532] joinstr ................................. <"j" & pJumpDirection>
+  [533] pushcons 56 ............................. <"e">
+  [535] joinstr ................................. <"j" & pJumpDirection & "e">
+  [536] setprop 50 .............................. jumpAction = "j" & pJumpDirection & "e"
+  [538] pushzero ................................ <0>
+  [539] setprop 58 .............................. pJumpLoop = 0
+  [541] pushsymb 176 ............................ <#Active>
+  [543] setprop 174 ............................. pJumpMode = #Active
+  [545] getprop 148 ............................. <pJumpData>
+  [547] getparam 1 .............................. <tPelleKey>
+  [549] joinstr ................................. <pJumpData & tPelleKey>
+  [550] setprop 148 ............................. pJumpData = pJumpData & tPelleKey
+  [552] pushint8 1 .............................. <1>
+  [554] setprop 178 ............................. pJumpMaxAnimFrames = 1
+  [556] jmp [751]
+  [559] peek 0
+  [561] pushcons 58 ............................. <"z">
+  [563] eq
+  [564] jmpifz [615] ............................ (case) "z":
+  [567] getprop 50 .............................. <jumpAction>
+  [569] pushcons 47 ............................. <"j">
+  [571] getprop 55 .............................. <pJumpDirection>
+  [573] joinstr ................................. <"j" & pJumpDirection>
+  [574] pushcons 58 ............................. <"z">
+  [576] joinstr ................................. <"j" & pJumpDirection & "z">
+  [577] nteq .................................... <jumpAction <> ("j" & pJumpDirection & "z")>
+  [578] jmpifz [584] ............................ if jumpAction <> ("j" & pJumpDirection & "z") then
+  [581] pushzero ................................ <0>
+  [582] setprop 53 .............................. jumpAnimFrame = 0
+  [584] pushcons 47 ............................. <"j">
+  [586] getprop 55 .............................. <pJumpDirection>
+  [588] joinstr ................................. <"j" & pJumpDirection>
+  [589] pushcons 58 ............................. <"z">
+  [591] joinstr ................................. <"j" & pJumpDirection & "z">
+  [592] setprop 50 .............................. jumpAction = "j" & pJumpDirection & "z"
+  [594] pushzero ................................ <0>
+  [595] setprop 58 .............................. pJumpLoop = 0
+  [597] pushsymb 176 ............................ <#Active>
+  [599] setprop 174 ............................. pJumpMode = #Active
+  [601] getprop 148 ............................. <pJumpData>
+  [603] getparam 1 .............................. <tPelleKey>
+  [605] joinstr ................................. <pJumpData & tPelleKey>
+  [606] setprop 148 ............................. pJumpData = pJumpData & tPelleKey
+  [608] pushint8 1 .............................. <1>
+  [610] setprop 178 ............................. pJumpMaxAnimFrames = 1
+  [612] jmp [751]
+  [615] peek 0
+  [617] pushcons 59 ............................. <"x">
+  [619] eq
+  [620] jmpifz [671] ............................ (case) "x":
+  [623] getprop 50 .............................. <jumpAction>
+  [625] pushcons 47 ............................. <"j">
+  [627] getprop 55 .............................. <pJumpDirection>
+  [629] joinstr ................................. <"j" & pJumpDirection>
+  [630] pushcons 59 ............................. <"x">
+  [632] joinstr ................................. <"j" & pJumpDirection & "x">
+  [633] nteq .................................... <jumpAction <> ("j" & pJumpDirection & "x")>
+  [634] jmpifz [640] ............................ if jumpAction <> ("j" & pJumpDirection & "x") then
+  [637] pushzero ................................ <0>
+  [638] setprop 53 .............................. jumpAnimFrame = 0
+  [640] pushcons 47 ............................. <"j">
+  [642] getprop 55 .............................. <pJumpDirection>
+  [644] joinstr ................................. <"j" & pJumpDirection>
+  [645] pushcons 59 ............................. <"x">
+  [647] joinstr ................................. <"j" & pJumpDirection & "x">
+  [648] setprop 50 .............................. jumpAction = "j" & pJumpDirection & "x"
+  [650] pushzero ................................ <0>
+  [651] setprop 58 .............................. pJumpLoop = 0
+  [653] pushsymb 176 ............................ <#Active>
+  [655] setprop 174 ............................. pJumpMode = #Active
+  [657] getprop 148 ............................. <pJumpData>
+  [659] getparam 1 .............................. <tPelleKey>
+  [661] joinstr ................................. <pJumpData & tPelleKey>
+  [662] setprop 148 ............................. pJumpData = pJumpData & tPelleKey
+  [664] pushint8 1 .............................. <1>
+  [666] setprop 178 ............................. pJumpMaxAnimFrames = 1
+  [668] jmp [751]
+  [671] peek 0
+  [673] pushcons 57 ............................. <"s">
+  [675] eq
+  [676] jmpifz [744] ............................ (case) "s":
+  [679] getprop 67 .............................. <pMyLoc>
+  [681] getobjprop 64 ........................... <pMyLoc.locH>
+  [683] getprop 78 .............................. <pjumpBoardEnd>
+  [685] gt ...................................... <pMyLoc.locH > pjumpBoardEnd>
+  [686] jmpifz [696] ............................ if pMyLoc.locH > pjumpBoardEnd then / else
+  [689] pushcons 4 .............................. <"u">
+  [691] setprop 55 .............................. pJumpDirection = "u"
+  [693] jmp [734]
+  [696] getprop 50 .............................. <jumpAction>
+  [698] pushcons 47 ............................. <"j">
+  [700] getprop 55 .............................. <pJumpDirection>
+  [702] joinstr ................................. <"j" & pJumpDirection>
+  [703] pushcons 57 ............................. <"s">
+  [705] joinstr ................................. <"j" & pJumpDirection & "s">
+  [706] nteq .................................... <jumpAction <> ("j" & pJumpDirection & "s")>
+  [707] jmpifz [713] ............................ if jumpAction <> ("j" & pJumpDirection & "s") then
+  [710] pushzero ................................ <0>
+  [711] setprop 53 .............................. jumpAnimFrame = 0
+  [713] pushcons 47 ............................. <"j">
+  [715] getprop 55 .............................. <pJumpDirection>
+  [717] joinstr ................................. <"j" & pJumpDirection>
+  [718] pushcons 57 ............................. <"s">
+  [720] joinstr ................................. <"j" & pJumpDirection & "s">
+  [721] setprop 50 .............................. jumpAction = "j" & pJumpDirection & "s"
+  [723] pushzero ................................ <0>
+  [724] setprop 58 .............................. pJumpLoop = 0
+  [726] pushsymb 176 ............................ <#Active>
+  [728] setprop 174 ............................. pJumpMode = #Active
+  [730] pushint8 3 .............................. <3>
+  [732] setprop 178 ............................. pJumpMaxAnimFrames = 3
+  [734] getprop 148 ............................. <pJumpData>
+  [736] getparam 1 .............................. <tPelleKey>
+  [738] joinstr ................................. <pJumpData & tPelleKey>
+  [739] setprop 148 ............................. pJumpData = pJumpData & tPelleKey
+  [741] jmp [751] ............................... (case) otherwise:
+  [744] getprop 148 ............................. <pJumpData>
+  [746] pushcons 35 ............................. <"0">
+  [748] joinstr ................................. <pJumpData & "0">
+  [749] setprop 148 ............................. pJumpData = pJumpData & "0"
+  [751] pop 1 ................................... end case
+  [753] jmp [763]
+  [756] getprop 148 ............................. <pJumpData>
+  [758] getparam 1 .............................. <tPelleKey>
+  [760] joinstr ................................. <pJumpData & tPelleKey>
+  [761] setprop 148 ............................. pJumpData = pJumpData & tPelleKey
+  [763] getparam 1 .............................. <tPelleKey>
+  [765] setprop 177 ............................. plastPressKey = tPelleKey
+  [767] getparam 0 .............................. <me>
+  [769] pusharglistnoret 1 ...................... <me>
+  [771] objcall 5 ............................... me.JumpingExitFrame()
+  [773] ret
+end
+
+on NotKeyDown me
+  [  0] getmovieprop 48 ......................... <the milliSeconds>
+  [  2] getprop 47 .............................. <pRemoveJumperTime>
+  [  4] pushint32 45000 ......................... <45000>
+  [  9] add ..................................... <pRemoveJumperTime + 45000>
+  [ 10] gt ...................................... <the milliSeconds > (pRemoveJumperTime + 45000)>
+  [ 11] jmpifz [104] ............................ if the milliSeconds > (pRemoveJumperTime + 45000) then / else
+  [ 14] getprop 67 .............................. <pMyLoc>
+  [ 16] getobjprop 64 ........................... <pMyLoc.locH>
+  [ 18] getprop 78 .............................. <pjumpBoardEnd>
+  [ 20] gt ...................................... <pMyLoc.locH > pjumpBoardEnd>
+  [ 21] jmpifz [ 36] ............................ if pMyLoc.locH > pjumpBoardEnd then
+  [ 24] pushsymb 46 ............................. <#Run>
+  [ 26] setprop 45 .............................. pStatus = #Run
+  [ 28] pushcons 43 ............................. <"run">
+  [ 30] setprop 50 .............................. jumpAction = "run"
+  [ 32] pushint8 2 .............................. <2>
+  [ 34] setprop 49 .............................. pSpeed = 2
+  [ 36] getprop 148 ............................. <pJumpData>
+  [ 38] pusharglist 1 ........................... <pJumpData>
+  [ 40] extcall 181 ............................. <voidp(pJumpData)>
+  [ 42] not ..................................... <not voidp(pJumpData)>
+  [ 43] jmpifz [ 94] ............................ if not voidp(pJumpData) then / else
+  [ 46] getprop 148 ............................. <pJumpData>
+  [ 48] pushsymb 149 ............................ <#char>
+  [ 50] getprop 148 ............................. <pJumpData>
+  [ 52] pusharglist 1 ........................... <pJumpData>
+  [ 54] extcall 147 ............................. <length(pJumpData)>
+  [ 56] pusharglist 3 ........................... <pJumpData, #char, length(pJumpData)>
+  [ 58] objcall 150 ............................. <pJumpData.char[length(pJumpData)]>
+  [ 60] pushcons 54 ............................. <"a">
+  [ 62] eq ...................................... <pJumpData.char[length(pJumpData)] = "a">
+  [ 63] jmpifz [ 73] ............................ if pJumpData.char[length(pJumpData)] = "a" then / else
+  [ 66] pushcons 5 .............................. <"d">
+  [ 68] setlocal 0 .............................. presskey = "d"
+  [ 70] jmp [ 77]
+  [ 73] pushcons 54 ............................. <"a">
+  [ 75] setlocal 0 .............................. presskey = "a"
+  [ 77] getparam 0 .............................. <me>
+  [ 79] getlocal 0 .............................. <presskey>
+  [ 81] pusharglist 0 ........................... <>
+  [ 83] extcall 198 ............................. <VOID>
+  [ 85] pushint8 1 .............................. <1>
+  [ 87] pusharglistnoret 4 ...................... <me, presskey, VOID, 1>
+  [ 89] objcall 8 ............................... me.MykeyDown(presskey, VOID, 1)
+  [ 91] jmp [101]
+  [ 94] getprop 148 ............................. <pJumpData>
+  [ 96] pushcons 54 ............................. <"a">
+  [ 98] joinstr ................................. <pJumpData & "a">
+  [ 99] setprop 148 ............................. pJumpData = pJumpData & "a"
+  [101] jmp [121]
+  [104] getprop 148 ............................. <pJumpData>
+  [106] pushcons 35 ............................. <"0">
+  [108] joinstr ................................. <pJumpData & "0">
+  [109] setprop 148 ............................. pJumpData = pJumpData & "0"
+  [111] pushsymb 179 ............................ <#inactive>
+  [113] setprop 174 ............................. pJumpMode = #inactive
+  [115] getparam 0 .............................. <me>
+  [117] pusharglistnoret 1 ...................... <me>
+  [119] objcall 5 ............................... me.JumpingExitFrame()
+  [121] ret
+end

@@ -1,0 +1,101 @@
+property pDate, pCardObj
+
+on prepare me, tdata
+  [  0] pushcons 0 .............................. <"PackageCardObj">
+  [  2] setprop 700 ............................. pCardObj = "PackageCardObj"
+  [  5] getparam 1 .............................. <tdata>
+  [  7] pushsymb 373 ............................ <#stuffdata>
+  [ 10] pusharglist 2 ........................... <tdata, #stuffdata>
+  [ 12] objcall 50 .............................. <tdata[#stuffdata]>
+  [ 14] setlocal 0 .............................. tDate = tdata[#stuffdata]
+  [ 16] getlocal 0 .............................. <tDate>
+  [ 18] pushcons 1 .............................. <"-">
+  [ 20] pushint8 3 .............................. <3>
+  [ 22] pusharglist 3 ........................... <tDate, "-", 3>
+  [ 24] extcall 174 ............................. <explode(tDate, "-", 3)>
+  [ 26] setlocal 1 .............................. tDateItems = explode(tDate, "-", 3)
+  [ 28] pushcons 2 .............................. <EMPTY>
+  [ 30] setprop 582 ............................. pDate = EMPTY
+  [ 33] pushsymb 877 ............................ <#dateFormatter>
+  [ 36] pusharglist 1 ........................... <#dateFormatter>
+  [ 38] extcall 511 ............................. <objectExists(#dateFormatter)>
+  [ 41] getlocal 1 .............................. <tDateItems>
+  [ 43] getobjprop 34 ........................... <tDateItems.count>
+  [ 45] pushint8 3 .............................. <3>
+  [ 47] eq ...................................... <tDateItems.count = 3>
+  [ 48] and ..................................... <objectExists(#dateFormatter) and (tDateItems.count = 3)>
+  [ 49] jmpifz [ 91] ............................ if objectExists(#dateFormatter) and (tDateItems.count = 3) then
+  [ 52] pushsymb 877 ............................ <#dateFormatter>
+  [ 55] pusharglist 1 ........................... <#dateFormatter>
+  [ 57] extcall 122 ............................. <getObject(#dateFormatter)>
+  [ 59] getlocal 1 .............................. <tDateItems>
+  [ 61] pushint8 3 .............................. <3>
+  [ 63] pusharglist 2 ........................... <tDateItems, 3>
+  [ 65] objcall 50 .............................. <tDateItems[3]>
+  [ 67] getlocal 1 .............................. <tDateItems>
+  [ 69] pushint8 2 .............................. <2>
+  [ 71] pusharglist 2 ........................... <tDateItems, 2>
+  [ 73] objcall 50 .............................. <tDateItems[2]>
+  [ 75] getlocal 1 .............................. <tDateItems>
+  [ 77] pushint8 1 .............................. <1>
+  [ 79] pusharglist 2 ........................... <tDateItems, 1>
+  [ 81] objcall 50 .............................. <tDateItems[1]>
+  [ 83] pusharglist 4 ........................... <getObject(#dateFormatter), tDateItems[3], tDateItems[2], tDateItems[1]>
+  [ 85] objcall 878 ............................. <getObject(#dateFormatter).getLocalDate(tDateItems[3], tDateItems[2], tDateItems[1])>
+  [ 88] setprop 582 ............................. pDate = getObject(#dateFormatter).getLocalDate(tDateItems[3], tDateItems[2], tDateItems[1])
+  [ 91] pushint8 1 .............................. <1>
+  [ 93] pusharglistnoret 1 ...................... <1>
+  [ 95] extcall 14 .............................. return 1
+  [ 97] ret
+end
+
+on select me
+  [  0] pusharglist 0 ........................... <>
+  [  2] thebuiltin 376 .......................... <the doubleClick>
+  [  5] jmpifz [ 15] ............................ if the doubleClick then
+  [  8] getparam 0 .............................. <me>
+  [ 10] pusharglistnoret 1 ...................... <me>
+  [ 12] objcall 699 ............................. me.showCard()
+  [ 15] pushint8 1 .............................. <1>
+  [ 17] pusharglistnoret 1 ...................... <1>
+  [ 19] extcall 14 .............................. return 1
+  [ 21] ret
+end
+
+on showCard me
+  [  0] getprop 700 ............................. <pCardObj>
+  [  3] pusharglist 1 ........................... <pCardObj>
+  [  5] extcall 511 ............................. <objectExists(pCardObj)>
+  [  8] jmpifz [ 19] ............................ if objectExists(pCardObj) then
+  [ 11] getprop 700 ............................. <pCardObj>
+  [ 14] pusharglistnoret 1 ...................... <pCardObj>
+  [ 16] extcall 498 ............................. removeObject(pCardObj)
+  [ 19] getprop 700 ............................. <pCardObj>
+  [ 22] pushcons 3 .............................. <"Ecotron Box Card Class">
+  [ 24] pusharglistnoret 2 ...................... <pCardObj, "Ecotron Box Card Class">
+  [ 26] extcall 432 ............................. createObject(pCardObj, "Ecotron Box Card Class")
+  [ 29] getprop 700 ............................. <pCardObj>
+  [ 32] pusharglist 1 ........................... <pCardObj>
+  [ 34] extcall 122 ............................. <getObject(pCardObj)>
+  [ 36] pushsymb 200 ............................ <#id>
+  [ 38] getparam 0 .............................. <me>
+  [ 40] pusharglist 1 ........................... <me>
+  [ 42] objcall 140 ............................. <me.getID()>
+  [ 44] pushsymb 880 ............................ <#date>
+  [ 47] getprop 582 ............................. <pDate>
+  [ 50] pushsymb 253 ............................ <#loc>
+  [ 52] getparam 0 .............................. <me>
+  [ 54] pushsymb 105 ............................ <#pSprList>
+  [ 56] pushint8 1 .............................. <1>
+  [ 58] pusharglist 3 ........................... <me, #pSprList, 1>
+  [ 60] objcall 381 ............................. <me.pSprList[1]>
+  [ 63] getobjprop 253 .......................... <me.pSprList[1].loc>
+  [ 65] pusharglist 6 ........................... <[#id: me.getID(), #date: pDate, #loc: me.pSprList[1].loc]>
+  [ 67] pushproplist ............................ <[#id: me.getID(), #date: pDate, #loc: me.pSprList[1].loc]>
+  [ 68] pusharglistnoret 2 ...................... <getObject(pCardObj), [#id: me.getID(), #date: pDate, #loc: me.pSprList[1].loc]>
+  [ 70] objcall 78 .............................. getObject(pCardObj).define([#id: me.getID(), #date: pDate, #loc: me.pSprList[1].loc])
+  [ 72] pushint8 1 .............................. <1>
+  [ 74] pusharglistnoret 1 ...................... <1>
+  [ 76] extcall 14 .............................. return 1
+  [ 78] ret
+end

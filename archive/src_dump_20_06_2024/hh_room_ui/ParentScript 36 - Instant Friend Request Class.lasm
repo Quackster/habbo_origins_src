@@ -1,0 +1,428 @@
+property pWindowID, pParentWindowID, pParentElementID, pParentObjId, pData
+
+on construct me
+  [  0] pushcons 0 .............................. <"Instant Friend Request Window">
+  [  2] setprop 242 ............................. pWindowID = "Instant Friend Request Window"
+  [  4] pushint8 1 .............................. <1>
+  [  6] pusharglistnoret 1 ...................... <1>
+  [  8] extcall 20 .............................. return 1
+  [ 10] ret
+end
+
+on deconstruct me
+  [  0] getprop 242 ............................. <pWindowID>
+  [  2] pusharglist 1 ........................... <pWindowID>
+  [  4] extcall 75 .............................. <windowExists(pWindowID)>
+  [  6] jmpifz [ 15] ............................ if windowExists(pWindowID) then
+  [  9] getprop 242 ............................. <pWindowID>
+  [ 11] pusharglistnoret 1 ...................... <pWindowID>
+  [ 13] extcall 106 ............................. removeWindow(pWindowID)
+  [ 15] pushint8 1 .............................. <1>
+  [ 17] pusharglistnoret 1 ...................... <1>
+  [ 19] extcall 20 .............................. return 1
+  [ 21] ret
+end
+
+on define me, tParentWindowID, tParentElementID, tdata, tParentObjId
+  [  0] getparam 1 .............................. <tParentWindowID>
+  [  2] setprop 784 ............................. pParentWindowID = tParentWindowID
+  [  5] getparam 2 .............................. <tParentElementID>
+  [  7] setprop 785 ............................. pParentElementID = tParentElementID
+  [ 10] getparam 3 .............................. <tdata>
+  [ 12] setprop 769 ............................. pData = tdata
+  [ 15] getparam 4 .............................. <tParentObjId>
+  [ 17] setprop 786 ............................. pParentObjId = tParentObjId
+  [ 20] ret
+end
+
+on show me
+  [  0] getprop 769 ............................. <pData>
+  [  3] getobjprop 335 .......................... <pData.ilk>
+  [  6] pushsymb 336 ............................ <#propList>
+  [  9] nteq .................................... <pData.ilk <> #propList>
+  [ 10] jmpifz [ 18] ............................ if pData.ilk <> #propList then
+  [ 13] pushzero ................................ <0>
+  [ 14] pusharglistnoret 1 ...................... <0>
+  [ 16] extcall 20 .............................. return 0
+  [ 18] getprop 769 ............................. <pData>
+  [ 21] pushsymb 253 ............................ <#name>
+  [ 23] pusharglist 2 ........................... <pData, #name>
+  [ 25] objcall 770 ............................. <pData.findPos(#name)>
+  [ 28] pusharglist 1 ........................... <pData.findPos(#name)>
+  [ 30] extcall 25 .............................. <voidp(pData.findPos(#name))>
+  [ 32] jmpifz [ 40] ............................ if voidp(pData.findPos(#name)) then
+  [ 35] pushzero ................................ <0>
+  [ 36] pusharglistnoret 1 ...................... <0>
+  [ 38] extcall 20 .............................. return 0
+  [ 40] getprop 784 ............................. <pParentWindowID>
+  [ 43] pusharglist 1 ........................... <pParentWindowID>
+  [ 45] extcall 75 .............................. <windowExists(pParentWindowID)>
+  [ 47] not ..................................... <not windowExists(pParentWindowID)>
+  [ 48] jmpifz [ 56] ............................ if not windowExists(pParentWindowID) then
+  [ 51] pushzero ................................ <0>
+  [ 52] pusharglistnoret 1 ...................... <0>
+  [ 54] extcall 20 .............................. return 0
+  [ 56] getprop 242 ............................. <pWindowID>
+  [ 58] pusharglist 1 ........................... <pWindowID>
+  [ 60] extcall 75 .............................. <windowExists(pWindowID)>
+  [ 62] not ..................................... <not windowExists(pWindowID)>
+  [ 63] jmpifz [102] ............................ if not windowExists(pWindowID) then / else
+  [ 66] getprop 242 ............................. <pWindowID>
+  [ 68] pushcons 1 .............................. <"instant_friend_request.window">
+  [ 70] pusharglistnoret 2 ...................... <pWindowID, "instant_friend_request.window">
+  [ 72] extcall 76 .............................. createWindow(pWindowID, "instant_friend_request.window")
+  [ 74] getprop 242 ............................. <pWindowID>
+  [ 76] pusharglist 1 ........................... <pWindowID>
+  [ 78] extcall 80 .............................. <getWindow(pWindowID)>
+  [ 80] setlocal 0 .............................. tWindow = getWindow(pWindowID)
+  [ 82] getlocal 0 .............................. <tWindow>
+  [ 84] pushsymb 783 ............................ <#eventProcRequest>
+  [ 87] getparam 0 .............................. <me>
+  [ 89] pusharglist 1 ........................... <me>
+  [ 91] objcall 19 .............................. <me.getID()>
+  [ 93] pushsymb 92 ............................. <#mouseUp>
+  [ 95] pusharglistnoret 4 ...................... <tWindow, #eventProcRequest, me.getID(), #mouseUp>
+  [ 97] objcall 93 .............................. tWindow.registerProcedure(#eventProcRequest, me.getID(), #mouseUp)
+  [ 99] jmp [110]
+  [102] getprop 242 ............................. <pWindowID>
+  [104] pusharglist 1 ........................... <pWindowID>
+  [106] extcall 80 .............................. <getWindow(pWindowID)>
+  [108] setlocal 0 .............................. tWindow = getWindow(pWindowID)
+  [110] pushsymb 77 ............................. <#room>
+  [112] pusharglist 1 ........................... <#room>
+  [114] extcall 28 .............................. <getThread(#room)>
+  [116] pusharglist 1 ........................... <getThread(#room)>
+  [118] objcall 29 .............................. <getThread(#room).getComponent()>
+  [120] setlocal 1 .............................. tRoomComp = getThread(#room).getComponent()
+  [122] getlocal 1 .............................. <tRoomComp>
+  [124] getprop 769 ............................. <pData>
+  [127] pushsymb 253 ............................ <#name>
+  [129] pusharglist 2 ........................... <pData, #name>
+  [131] objcall 164 ............................. <pData[#name]>
+  [133] pusharglist 2 ........................... <tRoomComp, pData[#name]>
+  [135] objcall 748 ............................. <tRoomComp.getUsersRoomId(pData[#name])>
+  [138] setlocal 2 .............................. tUsersRoomId = tRoomComp.getUsersRoomId(pData[#name])
+  [140] getlocal 1 .............................. <tRoomComp>
+  [142] getlocal 2 .............................. <tUsersRoomId>
+  [144] pusharglist 2 ........................... <tRoomComp, tUsersRoomId>
+  [146] objcall 332 ............................. <tRoomComp.getUserObject(tUsersRoomId)>
+  [149] setlocal 3 .............................. tUserObj = tRoomComp.getUserObject(tUsersRoomId)
+  [151] getlocal 3 .............................. <tUserObj>
+  [153] pusharglist 1 ........................... <tUserObj>
+  [155] extcall 25 .............................. <voidp(tUserObj)>
+  [157] not ..................................... <not voidp(tUserObj)>
+  [158] jmpifz [233] ............................ if not voidp(tUserObj) then
+  [161] pushcons 2 .............................. <"Figure_Preview">
+  [163] pusharglist 1 ........................... <"Figure_Preview">
+  [165] extcall 107 ............................. <objectExists("Figure_Preview")>
+  [167] jmpifz [215] ............................ if objectExists("Figure_Preview") then
+  [170] getlocal 3 .............................. <tUserObj>
+  [172] pushsymb 790 ............................ <#pPartListSubSet>
+  [175] pushsymb 791 ............................ <#head>
+  [178] pusharglist 3 ........................... <tUserObj, #pPartListSubSet, #head>
+  [180] objcall 431 ............................. <tUserObj.pPartListSubSet[#head]>
+  [183] setlocal 4 .............................. tPartList = tUserObj.pPartListSubSet[#head]
+  [185] getlocal 3 .............................. <tUserObj>
+  [187] pusharglist 1 ........................... <tUserObj>
+  [189] objcall 792 ............................. <tUserObj.getRawFigure()>
+  [192] setlocal 5 .............................. tFigure = tUserObj.getRawFigure()
+  [194] pushcons 2 .............................. <"Figure_Preview">
+  [196] pusharglist 1 ........................... <"Figure_Preview">
+  [198] extcall 24 .............................. <getObject("Figure_Preview")>
+  [200] getlocal 4 .............................. <tPartList>
+  [202] getlocal 5 .............................. <tFigure>
+  [204] pushint8 2 .............................. <2>
+  [206] pushcons 3 .............................. <"sh">
+  [208] pusharglist 5 ........................... <getObject("Figure_Preview"), tPartList, tFigure, 2, "sh">
+  [210] objcall 793 ............................. <getObject("Figure_Preview").getHumanPartImg(tPartList, tFigure, 2, "sh")>
+  [213] setlocal 6 .............................. tUserImg = getObject("Figure_Preview").getHumanPartImg(tPartList, tFigure, 2, "sh")
+  [215] getlocal 0 .............................. <tWindow>
+  [217] pushcons 4 .............................. <"user_head">
+  [219] pusharglist 2 ........................... <tWindow, "user_head">
+  [221] objcall 87 .............................. <tWindow.getElement("user_head")>
+  [223] setlocal 7 .............................. tFaceElem = tWindow.getElement("user_head")
+  [225] getlocal 7 .............................. <tFaceElem>
+  [227] getlocal 6 .............................. <tUserImg>
+  [229] pusharglistnoret 2 ...................... <tFaceElem, tUserImg>
+  [231] objcall 130 ............................. tFaceElem.feedImage(tUserImg)
+  [233] getlocal 0 .............................. <tWindow>
+  [235] pushcons 5 .............................. <"user_name">
+  [237] pusharglist 2 ........................... <tWindow, "user_name">
+  [239] objcall 87 .............................. <tWindow.getElement("user_name")>
+  [241] getprop 769 ............................. <pData>
+  [244] pushsymb 253 ............................ <#name>
+  [246] pusharglist 2 ........................... <pData, #name>
+  [248] objcall 164 ............................. <pData[#name]>
+  [250] pusharglistnoret 2 ...................... <tWindow.getElement("user_name"), pData[#name]>
+  [252] objcall 110 ............................. tWindow.getElement("user_name").setText(pData[#name])
+  [254] getparam 0 .............................. <me>
+  [256] pusharglist 1 ........................... <me>
+  [258] objcall 766 ............................. <me.align()>
+  [261] not ..................................... <not me.align()>
+  [262] jmpifz [270] ............................ if not me.align() then
+  [265] pushzero ................................ <0>
+  [266] pusharglistnoret 1 ...................... <0>
+  [268] extcall 20 .............................. return 0
+  [270] ret
+end
+
+on align me
+  [  0] getprop 784 ............................. <pParentWindowID>
+  [  3] pusharglist 1 ........................... <pParentWindowID>
+  [  5] extcall 75 .............................. <windowExists(pParentWindowID)>
+  [  7] not ..................................... <not windowExists(pParentWindowID)>
+  [  8] jmpifz [ 16] ............................ if not windowExists(pParentWindowID) then
+  [ 11] pushzero ................................ <0>
+  [ 12] pusharglistnoret 1 ...................... <0>
+  [ 14] extcall 20 .............................. return 0
+  [ 16] getprop 242 ............................. <pWindowID>
+  [ 18] pusharglist 1 ........................... <pWindowID>
+  [ 20] extcall 75 .............................. <windowExists(pWindowID)>
+  [ 22] not ..................................... <not windowExists(pWindowID)>
+  [ 23] jmpifz [ 31] ............................ if not windowExists(pWindowID) then
+  [ 26] pushzero ................................ <0>
+  [ 27] pusharglistnoret 1 ...................... <0>
+  [ 29] extcall 20 .............................. return 0
+  [ 31] getprop 784 ............................. <pParentWindowID>
+  [ 34] pusharglist 1 ........................... <pParentWindowID>
+  [ 36] extcall 80 .............................. <getWindow(pParentWindowID)>
+  [ 38] setlocal 0 .............................. tTargetWindow = getWindow(pParentWindowID)
+  [ 40] getprop 242 ............................. <pWindowID>
+  [ 42] pusharglist 1 ........................... <pWindowID>
+  [ 44] extcall 80 .............................. <getWindow(pWindowID)>
+  [ 46] setlocal 1 .............................. tRequestWindow = getWindow(pWindowID)
+  [ 48] getlocal 0 .............................. <tTargetWindow>
+  [ 50] getprop 785 ............................. <pParentElementID>
+  [ 53] pusharglist 2 ........................... <tTargetWindow, pParentElementID>
+  [ 55] objcall 100 ............................. <tTargetWindow.elementExists(pParentElementID)>
+  [ 57] not ..................................... <not tTargetWindow.elementExists(pParentElementID)>
+  [ 58] jmpifz [ 66] ............................ if not tTargetWindow.elementExists(pParentElementID) then
+  [ 61] pushzero ................................ <0>
+  [ 62] pusharglistnoret 1 ...................... <0>
+  [ 64] extcall 20 .............................. return 0
+  [ 66] getlocal 0 .............................. <tTargetWindow>
+  [ 68] getprop 785 ............................. <pParentElementID>
+  [ 71] pusharglist 2 ........................... <tTargetWindow, pParentElementID>
+  [ 73] objcall 87 .............................. <tTargetWindow.getElement(pParentElementID)>
+  [ 75] setlocal 2 .............................. tElem = tTargetWindow.getElement(pParentElementID)
+  [ 77] getlocal 2 .............................. <tElem>
+  [ 79] pushsymb 261 ............................ <#visible>
+  [ 82] pusharglist 2 ........................... <tElem, #visible>
+  [ 84] objcall 139 ............................. <tElem.getProperty(#visible)>
+  [ 86] not ..................................... <not tElem.getProperty(#visible)>
+  [ 87] jmpifz [ 95] ............................ if not tElem.getProperty(#visible) then
+  [ 90] pushzero ................................ <0>
+  [ 91] pusharglistnoret 1 ...................... <0>
+  [ 93] extcall 20 .............................. return 0
+  [ 95] getlocal 0 .............................. <tTargetWindow>
+  [ 97] pushsymb 586 ............................ <#locX>
+  [100] pusharglist 2 ........................... <tTargetWindow, #locX>
+  [102] objcall 139 ............................. <tTargetWindow.getProperty(#locX)>
+  [104] setlocal 3 .............................. tWinLocX = tTargetWindow.getProperty(#locX)
+  [106] getlocal 0 .............................. <tTargetWindow>
+  [108] pushsymb 404 ............................ <#locY>
+  [111] pusharglist 2 ........................... <tTargetWindow, #locY>
+  [113] objcall 139 ............................. <tTargetWindow.getProperty(#locY)>
+  [115] setlocal 4 .............................. tWinLocY = tTargetWindow.getProperty(#locY)
+  [117] getlocal 2 .............................. <tElem>
+  [119] pushsymb 586 ............................ <#locX>
+  [122] pusharglist 2 ........................... <tElem, #locX>
+  [124] objcall 139 ............................. <tElem.getProperty(#locX)>
+  [126] setlocal 5 .............................. tElemLocX = tElem.getProperty(#locX)
+  [128] getlocal 2 .............................. <tElem>
+  [130] pushsymb 404 ............................ <#locY>
+  [133] pusharglist 2 ........................... <tElem, #locY>
+  [135] objcall 139 ............................. <tElem.getProperty(#locY)>
+  [137] setlocal 6 .............................. tElemLocY = tElem.getProperty(#locY)
+  [139] getlocal 2 .............................. <tElem>
+  [141] pushsymb 138 ............................ <#width>
+  [143] pusharglist 2 ........................... <tElem, #width>
+  [145] objcall 139 ............................. <tElem.getProperty(#width)>
+  [147] setlocal 7 .............................. tElemWidth = tElem.getProperty(#width)
+  [149] getlocal 1 .............................. <tRequestWindow>
+  [151] pushsymb 138 ............................ <#width>
+  [153] pusharglist 2 ........................... <tRequestWindow, #width>
+  [155] objcall 139 ............................. <tRequestWindow.getProperty(#width)>
+  [157] setlocal 8 .............................. tOwnWidth = tRequestWindow.getProperty(#width)
+  [159] getlocal 1 .............................. <tRequestWindow>
+  [161] pushsymb 146 ............................ <#height>
+  [163] pusharglist 2 ........................... <tRequestWindow, #height>
+  [165] objcall 139 ............................. <tRequestWindow.getProperty(#height)>
+  [167] setlocal 9 .............................. tOwnHeight = tRequestWindow.getProperty(#height)
+  [169] getlocal 3 .............................. <tWinLocX>
+  [171] getlocal 5 .............................. <tElemLocX>
+  [173] add ..................................... <tWinLocX + tElemLocX>
+  [174] getlocal 7 .............................. <tElemWidth>
+  [176] pushint8 2 .............................. <2>
+  [178] div ..................................... <tElemWidth / 2>
+  [179] add ..................................... <tWinLocX + tElemLocX + (tElemWidth / 2)>
+  [180] getlocal 8 .............................. <tOwnWidth>
+  [182] pushint8 2 .............................. <2>
+  [184] div ..................................... <tOwnWidth / 2>
+  [185] sub ..................................... <tWinLocX + tElemLocX + (tElemWidth / 2) - (tOwnWidth / 2)>
+  [186] setlocal 10 ............................. tLocX = tWinLocX + tElemLocX + (tElemWidth / 2) - (tOwnWidth / 2)
+  [188] getlocal 4 .............................. <tWinLocY>
+  [190] getlocal 6 .............................. <tElemLocY>
+  [192] add ..................................... <tWinLocY + tElemLocY>
+  [193] getlocal 9 .............................. <tOwnHeight>
+  [195] sub ..................................... <tWinLocY + tElemLocY - tOwnHeight>
+  [196] setlocal 11 ............................. tLocY = tWinLocY + tElemLocY - tOwnHeight
+  [198] getlocal 10 ............................. <tLocX>
+  [200] getlocal 8 .............................. <tOwnWidth>
+  [202] add ..................................... <tLocX + tOwnWidth>
+  [203] getmovieprop 168 ........................ <the stage>
+  [205] getchainedprop 218 ...................... <(the stage).rect>
+  [207] getobjprop 138 .......................... <(the stage).rect.width>
+  [209] sub ..................................... <tLocX + tOwnWidth - (the stage).rect.width>
+  [210] setlocal 12 ............................. tOffset = tLocX + tOwnWidth - (the stage).rect.width
+  [212] getlocal 12 ............................. <tOffset>
+  [214] pushzero ................................ <0>
+  [215] gt ...................................... <tOffset > 0>
+  [216] jmpifz [246] ............................ if tOffset > 0 then
+  [219] getlocal 10 ............................. <tLocX>
+  [221] getlocal 12 ............................. <tOffset>
+  [223] sub ..................................... <tLocX - tOffset>
+  [224] setlocal 10 ............................. tLocX = tLocX - tOffset
+  [226] getlocal 1 .............................. <tRequestWindow>
+  [228] pushcons 6 .............................. <"pointer">
+  [230] pusharglist 2 ........................... <tRequestWindow, "pointer">
+  [232] objcall 87 .............................. <tRequestWindow.getElement("pointer")>
+  [234] setlocal 13 ............................. tPointerElem = tRequestWindow.getElement("pointer")
+  [236] getlocal 13 ............................. <tPointerElem>
+  [238] getlocal 12 ............................. <tOffset>
+  [240] pushzero ................................ <0>
+  [241] pusharglistnoret 3 ...................... <tPointerElem, tOffset, 0>
+  [243] objcall 691 ............................. tPointerElem.moveBy(tOffset, 0)
+  [246] getlocal 1 .............................. <tRequestWindow>
+  [248] getlocal 10 ............................. <tLocX>
+  [250] getlocal 11 ............................. <tLocY>
+  [252] pusharglistnoret 3 ...................... <tRequestWindow, tLocX, tLocY>
+  [254] objcall 271 ............................. tRequestWindow.moveTo(tLocX, tLocY)
+  [257] pushint8 1 .............................. <1>
+  [259] pusharglistnoret 1 ...................... <1>
+  [261] extcall 20 .............................. return 1
+  [263] ret
+end
+
+on eventProcRequest me, tEvent, tSprID
+  [  0] getparam 2 .............................. <tSprID>
+  [  2] peek 0 .................................. case tSprID of
+  [  4] pushcons 7 .............................. <"button_accept">
+  [  6] eq
+  [  7] jmpifz [ 73] ............................ (case) "button_accept":
+  [ 10] getprop 786 ............................. <pParentObjId>
+  [ 13] pusharglist 1 ........................... <pParentObjId>
+  [ 15] extcall 107 ............................. <objectExists(pParentObjId)>
+  [ 17] jmpifz [ 70] ............................ if objectExists(pParentObjId) then
+  [ 20] getprop 786 ............................. <pParentObjId>
+  [ 23] pusharglist 1 ........................... <pParentObjId>
+  [ 25] extcall 24 .............................. <getObject(pParentObjId)>
+  [ 27] setlocal 0 .............................. tParent = getObject(pParentObjId)
+  [ 29] getlocal 0 .............................. <tParent>
+  [ 31] pushint8 1 .............................. <1>
+  [ 33] getprop 769 ............................. <pData>
+  [ 36] pushsymb 714 ............................ <#id>
+  [ 39] pusharglist 2 ........................... <pData, #id>
+  [ 41] objcall 164 ............................. <pData[#id]>
+  [ 43] pusharglistnoret 3 ...................... <tParent, 1, pData[#id]>
+  [ 45] objcall 726 ............................. tParent.confirmFriendRequest(1, pData[#id])
+  [ 48] pushsymb 764 ............................ <#room_bar_extension_next_update>
+  [ 51] pushint16 1000 .......................... <1000>
+  [ 54] pushsymb 725 ............................ <#viewNextItemInStack>
+  [ 57] getprop 786 ............................. <pParentObjId>
+  [ 60] pusharglist 0 ........................... <>
+  [ 62] extcall 116 ............................. <VOID>
+  [ 64] pushint8 1 .............................. <1>
+  [ 66] pusharglistnoret 6 ...................... <#room_bar_extension_next_update, 1000, #viewNextItemInStack, pParentObjId, VOID, 1>
+  [ 68] extcall 132 ............................. createTimeout(#room_bar_extension_next_update, 1000, #viewNextItemInStack, pParentObjId, VOID, 1)
+  [ 70] jmp [267]
+  [ 73] peek 0
+  [ 75] pushcons 8 .............................. <"button_deny">
+  [ 77] eq
+  [ 78] jmpifz [143] ............................ (case) "button_deny":
+  [ 81] getprop 786 ............................. <pParentObjId>
+  [ 84] pusharglist 1 ........................... <pParentObjId>
+  [ 86] extcall 107 ............................. <objectExists(pParentObjId)>
+  [ 88] jmpifz [140] ............................ if objectExists(pParentObjId) then
+  [ 91] getprop 786 ............................. <pParentObjId>
+  [ 94] pusharglist 1 ........................... <pParentObjId>
+  [ 96] extcall 24 .............................. <getObject(pParentObjId)>
+  [ 98] setlocal 0 .............................. tParent = getObject(pParentObjId)
+  [100] getlocal 0 .............................. <tParent>
+  [102] pushzero ................................ <0>
+  [103] getprop 769 ............................. <pData>
+  [106] pushsymb 714 ............................ <#id>
+  [109] pusharglist 2 ........................... <pData, #id>
+  [111] objcall 164 ............................. <pData[#id]>
+  [113] pusharglistnoret 3 ...................... <tParent, 0, pData[#id]>
+  [115] objcall 726 ............................. tParent.confirmFriendRequest(0, pData[#id])
+  [118] pushsymb 764 ............................ <#room_bar_extension_next_update>
+  [121] pushint16 1000 .......................... <1000>
+  [124] pushsymb 725 ............................ <#viewNextItemInStack>
+  [127] getprop 786 ............................. <pParentObjId>
+  [130] pusharglist 0 ........................... <>
+  [132] extcall 116 ............................. <VOID>
+  [134] pushint8 1 .............................. <1>
+  [136] pusharglistnoret 6 ...................... <#room_bar_extension_next_update, 1000, #viewNextItemInStack, pParentObjId, VOID, 1>
+  [138] extcall 132 ............................. createTimeout(#room_bar_extension_next_update, 1000, #viewNextItemInStack, pParentObjId, VOID, 1)
+  [140] jmp [267]
+  [143] peek 0
+  [145] pushcons 4 .............................. <"user_head">
+  [147] eq
+  [148] jmpifz [226] ............................ (case) "user_head":
+  [151] getprop 769 ............................. <pData>
+  [154] pusharglist 1 ........................... <pData>
+  [156] extcall 248 ............................. <listp(pData)>
+  [158] jmpifz [223] ............................ if listp(pData) then
+  [161] pushsymb 77 ............................. <#room>
+  [163] pusharglist 1 ........................... <#room>
+  [165] extcall 28 .............................. <getThread(#room)>
+  [167] pusharglist 1 ........................... <getThread(#room)>
+  [169] objcall 29 .............................. <getThread(#room).getComponent()>
+  [171] setlocal 1 .............................. tRoomComp = getThread(#room).getComponent()
+  [173] pushsymb 77 ............................. <#room>
+  [175] pusharglist 1 ........................... <#room>
+  [177] extcall 28 .............................. <getThread(#room)>
+  [179] pusharglist 1 ........................... <getThread(#room)>
+  [181] objcall 149 ............................. <getThread(#room).getInterface()>
+  [183] setlocal 2 .............................. tRoomInterface = getThread(#room).getInterface()
+  [185] getlocal 1 .............................. <tRoomComp>
+  [187] getprop 769 ............................. <pData>
+  [190] pushsymb 253 ............................ <#name>
+  [192] pusharglist 2 ........................... <pData, #name>
+  [194] objcall 164 ............................. <pData[#name]>
+  [196] pusharglist 2 ........................... <tRoomComp, pData[#name]>
+  [198] objcall 748 ............................. <tRoomComp.getUsersRoomId(pData[#name])>
+  [201] setlocal 3 .............................. tUsersRoomId = tRoomComp.getUsersRoomId(pData[#name])
+  [203] getlocal 3 .............................. <tUsersRoomId>
+  [205] pushint8 1 .............................. <1>
+  [207] inv ..................................... <-1>
+  [208] gt ...................................... <tUsersRoomId > -1>
+  [209] jmpifz [223] ............................ if tUsersRoomId > -1 then
+  [212] getlocal 2 .............................. <tRoomInterface>
+  [214] pushsymb 97 ............................. <#mouseDown>
+  [216] getlocal 3 .............................. <tUsersRoomId>
+  [218] pusharglistnoret 3 ...................... <tRoomInterface, #mouseDown, tUsersRoomId>
+  [220] objcall 801 ............................. tRoomInterface.eventProcUserObj(#mouseDown, tUsersRoomId)
+  [223] jmp [267]
+  [226] peek 0
+  [228] pushcons 9 .............................. <"popup_button_close">
+  [230] eq
+  [231] jmpifz [267] ............................ (case) "popup_button_close":
+  [234] getprop 786 ............................. <pParentObjId>
+  [237] pusharglist 1 ........................... <pParentObjId>
+  [239] extcall 107 ............................. <objectExists(pParentObjId)>
+  [241] jmpifz [267] ............................ if objectExists(pParentObjId) then
+  [244] getprop 786 ............................. <pParentObjId>
+  [247] pusharglist 1 ........................... <pParentObjId>
+  [249] extcall 24 .............................. <getObject(pParentObjId)>
+  [251] setlocal 0 .............................. tParent = getObject(pParentObjId)
+  [253] getlocal 0 .............................. <tParent>
+  [255] pusharglistnoret 1 ...................... <tParent>
+  [257] objcall 724 ............................. tParent.ignoreInstantFriendRequests()
+  [260] getlocal 0 .............................. <tParent>
+  [262] pusharglistnoret 1 ...................... <tParent>
+  [264] objcall 725 ............................. tParent.viewNextItemInStack()
+  [267] pop 1 ................................... end case
+  [269] ret
+end

@@ -1,0 +1,672 @@
+property pOwnX, pOwnY, pOwnW, pOwnH, pOffX, pOffY, pScrolls, pUpdateLock
+
+on prepare me
+  [  0] pushzero ................................ <0>
+  [  1] setprop 1419 ............................ pOffX = 0
+  [  4] pushzero ................................ <0>
+  [  5] setprop 1420 ............................ pOffY = 0
+  [  8] getparam 0 .............................. <me>
+  [ 10] pushsymb 1400 ........................... <#pProps>
+  [ 13] pushsymb 42 ............................. <#width>
+  [ 15] pusharglist 3 ........................... <me, #pProps, #width>
+  [ 17] objcall 285 ............................. <me.pProps[#width]>
+  [ 20] setprop 1421 ............................ pOwnW = me.pProps[#width]
+  [ 23] getparam 0 .............................. <me>
+  [ 25] pushsymb 1400 ........................... <#pProps>
+  [ 28] pushsymb 43 ............................. <#height>
+  [ 30] pusharglist 3 ........................... <me, #pProps, #height>
+  [ 32] objcall 285 ............................. <me.pProps[#height]>
+  [ 35] setprop 1422 ............................ pOwnH = me.pProps[#height]
+  [ 38] pusharglist 0 ........................... <[]>
+  [ 40] pushlist ................................ <[]>
+  [ 41] setprop 1423 ............................ pScrolls = []
+  [ 44] pushzero ................................ <0>
+  [ 45] setprop 1424 ............................ pUpdateLock = 0
+  [ 48] getparam 0 .............................. <me>
+  [ 50] pushint8 6 .............................. <6>
+  [ 52] get 7 ................................... <the colorDepth>
+  [ 54] setobjprop 1401 ......................... me.pDepth = the colorDepth
+  [ 57] getparam 0 .............................. <me>
+  [ 59] getparam 0 .............................. <me>
+  [ 61] getobjprop 489 .......................... <me.pwidth>
+  [ 64] getparam 0 .............................. <me>
+  [ 66] getobjprop 494 .......................... <me.pheight>
+  [ 69] getparam 0 .............................. <me>
+  [ 71] getobjprop 1401 ......................... <me.pDepth>
+  [ 74] pusharglist 3 ........................... <me.pwidth, me.pheight, me.pDepth>
+  [ 76] extcall 492 ............................. <image(me.pwidth, me.pheight, me.pDepth)>
+  [ 79] setobjprop 488 .......................... me.pimage = image(me.pwidth, me.pheight, me.pDepth)
+  [ 82] getparam 0 .............................. <me>
+  [ 84] pushsymb 1400 ........................... <#pProps>
+  [ 87] pushsymb 1371 ........................... <#style>
+  [ 90] pusharglist 3 ........................... <me, #pProps, #style>
+  [ 92] objcall 285 ............................. <me.pProps[#style]>
+  [ 95] pushsymb 945 ............................ <#unique>
+  [ 98] eq ...................................... <me.pProps[#style] = #unique>
+  [ 99] jmpifz [113] ............................ if me.pProps[#style] = #unique then / else
+  [102] pushzero ................................ <0>
+  [103] setprop 1425 ............................ pOwnX = 0
+  [106] pushzero ................................ <0>
+  [107] setprop 1426 ............................ pOwnY = 0
+  [110] jmp [145]
+  [113] getparam 0 .............................. <me>
+  [115] pushsymb 1400 ........................... <#pProps>
+  [118] pushsymb 496 ............................ <#locH>
+  [121] pusharglist 3 ........................... <me, #pProps, #locH>
+  [123] objcall 285 ............................. <me.pProps[#locH]>
+  [126] setprop 1425 ............................ pOwnX = me.pProps[#locH]
+  [129] getparam 0 .............................. <me>
+  [131] pushsymb 1400 ........................... <#pProps>
+  [134] pushsymb 497 ............................ <#locV>
+  [137] pusharglist 3 ........................... <me, #pProps, #locV>
+  [139] objcall 285 ............................. <me.pProps[#locV]>
+  [142] setprop 1426 ............................ pOwnY = me.pProps[#locV]
+  [145] getparam 0 .............................. <me>
+  [147] pushsymb 1400 ........................... <#pProps>
+  [150] pushsymb 442 ............................ <#flipH>
+  [153] pusharglist 3 ........................... <me, #pProps, #flipH>
+  [155] objcall 285 ............................. <me.pProps[#flipH]>
+  [158] jmpifz [168] ............................ if me.pProps[#flipH] then
+  [161] getparam 0 .............................. <me>
+  [163] pusharglistnoret 1 ...................... <me>
+  [165] objcall 442 ............................. me.flipH()
+  [168] getparam 0 .............................. <me>
+  [170] pushsymb 1400 ........................... <#pProps>
+  [173] pushsymb 443 ............................ <#flipV>
+  [176] pusharglist 3 ........................... <me, #pProps, #flipV>
+  [178] objcall 285 ............................. <me.pProps[#flipV]>
+  [181] jmpifz [191] ............................ if me.pProps[#flipV] then
+  [184] getparam 0 .............................. <me>
+  [186] pusharglistnoret 1 ...................... <me>
+  [188] objcall 443 ............................. me.flipV()
+  [191] pushint8 1 .............................. <1>
+  [193] pusharglistnoret 1 ...................... <1>
+  [195] extcall 25 .............................. return 1
+  [197] ret
+end
+
+on feedImage me, tImage
+  [  0] getparam 1 .............................. <tImage>
+  [  2] pusharglist 1 ........................... <tImage>
+  [  4] extcall 480 ............................. <ilk(tImage)>
+  [  7] pushsymb 492 ............................ <#image>
+  [ 10] eq ...................................... <ilk(tImage) = #image>
+  [ 11] not ..................................... <not (ilk(tImage) = #image)>
+  [ 12] jmpifz [ 33] ............................ if not (ilk(tImage) = #image) then
+  [ 15] getparam 0 .............................. <me>
+  [ 17] pushcons 0 .............................. <"Image object expected!">
+  [ 19] getparam 1 .............................. <tImage>
+  [ 21] joinpadstr .............................. <"Image object expected!" && tImage>
+  [ 22] pushsymb 1407 ........................... <#feedImage>
+  [ 25] pusharglist 3 ........................... <me, "Image object expected!" && tImage, #feedImage>
+  [ 27] extcall 39 .............................. <error(me, "Image object expected!" && tImage, #feedImage)>
+  [ 29] pusharglistnoret 1 ...................... <error(me, "Image object expected!" && tImage, #feedImage)>
+  [ 31] extcall 25 .............................. return error(me, "Image object expected!" && tImage, #feedImage)
+  [ 33] getprop 1425 ............................ <pOwnX>
+  [ 36] getprop 1426 ............................ <pOwnY>
+  [ 39] getprop 1425 ............................ <pOwnX>
+  [ 42] getprop 1421 ............................ <pOwnW>
+  [ 45] add ..................................... <pOwnX + pOwnW>
+  [ 46] getprop 1426 ............................ <pOwnY>
+  [ 49] getprop 1422 ............................ <pOwnH>
+  [ 52] add ..................................... <pOwnY + pOwnH>
+  [ 53] pusharglist 4 ........................... <pOwnX, pOwnY, pOwnX + pOwnW, pOwnY + pOwnH>
+  [ 55] extcall 547 ............................. <rect(pOwnX, pOwnY, pOwnX + pOwnW, pOwnY + pOwnH)>
+  [ 58] setlocal 0 .............................. tTargetRect = rect(pOwnX, pOwnY, pOwnX + pOwnW, pOwnY + pOwnH)
+  [ 60] getparam 0 .............................. <me>
+  [ 62] getchainedprop 455 ...................... <me.pBuffer>
+  [ 65] getchainedprop 492 ...................... <me.pBuffer.image>
+  [ 68] getlocal 0 .............................. <tTargetRect>
+  [ 70] getparam 0 .............................. <me>
+  [ 72] pushsymb 1400 ........................... <#pProps>
+  [ 75] pushsymb 1208 ........................... <#bgColor>
+  [ 78] pusharglist 3 ........................... <me, #pProps, #bgColor>
+  [ 80] objcall 285 ............................. <me.pProps[#bgColor]>
+  [ 83] pusharglistnoret 3 ...................... <me.pBuffer.image, tTargetRect, me.pProps[#bgColor]>
+  [ 85] objcall 1427 ............................ me.pBuffer.image.fill(tTargetRect, me.pProps[#bgColor])
+  [ 88] getparam 0 .............................. <me>
+  [ 90] getparam 1 .............................. <tImage>
+  [ 92] setobjprop 488 .......................... me.pimage = tImage
+  [ 95] getparam 0 .............................. <me>
+  [ 97] pusharglistnoret 1 ...................... <me>
+  [ 99] objcall 439 ............................. me.render()
+  [102] pushint8 1 .............................. <1>
+  [104] setprop 1424 ............................ pUpdateLock = 1
+  [107] getparam 0 .............................. <me>
+  [109] pusharglistnoret 1 ...................... <me>
+  [111] objcall 1410 ............................ me.registerScroll()
+  [114] pushzero ................................ <0>
+  [115] setprop 1424 ............................ pUpdateLock = 0
+  [118] pushint8 1 .............................. <1>
+  [120] pusharglistnoret 1 ...................... <1>
+  [122] extcall 25 .............................. return 1
+  [124] ret
+end
+
+on clearImage me
+  [  0] getprop 1425 ............................ <pOwnX>
+  [  3] getprop 1426 ............................ <pOwnY>
+  [  6] getprop 1425 ............................ <pOwnX>
+  [  9] getprop 1421 ............................ <pOwnW>
+  [ 12] add ..................................... <pOwnX + pOwnW>
+  [ 13] getprop 1426 ............................ <pOwnY>
+  [ 16] getprop 1422 ............................ <pOwnH>
+  [ 19] add ..................................... <pOwnY + pOwnH>
+  [ 20] pusharglist 4 ........................... <pOwnX, pOwnY, pOwnX + pOwnW, pOwnY + pOwnH>
+  [ 22] extcall 547 ............................. <rect(pOwnX, pOwnY, pOwnX + pOwnW, pOwnY + pOwnH)>
+  [ 25] setlocal 0 .............................. tTargetRect = rect(pOwnX, pOwnY, pOwnX + pOwnW, pOwnY + pOwnH)
+  [ 27] getparam 0 .............................. <me>
+  [ 29] getchainedprop 455 ...................... <me.pBuffer>
+  [ 32] getchainedprop 492 ...................... <me.pBuffer.image>
+  [ 35] getlocal 0 .............................. <tTargetRect>
+  [ 37] getparam 0 .............................. <me>
+  [ 39] pushsymb 1400 ........................... <#pProps>
+  [ 42] pushsymb 1208 ........................... <#bgColor>
+  [ 45] pusharglist 3 ........................... <me, #pProps, #bgColor>
+  [ 47] objcall 285 ............................. <me.pProps[#bgColor]>
+  [ 50] pusharglist 3 ........................... <me.pBuffer.image, tTargetRect, me.pProps[#bgColor]>
+  [ 52] objcall 1427 ............................ <me.pBuffer.image.fill(tTargetRect, me.pProps[#bgColor])>
+  [ 55] pusharglistnoret 1 ...................... <me.pBuffer.image.fill(tTargetRect, me.pProps[#bgColor])>
+  [ 57] extcall 25 .............................. return me.pBuffer.image.fill(tTargetRect, me.pProps[#bgColor])
+  [ 59] ret
+end
+
+on clearBuffer me
+  [  0] getparam 0 .............................. <me>
+  [  2] getchainedprop 488 ...................... <me.pimage>
+  [  5] getparam 0 .............................. <me>
+  [  7] getchainedprop 488 ...................... <me.pimage>
+  [ 10] getobjprop 547 .......................... <me.pimage.rect>
+  [ 13] getparam 0 .............................. <me>
+  [ 15] pushsymb 1400 ........................... <#pProps>
+  [ 18] pushsymb 1208 ........................... <#bgColor>
+  [ 21] pusharglist 3 ........................... <me, #pProps, #bgColor>
+  [ 23] objcall 285 ............................. <me.pProps[#bgColor]>
+  [ 26] pusharglist 3 ........................... <me.pimage, me.pimage.rect, me.pProps[#bgColor]>
+  [ 28] objcall 1427 ............................ <me.pimage.fill(me.pimage.rect, me.pProps[#bgColor])>
+  [ 31] pusharglistnoret 1 ...................... <me.pimage.fill(me.pimage.rect, me.pProps[#bgColor])>
+  [ 33] extcall 25 .............................. return me.pimage.fill(me.pimage.rect, me.pProps[#bgColor])
+  [ 35] ret
+end
+
+on registerScroll me, tid
+  [  0] getprop 1423 ............................ <pScrolls>
+  [  3] pusharglist 1 ........................... <pScrolls>
+  [  5] extcall 20 .............................. <voidp(pScrolls)>
+  [  7] jmpifz [ 17] ............................ if voidp(pScrolls) then
+  [ 10] getparam 0 .............................. <me>
+  [ 12] pusharglistnoret 1 ...................... <me>
+  [ 14] objcall 427 ............................. me.prepare()
+  [ 17] getparam 1 .............................. <tid>
+  [ 19] pusharglist 1 ........................... <tid>
+  [ 21] extcall 20 .............................. <voidp(tid)>
+  [ 23] not ..................................... <not voidp(tid)>
+  [ 24] jmpifz [ 54] ............................ if not voidp(tid) then / else
+  [ 27] getprop 1423 ............................ <pScrolls>
+  [ 30] getparam 1 .............................. <tid>
+  [ 32] pusharglist 2 ........................... <pScrolls, tid>
+  [ 34] objcall 509 ............................. <pScrolls.getPos(tid)>
+  [ 37] pushzero ................................ <0>
+  [ 38] eq ...................................... <pScrolls.getPos(tid) = 0>
+  [ 39] jmpifz [ 51] ............................ if pScrolls.getPos(tid) = 0 then
+  [ 42] getprop 1423 ............................ <pScrolls>
+  [ 45] getparam 1 .............................. <tid>
+  [ 47] pusharglistnoret 2 ...................... <pScrolls, tid>
+  [ 49] objcall 122 ............................. pScrolls.add(tid)
+  [ 51] jmp [ 69]
+  [ 54] getprop 1423 ............................ <pScrolls>
+  [ 57] getobjprop 22 ........................... <pScrolls.count>
+  [ 59] pushzero ................................ <0>
+  [ 60] eq ...................................... <pScrolls.count = 0>
+  [ 61] jmpifz [ 69] ............................ if pScrolls.count = 0 then
+  [ 64] pushzero ................................ <0>
+  [ 65] pusharglistnoret 1 ...................... <0>
+  [ 67] extcall 25 .............................. return 0
+  [ 69] getprop 1419 ............................ <pOffX>
+  [ 72] getprop 1420 ............................ <pOffY>
+  [ 75] getprop 1419 ............................ <pOffX>
+  [ 78] getprop 1421 ............................ <pOwnW>
+  [ 81] add ..................................... <pOffX + pOwnW>
+  [ 82] getprop 1420 ............................ <pOffY>
+  [ 85] getprop 1422 ............................ <pOwnH>
+  [ 88] add ..................................... <pOffY + pOwnH>
+  [ 89] pusharglist 4 ........................... <pOffX, pOffY, pOffX + pOwnW, pOffY + pOwnH>
+  [ 91] extcall 547 ............................. <rect(pOffX, pOffY, pOffX + pOwnW, pOffY + pOwnH)>
+  [ 94] setlocal 0 .............................. tSourceRect = rect(pOffX, pOffY, pOffX + pOwnW, pOffY + pOwnH)
+  [ 96] pusharglist 0 ........................... <[]>
+  [ 98] pushlist ................................ <[]>
+  [ 99] setlocal 1 .............................. tScrollList = []
+  [101] pusharglist 0 ........................... <>
+  [103] extcall 314 ............................. <getWindowManager()>
+  [106] getparam 0 .............................. <me>
+  [108] getobjprop 1399 ......................... <me.pMotherId>
+  [111] pusharglist 2 ........................... <getWindowManager(), me.pMotherId>
+  [113] objcall 90 .............................. <getWindowManager().get(me.pMotherId)>
+  [115] setlocal 2 .............................. tWndObj = getWindowManager().get(me.pMotherId)
+  [117] getprop 1423 ............................ <pScrolls>
+  [120] peek 0
+  [122] pusharglist 1
+  [124] extcall 22
+  [126] pushint8 1
+  [128] peek 0
+  [130] peek 2
+  [132] lteq
+  [133] jmpifz [166] ............................ repeat with tScrollId in pScrolls
+  [136] peek 2
+  [138] peek 1
+  [140] pusharglist 2
+  [142] extcall 54
+  [144] setlocal 3
+  [146] getlocal 1 .............................. <tScrollList>
+  [148] getlocal 2 .............................. <tWndObj>
+  [150] getlocal 3 .............................. <tScrollId>
+  [152] pusharglist 2 ........................... <tWndObj, tScrollId>
+  [154] objcall 960 ............................. <tWndObj.getElement(tScrollId)>
+  [157] pusharglistnoret 2 ...................... <tScrollList, tWndObj.getElement(tScrollId)>
+  [159] objcall 122 ............................. tScrollList.add(tWndObj.getElement(tScrollId))
+  [161] pushint8 1
+  [163] add
+  [164] endrepeat [128]
+  [166] pop 3
+  [168] pushsymb 428 ............................ <#updateData>
+  [171] getlocal 1 .............................. <tScrollList>
+  [173] getlocal 0 .............................. <tSourceRect>
+  [175] getparam 0 .............................. <me>
+  [177] getchainedprop 488 ...................... <me.pimage>
+  [180] getobjprop 547 .......................... <me.pimage.rect>
+  [183] pusharglistnoret 4 ...................... <#updateData, tScrollList, tSourceRect, me.pimage.rect>
+  [185] extcall 68 .............................. call(#updateData, tScrollList, tSourceRect, me.pimage.rect)
+  [187] ret
+end
+
+on adjustOffsetTo me, tX, tY
+  [  0] getparam 1 .............................. <tX>
+  [  2] setprop 1419 ............................ pOffX = tX
+  [  5] getparam 2 .............................. <tY>
+  [  7] setprop 1420 ............................ pOffY = tY
+  [ 10] getprop 1424 ............................ <pUpdateLock>
+  [ 13] not ..................................... <not pUpdateLock>
+  [ 14] jmpifz [ 31] ............................ if not pUpdateLock then
+  [ 17] getparam 0 .............................. <me>
+  [ 19] pusharglistnoret 1 ...................... <me>
+  [ 21] objcall 1408 ............................ me.clearImage()
+  [ 24] getparam 0 .............................. <me>
+  [ 26] pusharglistnoret 1 ...................... <me>
+  [ 28] objcall 439 ............................. me.render()
+  [ 31] ret
+end
+
+on adjustOffsetBy me, tOffX, tOffY
+  [  0] getprop 1419 ............................ <pOffX>
+  [  3] getparam 1 .............................. <tOffX>
+  [  5] add ..................................... <pOffX + tOffX>
+  [  6] setprop 1419 ............................ pOffX = pOffX + tOffX
+  [  9] getprop 1420 ............................ <pOffY>
+  [ 12] getparam 2 .............................. <tOffY>
+  [ 14] add ..................................... <pOffY + tOffY>
+  [ 15] setprop 1420 ............................ pOffY = pOffY + tOffY
+  [ 18] getprop 1424 ............................ <pUpdateLock>
+  [ 21] not ..................................... <not pUpdateLock>
+  [ 22] jmpifz [ 39] ............................ if not pUpdateLock then
+  [ 25] getparam 0 .............................. <me>
+  [ 27] pusharglistnoret 1 ...................... <me>
+  [ 29] objcall 1408 ............................ me.clearImage()
+  [ 32] getparam 0 .............................. <me>
+  [ 34] pusharglistnoret 1 ...................... <me>
+  [ 36] objcall 439 ............................. me.render()
+  [ 39] ret
+end
+
+on adjustXOffsetTo me, tX
+  [  0] getparam 0 .............................. <me>
+  [  2] getparam 1 .............................. <tX>
+  [  4] getprop 1420 ............................ <pOffY>
+  [  7] pusharglistnoret 3 ...................... <me, tX, pOffY>
+  [  9] objcall 1411 ............................ me.adjustOffsetTo(tX, pOffY)
+  [ 12] ret
+end
+
+on adjustYOffsetTo me, tY
+  [  0] getparam 0 .............................. <me>
+  [  2] getprop 1419 ............................ <pOffX>
+  [  5] getparam 1 .............................. <tY>
+  [  7] pusharglistnoret 3 ...................... <me, pOffX, tY>
+  [  9] objcall 1411 ............................ me.adjustOffsetTo(pOffX, tY)
+  [ 12] ret
+end
+
+on setOffsetX me, tX
+  [  0] getparam 0 .............................. <me>
+  [  2] getparam 1 .............................. <tX>
+  [  4] getprop 1420 ............................ <pOffY>
+  [  7] pusharglistnoret 3 ...................... <me, tX, pOffY>
+  [  9] objcall 1411 ............................ me.adjustOffsetTo(tX, pOffY)
+  [ 12] ret
+end
+
+on setOffsetY me, tY
+  [  0] getparam 0 .............................. <me>
+  [  2] getprop 1419 ............................ <pOffX>
+  [  5] getparam 1 .............................. <tY>
+  [  7] pusharglistnoret 3 ...................... <me, pOffX, tY>
+  [  9] objcall 1411 ............................ me.adjustOffsetTo(pOffX, tY)
+  [ 12] ret
+end
+
+on getOffsetX me
+  [  0] getprop 1419 ............................ <pOffX>
+  [  3] pusharglistnoret 1 ...................... <pOffX>
+  [  5] extcall 25 .............................. return pOffX
+  [  7] ret
+end
+
+on getOffsetY me
+  [  0] getprop 1420 ............................ <pOffY>
+  [  3] pusharglistnoret 1 ...................... <pOffY>
+  [  5] extcall 25 .............................. return pOffY
+  [  7] ret
+end
+
+on resizeBy me, tOffH, tOffV
+  [  0] getparam 1 .............................. <tOffH>
+  [  2] pushzero ................................ <0>
+  [  3] nteq .................................... <tOffH <> 0>
+  [  4] getparam 2 .............................. <tOffV>
+  [  6] pushzero ................................ <0>
+  [  7] nteq .................................... <tOffV <> 0>
+  [  8] or ...................................... <(tOffH <> 0) or (tOffV <> 0)>
+  [  9] jmpifz [450] ............................ if (tOffH <> 0) or (tOffV <> 0) then
+  [ 12] getparam 0 .............................. <me>
+  [ 14] pushsymb 1400 ........................... <#pProps>
+  [ 17] pushsymb 1371 ........................... <#style>
+  [ 20] pusharglist 3 ........................... <me, #pProps, #style>
+  [ 22] objcall 285 ............................. <me.pProps[#style]>
+  [ 25] pushsymb 945 ............................ <#unique>
+  [ 28] eq ...................................... <me.pProps[#style] = #unique>
+  [ 29] jmpifz [296] ............................ if me.pProps[#style] = #unique then / else
+  [ 32] getparam 0 .............................. <me>
+  [ 34] getobjprop 1396 ......................... <me.pScaleH>
+  [ 37] peek 0 .................................. case me.pScaleH of
+  [ 39] pushsymb 1215 ........................... <#move>
+  [ 42] eq
+  [ 43] jmpifz [ 59] ............................ (case) #move:
+  [ 46] getparam 0 .............................. <me>
+  [ 48] getparam 1 .............................. <tOffH>
+  [ 50] pushzero ................................ <0>
+  [ 51] pusharglistnoret 3 ...................... <me, tOffH, 0>
+  [ 53] objcall 938 ............................. me.moveBy(tOffH, 0)
+  [ 56] jmp [106]
+  [ 59] peek 0
+  [ 61] pushsymb 1218 ........................... <#scale>
+  [ 64] eq
+  [ 65] jmpifz [ 84] ............................ (case) #scale:
+  [ 68] getparam 0 .............................. <me>
+  [ 70] getparam 0 .............................. <me>
+  [ 72] getobjprop 489 .......................... <me.pwidth>
+  [ 75] getparam 1 .............................. <tOffH>
+  [ 77] add ..................................... <me.pwidth + tOffH>
+  [ 78] setobjprop 489 .......................... me.pwidth = me.pwidth + tOffH
+  [ 81] jmp [106]
+  [ 84] peek 0
+  [ 86] pushsymb 498 ............................ <#center>
+  [ 89] eq
+  [ 90] jmpifz [106] ............................ (case) #center:
+  [ 93] getparam 0 .............................. <me>
+  [ 95] getparam 1 .............................. <tOffH>
+  [ 97] pushint8 2 .............................. <2>
+  [ 99] div ..................................... <tOffH / 2>
+  [100] pushzero ................................ <0>
+  [101] pusharglistnoret 3 ...................... <me, tOffH / 2, 0>
+  [103] objcall 938 ............................. me.moveBy(tOffH / 2, 0)
+  [106] pop 1 ................................... end case
+  [108] getparam 0 .............................. <me>
+  [110] getobjprop 1397 ......................... <me.pScaleV>
+  [113] peek 0 .................................. case me.pScaleV of
+  [115] pushsymb 1215 ........................... <#move>
+  [118] eq
+  [119] jmpifz [135] ............................ (case) #move:
+  [122] getparam 0 .............................. <me>
+  [124] pushzero ................................ <0>
+  [125] getparam 2 .............................. <tOffV>
+  [127] pusharglistnoret 3 ...................... <me, 0, tOffV>
+  [129] objcall 938 ............................. me.moveBy(0, tOffV)
+  [132] jmp [182]
+  [135] peek 0
+  [137] pushsymb 1218 ........................... <#scale>
+  [140] eq
+  [141] jmpifz [160] ............................ (case) #scale:
+  [144] getparam 0 .............................. <me>
+  [146] getparam 0 .............................. <me>
+  [148] getobjprop 494 .......................... <me.pheight>
+  [151] getparam 2 .............................. <tOffV>
+  [153] add ..................................... <me.pheight + tOffV>
+  [154] setobjprop 494 .......................... me.pheight = me.pheight + tOffV
+  [157] jmp [182]
+  [160] peek 0
+  [162] pushsymb 498 ............................ <#center>
+  [165] eq
+  [166] jmpifz [182] ............................ (case) #center:
+  [169] getparam 0 .............................. <me>
+  [171] pushzero ................................ <0>
+  [172] getparam 2 .............................. <tOffV>
+  [174] pushint8 2 .............................. <2>
+  [176] div ..................................... <tOffV / 2>
+  [177] pusharglistnoret 3 ...................... <me, 0, tOffV / 2>
+  [179] objcall 938 ............................. me.moveBy(0, tOffV / 2)
+  [182] pop 1 ................................... end case
+  [184] getparam 0 .............................. <me>
+  [186] getobjprop 489 .......................... <me.pwidth>
+  [189] pushint8 1 .............................. <1>
+  [191] lt ...................................... <me.pwidth < 1>
+  [192] jmpifz [202] ............................ if me.pwidth < 1 then
+  [195] getparam 0 .............................. <me>
+  [197] pushint8 1 .............................. <1>
+  [199] setobjprop 489 .......................... me.pwidth = 1
+  [202] getparam 0 .............................. <me>
+  [204] getobjprop 494 .......................... <me.pheight>
+  [207] pushint8 1 .............................. <1>
+  [209] lt ...................................... <me.pheight < 1>
+  [210] jmpifz [220] ............................ if me.pheight < 1 then
+  [213] getparam 0 .............................. <me>
+  [215] pushint8 1 .............................. <1>
+  [217] setobjprop 494 .......................... me.pheight = 1
+  [220] getparam 0 .............................. <me>
+  [222] getobjprop 489 .......................... <me.pwidth>
+  [225] setprop 1421 ............................ pOwnW = me.pwidth
+  [228] getparam 0 .............................. <me>
+  [230] getobjprop 494 .......................... <me.pheight>
+  [233] setprop 1422 ............................ pOwnH = me.pheight
+  [236] getparam 0 .............................. <me>
+  [238] getchainedprop 455 ...................... <me.pBuffer>
+  [241] getprop 1421 ............................ <pOwnW>
+  [244] getprop 1422 ............................ <pOwnH>
+  [247] getparam 0 .............................. <me>
+  [249] getobjprop 1401 ......................... <me.pDepth>
+  [252] pusharglist 3 ........................... <pOwnW, pOwnH, me.pDepth>
+  [254] extcall 492 ............................. <image(pOwnW, pOwnH, me.pDepth)>
+  [257] setobjprop 492 .......................... me.pBuffer.image = image(pOwnW, pOwnH, me.pDepth)
+  [260] getparam 0 .............................. <me>
+  [262] getchainedprop 455 ...................... <me.pBuffer>
+  [265] pushzero ................................ <0>
+  [266] pushzero ................................ <0>
+  [267] pusharglist 2 ........................... <0, 0>
+  [269] extcall 500 ............................. <point(0, 0)>
+  [272] setobjprop 491 .......................... me.pBuffer.regPoint = point(0, 0)
+  [275] getparam 0 .............................. <me>
+  [277] getchainedprop 35 ....................... <me.pSprite>
+  [279] getprop 1421 ............................ <pOwnW>
+  [282] setobjprop 42 ........................... me.pSprite.width = pOwnW
+  [284] getparam 0 .............................. <me>
+  [286] getchainedprop 35 ....................... <me.pSprite>
+  [288] getprop 1422 ............................ <pOwnH>
+  [291] setobjprop 43 ........................... me.pSprite.height = pOwnH
+  [293] jmp [436]
+  [296] getparam 0 .............................. <me>
+  [298] getobjprop 1396 ......................... <me.pScaleH>
+  [301] peek 0 .................................. case me.pScaleH of
+  [303] pushsymb 1215 ........................... <#move>
+  [306] eq
+  [307] jmpifz [322] ............................ (case) #move:
+  [310] getprop 1425 ............................ <pOwnX>
+  [313] getparam 1 .............................. <tOffH>
+  [315] add ..................................... <pOwnX + tOffH>
+  [316] setprop 1425 ............................ pOwnX = pOwnX + tOffH
+  [319] jmp [364]
+  [322] peek 0
+  [324] pushsymb 1218 ........................... <#scale>
+  [327] eq
+  [328] jmpifz [343] ............................ (case) #scale:
+  [331] getprop 1421 ............................ <pOwnW>
+  [334] getparam 1 .............................. <tOffH>
+  [336] add ..................................... <pOwnW + tOffH>
+  [337] setprop 1421 ............................ pOwnW = pOwnW + tOffH
+  [340] jmp [364]
+  [343] peek 0
+  [345] pushsymb 498 ............................ <#center>
+  [348] eq
+  [349] jmpifz [364] ............................ (case) #center:
+  [352] getprop 1425 ............................ <pOwnX>
+  [355] getparam 1 .............................. <tOffH>
+  [357] pushint8 2 .............................. <2>
+  [359] div ..................................... <tOffH / 2>
+  [360] add ..................................... <pOwnX + (tOffH / 2)>
+  [361] setprop 1425 ............................ pOwnX = pOwnX + (tOffH / 2)
+  [364] pop 1 ................................... end case
+  [366] getparam 0 .............................. <me>
+  [368] getobjprop 1397 ......................... <me.pScaleV>
+  [371] peek 0 .................................. case me.pScaleV of
+  [373] pushsymb 1215 ........................... <#move>
+  [376] eq
+  [377] jmpifz [392] ............................ (case) #move:
+  [380] getprop 1426 ............................ <pOwnY>
+  [383] getparam 2 .............................. <tOffV>
+  [385] add ..................................... <pOwnY + tOffV>
+  [386] setprop 1426 ............................ pOwnY = pOwnY + tOffV
+  [389] jmp [434]
+  [392] peek 0
+  [394] pushsymb 1218 ........................... <#scale>
+  [397] eq
+  [398] jmpifz [413] ............................ (case) #scale:
+  [401] getprop 1422 ............................ <pOwnH>
+  [404] getparam 2 .............................. <tOffV>
+  [406] add ..................................... <pOwnH + tOffV>
+  [407] setprop 1422 ............................ pOwnH = pOwnH + tOffV
+  [410] jmp [434]
+  [413] peek 0
+  [415] pushsymb 498 ............................ <#center>
+  [418] eq
+  [419] jmpifz [434] ............................ (case) #center:
+  [422] getprop 1426 ............................ <pOwnY>
+  [425] getparam 2 .............................. <tOffV>
+  [427] pushint8 2 .............................. <2>
+  [429] div ..................................... <tOffV / 2>
+  [430] add ..................................... <pOwnY + (tOffV / 2)>
+  [431] setprop 1426 ............................ pOwnY = pOwnY + (tOffV / 2)
+  [434] pop 1 ................................... end case
+  [436] getparam 0 .............................. <me>
+  [438] pusharglistnoret 1 ...................... <me>
+  [440] objcall 1410 ............................ me.registerScroll()
+  [443] getparam 0 .............................. <me>
+  [445] pusharglistnoret 1 ...................... <me>
+  [447] objcall 439 ............................. me.render()
+  [450] ret
+end
+
+on render me
+  [  0] getparam 0 .............................. <me>
+  [  2] getobjprop 1275 ......................... <me.pVisible>
+  [  5] not ..................................... <not me.pVisible>
+  [  6] jmpifz [ 13] ............................ if not me.pVisible then
+  [  9] pusharglistnoret 0 ...................... <>
+  [ 11] extcall 25 .............................. return 
+  [ 13] getprop 1425 ............................ <pOwnX>
+  [ 16] getprop 1426 ............................ <pOwnY>
+  [ 19] getprop 1425 ............................ <pOwnX>
+  [ 22] getprop 1421 ............................ <pOwnW>
+  [ 25] add ..................................... <pOwnX + pOwnW>
+  [ 26] getprop 1426 ............................ <pOwnY>
+  [ 29] getprop 1422 ............................ <pOwnH>
+  [ 32] add ..................................... <pOwnY + pOwnH>
+  [ 33] pusharglist 4 ........................... <pOwnX, pOwnY, pOwnX + pOwnW, pOwnY + pOwnH>
+  [ 35] extcall 547 ............................. <rect(pOwnX, pOwnY, pOwnX + pOwnW, pOwnY + pOwnH)>
+  [ 38] setlocal 0 .............................. tTargetRect = rect(pOwnX, pOwnY, pOwnX + pOwnW, pOwnY + pOwnH)
+  [ 40] getprop 1419 ............................ <pOffX>
+  [ 43] getprop 1420 ............................ <pOffY>
+  [ 46] getprop 1419 ............................ <pOffX>
+  [ 49] getprop 1421 ............................ <pOwnW>
+  [ 52] add ..................................... <pOffX + pOwnW>
+  [ 53] getprop 1420 ............................ <pOffY>
+  [ 56] getprop 1422 ............................ <pOwnH>
+  [ 59] add ..................................... <pOffY + pOwnH>
+  [ 60] pusharglist 4 ........................... <pOffX, pOffY, pOffX + pOwnW, pOffY + pOwnH>
+  [ 62] extcall 547 ............................. <rect(pOffX, pOffY, pOffX + pOwnW, pOffY + pOwnH)>
+  [ 65] setlocal 1 .............................. tSourceRect = rect(pOffX, pOffY, pOffX + pOwnW, pOffY + pOwnH)
+  [ 67] getparam 0 .............................. <me>
+  [ 69] getchainedprop 455 ...................... <me.pBuffer>
+  [ 72] getchainedprop 492 ...................... <me.pBuffer.image>
+  [ 75] getparam 0 .............................. <me>
+  [ 77] getobjprop 488 .......................... <me.pimage>
+  [ 80] getlocal 0 .............................. <tTargetRect>
+  [ 82] getlocal 1 .............................. <tSourceRect>
+  [ 84] getparam 0 .............................. <me>
+  [ 86] getobjprop 1402 ......................... <me.pParams>
+  [ 89] pusharglistnoret 5 ...................... <me.pBuffer.image, me.pimage, tTargetRect, tSourceRect, me.pParams>
+  [ 91] objcall 548 ............................. me.pBuffer.image.copyPixels(me.pimage, tTargetRect, tSourceRect, me.pParams)
+  [ 94] ret
+end
+
+on mouseDown me
+  [  0] pusharglist 0 ........................... <>
+  [  2] thebuiltin 1304 ......................... <the mouseH>
+  [  5] getparam 0 .............................. <me>
+  [  7] getchainedprop 35 ....................... <me.pSprite>
+  [  9] getobjprop 496 .......................... <me.pSprite.locH>
+  [ 12] sub ..................................... <the mouseH - me.pSprite.locH>
+  [ 13] getprop 1425 ............................ <pOwnX>
+  [ 16] add ..................................... <the mouseH - me.pSprite.locH + pOwnX>
+  [ 17] getprop 1419 ............................ <pOffX>
+  [ 20] add ..................................... <the mouseH - me.pSprite.locH + pOwnX + pOffX>
+  [ 21] pusharglist 0 ........................... <>
+  [ 23] thebuiltin 542 .......................... <the mouseV>
+  [ 26] getparam 0 .............................. <me>
+  [ 28] getchainedprop 35 ....................... <me.pSprite>
+  [ 30] getobjprop 497 .......................... <me.pSprite.locV>
+  [ 33] sub ..................................... <the mouseV - me.pSprite.locV>
+  [ 34] getprop 1426 ............................ <pOwnY>
+  [ 37] add ..................................... <the mouseV - me.pSprite.locV + pOwnY>
+  [ 38] getprop 1420 ............................ <pOffY>
+  [ 41] add ..................................... <the mouseV - me.pSprite.locV + pOwnY + pOffY>
+  [ 42] pusharglist 2 ........................... <the mouseH - me.pSprite.locH + pOwnX + pOffX, the mouseV - me.pSprite.locV + pOwnY + pOffY>
+  [ 44] extcall 500 ............................. <point(the mouseH - me.pSprite.locH + pOwnX + pOffX, the mouseV - me.pSprite.locV + pOwnY + pOffY)>
+  [ 47] pusharglistnoret 1 ...................... <point(the mouseH - me.pSprite.locH + pOwnX + pOffX, the mouseV - me.pSprite.locV + pOwnY + pOffY)>
+  [ 49] extcall 25 .............................. return point(the mouseH - me.pSprite.locH + pOwnX + pOffX, the mouseV - me.pSprite.locV + pOwnY + pOffY)
+  [ 51] ret
+end
+
+on mouseUp me
+  [  0] pusharglist 0 ........................... <>
+  [  2] thebuiltin 1304 ......................... <the mouseH>
+  [  5] getparam 0 .............................. <me>
+  [  7] getchainedprop 35 ....................... <me.pSprite>
+  [  9] getobjprop 496 .......................... <me.pSprite.locH>
+  [ 12] sub ..................................... <the mouseH - me.pSprite.locH>
+  [ 13] getprop 1425 ............................ <pOwnX>
+  [ 16] add ..................................... <the mouseH - me.pSprite.locH + pOwnX>
+  [ 17] getprop 1419 ............................ <pOffX>
+  [ 20] add ..................................... <the mouseH - me.pSprite.locH + pOwnX + pOffX>
+  [ 21] pusharglist 0 ........................... <>
+  [ 23] thebuiltin 542 .......................... <the mouseV>
+  [ 26] getparam 0 .............................. <me>
+  [ 28] getchainedprop 35 ....................... <me.pSprite>
+  [ 30] getobjprop 497 .......................... <me.pSprite.locV>
+  [ 33] sub ..................................... <the mouseV - me.pSprite.locV>
+  [ 34] getprop 1426 ............................ <pOwnY>
+  [ 37] add ..................................... <the mouseV - me.pSprite.locV + pOwnY>
+  [ 38] getprop 1420 ............................ <pOffY>
+  [ 41] add ..................................... <the mouseV - me.pSprite.locV + pOwnY + pOffY>
+  [ 42] pusharglist 2 ........................... <the mouseH - me.pSprite.locH + pOwnX + pOffX, the mouseV - me.pSprite.locV + pOwnY + pOffY>
+  [ 44] extcall 500 ............................. <point(the mouseH - me.pSprite.locH + pOwnX + pOffX, the mouseV - me.pSprite.locV + pOwnY + pOffY)>
+  [ 47] pusharglistnoret 1 ...................... <point(the mouseH - me.pSprite.locH + pOwnX + pOffX, the mouseV - me.pSprite.locV + pOwnY + pOffY)>
+  [ 49] extcall 25 .............................. return point(the mouseH - me.pSprite.locH + pOwnX + pOffX, the mouseV - me.pSprite.locV + pOwnY + pOffY)
+  [ 51] ret
+end

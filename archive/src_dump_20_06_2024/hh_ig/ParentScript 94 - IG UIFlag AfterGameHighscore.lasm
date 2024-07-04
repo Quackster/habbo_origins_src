@@ -1,0 +1,202 @@
+on showInfo me, tWindowList, tdata, tMode
+  [  0] getparam 3 .............................. <tMode>
+  [  2] not ..................................... <not tMode>
+  [  3] jmpifz [ 12] ............................ if not tMode then
+  [  6] pushint8 1 .............................. <1>
+  [  8] pusharglistnoret 1 ...................... <1>
+  [ 10] extcall 38 .............................. return 1
+  [ 12] getparam 1 .............................. <tWindowList>
+  [ 14] getobjprop 180 .......................... <tWindowList.count>
+  [ 16] pushint8 2 .............................. <2>
+  [ 18] lt ...................................... <tWindowList.count < 2>
+  [ 19] jmpifz [ 28] ............................ if tWindowList.count < 2 then
+  [ 22] pushint8 1 .............................. <1>
+  [ 24] pusharglistnoret 1 ...................... <1>
+  [ 26] extcall 38 .............................. return 1
+  [ 28] getparam 1 .............................. <tWindowList>
+  [ 30] pushint8 2 .............................. <2>
+  [ 32] pusharglist 2 ........................... <tWindowList, 2>
+  [ 34] objcall 181 ............................. <tWindowList[2]>
+  [ 36] pusharglist 1 ........................... <tWindowList[2]>
+  [ 38] extcall 400 ............................. <getWindow(tWindowList[2])>
+  [ 41] setlocal 0 .............................. tWndObj = getWindow(tWindowList[2])
+  [ 43] getparam 2 .............................. <tdata>
+  [ 45] pushsymb 225 ............................ <#top_level_scores>
+  [ 47] pusharglist 2 ........................... <tdata, #top_level_scores>
+  [ 49] objcall 256 ............................. <tdata.getaProp(#top_level_scores)>
+  [ 52] setlocal 1 .............................. tScoreData = tdata.getaProp(#top_level_scores)
+  [ 54] getlocal 1 .............................. <tScoreData>
+  [ 56] pusharglist 1 ........................... <tScoreData>
+  [ 58] extcall 377 ............................. <listp(tScoreData)>
+  [ 61] not ..................................... <not listp(tScoreData)>
+  [ 62] jmpifz [ 70] ............................ if not listp(tScoreData) then
+  [ 65] pushzero ................................ <0>
+  [ 66] pusharglistnoret 1 ...................... <0>
+  [ 68] extcall 38 .............................. return 0
+  [ 70] pushcons 0 .............................. <EMPTY>
+  [ 72] setlocal 2 .............................. tRankText = EMPTY
+  [ 74] pushcons 0 .............................. <EMPTY>
+  [ 76] setlocal 3 .............................. tNameText = EMPTY
+  [ 78] pushcons 0 .............................. <EMPTY>
+  [ 80] setlocal 4 .............................. tScoreText = EMPTY
+  [ 82] pushzero ................................ <0>
+  [ 83] setlocal 5 .............................. tOwnPos = 0
+  [ 85] getparam 2 .............................. <tdata>
+  [ 87] pushsymb 300 ............................ <#room_index>
+  [ 90] pusharglist 2 ........................... <tdata, #room_index>
+  [ 92] objcall 256 ............................. <tdata.getaProp(#room_index)>
+  [ 95] setlocal 6 .............................. tOwnId = tdata.getaProp(#room_index)
+  [ 97] getlocal 1 .............................. <tScoreData>
+  [ 99] getobjprop 180 .......................... <tScoreData.count>
+  [101] setlocal 7 .............................. tDataCount = tScoreData.count
+  [103] getlocal 7 .............................. <tDataCount>
+  [105] pushint8 5 .............................. <5>
+  [107] gt ...................................... <tDataCount > 5>
+  [108] jmpifz [115] ............................ if tDataCount > 5 then
+  [111] pushint8 5 .............................. <5>
+  [113] setlocal 7 .............................. tDataCount = 5
+  [115] pushint8 1 .............................. <1>
+  [117] setlocal 8
+  [119] getlocal 8
+  [121] getlocal 7 .............................. <tDataCount>
+  [123] lteq
+  [124] jmpifz [341] ............................ repeat with i = 1 to tDataCount
+  [127] getlocal 1 .............................. <tScoreData>
+  [129] getlocal 8 .............................. <i>
+  [131] pusharglist 2 ........................... <tScoreData, i>
+  [133] objcall 181 ............................. <tScoreData[i]>
+  [135] setlocal 9 .............................. tItem = tScoreData[i]
+  [137] getlocal 6 .............................. <tOwnId>
+  [139] pushint8 1 .............................. <1>
+  [141] inv ..................................... <-1>
+  [142] gt ...................................... <tOwnId > -1>
+  [143] getlocal 9 .............................. <tItem>
+  [145] pushsymb 300 ............................ <#room_index>
+  [148] pusharglist 2 ........................... <tItem, #room_index>
+  [150] objcall 256 ............................. <tItem.getaProp(#room_index)>
+  [153] getlocal 6 .............................. <tOwnId>
+  [155] eq ...................................... <tItem.getaProp(#room_index) = tOwnId>
+  [156] and ..................................... <(tOwnId > -1) and (tItem.getaProp(#room_index) = tOwnId)>
+  [157] setlocal 10 ............................. tOwnUser = (tOwnId > -1) and (tItem.getaProp(#room_index) = tOwnId)
+  [159] getlocal 0 .............................. <tWndObj>
+  [161] pushcons 1 .............................. <"ig_highscore_rank">
+  [163] getlocal 8 .............................. <i>
+  [165] joinstr ................................. <"ig_highscore_rank" & i>
+  [166] pusharglist 2 ........................... <tWndObj, "ig_highscore_rank" & i>
+  [168] objcall 401 ............................. <tWndObj.getElement("ig_highscore_rank" & i)>
+  [171] setlocal 11 ............................. tElem = tWndObj.getElement("ig_highscore_rank" & i)
+  [173] getlocal 11 ............................. <tElem>
+  [175] pushzero ................................ <0>
+  [176] eq ...................................... <tElem = 0>
+  [177] jmpifz [185] ............................ if tElem = 0 then
+  [180] pushzero ................................ <0>
+  [181] pusharglistnoret 1 ...................... <0>
+  [183] extcall 38 .............................. return 0
+  [185] getlocal 10 ............................. <tOwnUser>
+  [187] jmpifz [208] ............................ if tOwnUser then
+  [190] pushcons 2 .............................. <"struct.font.bold">
+  [192] pusharglist 1 ........................... <"struct.font.bold">
+  [194] extcall 551 ............................. <getStructVariable("struct.font.bold")>
+  [197] setlocal 12 ............................. tFontStruct = getStructVariable("struct.font.bold")
+  [199] getlocal 11 ............................. <tElem>
+  [201] getlocal 12 ............................. <tFontStruct>
+  [203] pusharglistnoret 2 ...................... <tElem, tFontStruct>
+  [205] objcall 866 ............................. tElem.setFont(tFontStruct)
+  [208] getlocal 11 ............................. <tElem>
+  [210] getlocal 8 .............................. <i>
+  [212] pushcons 3 .............................. <".">
+  [214] joinstr ................................. <i & ".">
+  [215] pusharglistnoret 2 ...................... <tElem, i & ".">
+  [217] objcall 415 ............................. tElem.setText(i & ".")
+  [220] getlocal 0 .............................. <tWndObj>
+  [222] pushcons 4 .............................. <"ig_highscore_player">
+  [224] getlocal 8 .............................. <i>
+  [226] joinstr ................................. <"ig_highscore_player" & i>
+  [227] pusharglist 2 ........................... <tWndObj, "ig_highscore_player" & i>
+  [229] objcall 401 ............................. <tWndObj.getElement("ig_highscore_player" & i)>
+  [232] setlocal 11 ............................. tElem = tWndObj.getElement("ig_highscore_player" & i)
+  [234] getlocal 11 ............................. <tElem>
+  [236] pushzero ................................ <0>
+  [237] eq ...................................... <tElem = 0>
+  [238] jmpifz [246] ............................ if tElem = 0 then
+  [241] pushzero ................................ <0>
+  [242] pusharglistnoret 1 ...................... <0>
+  [244] extcall 38 .............................. return 0
+  [246] getlocal 10 ............................. <tOwnUser>
+  [248] jmpifz [260] ............................ if tOwnUser then
+  [251] getlocal 11 ............................. <tElem>
+  [253] getlocal 12 ............................. <tFontStruct>
+  [255] pusharglistnoret 2 ...................... <tElem, tFontStruct>
+  [257] objcall 866 ............................. tElem.setFont(tFontStruct)
+  [260] getlocal 11 ............................. <tElem>
+  [262] getlocal 9 .............................. <tItem>
+  [264] pushsymb 221 ............................ <#name>
+  [266] pusharglist 2 ........................... <tItem, #name>
+  [268] objcall 256 ............................. <tItem.getaProp(#name)>
+  [271] pusharglistnoret 2 ...................... <tElem, tItem.getaProp(#name)>
+  [273] objcall 415 ............................. tElem.setText(tItem.getaProp(#name))
+  [276] getlocal 0 .............................. <tWndObj>
+  [278] pushcons 5 .............................. <"ig_highscore_score">
+  [280] getlocal 8 .............................. <i>
+  [282] joinstr ................................. <"ig_highscore_score" & i>
+  [283] pusharglist 2 ........................... <tWndObj, "ig_highscore_score" & i>
+  [285] objcall 401 ............................. <tWndObj.getElement("ig_highscore_score" & i)>
+  [288] setlocal 11 ............................. tElem = tWndObj.getElement("ig_highscore_score" & i)
+  [290] getlocal 11 ............................. <tElem>
+  [292] pushzero ................................ <0>
+  [293] eq ...................................... <tElem = 0>
+  [294] jmpifz [302] ............................ if tElem = 0 then
+  [297] pushzero ................................ <0>
+  [298] pusharglistnoret 1 ...................... <0>
+  [300] extcall 38 .............................. return 0
+  [302] getlocal 10 ............................. <tOwnUser>
+  [304] jmpifz [316] ............................ if tOwnUser then
+  [307] getlocal 11 ............................. <tElem>
+  [309] getlocal 12 ............................. <tFontStruct>
+  [311] pusharglistnoret 2 ...................... <tElem, tFontStruct>
+  [313] objcall 866 ............................. tElem.setFont(tFontStruct)
+  [316] getlocal 11 ............................. <tElem>
+  [318] getlocal 9 .............................. <tItem>
+  [320] pushsymb 223 ............................ <#score>
+  [322] pusharglist 2 ........................... <tItem, #score>
+  [324] objcall 256 ............................. <tItem.getaProp(#score)>
+  [327] pusharglistnoret 2 ...................... <tElem, tItem.getaProp(#score)>
+  [329] objcall 415 ............................. tElem.setText(tItem.getaProp(#score))
+  [332] pushint8 1
+  [334] getlocal 8
+  [336] add
+  [337] setlocal 8
+  [339] endrepeat [119]
+  [341] pushint8 1 .............................. <1>
+  [343] pusharglistnoret 1 ...................... <1>
+  [345] extcall 38 .............................. return 1
+  [347] ret
+end
+
+on getTitleText me
+  [  0] pushcons 6 .............................. <"ig_ag_flag_high_title">
+  [  2] pusharglist 1 ........................... <"ig_ag_flag_high_title">
+  [  4] extcall 82 .............................. <getText("ig_ag_flag_high_title")>
+  [  6] pusharglistnoret 1 ...................... <getText("ig_ag_flag_high_title")>
+  [  8] extcall 38 .............................. return getText("ig_ag_flag_high_title")
+  [ 10] ret
+end
+
+on getLayout me, tMode
+  [  0] getparam 1 .............................. <tMode>
+  [  2] jmpifz [ 17] ............................ if tMode then / else
+  [  5] pushcons 7 .............................. <"ig_ag_tip_title_exp.window">
+  [  7] pushcons 8 .............................. <"ig_ag_highscores_btm.window">
+  [  9] pusharglist 2 ........................... <["ig_ag_tip_title_exp.window", "ig_ag_highscores_btm.window"]>
+  [ 11] pushlist ................................ <["ig_ag_tip_title_exp.window", "ig_ag_highscores_btm.window"]>
+  [ 12] setlocal 0 .............................. tLayout = ["ig_ag_tip_title_exp.window", "ig_ag_highscores_btm.window"]
+  [ 14] jmp [ 24]
+  [ 17] pushcons 9 .............................. <"ig_ag_tip_title.window">
+  [ 19] pusharglist 1 ........................... <["ig_ag_tip_title.window"]>
+  [ 21] pushlist ................................ <["ig_ag_tip_title.window"]>
+  [ 22] setlocal 0 .............................. tLayout = ["ig_ag_tip_title.window"]
+  [ 24] getlocal 0 .............................. <tLayout>
+  [ 26] pusharglistnoret 1 ...................... <tLayout>
+  [ 28] extcall 38 .............................. return tLayout
+  [ 30] ret
+end

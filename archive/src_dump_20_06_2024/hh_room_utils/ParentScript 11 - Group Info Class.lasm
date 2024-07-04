@@ -1,0 +1,846 @@
+property pGroupWindowID, pGroupData, pCurrentShownGroupId, pGroupsWithDownloadedLogo, pGroupLogoMemPrefix, pGroupLogoTemplateMember, pGroupLogoUrlTemplate, pLastPendingData
+
+on construct me
+  [  0] pushcons 0 .............................. <"group_window_title">
+  [  2] pusharglist 1 ........................... <"group_window_title">
+  [  4] extcall 31 .............................. <getText("group_window_title")>
+  [  6] setprop 542 ............................. pGroupWindowID = getText("group_window_title")
+  [  9] pusharglist 0 ........................... <[:]>
+  [ 11] pushproplist ............................ <[:]>
+  [ 12] setprop 543 ............................. pGroupData = [:]
+  [ 15] pusharglist 0 ........................... <>
+  [ 17] extcall 118 ............................. <VOID>
+  [ 19] setprop 544 ............................. pCurrentShownGroupId = VOID
+  [ 22] pusharglist 0 ........................... <[]>
+  [ 24] pushlist ................................ <[]>
+  [ 25] setprop 545 ............................. pGroupsWithDownloadedLogo = []
+  [ 28] pusharglist 0 ........................... <[:]>
+  [ 30] pushproplist ............................ <[:]>
+  [ 31] setprop 546 ............................. pLastPendingData = [:]
+  [ 34] pushcons 1 .............................. <"group_logo_">
+  [ 36] setprop 547 ............................. pGroupLogoMemPrefix = "group_logo_"
+  [ 39] pushcons 2 .............................. <"logo_downloading_template">
+  [ 41] setprop 548 ............................. pGroupLogoTemplateMember = "logo_downloading_template"
+  [ 44] pushcons 3 .............................. <"group_logo_url_template">
+  [ 46] pusharglist 1 ........................... <"group_logo_url_template">
+  [ 48] extcall 31 .............................. <getText("group_logo_url_template")>
+  [ 50] setprop 549 ............................. pGroupLogoUrlTemplate = getText("group_logo_url_template")
+  [ 53] pushsymb 550 ............................ <#roomReady>
+  [ 56] getparam 0 .............................. <me>
+  [ 58] pusharglist 1 ........................... <me>
+  [ 60] objcall 89 .............................. <me.getID()>
+  [ 62] pushsymb 534 ............................ <#requestGroups>
+  [ 65] pusharglistnoret 3 ...................... <#roomReady, me.getID(), #requestGroups>
+  [ 67] extcall 374 ............................. registerMessage(#roomReady, me.getID(), #requestGroups)
+  [ 70] pushsymb 509 ............................ <#leaveRoom>
+  [ 73] getparam 0 .............................. <me>
+  [ 75] pusharglist 1 ........................... <me>
+  [ 77] objcall 89 .............................. <me.getID()>
+  [ 79] pushsymb 533 ............................ <#clearGroups>
+  [ 82] pusharglistnoret 3 ...................... <#leaveRoom, me.getID(), #clearGroups>
+  [ 84] extcall 374 ............................. registerMessage(#leaveRoom, me.getID(), #clearGroups)
+  [ 87] pushsymb 510 ............................ <#changeRoom>
+  [ 90] getparam 0 .............................. <me>
+  [ 92] pusharglist 1 ........................... <me>
+  [ 94] objcall 89 .............................. <me.getID()>
+  [ 96] pushsymb 533 ............................ <#clearGroups>
+  [ 99] pusharglistnoret 3 ...................... <#changeRoom, me.getID(), #clearGroups>
+  [101] extcall 374 ............................. registerMessage(#changeRoom, me.getID(), #clearGroups)
+  [104] pushint8 1 .............................. <1>
+  [106] pusharglistnoret 1 ...................... <1>
+  [108] extcall 50 .............................. return 1
+  [110] ret
+end
+
+on deconstruct me
+  [  0] pushsymb 551 ............................ <#userClicked>
+  [  3] getparam 0 .............................. <me>
+  [  5] pusharglist 1 ........................... <me>
+  [  7] objcall 89 .............................. <me.getID()>
+  [  9] pusharglistnoret 2 ...................... <#userClicked, me.getID()>
+  [ 11] extcall 386 ............................. unregisterMessage(#userClicked, me.getID())
+  [ 14] pushsymb 509 ............................ <#leaveRoom>
+  [ 17] getparam 0 .............................. <me>
+  [ 19] pusharglist 1 ........................... <me>
+  [ 21] objcall 89 .............................. <me.getID()>
+  [ 23] pusharglistnoret 2 ...................... <#leaveRoom, me.getID()>
+  [ 25] extcall 386 ............................. unregisterMessage(#leaveRoom, me.getID())
+  [ 28] pushint8 1 .............................. <1>
+  [ 30] pusharglistnoret 1 ...................... <1>
+  [ 32] extcall 50 .............................. return 1
+  [ 34] ret
+end
+
+on updateGroupInformation me, tGroupsArr
+  [  0] getparam 1 .............................. <tGroupsArr>
+  [  2] pusharglist 1 ........................... <tGroupsArr>
+  [  4] extcall 150 ............................. <listp(tGroupsArr)>
+  [  6] not ..................................... <not listp(tGroupsArr)>
+  [  7] jmpifz [ 15] ............................ if not listp(tGroupsArr) then
+  [ 10] pushzero ................................ <0>
+  [ 11] pusharglistnoret 1 ...................... <0>
+  [ 13] extcall 50 .............................. return 0
+  [ 15] getparam 1 .............................. <tGroupsArr>
+  [ 17] peek 0
+  [ 19] pusharglist 1
+  [ 21] extcall 105
+  [ 23] pushint8 1
+  [ 25] peek 0
+  [ 27] peek 2
+  [ 29] lteq
+  [ 30] jmpifz [273] ............................ repeat with tIncomingGroupData in tGroupsArr
+  [ 33] peek 2
+  [ 35] peek 1
+  [ 37] pusharglist 2
+  [ 39] extcall 75
+  [ 41] setlocal 0
+  [ 43] getlocal 0 .............................. <tIncomingGroupData>
+  [ 45] pushsymb 57 ............................. <#id>
+  [ 47] pusharglist 2 ........................... <tIncomingGroupData, #id>
+  [ 49] objcall 75 .............................. <tIncomingGroupData[#id]>
+  [ 51] pusharglist 1 ........................... <tIncomingGroupData[#id]>
+  [ 53] extcall 192 ............................. <string(tIncomingGroupData[#id])>
+  [ 55] setlocal 1 .............................. tID = string(tIncomingGroupData[#id])
+  [ 57] pusharglist 0 ........................... <[:]>
+  [ 59] pushproplist ............................ <[:]>
+  [ 60] setlocal 2 .............................. tCombinedData = [:]
+  [ 62] getprop 543 ............................. <pGroupData>
+  [ 65] getlocal 1 .............................. <tID>
+  [ 67] pusharglist 2 ........................... <pGroupData, tID>
+  [ 69] objcall 75 .............................. <pGroupData[tID]>
+  [ 71] pusharglist 1 ........................... <pGroupData[tID]>
+  [ 73] extcall 54 .............................. <voidp(pGroupData[tID])>
+  [ 75] not ..................................... <not voidp(pGroupData[tID])>
+  [ 76] jmpifz [ 90] ............................ if not voidp(pGroupData[tID]) then
+  [ 79] getprop 543 ............................. <pGroupData>
+  [ 82] getlocal 1 .............................. <tID>
+  [ 84] pusharglist 2 ........................... <pGroupData, tID>
+  [ 86] objcall 75 .............................. <pGroupData[tID]>
+  [ 88] setlocal 2 .............................. tCombinedData = pGroupData[tID]
+  [ 90] pushsymb 57 ............................. <#id>
+  [ 92] pushsymb 156 ............................ <#name>
+  [ 94] pushsymb 552 ............................ <#desc>
+  [ 97] pushsymb 553 ............................ <#logo>
+  [100] pushsymb 554 ............................ <#roomid>
+  [103] pushsymb 555 ............................ <#roomname>
+  [106] pusharglist 6 ........................... <[#id, #name, #desc, #logo, #roomid, #roomname]>
+  [108] pushlist ................................ <[#id, #name, #desc, #logo, #roomid, #roomname]>
+  [109] setlocal 3 .............................. tKeyList = [#id, #name, #desc, #logo, #roomid, #roomname]
+  [111] getlocal 3 .............................. <tKeyList>
+  [113] peek 0
+  [115] pusharglist 1
+  [117] extcall 105
+  [119] pushint8 1
+  [121] peek 0
+  [123] peek 2
+  [125] lteq
+  [126] jmpifz [197] ............................ repeat with tKey in tKeyList
+  [129] peek 2
+  [131] peek 1
+  [133] pusharglist 2
+  [135] extcall 75
+  [137] setlocal 4
+  [139] getlocal 0 .............................. <tIncomingGroupData>
+  [141] getlocal 4 .............................. <tKey>
+  [143] pusharglist 2 ........................... <tIncomingGroupData, tKey>
+  [145] objcall 75 .............................. <tIncomingGroupData[tKey]>
+  [147] pusharglist 1 ........................... <tIncomingGroupData[tKey]>
+  [149] extcall 54 .............................. <voidp(tIncomingGroupData[tKey])>
+  [151] not ..................................... <not voidp(tIncomingGroupData[tKey])>
+  [152] jmpifz [192] ............................ if not voidp(tIncomingGroupData[tKey]) then
+  [155] getlocal 2 .............................. <tCombinedData>
+  [157] getlocal 4 .............................. <tKey>
+  [159] getlocal 0 .............................. <tIncomingGroupData>
+  [161] getlocal 4 .............................. <tKey>
+  [163] pusharglist 2 ........................... <tIncomingGroupData, tKey>
+  [165] objcall 75 .............................. <tIncomingGroupData[tKey]>
+  [167] pusharglistnoret 3 ...................... <tCombinedData, tKey, tIncomingGroupData[tKey]>
+  [169] objcall 73 .............................. tCombinedData[tKey] = tIncomingGroupData[tKey]
+  [171] getlocal 4 .............................. <tKey>
+  [173] pushsymb 553 ............................ <#logo>
+  [176] eq ...................................... <tKey = #logo>
+  [177] jmpifz [192] ............................ if tKey = #logo then
+  [180] getlocal 2 .............................. <tCombinedData>
+  [182] pushsymb 556 ............................ <#download>
+  [185] pushsymb 557 ............................ <#invalid>
+  [188] pusharglistnoret 3 ...................... <tCombinedData, #download, #invalid>
+  [190] objcall 73 .............................. tCombinedData[#download] = #invalid
+  [192] pushint8 1
+  [194] add
+  [195] endrepeat [121]
+  [197] pop 3
+  [199] getprop 543 ............................. <pGroupData>
+  [202] getlocal 1 .............................. <tID>
+  [204] getlocal 2 .............................. <tCombinedData>
+  [206] pusharglistnoret 3 ...................... <pGroupData, tID, tCombinedData>
+  [208] objcall 73 .............................. pGroupData[tID] = tCombinedData
+  [210] getprop 546 ............................. <pLastPendingData>
+  [213] pushsymb 558 ............................ <#groupID>
+  [216] pusharglist 2 ........................... <pLastPendingData, #groupID>
+  [218] objcall 75 .............................. <pLastPendingData[#groupID]>
+  [220] getlocal 1 .............................. <tID>
+  [222] eq ...................................... <pLastPendingData[#groupID] = tID>
+  [223] jmpifz [268] ............................ if pLastPendingData[#groupID] = tID then
+  [226] getparam 0 .............................. <me>
+  [228] getprop 546 ............................. <pLastPendingData>
+  [231] pushsymb 559 ............................ <#userindex>
+  [234] pusharglist 2 ........................... <pLastPendingData, #userindex>
+  [236] objcall 75 .............................. <pLastPendingData[#userindex]>
+  [238] pusharglistnoret 2 ...................... <me, pLastPendingData[#userindex]>
+  [240] objcall 539 ............................. me.showUsersInfo(pLastPendingData[#userindex])
+  [243] getprop 543 ............................. <pGroupData>
+  [246] getlocal 1 .............................. <tID>
+  [248] pusharglist 2 ........................... <pGroupData, tID>
+  [250] objcall 75 .............................. <pGroupData[tID]>
+  [252] pushsymb 556 ............................ <#download>
+  [255] pushsymb 560 ............................ <#done>
+  [258] pusharglistnoret 3 ...................... <pGroupData[tID], #download, #done>
+  [260] objcall 73 .............................. pGroupData[tID][#download] = #done
+  [262] pusharglist 0 ........................... <[:]>
+  [264] pushproplist ............................ <[:]>
+  [265] setprop 546 ............................. pLastPendingData = [:]
+  [268] pushint8 1
+  [270] add
+  [271] endrepeat [ 25]
+  [273] pop 3
+  [275] ret
+end
+
+on getGroupInformation me, tGroupId
+  [  0] pusharglist 0 ........................... <[:]>
+  [  2] pushproplist ............................ <[:]>
+  [  3] setlocal 0 .............................. tGroupInfo = [:]
+  [  5] getparam 1 .............................. <tGroupId>
+  [  7] pusharglist 1 ........................... <tGroupId>
+  [  9] extcall 192 ............................. <string(tGroupId)>
+  [ 11] setparam 1 .............................. tGroupId = string(tGroupId)
+  [ 13] getprop 543 ............................. <pGroupData>
+  [ 16] getparam 1 .............................. <tGroupId>
+  [ 18] pusharglist 2 ........................... <pGroupData, tGroupId>
+  [ 20] objcall 75 .............................. <pGroupData[tGroupId]>
+  [ 22] pusharglist 1 ........................... <pGroupData[tGroupId]>
+  [ 24] extcall 54 .............................. <voidp(pGroupData[tGroupId])>
+  [ 26] not ..................................... <not voidp(pGroupData[tGroupId])>
+  [ 27] jmpifz [ 41] ............................ if not voidp(pGroupData[tGroupId]) then
+  [ 30] getprop 543 ............................. <pGroupData>
+  [ 33] getparam 1 .............................. <tGroupId>
+  [ 35] pusharglist 2 ........................... <pGroupData, tGroupId>
+  [ 37] objcall 75 .............................. <pGroupData[tGroupId]>
+  [ 39] setlocal 0 .............................. tGroupInfo = pGroupData[tGroupId]
+  [ 41] getlocal 0 .............................. <tGroupInfo>
+  [ 43] pusharglistnoret 1 ...................... <tGroupInfo>
+  [ 45] extcall 50 .............................. return tGroupInfo
+  [ 47] ret
+end
+
+on getGroupLogoMemberNum me, tGroupId
+  [  0] getprop 543 ............................. <pGroupData>
+  [  3] getparam 1 .............................. <tGroupId>
+  [  5] pusharglist 2 ........................... <pGroupData, tGroupId>
+  [  7] objcall 149 ............................. <pGroupData.getaProp(tGroupId)>
+  [  9] setlocal 0 .............................. tGroupData = pGroupData.getaProp(tGroupId)
+  [ 11] getlocal 0 .............................. <tGroupData>
+  [ 13] pusharglist 1 ........................... <tGroupData>
+  [ 15] extcall 54 .............................. <voidp(tGroupData)>
+  [ 17] jmpifz [ 32] ............................ if voidp(tGroupData) then
+  [ 20] getprop 548 ............................. <pGroupLogoTemplateMember>
+  [ 23] pusharglist 1 ........................... <pGroupLogoTemplateMember>
+  [ 25] extcall 305 ............................. <getmemnum(pGroupLogoTemplateMember)>
+  [ 28] pusharglistnoret 1 ...................... <getmemnum(pGroupLogoTemplateMember)>
+  [ 30] extcall 50 .............................. return getmemnum(pGroupLogoTemplateMember)
+  [ 32] getprop 547 ............................. <pGroupLogoMemPrefix>
+  [ 35] getlocal 0 .............................. <tGroupData>
+  [ 37] pushsymb 553 ............................ <#logo>
+  [ 40] pusharglist 2 ........................... <tGroupData, #logo>
+  [ 42] objcall 75 .............................. <tGroupData[#logo]>
+  [ 44] joinstr ................................. <pGroupLogoMemPrefix & tGroupData[#logo]>
+  [ 45] setlocal 1 .............................. tGroupLogoMem = pGroupLogoMemPrefix & tGroupData[#logo]
+  [ 47] getlocal 1 .............................. <tGroupLogoMem>
+  [ 49] pusharglist 1 ........................... <tGroupLogoMem>
+  [ 51] extcall 204 ............................. <memberExists(tGroupLogoMem)>
+  [ 53] jmpifz [ 70] ............................ if memberExists(tGroupLogoMem) then / else
+  [ 56] getlocal 1 .............................. <tGroupLogoMem>
+  [ 58] pusharglist 1 ........................... <tGroupLogoMem>
+  [ 60] extcall 305 ............................. <getmemnum(tGroupLogoMem)>
+  [ 63] pusharglistnoret 1 ...................... <getmemnum(tGroupLogoMem)>
+  [ 65] extcall 50 .............................. return getmemnum(tGroupLogoMem)
+  [ 67] jmp [ 91]
+  [ 70] getparam 0 .............................. <me>
+  [ 72] getparam 1 .............................. <tGroupId>
+  [ 74] pusharglistnoret 2 ...................... <me, tGroupId>
+  [ 76] objcall 536 ............................. me.requestLogoDownload(tGroupId)
+  [ 79] getprop 548 ............................. <pGroupLogoTemplateMember>
+  [ 82] pusharglist 1 ........................... <pGroupLogoTemplateMember>
+  [ 84] extcall 305 ............................. <getmemnum(pGroupLogoTemplateMember)>
+  [ 87] pusharglistnoret 1 ...................... <getmemnum(pGroupLogoTemplateMember)>
+  [ 89] extcall 50 .............................. return getmemnum(pGroupLogoTemplateMember)
+  [ 91] ret
+end
+
+on closeView me
+  [  0] getprop 542 ............................. <pGroupWindowID>
+  [  3] pusharglistnoret 1 ...................... <pGroupWindowID>
+  [  5] extcall 129 ............................. removeWindow(pGroupWindowID)
+  [  7] ret
+end
+
+on clearGroups me
+  [  0] getparam 0 .............................. <me>
+  [  2] pusharglistnoret 1 ...................... <me>
+  [  4] objcall 532 ............................. me.closeView()
+  [  7] pusharglist 0 ........................... <[:]>
+  [  9] pushproplist ............................ <[:]>
+  [ 10] setlocal 0 .............................. pGroupInformation = [:]
+  [ 12] pusharglist 0 ........................... <>
+  [ 14] extcall 118 ............................. <VOID>
+  [ 16] setprop 544 ............................. pCurrentShownGroupId = VOID
+  [ 19] ret
+end
+
+on requestGroups me
+  [  0] pushcons 4 .............................. <"connection.room.id">
+  [  2] pusharglist 1 ........................... <"connection.room.id">
+  [  4] extcall 267 ............................. <getVariable("connection.room.id")>
+  [  7] pusharglist 1 ........................... <getVariable("connection.room.id")>
+  [  9] extcall 266 ............................. <getConnection(getVariable("connection.room.id"))>
+  [ 12] pushcons 5 .............................. <"GET_GROUP_BADGES">
+  [ 14] pusharglistnoret 2 ...................... <getConnection(getVariable("connection.room.id")), "GET_GROUP_BADGES">
+  [ 16] objcall 268 ............................. getConnection(getVariable("connection.room.id")).send("GET_GROUP_BADGES")
+  [ 19] ret
+end
+
+on getLogoURL me, tGroupId
+  [  0] getparam 1 .............................. <tGroupId>
+  [  2] pusharglist 1 ........................... <tGroupId>
+  [  4] extcall 54 .............................. <voidp(tGroupId)>
+  [  6] jmpifz [ 14] ............................ if voidp(tGroupId) then
+  [  9] pushzero ................................ <0>
+  [ 10] pusharglistnoret 1 ...................... <0>
+  [ 12] extcall 50 .............................. return 0
+  [ 14] pushcons 6 .............................. <EMPTY>
+  [ 16] setlocal 0 .............................. tURL = EMPTY
+  [ 18] getprop 543 ............................. <pGroupData>
+  [ 21] getparam 1 .............................. <tGroupId>
+  [ 23] pusharglist 2 ........................... <pGroupData, tGroupId>
+  [ 25] objcall 75 .............................. <pGroupData[tGroupId]>
+  [ 27] setlocal 1 .............................. tGroupData = pGroupData[tGroupId]
+  [ 29] getlocal 1 .............................. <tGroupData>
+  [ 31] pusharglist 1 ........................... <tGroupData>
+  [ 33] extcall 146 ............................. <ilk(tGroupData)>
+  [ 35] pushsymb 147 ............................ <#propList>
+  [ 37] eq ...................................... <ilk(tGroupData) = #propList>
+  [ 38] jmpifz [ 69] ............................ if ilk(tGroupData) = #propList then
+  [ 41] getprop 549 ............................. <pGroupLogoUrlTemplate>
+  [ 44] setlocal 0 .............................. tURL = pGroupLogoUrlTemplate
+  [ 46] getlocal 1 .............................. <tGroupData>
+  [ 48] pushsymb 553 ............................ <#logo>
+  [ 51] pusharglist 2 ........................... <tGroupData, #logo>
+  [ 53] objcall 75 .............................. <tGroupData[#logo]>
+  [ 55] setlocal 2 .............................. tGroupLogoPath = tGroupData[#logo]
+  [ 57] getlocal 0 .............................. <tURL>
+  [ 59] pushcons 7 .............................. <"%imagerdata%">
+  [ 61] getlocal 2 .............................. <tGroupLogoPath>
+  [ 63] pusharglist 3 ........................... <tURL, "%imagerdata%", tGroupLogoPath>
+  [ 65] extcall 168 ............................. <replaceChunks(tURL, "%imagerdata%", tGroupLogoPath)>
+  [ 67] setlocal 0 .............................. tURL = replaceChunks(tURL, "%imagerdata%", tGroupLogoPath)
+  [ 69] getlocal 0 .............................. <tURL>
+  [ 71] pusharglistnoret 1 ...................... <tURL>
+  [ 73] extcall 50 .............................. return tURL
+  [ 75] ret
+end
+
+on requestLogoDownload me, tGroupId
+  [  0] getparam 1 .............................. <tGroupId>
+  [  2] pusharglist 1 ........................... <tGroupId>
+  [  4] extcall 192 ............................. <string(tGroupId)>
+  [  6] setparam 1 .............................. tGroupId = string(tGroupId)
+  [  8] getprop 543 ............................. <pGroupData>
+  [ 11] getparam 1 .............................. <tGroupId>
+  [ 13] pusharglist 2 ........................... <pGroupData, tGroupId>
+  [ 15] objcall 149 ............................. <pGroupData.getaProp(tGroupId)>
+  [ 17] setlocal 0 .............................. tGroupData = pGroupData.getaProp(tGroupId)
+  [ 19] getlocal 0 .............................. <tGroupData>
+  [ 21] pusharglist 1 ........................... <tGroupData>
+  [ 23] extcall 146 ............................. <ilk(tGroupData)>
+  [ 25] pushsymb 147 ............................ <#propList>
+  [ 27] nteq .................................... <ilk(tGroupData) <> #propList>
+  [ 28] jmpifz [ 58] ............................ if ilk(tGroupData) <> #propList then
+  [ 31] getparam 0 .............................. <me>
+  [ 33] pushcons 8 .............................. <"No group found: ">
+  [ 35] getparam 1 .............................. <tGroupId>
+  [ 37] joinstr ................................. <"No group found: " & tGroupId>
+  [ 38] getparam 0 .............................. <me>
+  [ 40] pusharglist 1 ........................... <me>
+  [ 42] objcall 89 .............................. <me.getID()>
+  [ 44] pushsymb 536 ............................ <#requestLogoDownload>
+  [ 47] pushsymb 389 ............................ <#minor>
+  [ 50] pusharglist 5 ........................... <me, "No group found: " & tGroupId, me.getID(), #requestLogoDownload, #minor>
+  [ 52] extcall 123 ............................. <error(me, "No group found: " & tGroupId, me.getID(), #requestLogoDownload, #minor)>
+  [ 54] pusharglistnoret 1 ...................... <error(me, "No group found: " & tGroupId, me.getID(), #requestLogoDownload, #minor)>
+  [ 56] extcall 50 .............................. return error(me, "No group found: " & tGroupId, me.getID(), #requestLogoDownload, #minor)
+  [ 58] getlocal 0 .............................. <tGroupData>
+  [ 60] pushsymb 556 ............................ <#download>
+  [ 63] pusharglist 2 ........................... <tGroupData, #download>
+  [ 65] objcall 75 .............................. <tGroupData[#download]>
+  [ 67] setlocal 1 .............................. tDownloadStatus = tGroupData[#download]
+  [ 69] getlocal 1 .............................. <tDownloadStatus>
+  [ 71] pusharglist 1 ........................... <tDownloadStatus>
+  [ 73] extcall 54 .............................. <voidp(tDownloadStatus)>
+  [ 75] getlocal 1 .............................. <tDownloadStatus>
+  [ 77] pushsymb 557 ............................ <#invalid>
+  [ 80] eq ...................................... <tDownloadStatus = #invalid>
+  [ 81] or ...................................... <voidp(tDownloadStatus) or (tDownloadStatus = #invalid)>
+  [ 82] not ..................................... <not (voidp(tDownloadStatus) or (tDownloadStatus = #invalid))>
+  [ 83] jmpifz [ 94] ............................ if not (voidp(tDownloadStatus) or (tDownloadStatus = #invalid)) then / else
+  [ 86] pushzero ................................ <0>
+  [ 87] pusharglistnoret 1 ...................... <0>
+  [ 89] extcall 50 .............................. return 0
+  [ 91] jmp [113]
+  [ 94] getprop 543 ............................. <pGroupData>
+  [ 97] getparam 1 .............................. <tGroupId>
+  [ 99] pusharglist 2 ........................... <pGroupData, tGroupId>
+  [101] objcall 75 .............................. <pGroupData[tGroupId]>
+  [103] pushsymb 556 ............................ <#download>
+  [106] pushsymb 571 ............................ <#downloading>
+  [109] pusharglistnoret 3 ...................... <pGroupData[tGroupId], #download, #downloading>
+  [111] objcall 73 .............................. pGroupData[tGroupId][#download] = #downloading
+  [113] getprop 547 ............................. <pGroupLogoMemPrefix>
+  [116] getlocal 0 .............................. <tGroupData>
+  [118] pushsymb 553 ............................ <#logo>
+  [121] pusharglist 2 ........................... <tGroupData, #logo>
+  [123] objcall 75 .............................. <tGroupData[#logo]>
+  [125] joinstr ................................. <pGroupLogoMemPrefix & tGroupData[#logo]>
+  [126] setlocal 2 .............................. tMemberName = pGroupLogoMemPrefix & tGroupData[#logo]
+  [128] getparam 0 .............................. <me>
+  [130] getparam 1 .............................. <tGroupId>
+  [132] pusharglist 2 ........................... <me, tGroupId>
+  [134] objcall 535 ............................. <me.getLogoURL(tGroupId)>
+  [137] setlocal 3 .............................. tLogoURL = me.getLogoURL(tGroupId)
+  [139] getlocal 3 .............................. <tLogoURL>
+  [141] getlocal 2 .............................. <tMemberName>
+  [143] pushsymb 455 ............................ <#bitmap>
+  [146] pushint8 1 .............................. <1>
+  [148] pusharglist 4 ........................... <tLogoURL, tMemberName, #bitmap, 1>
+  [150] extcall 572 ............................. <queueDownload(tLogoURL, tMemberName, #bitmap, 1)>
+  [153] setlocal 4 .............................. tMemNum = queueDownload(tLogoURL, tMemberName, #bitmap, 1)
+  [155] getlocal 4 .............................. <tMemNum>
+  [157] pushsymb 537 ............................ <#logoDownloadedCallback>
+  [160] getparam 0 .............................. <me>
+  [162] pusharglist 1 ........................... <me>
+  [164] objcall 89 .............................. <me.getID()>
+  [166] getparam 1 .............................. <tGroupId>
+  [168] pusharglistnoret 4 ...................... <tMemNum, #logoDownloadedCallback, me.getID(), tGroupId>
+  [170] extcall 573 ............................. registerDownloadCallback(tMemNum, #logoDownloadedCallback, me.getID(), tGroupId)
+  [173] ret
+end
+
+on logoDownloadedCallback me, tGroupId
+  [  0] pushsymb 578 ............................ <#groupLogoDownloaded>
+  [  3] getparam 1 .............................. <tGroupId>
+  [  5] pusharglistnoret 2 ...................... <#groupLogoDownloaded, tGroupId>
+  [  7] extcall 55 .............................. executeMessage(#groupLogoDownloaded, tGroupId)
+  [  9] getparam 0 .............................. <me>
+  [ 11] getparam 1 .............................. <tGroupId>
+  [ 13] pusharglistnoret 2 ...................... <me, tGroupId>
+  [ 15] objcall 540 ............................. me.updateGroupLogoToWindow(tGroupId)
+  [ 18] ret
+end
+
+on showUsersInfoByName me, tUserName
+  [  0] pushsymb 77 ............................. <#room>
+  [  2] pusharglist 1 ........................... <#room>
+  [  4] extcall 76 .............................. <getThread(#room)>
+  [  6] pusharglist 1 ........................... <getThread(#room)>
+  [  8] objcall 82 .............................. <getThread(#room).getComponent()>
+  [ 10] getparam 1 .............................. <tUserName>
+  [ 12] pusharglist 2 ........................... <getThread(#room).getComponent(), tUserName>
+  [ 14] objcall 579 ............................. <getThread(#room).getComponent().getUsersRoomId(tUserName)>
+  [ 17] setlocal 0 .............................. tUserIndex = getThread(#room).getComponent().getUsersRoomId(tUserName)
+  [ 19] getlocal 0 .............................. <tUserIndex>
+  [ 21] pushint8 1 .............................. <1>
+  [ 23] inv ..................................... <-1>
+  [ 24] nteq .................................... <tUserIndex <> -1>
+  [ 25] jmpifz [ 37] ............................ if tUserIndex <> -1 then
+  [ 28] getparam 0 .............................. <me>
+  [ 30] getlocal 0 .............................. <tUserIndex>
+  [ 32] pusharglistnoret 2 ...................... <me, tUserIndex>
+  [ 34] objcall 539 ............................. me.showUsersInfo(tUserIndex)
+  [ 37] ret
+end
+
+on showUsersInfo me, tUserIndex
+  [  0] pushsymb 77 ............................. <#room>
+  [  2] pusharglist 1 ........................... <#room>
+  [  4] extcall 76 .............................. <getThread(#room)>
+  [  6] pusharglist 1 ........................... <getThread(#room)>
+  [  8] objcall 82 .............................. <getThread(#room).getComponent()>
+  [ 10] setlocal 0 .............................. tRoomComponent = getThread(#room).getComponent()
+  [ 12] getlocal 0 .............................. <tRoomComponent>
+  [ 14] getparam 1 .............................. <tUserIndex>
+  [ 16] pusharglist 2 ........................... <tRoomComponent, tUserIndex>
+  [ 18] objcall 335 ............................. <tRoomComponent.getUserObject(tUserIndex)>
+  [ 21] setlocal 1 .............................. tuser = tRoomComponent.getUserObject(tUserIndex)
+  [ 23] getlocal 1 .............................. <tuser>
+  [ 25] pusharglist 1 ........................... <tuser>
+  [ 27] extcall 54 .............................. <voidp(tuser)>
+  [ 29] jmpifz [ 37] ............................ if voidp(tuser) then
+  [ 32] pushzero ................................ <0>
+  [ 33] pusharglistnoret 1 ...................... <0>
+  [ 35] extcall 50 .............................. return 0
+  [ 37] getlocal 1 .............................. <tuser>
+  [ 39] pushsymb 558 ............................ <#groupID>
+  [ 42] pusharglist 2 ........................... <tuser, #groupID>
+  [ 44] objcall 96 .............................. <tuser.getProperty(#groupID)>
+  [ 46] setlocal 2 .............................. tGroupId = tuser.getProperty(#groupID)
+  [ 48] getlocal 2 .............................. <tGroupId>
+  [ 50] pusharglist 1 ........................... <tGroupId>
+  [ 52] extcall 192 ............................. <string(tGroupId)>
+  [ 54] setlocal 2 .............................. tGroupId = string(tGroupId)
+  [ 56] getlocal 1 .............................. <tuser>
+  [ 58] pushsymb 582 ............................ <#groupstatus>
+  [ 61] pusharglist 2 ........................... <tuser, #groupstatus>
+  [ 63] objcall 96 .............................. <tuser.getProperty(#groupstatus)>
+  [ 65] setlocal 3 .............................. tGroupStatus = tuser.getProperty(#groupstatus)
+  [ 67] getlocal 2 .............................. <tGroupId>
+  [ 69] pushcons 6 .............................. <EMPTY>
+  [ 71] eq ...................................... <tGroupId = EMPTY>
+  [ 72] jmpifz [ 80] ............................ if tGroupId = EMPTY then
+  [ 75] pushzero ................................ <0>
+  [ 76] pusharglistnoret 1 ...................... <0>
+  [ 78] extcall 50 .............................. return 0
+  [ 80] getlocal 2 .............................. <tGroupId>
+  [ 82] pusharglist 1 ........................... <tGroupId>
+  [ 84] extcall 172 ............................. <integer(tGroupId)>
+  [ 86] pushzero ................................ <0>
+  [ 87] lt ...................................... <integer(tGroupId) < 0>
+  [ 88] jmpifz [ 96] ............................ if integer(tGroupId) < 0 then
+  [ 91] pushzero ................................ <0>
+  [ 92] pusharglistnoret 1 ...................... <0>
+  [ 94] extcall 50 .............................. return 0
+  [ 96] getprop 543 ............................. <pGroupData>
+  [ 99] getlocal 2 .............................. <tGroupId>
+  [101] pusharglist 2 ........................... <pGroupData, tGroupId>
+  [103] objcall 75 .............................. <pGroupData[tGroupId]>
+  [105] pusharglist 1 ........................... <pGroupData[tGroupId]>
+  [107] extcall 54 .............................. <voidp(pGroupData[tGroupId])>
+  [109] jmpifz [163] ............................ if voidp(pGroupData[tGroupId]) then
+  [112] pushsymb 559 ............................ <#userindex>
+  [115] getparam 1 .............................. <tUserIndex>
+  [117] pushsymb 558 ............................ <#groupID>
+  [120] getlocal 2 .............................. <tGroupId>
+  [122] pusharglist 4 ........................... <[#userindex: tUserIndex, #groupID: tGroupId]>
+  [124] pushproplist ............................ <[#userindex: tUserIndex, #groupID: tGroupId]>
+  [125] setprop 546 ............................. pLastPendingData = [#userindex: tUserIndex, #groupID: tGroupId]
+  [128] pushcons 9 .............................. <"connection.info.id">
+  [130] pusharglist 1 ........................... <"connection.info.id">
+  [132] extcall 267 ............................. <getVariable("connection.info.id")>
+  [135] pusharglist 1 ........................... <getVariable("connection.info.id")>
+  [137] extcall 266 ............................. <getConnection(getVariable("connection.info.id"))>
+  [140] pushcons 10 ............................. <"GET_GROUP_DETAILS">
+  [142] pushsymb 172 ............................ <#integer>
+  [144] getlocal 2 .............................. <tGroupId>
+  [146] pusharglist 1 ........................... <tGroupId>
+  [148] extcall 172 ............................. <integer(tGroupId)>
+  [150] pusharglist 2 ........................... <[#integer: integer(tGroupId)]>
+  [152] pushproplist ............................ <[#integer: integer(tGroupId)]>
+  [153] pusharglistnoret 3 ...................... <getConnection(getVariable("connection.info.id")), "GET_GROUP_DETAILS", [#integer: integer(tGroupId)]>
+  [155] objcall 268 ............................. getConnection(getVariable("connection.info.id")).send("GET_GROUP_DETAILS", [#integer: integer(tGroupId)])
+  [158] pushzero ................................ <0>
+  [159] pusharglistnoret 1 ...................... <0>
+  [161] extcall 50 .............................. return 0
+  [163] getprop 543 ............................. <pGroupData>
+  [166] getlocal 2 .............................. <tGroupId>
+  [168] pusharglist 2 ........................... <pGroupData, tGroupId>
+  [170] objcall 75 .............................. <pGroupData[tGroupId]>
+  [172] pushsymb 156 ............................ <#name>
+  [174] pusharglist 2 ........................... <pGroupData[tGroupId], #name>
+  [176] objcall 75 .............................. <pGroupData[tGroupId][#name]>
+  [178] pusharglist 1 ........................... <pGroupData[tGroupId][#name]>
+  [180] extcall 54 .............................. <voidp(pGroupData[tGroupId][#name])>
+  [182] jmpifz [236] ............................ if voidp(pGroupData[tGroupId][#name]) then
+  [185] pushsymb 559 ............................ <#userindex>
+  [188] getparam 1 .............................. <tUserIndex>
+  [190] pushsymb 558 ............................ <#groupID>
+  [193] getlocal 2 .............................. <tGroupId>
+  [195] pusharglist 4 ........................... <[#userindex: tUserIndex, #groupID: tGroupId]>
+  [197] pushproplist ............................ <[#userindex: tUserIndex, #groupID: tGroupId]>
+  [198] setprop 546 ............................. pLastPendingData = [#userindex: tUserIndex, #groupID: tGroupId]
+  [201] pushcons 9 .............................. <"connection.info.id">
+  [203] pusharglist 1 ........................... <"connection.info.id">
+  [205] extcall 267 ............................. <getVariable("connection.info.id")>
+  [208] pusharglist 1 ........................... <getVariable("connection.info.id")>
+  [210] extcall 266 ............................. <getConnection(getVariable("connection.info.id"))>
+  [213] pushcons 10 ............................. <"GET_GROUP_DETAILS">
+  [215] pushsymb 172 ............................ <#integer>
+  [217] getlocal 2 .............................. <tGroupId>
+  [219] pusharglist 1 ........................... <tGroupId>
+  [221] extcall 172 ............................. <integer(tGroupId)>
+  [223] pusharglist 2 ........................... <[#integer: integer(tGroupId)]>
+  [225] pushproplist ............................ <[#integer: integer(tGroupId)]>
+  [226] pusharglistnoret 3 ...................... <getConnection(getVariable("connection.info.id")), "GET_GROUP_DETAILS", [#integer: integer(tGroupId)]>
+  [228] objcall 268 ............................. getConnection(getVariable("connection.info.id")).send("GET_GROUP_DETAILS", [#integer: integer(tGroupId)])
+  [231] pushzero ................................ <0>
+  [232] pusharglistnoret 1 ...................... <0>
+  [234] extcall 50 .............................. return 0
+  [236] getprop 542 ............................. <pGroupWindowID>
+  [239] pusharglist 1 ........................... <pGroupWindowID>
+  [241] extcall 72 .............................. <windowExists(pGroupWindowID)>
+  [243] not ..................................... <not windowExists(pGroupWindowID)>
+  [244] jmpifz [290] ............................ if not windowExists(pGroupWindowID) then
+  [247] getprop 542 ............................. <pGroupWindowID>
+  [250] pushcons 11 ............................. <"habbo_full.window">
+  [252] pusharglistnoret 2 ...................... <pGroupWindowID, "habbo_full.window">
+  [254] extcall 86 .............................. createWindow(pGroupWindowID, "habbo_full.window")
+  [256] getprop 542 ............................. <pGroupWindowID>
+  [259] pusharglist 1 ........................... <pGroupWindowID>
+  [261] extcall 87 .............................. <getWindow(pGroupWindowID)>
+  [263] setlocal 4 .............................. tWindowObj = getWindow(pGroupWindowID)
+  [265] getlocal 4 .............................. <tWindowObj>
+  [267] pushcons 12 ............................. <"group_info.window">
+  [269] pusharglistnoret 2 ...................... <tWindowObj, "group_info.window">
+  [271] objcall 88 .............................. tWindowObj.merge("group_info.window")
+  [273] getlocal 4 .............................. <tWindowObj>
+  [275] pushsymb 541 ............................ <#eventProcInfoWindow>
+  [278] getparam 0 .............................. <me>
+  [280] pusharglist 1 ........................... <me>
+  [282] objcall 89 .............................. <me.getID()>
+  [284] pushsymb 119 ............................ <#mouseUp>
+  [286] pusharglistnoret 4 ...................... <tWindowObj, #eventProcInfoWindow, me.getID(), #mouseUp>
+  [288] objcall 91 .............................. tWindowObj.registerProcedure(#eventProcInfoWindow, me.getID(), #mouseUp)
+  [290] getprop 542 ............................. <pGroupWindowID>
+  [293] pusharglist 1 ........................... <pGroupWindowID>
+  [295] extcall 87 .............................. <getWindow(pGroupWindowID)>
+  [297] setlocal 4 .............................. tWindowObj = getWindow(pGroupWindowID)
+  [299] getprop 543 ............................. <pGroupData>
+  [302] getlocal 2 .............................. <tGroupId>
+  [304] pusharglist 2 ........................... <pGroupData, tGroupId>
+  [306] objcall 75 .............................. <pGroupData[tGroupId]>
+  [308] setlocal 5 .............................. tGroup = pGroupData[tGroupId]
+  [310] pushcons 6 .............................. <EMPTY>
+  [312] setlocal 6 .............................. tUserStatusTxt = EMPTY
+  [314] getlocal 3 .............................. <tGroupStatus>
+  [316] peek 0 .................................. case tGroupStatus of
+  [318] pushint8 1 .............................. <1>
+  [320] eq
+  [321] jmpifz [335] ............................ (case) 1:
+  [324] pushcons 13 ............................. <"group_owner">
+  [326] pusharglist 1 ........................... <"group_owner">
+  [328] extcall 31 .............................. <getText("group_owner")>
+  [330] setlocal 6 .............................. tUserStatusTxt = getText("group_owner")
+  [332] jmp [370]
+  [335] peek 0
+  [337] pushint8 2 .............................. <2>
+  [339] eq
+  [340] jmpifz [354] ............................ (case) 2:
+  [343] pushcons 14 ............................. <"group_admin">
+  [345] pusharglist 1 ........................... <"group_admin">
+  [347] extcall 31 .............................. <getText("group_admin")>
+  [349] setlocal 6 .............................. tUserStatusTxt = getText("group_admin")
+  [351] jmp [370]
+  [354] peek 0
+  [356] pushint8 3 .............................. <3>
+  [358] eq
+  [359] jmpifz [370] ............................ (case) 3:
+  [362] pushcons 15 ............................. <"group_member">
+  [364] pusharglist 1 ........................... <"group_member">
+  [366] extcall 31 .............................. <getText("group_member")>
+  [368] setlocal 6 .............................. tUserStatusTxt = getText("group_member")
+  [370] pop 1 ................................... end case
+  [372] pushcons 16 ............................. <"group_privileges">
+  [374] pusharglist 1 ........................... <"group_privileges">
+  [376] extcall 31 .............................. <getText("group_privileges")>
+  [378] setlocal 7 .............................. tPrivilegesTxt = getText("group_privileges")
+  [380] getlocal 7 .............................. <tPrivilegesTxt>
+  [382] getlocal 6 .............................. <tUserStatusTxt>
+  [384] joinpadstr .............................. <tPrivilegesTxt && tUserStatusTxt>
+  [385] setlocal 7 .............................. tPrivilegesTxt = tPrivilegesTxt && tUserStatusTxt
+  [387] getlocal 4 .............................. <tWindowObj>
+  [389] pushcons 17 ............................. <"group_name">
+  [391] pusharglist 2 ........................... <tWindowObj, "group_name">
+  [393] objcall 92 .............................. <tWindowObj.getElement("group_name")>
+  [395] getlocal 5 .............................. <tGroup>
+  [397] pushsymb 156 ............................ <#name>
+  [399] pusharglist 2 ........................... <tGroup, #name>
+  [401] objcall 75 .............................. <tGroup[#name]>
+  [403] pusharglistnoret 2 ...................... <tWindowObj.getElement("group_name"), tGroup[#name]>
+  [405] objcall 93 .............................. tWindowObj.getElement("group_name").setText(tGroup[#name])
+  [407] getlocal 4 .............................. <tWindowObj>
+  [409] pushcons 16 ............................. <"group_privileges">
+  [411] pusharglist 2 ........................... <tWindowObj, "group_privileges">
+  [413] objcall 92 .............................. <tWindowObj.getElement("group_privileges")>
+  [415] getlocal 7 .............................. <tPrivilegesTxt>
+  [417] pusharglistnoret 2 ...................... <tWindowObj.getElement("group_privileges"), tPrivilegesTxt>
+  [419] objcall 93 .............................. tWindowObj.getElement("group_privileges").setText(tPrivilegesTxt)
+  [421] getlocal 4 .............................. <tWindowObj>
+  [423] pushcons 18 ............................. <"group_description">
+  [425] pusharglist 2 ........................... <tWindowObj, "group_description">
+  [427] objcall 92 .............................. <tWindowObj.getElement("group_description")>
+  [429] getlocal 5 .............................. <tGroup>
+  [431] pushsymb 552 ............................ <#desc>
+  [434] pusharglist 2 ........................... <tGroup, #desc>
+  [436] objcall 75 .............................. <tGroup[#desc]>
+  [438] pusharglistnoret 2 ...................... <tWindowObj.getElement("group_description"), tGroup[#desc]>
+  [440] objcall 93 .............................. tWindowObj.getElement("group_description").setText(tGroup[#desc])
+  [442] getlocal 2 .............................. <tGroupId>
+  [444] setprop 544 ............................. pCurrentShownGroupId = tGroupId
+  [447] getlocal 4 .............................. <tWindowObj>
+  [449] pushcons 19 ............................. <"group_room_link">
+  [451] pusharglist 2 ........................... <tWindowObj, "group_room_link">
+  [453] objcall 92 .............................. <tWindowObj.getElement("group_room_link")>
+  [455] setlocal 8 .............................. tRoomLinkElem = tWindowObj.getElement("group_room_link")
+  [457] getlocal 5 .............................. <tGroup>
+  [459] pushsymb 554 ............................ <#roomid>
+  [462] pusharglist 2 ........................... <tGroup, #roomid>
+  [464] objcall 75 .............................. <tGroup[#roomid]>
+  [466] pushzero ................................ <0>
+  [467] lt ...................................... <tGroup[#roomid] < 0>
+  [468] jmpifz [481] ............................ if tGroup[#roomid] < 0 then / else
+  [471] getlocal 8 .............................. <tRoomLinkElem>
+  [473] pusharglistnoret 1 ...................... <tRoomLinkElem>
+  [475] objcall 315 ............................. tRoomLinkElem.hide()
+  [478] jmp [523]
+  [481] pushcons 19 ............................. <"group_room_link">
+  [483] pusharglist 1 ........................... <"group_room_link">
+  [485] extcall 31 .............................. <getText("group_room_link")>
+  [487] setlocal 9 .............................. tRoomNameTemplate = getText("group_room_link")
+  [489] getlocal 9 .............................. <tRoomNameTemplate>
+  [491] pushcons 20 ............................. <"%room_name%">
+  [493] getlocal 5 .............................. <tGroup>
+  [495] pushsymb 555 ............................ <#roomname>
+  [498] pusharglist 2 ........................... <tGroup, #roomname>
+  [500] objcall 75 .............................. <tGroup[#roomname]>
+  [502] pusharglist 3 ........................... <tRoomNameTemplate, "%room_name%", tGroup[#roomname]>
+  [504] extcall 168 ............................. <replaceChunks(tRoomNameTemplate, "%room_name%", tGroup[#roomname])>
+  [506] setlocal 10 ............................. tRoomLinkText = replaceChunks(tRoomNameTemplate, "%room_name%", tGroup[#roomname])
+  [508] getlocal 8 .............................. <tRoomLinkElem>
+  [510] getlocal 10 ............................. <tRoomLinkText>
+  [512] pusharglistnoret 2 ...................... <tRoomLinkElem, tRoomLinkText>
+  [514] objcall 93 .............................. tRoomLinkElem.setText(tRoomLinkText)
+  [516] getlocal 8 .............................. <tRoomLinkElem>
+  [518] pusharglistnoret 1 ...................... <tRoomLinkElem>
+  [520] objcall 314 ............................. tRoomLinkElem.show()
+  [523] getparam 0 .............................. <me>
+  [525] getlocal 2 .............................. <tGroupId>
+  [527] pusharglistnoret 2 ...................... <me, tGroupId>
+  [529] objcall 540 ............................. me.updateGroupLogoToWindow(tGroupId)
+  [532] ret
+end
+
+on updateGroupLogoToWindow me, tGroupId
+  [  0] getparam 1 .............................. <tGroupId>
+  [  2] pusharglist 1 ........................... <tGroupId>
+  [  4] extcall 54 .............................. <voidp(tGroupId)>
+  [  6] jmpifz [ 14] ............................ if voidp(tGroupId) then
+  [  9] pushzero ................................ <0>
+  [ 10] pusharglistnoret 1 ...................... <0>
+  [ 12] extcall 50 .............................. return 0
+  [ 14] getprop 542 ............................. <pGroupWindowID>
+  [ 17] pusharglist 1 ........................... <pGroupWindowID>
+  [ 19] extcall 72 .............................. <windowExists(pGroupWindowID)>
+  [ 21] not ..................................... <not windowExists(pGroupWindowID)>
+  [ 22] jmpifz [ 30] ............................ if not windowExists(pGroupWindowID) then
+  [ 25] pushzero ................................ <0>
+  [ 26] pusharglistnoret 1 ...................... <0>
+  [ 28] extcall 50 .............................. return 0
+  [ 30] getprop 544 ............................. <pCurrentShownGroupId>
+  [ 33] getparam 1 .............................. <tGroupId>
+  [ 35] nteq .................................... <pCurrentShownGroupId <> tGroupId>
+  [ 36] jmpifz [ 44] ............................ if pCurrentShownGroupId <> tGroupId then
+  [ 39] pushzero ................................ <0>
+  [ 40] pusharglistnoret 1 ...................... <0>
+  [ 42] extcall 50 .............................. return 0
+  [ 44] getprop 542 ............................. <pGroupWindowID>
+  [ 47] pusharglist 1 ........................... <pGroupWindowID>
+  [ 49] extcall 87 .............................. <getWindow(pGroupWindowID)>
+  [ 51] setlocal 0 .............................. tWindowObj = getWindow(pGroupWindowID)
+  [ 53] getlocal 0 .............................. <tWindowObj>
+  [ 55] pushcons 21 ............................. <"group_logo">
+  [ 57] pusharglist 2 ........................... <tWindowObj, "group_logo">
+  [ 59] objcall 94 .............................. <tWindowObj.elementExists("group_logo")>
+  [ 61] not ..................................... <not tWindowObj.elementExists("group_logo")>
+  [ 62] jmpifz [ 70] ............................ if not tWindowObj.elementExists("group_logo") then
+  [ 65] pushzero ................................ <0>
+  [ 66] pusharglistnoret 1 ...................... <0>
+  [ 68] extcall 50 .............................. return 0
+  [ 70] getparam 0 .............................. <me>
+  [ 72] getparam 1 .............................. <tGroupId>
+  [ 74] pusharglist 2 ........................... <me, tGroupId>
+  [ 76] objcall 531 ............................. <me.getGroupLogoMemberNum(tGroupId)>
+  [ 79] setlocal 1 .............................. tGroupLogoMemNum = me.getGroupLogoMemberNum(tGroupId)
+  [ 81] getlocal 1 .............................. <tGroupLogoMemNum>
+  [ 83] pusharglist 1 ........................... <tGroupLogoMemNum>
+  [ 85] extcall 134 ............................. <member(tGroupLogoMemNum)>
+  [ 87] getobjprop 175 .......................... <member(tGroupLogoMemNum).image>
+  [ 89] setlocal 2 .............................. tLogoImg = member(tGroupLogoMemNum).image
+  [ 91] getlocal 0 .............................. <tWindowObj>
+  [ 93] pushcons 21 ............................. <"group_logo">
+  [ 95] pusharglist 2 ........................... <tWindowObj, "group_logo">
+  [ 97] objcall 92 .............................. <tWindowObj.getElement("group_logo")>
+  [ 99] pusharglistnoret 1 ...................... <tWindowObj.getElement("group_logo")>
+  [101] objcall 140 ............................. tWindowObj.getElement("group_logo").clearImage()
+  [103] getlocal 0 .............................. <tWindowObj>
+  [105] pushcons 21 ............................. <"group_logo">
+  [107] pusharglist 2 ........................... <tWindowObj, "group_logo">
+  [109] objcall 92 .............................. <tWindowObj.getElement("group_logo")>
+  [111] getlocal 2 .............................. <tLogoImg>
+  [113] pusharglistnoret 2 ...................... <tWindowObj.getElement("group_logo"), tLogoImg>
+  [115] objcall 170 ............................. tWindowObj.getElement("group_logo").feedImage(tLogoImg)
+  [117] ret
+end
+
+on eventProcInfoWindow me, tEvent, tSprID, tParams
+  [  0] getparam 2 .............................. <tSprID>
+  [  2] peek 0 .................................. case tSprID of
+  [  4] pushcons 22 ............................. <"group_homepage_link">
+  [  6] eq
+  [  7] jmpifz [ 68] ............................ (case) "group_homepage_link":
+  [ 10] getprop 543 ............................. <pGroupData>
+  [ 13] getprop 544 ............................. <pCurrentShownGroupId>
+  [ 16] pusharglist 2 ........................... <pGroupData, pCurrentShownGroupId>
+  [ 18] objcall 75 .............................. <pGroupData[pCurrentShownGroupId]>
+  [ 20] pushsymb 57 ............................. <#id>
+  [ 22] pusharglist 2 ........................... <pGroupData[pCurrentShownGroupId], #id>
+  [ 24] objcall 75 .............................. <pGroupData[pCurrentShownGroupId][#id]>
+  [ 26] setlocal 0 .............................. tGroupId = pGroupData[pCurrentShownGroupId][#id]
+  [ 28] pushcons 23 ............................. <"group_homepage_url">
+  [ 30] pusharglist 1 ........................... <"group_homepage_url">
+  [ 32] extcall 31 .............................. <getText("group_homepage_url")>
+  [ 34] setlocal 1 .............................. tGroupURL = getText("group_homepage_url")
+  [ 36] getlocal 1 .............................. <tGroupURL>
+  [ 38] pushcons 24 ............................. <"%groupid%">
+  [ 40] getlocal 0 .............................. <tGroupId>
+  [ 42] pusharglist 3 ........................... <tGroupURL, "%groupid%", tGroupId>
+  [ 44] extcall 168 ............................. <replaceChunks(tGroupURL, "%groupid%", tGroupId)>
+  [ 46] setlocal 1 .............................. tGroupURL = replaceChunks(tGroupURL, "%groupid%", tGroupId)
+  [ 48] pushsymb 458 ............................ <#externalLinkClick>
+  [ 51] getmovieprop 459 ........................ <the mouseLoc>
+  [ 54] pusharglistnoret 2 ...................... <#externalLinkClick, the mouseLoc>
+  [ 56] extcall 55 .............................. executeMessage(#externalLinkClick, the mouseLoc)
+  [ 58] getlocal 1 .............................. <tGroupURL>
+  [ 60] pusharglistnoret 1 ...................... <tGroupURL>
+  [ 62] extcall 457 ............................. openNetPage(tGroupURL)
+  [ 65] jmp [115]
+  [ 68] peek 0
+  [ 70] pushcons 19 ............................. <"group_room_link">
+  [ 72] eq
+  [ 73] jmpifz [115] ............................ (case) "group_room_link":
+  [ 76] getprop 543 ............................. <pGroupData>
+  [ 79] getprop 544 ............................. <pCurrentShownGroupId>
+  [ 82] pusharglist 2 ........................... <pGroupData, pCurrentShownGroupId>
+  [ 84] objcall 75 .............................. <pGroupData[pCurrentShownGroupId]>
+  [ 86] pushsymb 554 ............................ <#roomid>
+  [ 89] pusharglist 2 ........................... <pGroupData[pCurrentShownGroupId], #roomid>
+  [ 91] objcall 75 .............................. <pGroupData[pCurrentShownGroupId][#roomid]>
+  [ 93] pusharglist 1 ........................... <pGroupData[pCurrentShownGroupId][#roomid]>
+  [ 95] extcall 192 ............................. <string(pGroupData[pCurrentShownGroupId][#roomid])>
+  [ 97] setlocal 2 .............................. tForwardId = string(pGroupData[pCurrentShownGroupId][#roomid])
+  [ 99] pushsymb 593 ............................ <#private>
+  [102] setlocal 3 .............................. tForwardType = #private
+  [104] pushsymb 594 ............................ <#roomForward>
+  [107] getlocal 2 .............................. <tForwardId>
+  [109] getlocal 3 .............................. <tForwardType>
+  [111] pusharglistnoret 3 ...................... <#roomForward, tForwardId, tForwardType>
+  [113] extcall 55 .............................. executeMessage(#roomForward, tForwardId, tForwardType)
+  [115] pop 1 ................................... end case
+  [117] ret
+end

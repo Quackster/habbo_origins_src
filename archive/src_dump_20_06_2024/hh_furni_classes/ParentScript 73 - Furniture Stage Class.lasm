@@ -1,0 +1,340 @@
+property pDoFlashing, pSkippedFrames, pFlashCount, pNumber, pSleep
+
+on select me
+  [  0] pushzero ................................ <0>
+  [  1] pusharglistnoret 1 ...................... <0>
+  [  3] extcall 14 .............................. return 0
+  [  5] ret
+end
+
+on setState me, tNewState
+  [  0] getparam 1 .............................. <tNewState>
+  [  2] pusharglist 1 ........................... <tNewState>
+  [  4] extcall 177 ............................. <integer(tNewState)>
+  [  6] setparam 1 .............................. tNewState = integer(tNewState)
+  [  8] getparam 1 .............................. <tNewState>
+  [ 10] pushint8 1 .............................. <1>
+  [ 12] inv ..................................... <-1>
+  [ 13] lt ...................................... <tNewState < -1>
+  [ 14] jmpifz [ 22] ............................ if tNewState < -1 then
+  [ 17] pushint8 1 .............................. <1>
+  [ 19] inv ..................................... <-1>
+  [ 20] setparam 1 .............................. tNewState = -1
+  [ 22] getparam 1 .............................. <tNewState>
+  [ 24] pushint8 1 .............................. <1>
+  [ 26] inv ..................................... <-1>
+  [ 27] eq ...................................... <tNewState = -1>
+  [ 28] jmpifz [ 55] ............................ if tNewState = -1 then / else
+  [ 31] getparam 0 .............................. <me>
+  [ 33] pushzero ................................ <0>
+  [ 34] pusharglistnoret 2 ...................... <me, 0>
+  [ 36] objcall 865 ............................. me.setFloor(0)
+  [ 39] pushint8 1 .............................. <1>
+  [ 41] setprop 867 ............................. pDoFlashing = 1
+  [ 44] pushzero ................................ <0>
+  [ 45] setprop 868 ............................. pFlashCount = 0
+  [ 48] pushzero ................................ <0>
+  [ 49] setprop 869 ............................. pSleep = 0
+  [ 52] jmp [ 97]
+  [ 55] pushsymb 271 ............................ <#setState>
+  [ 58] getparam 0 .............................. <me>
+  [ 60] pusharglist 1 ........................... <[me]>
+  [ 62] pushlist ................................ <[me]>
+  [ 63] pushint8 1 .............................. <1>
+  [ 65] pusharglistnoret 3 ...................... <#setState, [me], 1>
+  [ 67] extcall 351 ............................. callAncestor(#setState, [me], 1)
+  [ 70] getparam 0 .............................. <me>
+  [ 72] pushint8 1 .............................. <1>
+  [ 74] pusharglistnoret 2 ...................... <me, 1>
+  [ 76] objcall 865 ............................. me.setFloor(1)
+  [ 79] getparam 0 .............................. <me>
+  [ 81] getparam 1 .............................. <tNewState>
+  [ 83] pusharglistnoret 2 ...................... <me, tNewState>
+  [ 85] objcall 866 ............................. me.setNumber(tNewState)
+  [ 88] pushzero ................................ <0>
+  [ 89] setprop 867 ............................. pDoFlashing = 0
+  [ 92] getparam 1 .............................. <tNewState>
+  [ 94] setprop 870 ............................. pNumber = tNewState
+  [ 97] pushint8 1 .............................. <1>
+  [ 99] pusharglistnoret 1 ...................... <1>
+  [101] extcall 14 .............................. return 1
+  [103] ret
+end
+
+on update me
+  [  0] getprop 867 ............................. <pDoFlashing>
+  [  3] not ..................................... <not pDoFlashing>
+  [  4] jmpifz [ 13] ............................ if not pDoFlashing then
+  [  7] pushint8 1 .............................. <1>
+  [  9] pusharglistnoret 1 ...................... <1>
+  [ 11] extcall 14 .............................. return 1
+  [ 13] getprop 869 ............................. <pSleep>
+  [ 16] pushzero ................................ <0>
+  [ 17] gt ...................................... <pSleep > 0>
+  [ 18] jmpifz [ 36] ............................ if pSleep > 0 then
+  [ 21] getprop 869 ............................. <pSleep>
+  [ 24] pushint8 1 .............................. <1>
+  [ 26] sub ..................................... <pSleep - 1>
+  [ 27] setprop 869 ............................. pSleep = pSleep - 1
+  [ 30] pushint8 1 .............................. <1>
+  [ 32] pusharglistnoret 1 ...................... <1>
+  [ 34] extcall 14 .............................. return 1
+  [ 36] pushint8 10 ............................. <10>
+  [ 38] setprop 869 ............................. pSleep = 10
+  [ 41] getprop 868 ............................. <pFlashCount>
+  [ 44] pushint8 2 .............................. <2>
+  [ 46] mod ..................................... <pFlashCount mod 2>
+  [ 47] pushzero ................................ <0>
+  [ 48] eq ...................................... <(pFlashCount mod 2) = 0>
+  [ 49] jmpifz [ 65] ............................ if (pFlashCount mod 2) = 0 then / else
+  [ 52] getparam 0 .............................. <me>
+  [ 54] getprop 870 ............................. <pNumber>
+  [ 57] pusharglistnoret 2 ...................... <me, pNumber>
+  [ 59] objcall 866 ............................. me.setNumber(pNumber)
+  [ 62] jmp [ 75]
+  [ 65] getparam 0 .............................. <me>
+  [ 67] pushint8 1 .............................. <1>
+  [ 69] inv ..................................... <-1>
+  [ 70] pusharglistnoret 2 ...................... <me, -1>
+  [ 72] objcall 866 ............................. me.setNumber(-1)
+  [ 75] getprop 868 ............................. <pFlashCount>
+  [ 78] pushint8 1 .............................. <1>
+  [ 80] add ..................................... <pFlashCount + 1>
+  [ 81] setprop 868 ............................. pFlashCount = pFlashCount + 1
+  [ 84] getprop 868 ............................. <pFlashCount>
+  [ 87] pushint8 8 .............................. <8>
+  [ 89] gt ...................................... <pFlashCount > 8>
+  [ 90] jmpifz [117] ............................ if pFlashCount > 8 then
+  [ 93] pushzero ................................ <0>
+  [ 94] setprop 867 ............................. pDoFlashing = 0
+  [ 97] pushsymb 271 ............................ <#setState>
+  [100] getparam 0 .............................. <me>
+  [102] pusharglist 1 ........................... <[me]>
+  [104] pushlist ................................ <[me]>
+  [105] pushzero ................................ <0>
+  [106] pusharglistnoret 3 ...................... <#setState, [me], 0>
+  [108] extcall 351 ............................. callAncestor(#setState, [me], 0)
+  [111] pushint8 1 .............................. <1>
+  [113] inv ..................................... <-1>
+  [114] setprop 870 ............................. pNumber = -1
+  [117] pushint8 1 .............................. <1>
+  [119] pusharglistnoret 1 ...................... <1>
+  [121] extcall 14 .............................. return 1
+  [123] ret
+end
+
+on setFloor me, tOn
+  [  0] getparam 0 .............................. <me>
+  [  2] pushsymb 339 ............................ <#pLayerDataList>
+  [  5] pushcons 0 .............................. <"e">
+  [  7] pusharglist 3 ........................... <me, #pLayerDataList, "e">
+  [  9] objcall 25 .............................. <me.pLayerDataList["e"]>
+  [ 11] setlocal 0 .............................. tLayerData = me.pLayerDataList["e"]
+  [ 13] getlocal 0 .............................. <tLayerData>
+  [ 15] getobjprop 42 ........................... <tLayerData.ilk>
+  [ 17] pushsymb 59 ............................. <#list>
+  [ 19] nteq .................................... <tLayerData.ilk <> #list>
+  [ 20] jmpifz [ 28] ............................ if tLayerData.ilk <> #list then
+  [ 23] pushzero ................................ <0>
+  [ 24] pusharglistnoret 1 ...................... <0>
+  [ 26] extcall 14 .............................. return 0
+  [ 28] getlocal 0 .............................. <tLayerData>
+  [ 30] pushint8 2 .............................. <2>
+  [ 32] pusharglist 2 ........................... <tLayerData, 2>
+  [ 34] objcall 50 .............................. <tLayerData[2]>
+  [ 36] setlocal 1 .............................. tStateData = tLayerData[2]
+  [ 38] getlocal 1 .............................. <tStateData>
+  [ 40] getobjprop 42 ........................... <tStateData.ilk>
+  [ 42] pushsymb 209 ............................ <#propList>
+  [ 44] nteq .................................... <tStateData.ilk <> #propList>
+  [ 45] jmpifz [ 53] ............................ if tStateData.ilk <> #propList then
+  [ 48] pushzero ................................ <0>
+  [ 49] pusharglistnoret 1 ...................... <0>
+  [ 51] extcall 14 .............................. return 0
+  [ 53] getparam 1 .............................. <tOn>
+  [ 55] jmpifz [ 65] ............................ if tOn then / else
+  [ 58] pushint8 1 .............................. <1>
+  [ 60] setlocal 2 .............................. tFrame = 1
+  [ 62] jmp [ 68]
+  [ 65] pushzero ................................ <0>
+  [ 66] setlocal 2 .............................. tFrame = 0
+  [ 68] getlocal 1 .............................. <tStateData>
+  [ 70] pushsymb 377 ............................ <#frames>
+  [ 73] getlocal 2 .............................. <tFrame>
+  [ 75] pusharglist 1 ........................... <[tFrame]>
+  [ 77] pushlist ................................ <[tFrame]>
+  [ 78] pusharglistnoret 3 ...................... <tStateData, #frames, [tFrame]>
+  [ 80] objcall 360 ............................. tStateData.setaProp(#frames, [tFrame])
+  [ 83] getparam 0 .............................. <me>
+  [ 85] pushsymb 339 ............................ <#pLayerDataList>
+  [ 88] pushcons 1 .............................. <"a">
+  [ 90] pusharglist 3 ........................... <me, #pLayerDataList, "a">
+  [ 92] objcall 25 .............................. <me.pLayerDataList["a"]>
+  [ 94] setlocal 0 .............................. tLayerData = me.pLayerDataList["a"]
+  [ 96] getlocal 0 .............................. <tLayerData>
+  [ 98] getobjprop 42 ........................... <tLayerData.ilk>
+  [100] pushsymb 59 ............................. <#list>
+  [102] nteq .................................... <tLayerData.ilk <> #list>
+  [103] jmpifz [111] ............................ if tLayerData.ilk <> #list then
+  [106] pushzero ................................ <0>
+  [107] pusharglistnoret 1 ...................... <0>
+  [109] extcall 14 .............................. return 0
+  [111] getlocal 0 .............................. <tLayerData>
+  [113] pushint8 2 .............................. <2>
+  [115] pusharglist 2 ........................... <tLayerData, 2>
+  [117] objcall 50 .............................. <tLayerData[2]>
+  [119] setlocal 1 .............................. tStateData = tLayerData[2]
+  [121] getlocal 1 .............................. <tStateData>
+  [123] getobjprop 42 ........................... <tStateData.ilk>
+  [125] pushsymb 209 ............................ <#propList>
+  [127] nteq .................................... <tStateData.ilk <> #propList>
+  [128] jmpifz [136] ............................ if tStateData.ilk <> #propList then
+  [131] pushzero ................................ <0>
+  [132] pusharglistnoret 1 ...................... <0>
+  [134] extcall 14 .............................. return 0
+  [136] getparam 1 .............................. <tOn>
+  [138] jmpifz [148] ............................ if tOn then / else
+  [141] pushint8 1 .............................. <1>
+  [143] setlocal 2 .............................. tFrame = 1
+  [145] jmp [151]
+  [148] pushzero ................................ <0>
+  [149] setlocal 2 .............................. tFrame = 0
+  [151] getlocal 1 .............................. <tStateData>
+  [153] pushsymb 377 ............................ <#frames>
+  [156] getlocal 2 .............................. <tFrame>
+  [158] pusharglist 1 ........................... <[tFrame]>
+  [160] pushlist ................................ <[tFrame]>
+  [161] pusharglistnoret 3 ...................... <tStateData, #frames, [tFrame]>
+  [163] objcall 360 ............................. tStateData.setaProp(#frames, [tFrame])
+  [166] pushsymb 271 ............................ <#setState>
+  [169] getparam 0 .............................. <me>
+  [171] pusharglist 1 ........................... <[me]>
+  [173] pushlist ................................ <[me]>
+  [174] getparam 0 .............................. <me>
+  [176] getobjprop 338 .......................... <me.pState>
+  [179] pushint8 1 .............................. <1>
+  [181] sub ..................................... <me.pState - 1>
+  [182] pusharglistnoret 3 ...................... <#setState, [me], me.pState - 1>
+  [184] extcall 351 ............................. callAncestor(#setState, [me], me.pState - 1)
+  [187] ret
+end
+
+on setNumber me, tNumber
+  [  0] getparam 1 .............................. <tNumber>
+  [  2] pusharglist 1 ........................... <tNumber>
+  [  4] extcall 406 ............................. <integerp(tNumber)>
+  [  7] not ..................................... <not integerp(tNumber)>
+  [  8] jmpifz [ 16] ............................ if not integerp(tNumber) then
+  [ 11] pushzero ................................ <0>
+  [ 12] pusharglistnoret 1 ...................... <0>
+  [ 14] extcall 14 .............................. return 0
+  [ 16] getparam 1 .............................. <tNumber>
+  [ 18] pushint8 10 ............................. <10>
+  [ 20] div ..................................... <tNumber / 10>
+  [ 21] setlocal 0 .............................. tFirstDigit = tNumber / 10
+  [ 23] getparam 1 .............................. <tNumber>
+  [ 25] pushint8 10 ............................. <10>
+  [ 27] mod ..................................... <tNumber mod 10>
+  [ 28] setlocal 1 .............................. tSecondDigit = tNumber mod 10
+  [ 30] getlocal 0 .............................. <tFirstDigit>
+  [ 32] pushint8 9 .............................. <9>
+  [ 34] gt ...................................... <tFirstDigit > 9>
+  [ 35] jmpifz [ 46] ............................ if tFirstDigit > 9 then
+  [ 38] pushint8 9 .............................. <9>
+  [ 40] setlocal 0 .............................. tFirstDigit = 9
+  [ 42] pushint8 9 .............................. <9>
+  [ 44] setlocal 1 .............................. tSecondDigit = 9
+  [ 46] getlocal 0 .............................. <tFirstDigit>
+  [ 48] pushzero ................................ <0>
+  [ 49] eq ...................................... <tFirstDigit = 0>
+  [ 50] jmpifz [ 57] ............................ if tFirstDigit = 0 then
+  [ 53] pushint8 11 ............................. <11>
+  [ 55] setlocal 0 .............................. tFirstDigit = 11
+  [ 57] getparam 1 .............................. <tNumber>
+  [ 59] pushzero ................................ <0>
+  [ 60] lt ...................................... <tNumber < 0>
+  [ 61] jmpifz [ 72] ............................ if tNumber < 0 then
+  [ 64] pushint8 11 ............................. <11>
+  [ 66] setlocal 0 .............................. tFirstDigit = 11
+  [ 68] pushint8 11 ............................. <11>
+  [ 70] setlocal 1 .............................. tSecondDigit = 11
+  [ 72] getparam 0 .............................. <me>
+  [ 74] getchainedprop 339 ...................... <me.pLayerDataList>
+  [ 77] pushcons 2 .............................. <"c">
+  [ 79] pusharglist 2 ........................... <me.pLayerDataList, "c">
+  [ 81] objcall 128 ............................. <me.pLayerDataList.getaProp("c")>
+  [ 83] setlocal 2 .............................. tLayerData = me.pLayerDataList.getaProp("c")
+  [ 85] getlocal 2 .............................. <tLayerData>
+  [ 87] getobjprop 42 ........................... <tLayerData.ilk>
+  [ 89] pushsymb 59 ............................. <#list>
+  [ 91] nteq .................................... <tLayerData.ilk <> #list>
+  [ 92] jmpifz [100] ............................ if tLayerData.ilk <> #list then
+  [ 95] pushzero ................................ <0>
+  [ 96] pusharglistnoret 1 ...................... <0>
+  [ 98] extcall 14 .............................. return 0
+  [100] getlocal 2 .............................. <tLayerData>
+  [102] pushint8 2 .............................. <2>
+  [104] pusharglist 2 ........................... <tLayerData, 2>
+  [106] objcall 50 .............................. <tLayerData[2]>
+  [108] setlocal 3 .............................. tStateData = tLayerData[2]
+  [110] getlocal 3 .............................. <tStateData>
+  [112] getobjprop 42 ........................... <tStateData.ilk>
+  [114] pushsymb 209 ............................ <#propList>
+  [116] nteq .................................... <tStateData.ilk <> #propList>
+  [117] jmpifz [125] ............................ if tStateData.ilk <> #propList then
+  [120] pushzero ................................ <0>
+  [121] pusharglistnoret 1 ...................... <0>
+  [123] extcall 14 .............................. return 0
+  [125] getlocal 3 .............................. <tStateData>
+  [127] pushsymb 377 ............................ <#frames>
+  [130] getlocal 0 .............................. <tFirstDigit>
+  [132] pusharglist 1 ........................... <[tFirstDigit]>
+  [134] pushlist ................................ <[tFirstDigit]>
+  [135] pusharglistnoret 3 ...................... <tStateData, #frames, [tFirstDigit]>
+  [137] objcall 360 ............................. tStateData.setaProp(#frames, [tFirstDigit])
+  [140] getparam 0 .............................. <me>
+  [142] pushsymb 339 ............................ <#pLayerDataList>
+  [145] pushcons 3 .............................. <"d">
+  [147] pusharglist 3 ........................... <me, #pLayerDataList, "d">
+  [149] objcall 25 .............................. <me.pLayerDataList["d"]>
+  [151] setlocal 2 .............................. tLayerData = me.pLayerDataList["d"]
+  [153] getlocal 2 .............................. <tLayerData>
+  [155] getobjprop 42 ........................... <tLayerData.ilk>
+  [157] pushsymb 59 ............................. <#list>
+  [159] nteq .................................... <tLayerData.ilk <> #list>
+  [160] jmpifz [168] ............................ if tLayerData.ilk <> #list then
+  [163] pushzero ................................ <0>
+  [164] pusharglistnoret 1 ...................... <0>
+  [166] extcall 14 .............................. return 0
+  [168] getlocal 2 .............................. <tLayerData>
+  [170] pushint8 2 .............................. <2>
+  [172] pusharglist 2 ........................... <tLayerData, 2>
+  [174] objcall 50 .............................. <tLayerData[2]>
+  [176] setlocal 3 .............................. tStateData = tLayerData[2]
+  [178] getlocal 3 .............................. <tStateData>
+  [180] getobjprop 42 ........................... <tStateData.ilk>
+  [182] pushsymb 209 ............................ <#propList>
+  [184] nteq .................................... <tStateData.ilk <> #propList>
+  [185] jmpifz [193] ............................ if tStateData.ilk <> #propList then
+  [188] pushzero ................................ <0>
+  [189] pusharglistnoret 1 ...................... <0>
+  [191] extcall 14 .............................. return 0
+  [193] getlocal 3 .............................. <tStateData>
+  [195] pushsymb 377 ............................ <#frames>
+  [198] getlocal 1 .............................. <tSecondDigit>
+  [200] pusharglist 1 ........................... <[tSecondDigit]>
+  [202] pushlist ................................ <[tSecondDigit]>
+  [203] pusharglistnoret 3 ...................... <tStateData, #frames, [tSecondDigit]>
+  [205] objcall 360 ............................. tStateData.setaProp(#frames, [tSecondDigit])
+  [208] pushsymb 271 ............................ <#setState>
+  [211] getparam 0 .............................. <me>
+  [213] pusharglist 1 ........................... <[me]>
+  [215] pushlist ................................ <[me]>
+  [216] getparam 0 .............................. <me>
+  [218] getobjprop 338 .......................... <me.pState>
+  [221] pushint8 1 .............................. <1>
+  [223] sub ..................................... <me.pState - 1>
+  [224] pusharglistnoret 3 ...................... <#setState, [me], me.pState - 1>
+  [226] extcall 351 ............................. callAncestor(#setState, [me], me.pState - 1)
+  [229] ret
+end

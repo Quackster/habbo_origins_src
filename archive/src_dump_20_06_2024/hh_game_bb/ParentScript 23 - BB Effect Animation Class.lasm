@@ -1,0 +1,305 @@
+property pActive, pSprite, pMemberID, pmode, pLocAdjust, pSkipAmount, pSkipCounter, pAnimFrame, pDirection
+
+on construct me
+  [  0] pushzero ................................ <0>
+  [  1] pushzero ................................ <0>
+  [  2] pusharglist 2 ........................... <0, 0>
+  [  4] extcall 96 .............................. <point(0, 0)>
+  [  6] setprop 463 ............................. pLocAdjust = point(0, 0)
+  [  9] pushint8 1 .............................. <1>
+  [ 11] setprop 85 .............................. pActive = 1
+  [ 13] pushint8 1 .............................. <1>
+  [ 15] pusharglistnoret 1 ...................... <1>
+  [ 17] extcall 28 .............................. return 1
+  [ 19] ret
+end
+
+on deconstruct me
+  [  0] pushzero ................................ <0>
+  [  1] setprop 85 .............................. pActive = 0
+  [  3] getparam 0 .............................. <me>
+  [  5] pusharglistnoret 1 ...................... <me>
+  [  7] objcall 462 ............................. me.removeSprites()
+  [ 10] pushint8 1 .............................. <1>
+  [ 12] pusharglistnoret 1 ...................... <1>
+  [ 14] extcall 28 .............................. return 1
+  [ 16] ret
+end
+
+on define me, tMode, tScreenLoc, tlocz, tMemberId, tProps, tDirection
+  [  0] getparam 1 .............................. <tMode>
+  [  2] setprop 464 ............................. pmode = tMode
+  [  5] pushzero ................................ <0>
+  [  6] setprop 465 ............................. pAnimFrame = 0
+  [  9] getparam 4 .............................. <tMemberId>
+  [ 11] setprop 466 ............................. pMemberID = tMemberId
+  [ 14] getparam 6 .............................. <tDirection>
+  [ 16] pusharglist 1 ........................... <tDirection>
+  [ 18] extcall 122 ............................. <voidp(tDirection)>
+  [ 20] jmpifz [ 29] ............................ if voidp(tDirection) then / else
+  [ 23] pushzero ................................ <0>
+  [ 24] setprop 51 .............................. pDirection = 0
+  [ 26] jmp [ 33]
+  [ 29] getparam 6 .............................. <tDirection>
+  [ 31] setprop 51 .............................. pDirection = tDirection
+  [ 33] getparam 5 .............................. <tProps>
+  [ 35] pushsymb 112 ............................ <#loc>
+  [ 37] pusharglist 2 ........................... <tProps, #loc>
+  [ 39] objcall 31 .............................. <tProps[#loc]>
+  [ 41] pusharglist 0 ........................... <>
+  [ 43] extcall 116 ............................. <VOID>
+  [ 45] nteq .................................... <tProps[#loc] <> VOID>
+  [ 46] jmpifz [ 69] ............................ if tProps[#loc] <> VOID then
+  [ 49] getparam 5 .............................. <tProps>
+  [ 51] pushsymb 112 ............................ <#loc>
+  [ 53] pusharglist 2 ........................... <tProps, #loc>
+  [ 55] objcall 31 .............................. <tProps[#loc]>
+  [ 57] setprop 463 ............................. pLocAdjust = tProps[#loc]
+  [ 60] getparam 5 .............................. <tProps>
+  [ 62] pushsymb 112 ............................ <#loc>
+  [ 64] pusharglistnoret 2 ...................... <tProps, #loc>
+  [ 66] objcall 467 ............................. tProps.deleteProp(#loc)
+  [ 69] getprop 464 ............................. <pmode>
+  [ 72] peek 0 .................................. case pmode of
+  [ 74] pushsymb 49 ............................. <#loop>
+  [ 76] nteq
+  [ 77] jmpifz [ 88] ............................ (case) #loop, ...
+  [ 80] peek 0
+  [ 82] pushsymb 80 ............................. <#once>
+  [ 84] eq
+  [ 85] jmpifz [ 96] ............................ (case) ..., #once:
+  [ 88] pushint8 2 .............................. <2>
+  [ 90] setprop 468 ............................. pSkipAmount = 2
+  [ 93] jmp [110]
+  [ 96] peek 0
+  [ 98] pushsymb 371 ............................ <#once_slow>
+  [101] eq
+  [102] jmpifz [110] ............................ (case) #once_slow:
+  [105] pushint8 10 ............................. <10>
+  [107] setprop 468 ............................. pSkipAmount = 10
+  [110] pop 1 ................................... end case
+  [112] getprop 468 ............................. <pSkipAmount>
+  [115] setprop 400 ............................. pSkipCounter = pSkipAmount
+  [118] getparam 0 .............................. <me>
+  [120] getparam 2 .............................. <tScreenLoc>
+  [122] getparam 3 .............................. <tlocz>
+  [124] getparam 5 .............................. <tProps>
+  [126] getparam 6 .............................. <tDirection>
+  [128] pusharglistnoret 5 ...................... <me, tScreenLoc, tlocz, tProps, tDirection>
+  [130] objcall 461 ............................. me.createSprites(tScreenLoc, tlocz, tProps, tDirection)
+  [133] pushint8 1 .............................. <1>
+  [135] pusharglistnoret 1 ...................... <1>
+  [137] extcall 28 .............................. return 1
+  [139] ret
+end
+
+on setLocation me, tScreenLoc
+  [  0] getparam 1 .............................. <tScreenLoc>
+  [  2] pushint8 1 .............................. <1>
+  [  4] getparam 1 .............................. <tScreenLoc>
+  [  6] pushint8 1 .............................. <1>
+  [  8] pusharglist 2 ........................... <tScreenLoc, 1>
+  [ 10] objcall 31 .............................. <tScreenLoc[1]>
+  [ 12] getprop 463 ............................. <pLocAdjust>
+  [ 15] getobjprop 109 .......................... <pLocAdjust.locH>
+  [ 17] add ..................................... <tScreenLoc[1] + pLocAdjust.locH>
+  [ 18] pusharglistnoret 3 ...................... <tScreenLoc, 1, tScreenLoc[1] + pLocAdjust.locH>
+  [ 20] objcall 123 ............................. tScreenLoc[1] = tScreenLoc[1] + pLocAdjust.locH
+  [ 22] getparam 1 .............................. <tScreenLoc>
+  [ 24] pushint8 2 .............................. <2>
+  [ 26] getparam 1 .............................. <tScreenLoc>
+  [ 28] pushint8 2 .............................. <2>
+  [ 30] pusharglist 2 ........................... <tScreenLoc, 2>
+  [ 32] objcall 31 .............................. <tScreenLoc[2]>
+  [ 34] getprop 463 ............................. <pLocAdjust>
+  [ 37] getobjprop 110 .......................... <pLocAdjust.locV>
+  [ 39] add ..................................... <tScreenLoc[2] + pLocAdjust.locV>
+  [ 40] pusharglistnoret 3 ...................... <tScreenLoc, 2, tScreenLoc[2] + pLocAdjust.locV>
+  [ 42] objcall 123 ............................. tScreenLoc[2] = tScreenLoc[2] + pLocAdjust.locV
+  [ 44] getprop 98 .............................. <pSprite>
+  [ 46] pusharglist 0 ........................... <>
+  [ 48] extcall 116 ............................. <VOID>
+  [ 50] nteq .................................... <pSprite <> VOID>
+  [ 51] jmpifz [ 78] ............................ if pSprite <> VOID then
+  [ 54] getprop 98 .............................. <pSprite>
+  [ 56] getparam 1 .............................. <tScreenLoc>
+  [ 58] pushint8 1 .............................. <1>
+  [ 60] pusharglist 2 ........................... <tScreenLoc, 1>
+  [ 62] objcall 31 .............................. <tScreenLoc[1]>
+  [ 64] getparam 1 .............................. <tScreenLoc>
+  [ 66] pushint8 2 .............................. <2>
+  [ 68] pusharglist 2 ........................... <tScreenLoc, 2>
+  [ 70] objcall 31 .............................. <tScreenLoc[2]>
+  [ 72] pusharglist 2 ........................... <tScreenLoc[1], tScreenLoc[2]>
+  [ 74] extcall 96 .............................. <point(tScreenLoc[1], tScreenLoc[2])>
+  [ 76] setobjprop 112 .......................... pSprite.loc = point(tScreenLoc[1], tScreenLoc[2])
+  [ 78] pushint8 1 .............................. <1>
+  [ 80] pusharglistnoret 1 ...................... <1>
+  [ 82] extcall 28 .............................. return 1
+  [ 84] ret
+end
+
+on update me
+  [  0] getprop 85 .............................. <pActive>
+  [  2] not ..................................... <not pActive>
+  [  3] jmpifz [ 12] ............................ if not pActive then
+  [  6] pushint8 1 .............................. <1>
+  [  8] pusharglistnoret 1 ...................... <1>
+  [ 10] extcall 28 .............................. return 1
+  [ 12] getprop 400 ............................. <pSkipCounter>
+  [ 15] pushint8 1 .............................. <1>
+  [ 17] add ..................................... <pSkipCounter + 1>
+  [ 18] setprop 400 ............................. pSkipCounter = pSkipCounter + 1
+  [ 21] getprop 400 ............................. <pSkipCounter>
+  [ 24] getprop 468 ............................. <pSkipAmount>
+  [ 27] lt ...................................... <pSkipCounter < pSkipAmount>
+  [ 28] jmpifz [ 37] ............................ if pSkipCounter < pSkipAmount then
+  [ 31] pushint8 1 .............................. <1>
+  [ 33] pusharglistnoret 1 ...................... <1>
+  [ 35] extcall 28 .............................. return 1
+  [ 37] pushzero ................................ <0>
+  [ 38] setprop 400 ............................. pSkipCounter = 0
+  [ 41] getprop 466 ............................. <pMemberID>
+  [ 44] getprop 51 .............................. <pDirection>
+  [ 46] joinstr ................................. <pMemberID & pDirection>
+  [ 47] pushcons 0 .............................. <"_">
+  [ 49] joinstr ................................. <pMemberID & pDirection & "_">
+  [ 50] getprop 465 ............................. <pAnimFrame>
+  [ 53] joinstr ................................. <pMemberID & pDirection & "_" & pAnimFrame>
+  [ 54] pusharglist 1 ........................... <pMemberID & pDirection & "_" & pAnimFrame>
+  [ 56] extcall 238 ............................. <getmemnum(pMemberID & pDirection & "_" & pAnimFrame)>
+  [ 58] setlocal 0 .............................. tMemNum = getmemnum(pMemberID & pDirection & "_" & pAnimFrame)
+  [ 60] getlocal 0 .............................. <tMemNum>
+  [ 62] pushzero ................................ <0>
+  [ 63] eq ...................................... <tMemNum = 0>
+  [ 64] jmpifz [103] ............................ if tMemNum = 0 then
+  [ 67] getprop 464 ............................. <pmode>
+  [ 70] pushsymb 49 ............................. <#loop>
+  [ 72] eq ...................................... <pmode = #loop>
+  [ 73] jmpifz [ 93] ............................ if pmode = #loop then / else
+  [ 76] pushzero ................................ <0>
+  [ 77] setprop 465 ............................. pAnimFrame = 0
+  [ 80] getparam 0 .............................. <me>
+  [ 82] pusharglistnoret 1 ...................... <me>
+  [ 84] objcall 6 ............................... me.update()
+  [ 86] pusharglistnoret 0 ...................... <>
+  [ 88] extcall 28 .............................. return 
+  [ 90] jmp [103]
+  [ 93] getparam 0 .............................. <me>
+  [ 95] pusharglist 1 ........................... <me>
+  [ 97] objcall 1 ............................... <me.deconstruct()>
+  [ 99] pusharglistnoret 1 ...................... <me.deconstruct()>
+  [101] extcall 28 .............................. return me.deconstruct()
+  [103] getprop 98 .............................. <pSprite>
+  [105] getlocal 0 .............................. <tMemNum>
+  [107] pusharglist 1 ........................... <tMemNum>
+  [109] extcall 91 .............................. <member(tMemNum)>
+  [111] setobjprop 91 ........................... pSprite.member = member(tMemNum)
+  [113] getprop 98 .............................. <pSprite>
+  [115] getobjprop 94 ........................... <pSprite.width>
+  [117] getlocal 0 .............................. <tMemNum>
+  [119] pusharglist 1 ........................... <tMemNum>
+  [121] extcall 91 .............................. <member(tMemNum)>
+  [123] getchainedprop 44 ....................... <member(tMemNum).image>
+  [125] getobjprop 94 ........................... <member(tMemNum).image.width>
+  [127] nteq .................................... <pSprite.width <> member(tMemNum).image.width>
+  [128] jmpifz [145] ............................ if pSprite.width <> member(tMemNum).image.width then
+  [131] getprop 98 .............................. <pSprite>
+  [133] getlocal 0 .............................. <tMemNum>
+  [135] pusharglist 1 ........................... <tMemNum>
+  [137] extcall 91 .............................. <member(tMemNum)>
+  [139] getchainedprop 44 ....................... <member(tMemNum).image>
+  [141] getobjprop 94 ........................... <member(tMemNum).image.width>
+  [143] setobjprop 94 ........................... pSprite.width = member(tMemNum).image.width
+  [145] getprop 98 .............................. <pSprite>
+  [147] getobjprop 95 ........................... <pSprite.height>
+  [149] getlocal 0 .............................. <tMemNum>
+  [151] pusharglist 1 ........................... <tMemNum>
+  [153] extcall 91 .............................. <member(tMemNum)>
+  [155] getchainedprop 44 ....................... <member(tMemNum).image>
+  [157] getobjprop 95 ........................... <member(tMemNum).image.height>
+  [159] nteq .................................... <pSprite.height <> member(tMemNum).image.height>
+  [160] jmpifz [177] ............................ if pSprite.height <> member(tMemNum).image.height then
+  [163] getprop 98 .............................. <pSprite>
+  [165] getlocal 0 .............................. <tMemNum>
+  [167] pusharglist 1 ........................... <tMemNum>
+  [169] extcall 91 .............................. <member(tMemNum)>
+  [171] getchainedprop 44 ....................... <member(tMemNum).image>
+  [173] getobjprop 95 ........................... <member(tMemNum).image.height>
+  [175] setobjprop 95 ........................... pSprite.height = member(tMemNum).image.height
+  [177] getprop 465 ............................. <pAnimFrame>
+  [180] pushint8 1 .............................. <1>
+  [182] add ..................................... <pAnimFrame + 1>
+  [183] setprop 465 ............................. pAnimFrame = pAnimFrame + 1
+  [186] pushint8 1 .............................. <1>
+  [188] pusharglistnoret 1 ...................... <1>
+  [190] extcall 28 .............................. return 1
+  [192] ret
+end
+
+on createSprites me, tScreenLoc, tlocz, tProps, tDirection
+  [  0] getprop 466 ............................. <pMemberID>
+  [  3] pusharglist 0 ........................... <>
+  [  5] extcall 472 ............................. <getUniqueID()>
+  [  8] joinstr ................................. <pMemberID & getUniqueID()>
+  [  9] pusharglist 1 ........................... <pMemberID & getUniqueID()>
+  [ 11] extcall 471 ............................. <reserveSprite(pMemberID & getUniqueID())>
+  [ 14] pusharglist 1 ........................... <reserveSprite(pMemberID & getUniqueID())>
+  [ 16] extcall 470 ............................. <sprite(reserveSprite(pMemberID & getUniqueID()))>
+  [ 19] setprop 98 .............................. pSprite = sprite(reserveSprite(pMemberID & getUniqueID()))
+  [ 21] getprop 98 .............................. <pSprite>
+  [ 23] getparam 2 .............................. <tlocz>
+  [ 25] setobjprop 111 .......................... pSprite.locZ = tlocz
+  [ 27] getparam 3 .............................. <tProps>
+  [ 29] pushsymb 50 ............................. <#ink>
+  [ 31] pusharglist 2 ........................... <tProps, #ink>
+  [ 33] objcall 31 .............................. <tProps[#ink]>
+  [ 35] pusharglist 0 ........................... <>
+  [ 37] extcall 116 ............................. <VOID>
+  [ 39] eq ...................................... <tProps[#ink] = VOID>
+  [ 40] jmpifz [ 52] ............................ if tProps[#ink] = VOID then / else
+  [ 43] getprop 98 .............................. <pSprite>
+  [ 45] pushint8 8 .............................. <8>
+  [ 47] setobjprop 50 ........................... pSprite.ink = 8
+  [ 49] jmp [ 64]
+  [ 52] getprop 98 .............................. <pSprite>
+  [ 54] getparam 3 .............................. <tProps>
+  [ 56] pushsymb 50 ............................. <#ink>
+  [ 58] pusharglist 2 ........................... <tProps, #ink>
+  [ 60] objcall 31 .............................. <tProps[#ink]>
+  [ 62] setobjprop 50 ........................... pSprite.ink = tProps[#ink]
+  [ 64] getparam 0 .............................. <me>
+  [ 66] getparam 1 .............................. <tScreenLoc>
+  [ 68] pusharglistnoret 2 ...................... <me, tScreenLoc>
+  [ 70] objcall 169 ............................. me.setLocation(tScreenLoc)
+  [ 72] getparam 0 .............................. <me>
+  [ 74] pusharglistnoret 1 ...................... <me>
+  [ 76] objcall 6 ............................... me.update()
+  [ 78] pushint8 1 .............................. <1>
+  [ 80] pusharglistnoret 1 ...................... <1>
+  [ 82] extcall 28 .............................. return 1
+  [ 84] ret
+end
+
+on removeSprites me
+  [  0] getprop 98 .............................. <pSprite>
+  [  2] pusharglist 1 ........................... <pSprite>
+  [  4] extcall 129 ............................. <ilk(pSprite)>
+  [  6] pushsymb 470 ............................ <#sprite>
+  [  9] nteq .................................... <ilk(pSprite) <> #sprite>
+  [ 10] jmpifz [ 18] ............................ if ilk(pSprite) <> #sprite then
+  [ 13] pushzero ................................ <0>
+  [ 14] pusharglistnoret 1 ...................... <0>
+  [ 16] extcall 28 .............................. return 0
+  [ 18] getprop 98 .............................. <pSprite>
+  [ 20] getobjprop 474 .......................... <pSprite.spriteNum>
+  [ 23] pusharglistnoret 1 ...................... <pSprite.spriteNum>
+  [ 25] extcall 473 ............................. releaseSprite(pSprite.spriteNum)
+  [ 28] pusharglist 0 ........................... <>
+  [ 30] extcall 116 ............................. <VOID>
+  [ 32] setprop 98 .............................. pSprite = VOID
+  [ 34] pushint8 1 .............................. <1>
+  [ 36] pusharglistnoret 1 ...................... <1>
+  [ 38] extcall 28 .............................. return 1
+  [ 40] ret
+end

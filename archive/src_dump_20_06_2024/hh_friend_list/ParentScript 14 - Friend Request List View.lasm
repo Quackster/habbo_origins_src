@@ -1,0 +1,944 @@
+property pListImg, pWriterIdPlain, pContentList, pItemHeight, pItemWidth, pEmptyListText
+
+on construct me
+  [  0] pusharglist 0 ........................... <>
+  [  2] extcall 44 .............................. <VOID>
+  [  4] setlocal 0 .............................. pSelectedFriendID = VOID
+  [  6] pusharglist 0 ........................... <[:]>
+  [  8] pushproplist ............................ <[:]>
+  [  9] setprop 497 ............................. pContentList = [:]
+  [ 12] getprop 497 ............................. <pContentList>
+  [ 15] pusharglistnoret 1 ...................... <pContentList>
+  [ 17] objcall 480 ............................. pContentList.sort()
+  [ 20] pusharglist 0 ........................... <>
+  [ 22] extcall 40 .............................. <getUniqueID()>
+  [ 24] setprop 536 ............................. pWriterIdPlain = getUniqueID()
+  [ 27] pushcons 0 .............................. <"struct.font.plain">
+  [ 29] pusharglist 1 ........................... <"struct.font.plain">
+  [ 31] extcall 500 ............................. <getStructVariable("struct.font.plain")>
+  [ 34] setlocal 1 .............................. tPlain = getStructVariable("struct.font.plain")
+  [ 36] pushsymb 575 ............................ <#font>
+  [ 39] getlocal 1 .............................. <tPlain>
+  [ 41] pushsymb 575 ............................ <#font>
+  [ 44] pusharglist 2 ........................... <tPlain, #font>
+  [ 46] objcall 220 ............................. <tPlain.getaProp(#font)>
+  [ 48] pushsymb 576 ............................ <#fontStyle>
+  [ 51] getlocal 1 .............................. <tPlain>
+  [ 53] pushsymb 576 ............................ <#fontStyle>
+  [ 56] pusharglist 2 ........................... <tPlain, #fontStyle>
+  [ 58] objcall 220 ............................. <tPlain.getaProp(#fontStyle)>
+  [ 60] pushsymb 164 ............................ <#color>
+  [ 62] pushcons 1 .............................. <"#111111">
+  [ 64] pusharglist 1 ........................... <"#111111">
+  [ 66] extcall 159 ............................. <rgb("#111111")>
+  [ 68] pusharglist 6 ........................... <[#font: tPlain.getaProp(#font), #fontStyle: tPlain.getaProp(#fontStyle), #color: rgb("#111111")]>
+  [ 70] pushproplist ............................ <[#font: tPlain.getaProp(#font), #fontStyle: tPlain.getaProp(#fontStyle), #color: rgb("#111111")]>
+  [ 71] setlocal 2 .............................. tMetrics = [#font: tPlain.getaProp(#font), #fontStyle: tPlain.getaProp(#fontStyle), #color: rgb("#111111")]
+  [ 73] getprop 536 ............................. <pWriterIdPlain>
+  [ 76] getlocal 2 .............................. <tMetrics>
+  [ 78] pusharglistnoret 2 ...................... <pWriterIdPlain, tMetrics>
+  [ 80] extcall 498 ............................. createWriter(pWriterIdPlain, tMetrics)
+  [ 83] pushcons 2 .............................. <"fr.requests.item.height">
+  [ 85] pusharglist 1 ........................... <"fr.requests.item.height">
+  [ 87] extcall 46 .............................. <getVariable("fr.requests.item.height")>
+  [ 89] pusharglist 1 ........................... <getVariable("fr.requests.item.height")>
+  [ 91] extcall 105 ............................. <integer(getVariable("fr.requests.item.height"))>
+  [ 93] setprop 532 ............................. pItemHeight = integer(getVariable("fr.requests.item.height"))
+  [ 96] pushcons 3 .............................. <"fr.list.panel.width">
+  [ 98] pusharglist 1 ........................... <"fr.list.panel.width">
+  [100] extcall 46 .............................. <getVariable("fr.list.panel.width")>
+  [102] pusharglist 1 ........................... <getVariable("fr.list.panel.width")>
+  [104] extcall 105 ............................. <integer(getVariable("fr.list.panel.width"))>
+  [106] setprop 521 ............................. pItemWidth = integer(getVariable("fr.list.panel.width"))
+  [109] getprop 521 ............................. <pItemWidth>
+  [112] pushzero ................................ <0>
+  [113] pushint8 32 ............................. <32>
+  [115] pusharglist 3 ........................... <pItemWidth, 0, 32>
+  [117] extcall 142 ............................. <image(pItemWidth, 0, 32)>
+  [119] setprop 143 ............................. pListImg = image(pItemWidth, 0, 32)
+  [121] pushcons 4 .............................. <"friend_list_no_requests">
+  [123] pusharglist 1 ........................... <"friend_list_no_requests">
+  [125] extcall 42 .............................. <getText("friend_list_no_requests")>
+  [127] setprop 503 ............................. pEmptyListText = getText("friend_list_no_requests")
+  [130] ret
+end
+
+on deconstruct me
+  [  0] pusharglist 0 ........................... <>
+  [  2] extcall 44 .............................. <VOID>
+  [  4] setprop 143 ............................. pListImg = VOID
+  [  6] getprop 536 ............................. <pWriterIdPlain>
+  [  9] pusharglistnoret 1 ...................... <pWriterIdPlain>
+  [ 11] extcall 537 ............................. removeWriter(pWriterIdPlain)
+  [ 14] ret
+end
+
+on setListData me, tdata
+  [  0] pusharglist 0 ........................... <[:]>
+  [  2] pushproplist ............................ <[:]>
+  [  3] setprop 497 ............................. pContentList = [:]
+  [  6] getprop 497 ............................. <pContentList>
+  [  9] pusharglistnoret 1 ...................... <pContentList>
+  [ 11] objcall 480 ............................. pContentList.sort()
+  [ 14] pushint8 1 .............................. <1>
+  [ 16] setlocal 0
+  [ 18] getlocal 0
+  [ 20] getparam 1 .............................. <tdata>
+  [ 22] getobjprop 114 .......................... <tdata.count>
+  [ 24] lteq
+  [ 25] jmpifz [ 72] ............................ repeat with tNo = 1 to tdata.count
+  [ 28] getparam 1 .............................. <tdata>
+  [ 30] getlocal 0 .............................. <tNo>
+  [ 32] pusharglist 2 ........................... <tdata, tNo>
+  [ 34] objcall 93 .............................. <tdata[tNo]>
+  [ 36] setlocal 1 .............................. tRequest = tdata[tNo]
+  [ 38] getlocal 1 .............................. <tRequest>
+  [ 40] pushsymb 115 ............................ <#id>
+  [ 42] pusharglist 2 ........................... <tRequest, #id>
+  [ 44] objcall 93 .............................. <tRequest[#id]>
+  [ 46] pusharglist 1 ........................... <tRequest[#id]>
+  [ 48] extcall 160 ............................. <string(tRequest[#id])>
+  [ 50] setlocal 2 .............................. tRequestId = string(tRequest[#id])
+  [ 52] getprop 497 ............................. <pContentList>
+  [ 55] getlocal 2 .............................. <tRequestId>
+  [ 57] getlocal 1 .............................. <tRequest>
+  [ 59] pusharglistnoret 3 ...................... <pContentList, tRequestId, tRequest>
+  [ 61] objcall 165 ............................. pContentList[tRequestId] = tRequest
+  [ 63] pushint8 1
+  [ 65] getlocal 0
+  [ 67] add
+  [ 68] setlocal 0
+  [ 70] endrepeat [ 18]
+  [ 72] ret
+end
+
+on cleanUp me
+  [  0] pusharglist 0 ........................... <[:]>
+  [  2] pushproplist ............................ <[:]>
+  [  3] setlocal 0 .............................. tNewList = [:]
+  [  5] getlocal 0 .............................. <tNewList>
+  [  7] pusharglistnoret 1 ...................... <tNewList>
+  [  9] objcall 480 ............................. tNewList.sort()
+  [ 12] pushint8 1 .............................. <1>
+  [ 14] setlocal 1
+  [ 16] getlocal 1
+  [ 18] getprop 497 ............................. <pContentList>
+  [ 21] getobjprop 114 .......................... <pContentList.count>
+  [ 23] lteq
+  [ 24] jmpifz [ 79] ............................ repeat with tIndex = 1 to pContentList.count
+  [ 27] getprop 497 ............................. <pContentList>
+  [ 30] getlocal 1 .............................. <tIndex>
+  [ 32] pusharglist 2 ........................... <pContentList, tIndex>
+  [ 34] objcall 93 .............................. <pContentList[tIndex]>
+  [ 36] setlocal 2 .............................. tRequest = pContentList[tIndex]
+  [ 38] getlocal 2 .............................. <tRequest>
+  [ 40] pushsymb 363 ............................ <#state>
+  [ 43] pusharglist 2 ........................... <tRequest, #state>
+  [ 45] objcall 93 .............................. <tRequest[#state]>
+  [ 47] pushsymb 463 ............................ <#pending>
+  [ 50] eq ...................................... <tRequest[#state] = #pending>
+  [ 51] jmpifz [ 70] ............................ if tRequest[#state] = #pending then
+  [ 54] getlocal 0 .............................. <tNewList>
+  [ 56] getlocal 2 .............................. <tRequest>
+  [ 58] pushsymb 115 ............................ <#id>
+  [ 60] pusharglist 2 ........................... <tRequest, #id>
+  [ 62] objcall 93 .............................. <tRequest[#id]>
+  [ 64] getlocal 2 .............................. <tRequest>
+  [ 66] pusharglistnoret 3 ...................... <tNewList, tRequest[#id], tRequest>
+  [ 68] objcall 165 ............................. tNewList[tRequest[#id]] = tRequest
+  [ 70] pushint8 1
+  [ 72] getlocal 1
+  [ 74] add
+  [ 75] setlocal 1
+  [ 77] endrepeat [ 16]
+  [ 79] getparam 0 .............................. <me>
+  [ 81] getlocal 0 .............................. <tNewList>
+  [ 83] pusharglist 1 ........................... <tNewList>
+  [ 85] objcall 282 ............................. <tNewList.duplicate()>
+  [ 88] pusharglistnoret 2 ...................... <me, tNewList.duplicate()>
+  [ 90] objcall 222 ............................. me.setListData(tNewList.duplicate())
+  [ 92] getprop 521 ............................. <pItemWidth>
+  [ 95] pushzero ................................ <0>
+  [ 96] pushint8 32 ............................. <32>
+  [ 98] pusharglist 3 ........................... <pItemWidth, 0, 32>
+  [100] extcall 142 ............................. <image(pItemWidth, 0, 32)>
+  [102] setprop 143 ............................. pListImg = image(pItemWidth, 0, 32)
+  [104] pushint8 1 .............................. <1>
+  [106] setlocal 1
+  [108] getlocal 1
+  [110] getlocal 0 .............................. <tNewList>
+  [112] getobjprop 114 .......................... <tNewList.count>
+  [114] lteq
+  [115] jmpifz [195] ............................ repeat with tIndex = 1 to tNewList.count
+  [118] getlocal 0 .............................. <tNewList>
+  [120] getlocal 1 .............................. <tIndex>
+  [122] pusharglist 2 ........................... <tNewList, tIndex>
+  [124] objcall 93 .............................. <tNewList[tIndex]>
+  [126] setlocal 2 .............................. tRequest = tNewList[tIndex]
+  [128] getlocal 2 .............................. <tRequest>
+  [130] pushsymb 115 ............................ <#id>
+  [132] pusharglist 2 ........................... <tRequest, #id>
+  [134] objcall 93 .............................. <tRequest[#id]>
+  [136] pusharglist 1 ........................... <tRequest[#id]>
+  [138] extcall 160 ............................. <string(tRequest[#id])>
+  [140] setlocal 3 .............................. tRequestId = string(tRequest[#id])
+  [142] getlocal 1 .............................. <tIndex>
+  [144] pushint8 1 .............................. <1>
+  [146] sub ..................................... <tIndex - 1>
+  [147] getparam 0 .............................. <me>
+  [149] getobjprop 532 .......................... <me.pItemHeight>
+  [152] mul ..................................... <(tIndex - 1) * me.pItemHeight>
+  [153] setlocal 4 .............................. tPosV = (tIndex - 1) * me.pItemHeight
+  [155] getparam 0 .............................. <me>
+  [157] getlocal 2 .............................. <tRequest>
+  [159] pusharglist 2 ........................... <me, tRequest>
+  [161] objcall 581 ............................. <me.renderRequestItem(tRequest)>
+  [164] setlocal 5 .............................. tRequestImg = me.renderRequestItem(tRequest)
+  [166] getparam 0 .............................. <me>
+  [168] getlocal 5 .............................. <tRequestImg>
+  [170] getprop 143 ............................. <pListImg>
+  [172] pusharglist 1 ........................... <pListImg>
+  [174] objcall 282 ............................. <pListImg.duplicate()>
+  [177] getlocal 4 .............................. <tPosV>
+  [179] pusharglist 4 ........................... <me, tRequestImg, pListImg.duplicate(), tPosV>
+  [181] objcall 489 ............................. <me.insertImageTo(tRequestImg, pListImg.duplicate(), tPosV)>
+  [184] setprop 143 ............................. pListImg = me.insertImageTo(tRequestImg, pListImg.duplicate(), tPosV)
+  [186] pushint8 1
+  [188] getlocal 1
+  [190] add
+  [191] setlocal 1
+  [193] endrepeat [108]
+  [195] ret
+end
+
+on addRequest me, tRequest
+  [  0] getparam 1 .............................. <tRequest>
+  [  2] pusharglist 1 ........................... <tRequest>
+  [  4] extcall 209 ............................. <ilk(tRequest)>
+  [  6] pushsymb 210 ............................ <#propList>
+  [  8] nteq .................................... <ilk(tRequest) <> #propList>
+  [  9] jmpifz [ 17] ............................ if ilk(tRequest) <> #propList then
+  [ 12] pushzero ................................ <0>
+  [ 13] pusharglistnoret 1 ...................... <0>
+  [ 15] extcall 63 .............................. return 0
+  [ 17] getparam 1 .............................. <tRequest>
+  [ 19] pushsymb 115 ............................ <#id>
+  [ 21] pusharglist 2 ........................... <tRequest, #id>
+  [ 23] objcall 93 .............................. <tRequest[#id]>
+  [ 25] pusharglist 1 ........................... <tRequest[#id]>
+  [ 27] extcall 160 ............................. <string(tRequest[#id])>
+  [ 29] setlocal 0 .............................. tRequestId = string(tRequest[#id])
+  [ 31] getprop 497 ............................. <pContentList>
+  [ 34] getlocal 0 .............................. <tRequestId>
+  [ 36] getparam 1 .............................. <tRequest>
+  [ 38] pusharglistnoret 3 ...................... <pContentList, tRequestId, tRequest>
+  [ 40] objcall 165 ............................. pContentList[tRequestId] = tRequest
+  [ 42] getprop 497 ............................. <pContentList>
+  [ 45] getlocal 0 .............................. <tRequestId>
+  [ 47] pusharglist 2 ........................... <pContentList, tRequestId>
+  [ 49] objcall 375 ............................. <pContentList.findPos(tRequestId)>
+  [ 52] setlocal 1 .............................. tIndex = pContentList.findPos(tRequestId)
+  [ 54] getlocal 1 .............................. <tIndex>
+  [ 56] pushint8 1 .............................. <1>
+  [ 58] sub ..................................... <tIndex - 1>
+  [ 59] getparam 0 .............................. <me>
+  [ 61] getobjprop 532 .......................... <me.pItemHeight>
+  [ 64] mul ..................................... <(tIndex - 1) * me.pItemHeight>
+  [ 65] setlocal 2 .............................. tPosV = (tIndex - 1) * me.pItemHeight
+  [ 67] getparam 0 .............................. <me>
+  [ 69] getparam 1 .............................. <tRequest>
+  [ 71] pusharglist 2 ........................... <me, tRequest>
+  [ 73] objcall 581 ............................. <me.renderRequestItem(tRequest)>
+  [ 76] setlocal 3 .............................. tRequestImg = me.renderRequestItem(tRequest)
+  [ 78] getparam 0 .............................. <me>
+  [ 80] getlocal 3 .............................. <tRequestImg>
+  [ 82] getprop 143 ............................. <pListImg>
+  [ 84] pusharglist 1 ........................... <pListImg>
+  [ 86] objcall 282 ............................. <pListImg.duplicate()>
+  [ 89] getlocal 2 .............................. <tPosV>
+  [ 91] pusharglist 4 ........................... <me, tRequestImg, pListImg.duplicate(), tPosV>
+  [ 93] objcall 489 ............................. <me.insertImageTo(tRequestImg, pListImg.duplicate(), tPosV)>
+  [ 96] setprop 143 ............................. pListImg = me.insertImageTo(tRequestImg, pListImg.duplicate(), tPosV)
+  [ 98] ret
+end
+
+on handleRequestState me, tRequestId, tstate
+  [  0] getprop 497 ............................. <pContentList>
+  [  3] getparam 1 .............................. <tRequestId>
+  [  5] pusharglist 1 ........................... <tRequestId>
+  [  7] extcall 160 ............................. <string(tRequestId)>
+  [  9] pusharglist 2 ........................... <pContentList, string(tRequestId)>
+  [ 11] objcall 375 ............................. <pContentList.findPos(string(tRequestId))>
+  [ 14] pusharglist 0 ........................... <>
+  [ 16] extcall 44 .............................. <VOID>
+  [ 18] eq ...................................... <pContentList.findPos(string(tRequestId)) = VOID>
+  [ 19] jmpifz [ 27] ............................ if pContentList.findPos(string(tRequestId)) = VOID then
+  [ 22] pushzero ................................ <0>
+  [ 23] pusharglistnoret 1 ...................... <0>
+  [ 25] extcall 63 .............................. return 0
+  [ 27] getprop 497 ............................. <pContentList>
+  [ 30] getparam 1 .............................. <tRequestId>
+  [ 32] pusharglist 1 ........................... <tRequestId>
+  [ 34] extcall 160 ............................. <string(tRequestId)>
+  [ 36] pusharglist 2 ........................... <pContentList, string(tRequestId)>
+  [ 38] objcall 93 .............................. <pContentList[string(tRequestId)]>
+  [ 40] setlocal 0 .............................. tRequest = pContentList[string(tRequestId)]
+  [ 42] getlocal 0 .............................. <tRequest>
+  [ 44] pushsymb 363 ............................ <#state>
+  [ 47] getparam 2 .............................. <tstate>
+  [ 49] pusharglistnoret 3 ...................... <tRequest, #state, tstate>
+  [ 51] objcall 165 ............................. tRequest[#state] = tstate
+  [ 53] getprop 497 ............................. <pContentList>
+  [ 56] getparam 1 .............................. <tRequestId>
+  [ 58] getlocal 0 .............................. <tRequest>
+  [ 60] pusharglistnoret 3 ...................... <pContentList, tRequestId, tRequest>
+  [ 62] objcall 165 ............................. pContentList[tRequestId] = tRequest
+  [ 64] getprop 497 ............................. <pContentList>
+  [ 67] getparam 1 .............................. <tRequestId>
+  [ 69] pusharglist 2 ........................... <pContentList, tRequestId>
+  [ 71] objcall 375 ............................. <pContentList.findPos(tRequestId)>
+  [ 74] setlocal 1 .............................. tIndex = pContentList.findPos(tRequestId)
+  [ 76] getlocal 1 .............................. <tIndex>
+  [ 78] pushint8 1 .............................. <1>
+  [ 80] sub ..................................... <tIndex - 1>
+  [ 81] getparam 0 .............................. <me>
+  [ 83] getobjprop 532 .......................... <me.pItemHeight>
+  [ 86] mul ..................................... <(tIndex - 1) * me.pItemHeight>
+  [ 87] setlocal 2 .............................. tPosV = (tIndex - 1) * me.pItemHeight
+  [ 89] getparam 0 .............................. <me>
+  [ 91] getlocal 0 .............................. <tRequest>
+  [ 93] pusharglist 2 ........................... <me, tRequest>
+  [ 95] objcall 581 ............................. <me.renderRequestItem(tRequest)>
+  [ 98] setlocal 3 .............................. tRequestImg = me.renderRequestItem(tRequest)
+  [100] getparam 0 .............................. <me>
+  [102] getlocal 3 .............................. <tRequestImg>
+  [104] getprop 143 ............................. <pListImg>
+  [106] pusharglist 1 ........................... <pListImg>
+  [108] objcall 282 ............................. <pListImg.duplicate()>
+  [111] getlocal 2 .............................. <tPosV>
+  [113] pusharglist 4 ........................... <me, tRequestImg, pListImg.duplicate(), tPosV>
+  [115] objcall 490 ............................. <me.updateImagePart(tRequestImg, pListImg.duplicate(), tPosV)>
+  [118] setprop 143 ............................. pListImg = me.updateImagePart(tRequestImg, pListImg.duplicate(), tPosV)
+  [120] ret
+end
+
+on handleAll me, tstate
+  [  0] pushint8 1 .............................. <1>
+  [  2] setlocal 0
+  [  4] getlocal 0
+  [  6] getprop 497 ............................. <pContentList>
+  [  9] getobjprop 114 .......................... <pContentList.count>
+  [ 11] lteq
+  [ 12] jmpifz [127] ............................ repeat with tIndex = 1 to pContentList.count
+  [ 15] getprop 497 ............................. <pContentList>
+  [ 18] getlocal 0 .............................. <tIndex>
+  [ 20] pusharglist 2 ........................... <pContentList, tIndex>
+  [ 22] objcall 93 .............................. <pContentList[tIndex]>
+  [ 24] setlocal 1 .............................. tRequest = pContentList[tIndex]
+  [ 26] getlocal 1 .............................. <tRequest>
+  [ 28] pushsymb 363 ............................ <#state>
+  [ 31] pusharglist 2 ........................... <tRequest, #state>
+  [ 33] objcall 93 .............................. <tRequest[#state]>
+  [ 35] pushsymb 463 ............................ <#pending>
+  [ 38] eq ...................................... <tRequest[#state] = #pending>
+  [ 39] jmpifz [118] ............................ if tRequest[#state] = #pending then
+  [ 42] getlocal 1 .............................. <tRequest>
+  [ 44] pushsymb 363 ............................ <#state>
+  [ 47] getparam 1 .............................. <tstate>
+  [ 49] pusharglistnoret 3 ...................... <tRequest, #state, tstate>
+  [ 51] objcall 165 ............................. tRequest[#state] = tstate
+  [ 53] getprop 497 ............................. <pContentList>
+  [ 56] getlocal 1 .............................. <tRequest>
+  [ 58] pushsymb 115 ............................ <#id>
+  [ 60] pusharglist 2 ........................... <tRequest, #id>
+  [ 62] objcall 93 .............................. <tRequest[#id]>
+  [ 64] pusharglist 1 ........................... <tRequest[#id]>
+  [ 66] extcall 160 ............................. <string(tRequest[#id])>
+  [ 68] getlocal 1 .............................. <tRequest>
+  [ 70] pusharglistnoret 3 ...................... <pContentList, string(tRequest[#id]), tRequest>
+  [ 72] objcall 165 ............................. pContentList[string(tRequest[#id])] = tRequest
+  [ 74] getlocal 0 .............................. <tIndex>
+  [ 76] pushint8 1 .............................. <1>
+  [ 78] sub ..................................... <tIndex - 1>
+  [ 79] getparam 0 .............................. <me>
+  [ 81] getobjprop 532 .......................... <me.pItemHeight>
+  [ 84] mul ..................................... <(tIndex - 1) * me.pItemHeight>
+  [ 85] setlocal 2 .............................. tPosV = (tIndex - 1) * me.pItemHeight
+  [ 87] getparam 0 .............................. <me>
+  [ 89] getlocal 1 .............................. <tRequest>
+  [ 91] pusharglist 2 ........................... <me, tRequest>
+  [ 93] objcall 581 ............................. <me.renderRequestItem(tRequest)>
+  [ 96] setlocal 3 .............................. tRequestImg = me.renderRequestItem(tRequest)
+  [ 98] getparam 0 .............................. <me>
+  [100] getlocal 3 .............................. <tRequestImg>
+  [102] getprop 143 ............................. <pListImg>
+  [104] pusharglist 1 ........................... <pListImg>
+  [106] objcall 282 ............................. <pListImg.duplicate()>
+  [109] getlocal 2 .............................. <tPosV>
+  [111] pusharglist 4 ........................... <me, tRequestImg, pListImg.duplicate(), tPosV>
+  [113] objcall 490 ............................. <me.updateImagePart(tRequestImg, pListImg.duplicate(), tPosV)>
+  [116] setprop 143 ............................. pListImg = me.updateImagePart(tRequestImg, pListImg.duplicate(), tPosV)
+  [118] pushint8 1
+  [120] getlocal 0
+  [122] add
+  [123] setlocal 0
+  [125] endrepeat [  4]
+  [127] ret
+end
+
+on renderRequestItem me, tRequestData
+  [  0] getprop 536 ............................. <pWriterIdPlain>
+  [  3] pusharglist 1 ........................... <pWriterIdPlain>
+  [  5] extcall 499 ............................. <getWriter(pWriterIdPlain)>
+  [  8] setlocal 0 .............................. tNameWriter = getWriter(pWriterIdPlain)
+  [ 10] getprop 521 ............................. <pItemWidth>
+  [ 13] getprop 532 ............................. <pItemHeight>
+  [ 16] pushint8 32 ............................. <32>
+  [ 18] pusharglist 3 ........................... <pItemWidth, pItemHeight, 32>
+  [ 20] extcall 142 ............................. <image(pItemWidth, pItemHeight, 32)>
+  [ 22] setlocal 1 .............................. tItemImg = image(pItemWidth, pItemHeight, 32)
+  [ 24] getparam 1 .............................. <tRequestData>
+  [ 26] pushsymb 125 ............................ <#name>
+  [ 28] pusharglist 2 ........................... <tRequestData, #name>
+  [ 30] objcall 93 .............................. <tRequestData[#name]>
+  [ 32] setlocal 2 .............................. tName = tRequestData[#name]
+  [ 34] getlocal 0 .............................. <tNameWriter>
+  [ 36] getlocal 2 .............................. <tName>
+  [ 38] pusharglist 2 ........................... <tNameWriter, tName>
+  [ 40] objcall 504 ............................. <tNameWriter.render(tName)>
+  [ 43] setlocal 3 .............................. tNameImg = tNameWriter.render(tName)
+  [ 45] getlocal 3 .............................. <tNameImg>
+  [ 47] getobjprop 182 .......................... <tNameImg.rect>
+  [ 49] setlocal 4 .............................. tSourceRect = tNameImg.rect
+  [ 51] pushcons 5 .............................. <"fr.requests.name.offset.h">
+  [ 53] pusharglist 1 ........................... <"fr.requests.name.offset.h">
+  [ 55] extcall 46 .............................. <getVariable("fr.requests.name.offset.h")>
+  [ 57] pusharglist 1 ........................... <getVariable("fr.requests.name.offset.h")>
+  [ 59] extcall 105 ............................. <integer(getVariable("fr.requests.name.offset.h"))>
+  [ 61] setlocal 5 .............................. tNamePosH = integer(getVariable("fr.requests.name.offset.h"))
+  [ 63] getprop 532 ............................. <pItemHeight>
+  [ 66] getlocal 3 .............................. <tNameImg>
+  [ 68] getobjprop 81 ........................... <tNameImg.height>
+  [ 70] sub ..................................... <pItemHeight - tNameImg.height>
+  [ 71] pushint8 2 .............................. <2>
+  [ 73] div ..................................... <(pItemHeight - tNameImg.height) / 2>
+  [ 74] setlocal 6 .............................. tNamePosV = (pItemHeight - tNameImg.height) / 2
+  [ 76] getlocal 4 .............................. <tSourceRect>
+  [ 78] getlocal 5 .............................. <tNamePosH>
+  [ 80] getlocal 6 .............................. <tNamePosV>
+  [ 82] getlocal 5 .............................. <tNamePosH>
+  [ 84] getlocal 6 .............................. <tNamePosV>
+  [ 86] pusharglist 4 ........................... <tNamePosH, tNamePosV, tNamePosH, tNamePosV>
+  [ 88] extcall 182 ............................. <rect(tNamePosH, tNamePosV, tNamePosH, tNamePosV)>
+  [ 90] add ..................................... <tSourceRect + rect(tNamePosH, tNamePosV, tNamePosH, tNamePosV)>
+  [ 91] setlocal 7 .............................. tdestrect = tSourceRect + rect(tNamePosH, tNamePosV, tNamePosH, tNamePosV)
+  [ 93] getlocal 1 .............................. <tItemImg>
+  [ 95] getlocal 3 .............................. <tNameImg>
+  [ 97] getlocal 7 .............................. <tdestrect>
+  [ 99] getlocal 4 .............................. <tSourceRect>
+  [101] pusharglistnoret 4 ...................... <tItemImg, tNameImg, tdestrect, tSourceRect>
+  [103] objcall 505 ............................. tItemImg.copyPixels(tNameImg, tdestrect, tSourceRect)
+  [106] getparam 1 .............................. <tRequestData>
+  [108] pushsymb 363 ............................ <#state>
+  [111] pusharglist 2 ........................... <tRequestData, #state>
+  [113] objcall 93 .............................. <tRequestData[#state]>
+  [115] peek 0 .................................. case tRequestData[#state] of
+  [117] pushsymb 463 ............................ <#pending>
+  [120] eq
+  [121] jmpifz [293] ............................ (case) #pending:
+  [124] pushcons 6 .............................. <"fr.requests.accept.icon">
+  [126] pusharglist 1 ........................... <"fr.requests.accept.icon">
+  [128] extcall 46 .............................. <getVariable("fr.requests.accept.icon")>
+  [130] pusharglist 1 ........................... <getVariable("fr.requests.accept.icon")>
+  [132] extcall 158 ............................. <getMember(getVariable("fr.requests.accept.icon"))>
+  [134] getobjprop 142 .......................... <getMember(getVariable("fr.requests.accept.icon")).image>
+  [136] setlocal 8 .............................. tAcceptIconImg = getMember(getVariable("fr.requests.accept.icon")).image
+  [138] getlocal 8 .............................. <tAcceptIconImg>
+  [140] getobjprop 182 .......................... <tAcceptIconImg.rect>
+  [142] setlocal 9 .............................. tAcceptIconRect = tAcceptIconImg.rect
+  [144] pushcons 7 .............................. <"fr.requests.accept.offset.h">
+  [146] pusharglist 1 ........................... <"fr.requests.accept.offset.h">
+  [148] extcall 46 .............................. <getVariable("fr.requests.accept.offset.h")>
+  [150] pusharglist 1 ........................... <getVariable("fr.requests.accept.offset.h")>
+  [152] extcall 105 ............................. <integer(getVariable("fr.requests.accept.offset.h"))>
+  [154] setlocal 10 ............................. tAcceptIconPosH = integer(getVariable("fr.requests.accept.offset.h"))
+  [156] getprop 532 ............................. <pItemHeight>
+  [159] getlocal 8 .............................. <tAcceptIconImg>
+  [161] getobjprop 81 ........................... <tAcceptIconImg.height>
+  [163] sub ..................................... <pItemHeight - tAcceptIconImg.height>
+  [164] pushint8 2 .............................. <2>
+  [166] div ..................................... <(pItemHeight - tAcceptIconImg.height) / 2>
+  [167] setlocal 11 ............................. tAcceptIconPosV = (pItemHeight - tAcceptIconImg.height) / 2
+  [169] getlocal 9 .............................. <tAcceptIconRect>
+  [171] getlocal 10 ............................. <tAcceptIconPosH>
+  [173] getlocal 11 ............................. <tAcceptIconPosV>
+  [175] getlocal 10 ............................. <tAcceptIconPosH>
+  [177] getlocal 11 ............................. <tAcceptIconPosV>
+  [179] pusharglist 4 ........................... <tAcceptIconPosH, tAcceptIconPosV, tAcceptIconPosH, tAcceptIconPosV>
+  [181] extcall 182 ............................. <rect(tAcceptIconPosH, tAcceptIconPosV, tAcceptIconPosH, tAcceptIconPosV)>
+  [183] add ..................................... <tAcceptIconRect + rect(tAcceptIconPosH, tAcceptIconPosV, tAcceptIconPosH, tAcceptIconPosV)>
+  [184] setlocal 7 .............................. tdestrect = tAcceptIconRect + rect(tAcceptIconPosH, tAcceptIconPosV, tAcceptIconPosH, tAcceptIconPosV)
+  [186] getlocal 1 .............................. <tItemImg>
+  [188] getlocal 8 .............................. <tAcceptIconImg>
+  [190] getlocal 7 .............................. <tdestrect>
+  [192] getlocal 9 .............................. <tAcceptIconRect>
+  [194] pushsymb 507 ............................ <#ink>
+  [197] pushint8 36 ............................. <36>
+  [199] pusharglist 2 ........................... <[#ink: 36]>
+  [201] pushproplist ............................ <[#ink: 36]>
+  [202] pusharglistnoret 5 ...................... <tItemImg, tAcceptIconImg, tdestrect, tAcceptIconRect, [#ink: 36]>
+  [204] objcall 505 ............................. tItemImg.copyPixels(tAcceptIconImg, tdestrect, tAcceptIconRect, [#ink: 36])
+  [207] pushcons 8 .............................. <"fr.requests.reject.icon">
+  [209] pusharglist 1 ........................... <"fr.requests.reject.icon">
+  [211] extcall 46 .............................. <getVariable("fr.requests.reject.icon")>
+  [213] pusharglist 1 ........................... <getVariable("fr.requests.reject.icon")>
+  [215] extcall 158 ............................. <getMember(getVariable("fr.requests.reject.icon"))>
+  [217] getobjprop 142 .......................... <getMember(getVariable("fr.requests.reject.icon")).image>
+  [219] setlocal 12 ............................. tRejectIconImg = getMember(getVariable("fr.requests.reject.icon")).image
+  [221] getlocal 8 .............................. <tAcceptIconImg>
+  [223] getobjprop 182 .......................... <tAcceptIconImg.rect>
+  [225] setlocal 13 ............................. tRejectIconRect = tAcceptIconImg.rect
+  [227] pushcons 9 .............................. <"fr.requests.reject.offset.h">
+  [229] pusharglist 1 ........................... <"fr.requests.reject.offset.h">
+  [231] extcall 46 .............................. <getVariable("fr.requests.reject.offset.h")>
+  [233] pusharglist 1 ........................... <getVariable("fr.requests.reject.offset.h")>
+  [235] extcall 105 ............................. <integer(getVariable("fr.requests.reject.offset.h"))>
+  [237] setlocal 14 ............................. tRejectIconPosH = integer(getVariable("fr.requests.reject.offset.h"))
+  [239] getprop 532 ............................. <pItemHeight>
+  [242] getlocal 12 ............................. <tRejectIconImg>
+  [244] getobjprop 81 ........................... <tRejectIconImg.height>
+  [246] sub ..................................... <pItemHeight - tRejectIconImg.height>
+  [247] pushint8 2 .............................. <2>
+  [249] div ..................................... <(pItemHeight - tRejectIconImg.height) / 2>
+  [250] setlocal 15 ............................. tRejectIconPosV = (pItemHeight - tRejectIconImg.height) / 2
+  [252] getlocal 13 ............................. <tRejectIconRect>
+  [254] getlocal 14 ............................. <tRejectIconPosH>
+  [256] getlocal 15 ............................. <tRejectIconPosV>
+  [258] getlocal 14 ............................. <tRejectIconPosH>
+  [260] getlocal 15 ............................. <tRejectIconPosV>
+  [262] pusharglist 4 ........................... <tRejectIconPosH, tRejectIconPosV, tRejectIconPosH, tRejectIconPosV>
+  [264] extcall 182 ............................. <rect(tRejectIconPosH, tRejectIconPosV, tRejectIconPosH, tRejectIconPosV)>
+  [266] add ..................................... <tRejectIconRect + rect(tRejectIconPosH, tRejectIconPosV, tRejectIconPosH, tRejectIconPosV)>
+  [267] setlocal 7 .............................. tdestrect = tRejectIconRect + rect(tRejectIconPosH, tRejectIconPosV, tRejectIconPosH, tRejectIconPosV)
+  [269] getlocal 1 .............................. <tItemImg>
+  [271] getlocal 12 ............................. <tRejectIconImg>
+  [273] getlocal 7 .............................. <tdestrect>
+  [275] getlocal 13 ............................. <tRejectIconRect>
+  [277] pushsymb 507 ............................ <#ink>
+  [280] pushint8 36 ............................. <36>
+  [282] pusharglist 2 ........................... <[#ink: 36]>
+  [284] pushproplist ............................ <[#ink: 36]>
+  [285] pusharglistnoret 5 ...................... <tItemImg, tRejectIconImg, tdestrect, tRejectIconRect, [#ink: 36]>
+  [287] objcall 505 ............................. tItemImg.copyPixels(tRejectIconImg, tdestrect, tRejectIconRect, [#ink: 36])
+  [290] jmp [597]
+  [293] peek 0
+  [295] pushsymb 255 ............................ <#accepted>
+  [297] eq
+  [298] jmpifz [395] ............................ (case) #accepted:
+  [301] getlocal 0 .............................. <tNameWriter>
+  [303] pushcons 10 ............................. <"friend_request_accepted">
+  [305] pusharglist 1 ........................... <"friend_request_accepted">
+  [307] extcall 42 .............................. <getText("friend_request_accepted")>
+  [309] pusharglist 2 ........................... <tNameWriter, getText("friend_request_accepted")>
+  [311] objcall 504 ............................. <tNameWriter.render(getText("friend_request_accepted"))>
+  [314] setlocal 16 ............................. tImg = tNameWriter.render(getText("friend_request_accepted"))
+  [316] getlocal 16 ............................. <tImg>
+  [318] getobjprop 182 .......................... <tImg.rect>
+  [320] setlocal 4 .............................. tSourceRect = tImg.rect
+  [322] pushcons 11 ............................. <"fr.requests.status.margin.h">
+  [324] pusharglist 1 ........................... <"fr.requests.status.margin.h">
+  [326] extcall 46 .............................. <getVariable("fr.requests.status.margin.h")>
+  [328] pusharglist 1 ........................... <getVariable("fr.requests.status.margin.h")>
+  [330] extcall 105 ............................. <integer(getVariable("fr.requests.status.margin.h"))>
+  [332] setlocal 17 ............................. tMargin = integer(getVariable("fr.requests.status.margin.h"))
+  [334] getprop 521 ............................. <pItemWidth>
+  [337] getlocal 16 ............................. <tImg>
+  [339] getobjprop 128 .......................... <tImg.width>
+  [341] getlocal 17 ............................. <tMargin>
+  [343] add ..................................... <tImg.width + tMargin>
+  [344] sub ..................................... <pItemWidth - (tImg.width + tMargin)>
+  [345] setlocal 18 ............................. tPosH = pItemWidth - (tImg.width + tMargin)
+  [347] getprop 532 ............................. <pItemHeight>
+  [350] getlocal 16 ............................. <tImg>
+  [352] getobjprop 81 ........................... <tImg.height>
+  [354] sub ..................................... <pItemHeight - tImg.height>
+  [355] pushint8 2 .............................. <2>
+  [357] div ..................................... <(pItemHeight - tImg.height) / 2>
+  [358] setlocal 19 ............................. tPosV = (pItemHeight - tImg.height) / 2
+  [360] getlocal 4 .............................. <tSourceRect>
+  [362] getlocal 18 ............................. <tPosH>
+  [364] getlocal 19 ............................. <tPosV>
+  [366] getlocal 18 ............................. <tPosH>
+  [368] getlocal 19 ............................. <tPosV>
+  [370] pusharglist 4 ........................... <tPosH, tPosV, tPosH, tPosV>
+  [372] extcall 182 ............................. <rect(tPosH, tPosV, tPosH, tPosV)>
+  [374] add ..................................... <tSourceRect + rect(tPosH, tPosV, tPosH, tPosV)>
+  [375] setlocal 7 .............................. tdestrect = tSourceRect + rect(tPosH, tPosV, tPosH, tPosV)
+  [377] getlocal 1 .............................. <tItemImg>
+  [379] getlocal 16 ............................. <tImg>
+  [381] getlocal 7 .............................. <tdestrect>
+  [383] getlocal 16 ............................. <tImg>
+  [385] getobjprop 182 .......................... <tImg.rect>
+  [387] pusharglistnoret 4 ...................... <tItemImg, tImg, tdestrect, tImg.rect>
+  [389] objcall 505 ............................. tItemImg.copyPixels(tImg, tdestrect, tImg.rect)
+  [392] jmp [597]
+  [395] peek 0
+  [397] pushsymb 258 ............................ <#rejected>
+  [400] eq
+  [401] jmpifz [498] ............................ (case) #rejected:
+  [404] getlocal 0 .............................. <tNameWriter>
+  [406] pushcons 12 ............................. <"friend_request_declined">
+  [408] pusharglist 1 ........................... <"friend_request_declined">
+  [410] extcall 42 .............................. <getText("friend_request_declined")>
+  [412] pusharglist 2 ........................... <tNameWriter, getText("friend_request_declined")>
+  [414] objcall 504 ............................. <tNameWriter.render(getText("friend_request_declined"))>
+  [417] setlocal 16 ............................. tImg = tNameWriter.render(getText("friend_request_declined"))
+  [419] getlocal 16 ............................. <tImg>
+  [421] getobjprop 182 .......................... <tImg.rect>
+  [423] setlocal 4 .............................. tSourceRect = tImg.rect
+  [425] pushcons 11 ............................. <"fr.requests.status.margin.h">
+  [427] pusharglist 1 ........................... <"fr.requests.status.margin.h">
+  [429] extcall 46 .............................. <getVariable("fr.requests.status.margin.h")>
+  [431] pusharglist 1 ........................... <getVariable("fr.requests.status.margin.h")>
+  [433] extcall 105 ............................. <integer(getVariable("fr.requests.status.margin.h"))>
+  [435] setlocal 17 ............................. tMargin = integer(getVariable("fr.requests.status.margin.h"))
+  [437] getprop 521 ............................. <pItemWidth>
+  [440] getlocal 16 ............................. <tImg>
+  [442] getobjprop 128 .......................... <tImg.width>
+  [444] getlocal 17 ............................. <tMargin>
+  [446] add ..................................... <tImg.width + tMargin>
+  [447] sub ..................................... <pItemWidth - (tImg.width + tMargin)>
+  [448] setlocal 18 ............................. tPosH = pItemWidth - (tImg.width + tMargin)
+  [450] getprop 532 ............................. <pItemHeight>
+  [453] getlocal 16 ............................. <tImg>
+  [455] getobjprop 81 ........................... <tImg.height>
+  [457] sub ..................................... <pItemHeight - tImg.height>
+  [458] pushint8 2 .............................. <2>
+  [460] div ..................................... <(pItemHeight - tImg.height) / 2>
+  [461] setlocal 19 ............................. tPosV = (pItemHeight - tImg.height) / 2
+  [463] getlocal 4 .............................. <tSourceRect>
+  [465] getlocal 18 ............................. <tPosH>
+  [467] getlocal 19 ............................. <tPosV>
+  [469] getlocal 18 ............................. <tPosH>
+  [471] getlocal 19 ............................. <tPosV>
+  [473] pusharglist 4 ........................... <tPosH, tPosV, tPosH, tPosV>
+  [475] extcall 182 ............................. <rect(tPosH, tPosV, tPosH, tPosV)>
+  [477] add ..................................... <tSourceRect + rect(tPosH, tPosV, tPosH, tPosV)>
+  [478] setlocal 7 .............................. tdestrect = tSourceRect + rect(tPosH, tPosV, tPosH, tPosV)
+  [480] getlocal 1 .............................. <tItemImg>
+  [482] getlocal 16 ............................. <tImg>
+  [484] getlocal 7 .............................. <tdestrect>
+  [486] getlocal 16 ............................. <tImg>
+  [488] getobjprop 182 .......................... <tImg.rect>
+  [490] pusharglistnoret 4 ...................... <tItemImg, tImg, tdestrect, tImg.rect>
+  [492] objcall 505 ............................. tItemImg.copyPixels(tImg, tdestrect, tImg.rect)
+  [495] jmp [597]
+  [498] peek 0
+  [500] pushsymb 123 ............................ <#error>
+  [502] eq
+  [503] jmpifz [597] ............................ (case) #error:
+  [506] getlocal 0 .............................. <tNameWriter>
+  [508] pushcons 13 ............................. <"friend_request_failed">
+  [510] pusharglist 1 ........................... <"friend_request_failed">
+  [512] extcall 42 .............................. <getText("friend_request_failed")>
+  [514] pusharglist 2 ........................... <tNameWriter, getText("friend_request_failed")>
+  [516] objcall 504 ............................. <tNameWriter.render(getText("friend_request_failed"))>
+  [519] setlocal 16 ............................. tImg = tNameWriter.render(getText("friend_request_failed"))
+  [521] getlocal 16 ............................. <tImg>
+  [523] getobjprop 182 .......................... <tImg.rect>
+  [525] setlocal 4 .............................. tSourceRect = tImg.rect
+  [527] pushcons 11 ............................. <"fr.requests.status.margin.h">
+  [529] pusharglist 1 ........................... <"fr.requests.status.margin.h">
+  [531] extcall 46 .............................. <getVariable("fr.requests.status.margin.h")>
+  [533] pusharglist 1 ........................... <getVariable("fr.requests.status.margin.h")>
+  [535] extcall 105 ............................. <integer(getVariable("fr.requests.status.margin.h"))>
+  [537] setlocal 17 ............................. tMargin = integer(getVariable("fr.requests.status.margin.h"))
+  [539] getprop 521 ............................. <pItemWidth>
+  [542] getlocal 16 ............................. <tImg>
+  [544] getobjprop 128 .......................... <tImg.width>
+  [546] getlocal 17 ............................. <tMargin>
+  [548] add ..................................... <tImg.width + tMargin>
+  [549] sub ..................................... <pItemWidth - (tImg.width + tMargin)>
+  [550] setlocal 18 ............................. tPosH = pItemWidth - (tImg.width + tMargin)
+  [552] getprop 532 ............................. <pItemHeight>
+  [555] getlocal 16 ............................. <tImg>
+  [557] getobjprop 81 ........................... <tImg.height>
+  [559] sub ..................................... <pItemHeight - tImg.height>
+  [560] pushint8 2 .............................. <2>
+  [562] div ..................................... <(pItemHeight - tImg.height) / 2>
+  [563] setlocal 19 ............................. tPosV = (pItemHeight - tImg.height) / 2
+  [565] getlocal 4 .............................. <tSourceRect>
+  [567] getlocal 18 ............................. <tPosH>
+  [569] getlocal 19 ............................. <tPosV>
+  [571] getlocal 18 ............................. <tPosH>
+  [573] getlocal 19 ............................. <tPosV>
+  [575] pusharglist 4 ........................... <tPosH, tPosV, tPosH, tPosV>
+  [577] extcall 182 ............................. <rect(tPosH, tPosV, tPosH, tPosV)>
+  [579] add ..................................... <tSourceRect + rect(tPosH, tPosV, tPosH, tPosV)>
+  [580] setlocal 7 .............................. tdestrect = tSourceRect + rect(tPosH, tPosV, tPosH, tPosV)
+  [582] getlocal 1 .............................. <tItemImg>
+  [584] getlocal 16 ............................. <tImg>
+  [586] getlocal 7 .............................. <tdestrect>
+  [588] getlocal 16 ............................. <tImg>
+  [590] getobjprop 182 .......................... <tImg.rect>
+  [592] pusharglistnoret 4 ...................... <tItemImg, tImg, tdestrect, tImg.rect>
+  [594] objcall 505 ............................. tItemImg.copyPixels(tImg, tdestrect, tImg.rect)
+  [597] pop 1 ................................... end case
+  [599] getlocal 1 .............................. <tItemImg>
+  [601] pusharglist 1 ........................... <tItemImg>
+  [603] objcall 282 ............................. <tItemImg.duplicate()>
+  [606] pusharglistnoret 1 ...................... <tItemImg.duplicate()>
+  [608] extcall 63 .............................. return tItemImg.duplicate()
+  [610] ret
+end
+
+on renderBackgroundImage me
+  [  0] getprop 497 ............................. <pContentList>
+  [  3] pusharglist 1 ........................... <pContentList>
+  [  5] extcall 209 ............................. <ilk(pContentList)>
+  [  7] pushsymb 210 ............................ <#propList>
+  [  9] nteq .................................... <ilk(pContentList) <> #propList>
+  [ 10] jmpifz [ 27] ............................ if ilk(pContentList) <> #propList then
+  [ 13] pushint8 1 .............................. <1>
+  [ 15] pushint8 1 .............................. <1>
+  [ 17] pushint8 32 ............................. <32>
+  [ 19] pusharglist 3 ........................... <1, 1, 32>
+  [ 21] extcall 142 ............................. <image(1, 1, 32)>
+  [ 23] pusharglistnoret 1 ...................... <image(1, 1, 32)>
+  [ 25] extcall 63 .............................. return image(1, 1, 32)
+  [ 27] getprop 497 ............................. <pContentList>
+  [ 30] getobjprop 114 .......................... <pContentList.count>
+  [ 32] pushzero ................................ <0>
+  [ 33] eq ...................................... <pContentList.count = 0>
+  [ 34] jmpifz [ 51] ............................ if pContentList.count = 0 then
+  [ 37] pushint8 1 .............................. <1>
+  [ 39] pushint8 1 .............................. <1>
+  [ 41] pushint8 32 ............................. <32>
+  [ 43] pusharglist 3 ........................... <1, 1, 32>
+  [ 45] extcall 142 ............................. <image(1, 1, 32)>
+  [ 47] pusharglistnoret 1 ...................... <image(1, 1, 32)>
+  [ 49] extcall 63 .............................. return image(1, 1, 32)
+  [ 51] pushcons 14 ............................. <"fr.requests.bg.dark">
+  [ 53] pusharglist 1 ........................... <"fr.requests.bg.dark">
+  [ 55] extcall 46 .............................. <getVariable("fr.requests.bg.dark")>
+  [ 57] pusharglist 1 ........................... <getVariable("fr.requests.bg.dark")>
+  [ 59] extcall 160 ............................. <string(getVariable("fr.requests.bg.dark"))>
+  [ 61] pusharglist 1 ........................... <string(getVariable("fr.requests.bg.dark"))>
+  [ 63] extcall 159 ............................. <rgb(string(getVariable("fr.requests.bg.dark")))>
+  [ 65] setlocal 0 .............................. tDarkBg = rgb(string(getVariable("fr.requests.bg.dark")))
+  [ 67] pushcons 2 .............................. <"fr.requests.item.height">
+  [ 69] pusharglist 1 ........................... <"fr.requests.item.height">
+  [ 71] extcall 46 .............................. <getVariable("fr.requests.item.height")>
+  [ 73] pusharglist 1 ........................... <getVariable("fr.requests.item.height")>
+  [ 75] extcall 105 ............................. <integer(getVariable("fr.requests.item.height"))>
+  [ 77] setprop 532 ............................. pItemHeight = integer(getVariable("fr.requests.item.height"))
+  [ 80] pushcons 3 .............................. <"fr.list.panel.width">
+  [ 82] pusharglist 1 ........................... <"fr.list.panel.width">
+  [ 84] extcall 46 .............................. <getVariable("fr.list.panel.width")>
+  [ 86] pusharglist 1 ........................... <getVariable("fr.list.panel.width")>
+  [ 88] extcall 105 ............................. <integer(getVariable("fr.list.panel.width"))>
+  [ 90] setprop 521 ............................. pItemWidth = integer(getVariable("fr.list.panel.width"))
+  [ 93] getprop 521 ............................. <pItemWidth>
+  [ 96] getprop 497 ............................. <pContentList>
+  [ 99] getobjprop 114 .......................... <pContentList.count>
+  [101] getprop 532 ............................. <pItemHeight>
+  [104] mul ..................................... <pContentList.count * pItemHeight>
+  [105] pushint8 32 ............................. <32>
+  [107] pusharglist 3 ........................... <pItemWidth, pContentList.count * pItemHeight, 32>
+  [109] extcall 142 ............................. <image(pItemWidth, pContentList.count * pItemHeight, 32)>
+  [111] setlocal 1 .............................. tImage = image(pItemWidth, pContentList.count * pItemHeight, 32)
+  [113] pushzero ................................ <0>
+  [114] setlocal 2 .............................. tCurrentPosV = 0
+  [116] pushint8 1 .............................. <1>
+  [118] setlocal 3
+  [120] getlocal 3
+  [122] getprop 497 ............................. <pContentList>
+  [125] getobjprop 114 .......................... <pContentList.count>
+  [127] pushint8 2 .............................. <2>
+  [129] div ..................................... <pContentList.count / 2>
+  [130] pushint8 1 .............................. <1>
+  [132] add ..................................... <(pContentList.count / 2) + 1>
+  [133] lteq
+  [134] jmpifz [178] ............................ repeat with tIndex = 1 to (pContentList.count / 2) + 1
+  [137] getlocal 1 .............................. <tImage>
+  [139] pushzero ................................ <0>
+  [140] getlocal 2 .............................. <tCurrentPosV>
+  [142] getprop 521 ............................. <pItemWidth>
+  [145] getlocal 2 .............................. <tCurrentPosV>
+  [147] getprop 532 ............................. <pItemHeight>
+  [150] add ..................................... <tCurrentPosV + pItemHeight>
+  [151] getlocal 0 .............................. <tDarkBg>
+  [153] pusharglistnoret 6 ...................... <tImage, 0, tCurrentPosV, pItemWidth, tCurrentPosV + pItemHeight, tDarkBg>
+  [155] objcall 538 ............................. tImage.fill(0, tCurrentPosV, pItemWidth, tCurrentPosV + pItemHeight, tDarkBg)
+  [158] getlocal 2 .............................. <tCurrentPosV>
+  [160] getprop 532 ............................. <pItemHeight>
+  [163] pushint8 2 .............................. <2>
+  [165] mul ..................................... <pItemHeight * 2>
+  [166] add ..................................... <tCurrentPosV + (pItemHeight * 2)>
+  [167] setlocal 2 .............................. tCurrentPosV = tCurrentPosV + (pItemHeight * 2)
+  [169] pushint8 1
+  [171] getlocal 3
+  [173] add
+  [174] setlocal 3
+  [176] endrepeat [120]
+  [178] getlocal 1 .............................. <tImage>
+  [180] pusharglistnoret 1 ...................... <tImage>
+  [182] extcall 63 .............................. return tImage
+  [184] ret
+end
+
+on relayEvent me, tEvent, tLocX, tLocY
+  [  0] getparam 3 .............................. <tLocY>
+  [  2] getparam 0 .............................. <me>
+  [  4] getobjprop 532 .......................... <me.pItemHeight>
+  [  7] div ..................................... <tLocY / me.pItemHeight>
+  [  8] pushint8 1 .............................. <1>
+  [ 10] add ..................................... <(tLocY / me.pItemHeight) + 1>
+  [ 11] setlocal 0 .............................. tListIndex = (tLocY / me.pItemHeight) + 1
+  [ 13] pusharglist 0 ........................... <[:]>
+  [ 15] pushproplist ............................ <[:]>
+  [ 16] setlocal 1 .............................. tEventResult = [:]
+  [ 18] getlocal 1 .............................. <tEventResult>
+  [ 20] pushsymb 241 ............................ <#Event>
+  [ 22] getparam 1 .............................. <tEvent>
+  [ 24] pusharglistnoret 3 ...................... <tEventResult, #Event, tEvent>
+  [ 26] objcall 165 ............................. tEventResult[#Event] = tEvent
+  [ 28] getparam 1 .............................. <tEvent>
+  [ 30] pushsymb 77 ............................. <#mouseWithin>
+  [ 32] eq ...................................... <tEvent = #mouseWithin>
+  [ 33] jmpifz [ 42] ............................ if tEvent = #mouseWithin then
+  [ 36] getlocal 1 .............................. <tEventResult>
+  [ 38] pusharglistnoret 1 ...................... <tEventResult>
+  [ 40] extcall 63 .............................. return tEventResult
+  [ 42] getlocal 0 .............................. <tListIndex>
+  [ 44] getparam 0 .............................. <me>
+  [ 46] pushsymb 497 ............................ <#pContentList>
+  [ 49] pusharglist 2 ........................... <me, #pContentList>
+  [ 51] objcall 114 ............................. <me.pContentList.count>
+  [ 53] gt ...................................... <tListIndex > me.pContentList.count>
+  [ 54] getlocal 0 .............................. <tListIndex>
+  [ 56] pushint8 1 .............................. <1>
+  [ 58] lt ...................................... <tListIndex < 1>
+  [ 59] or ...................................... <(tListIndex > me.pContentList.count) or (tListIndex < 1)>
+  [ 60] jmpifz [ 76] ............................ if (tListIndex > me.pContentList.count) or (tListIndex < 1) then / else
+  [ 63] getlocal 1 .............................. <tEventResult>
+  [ 65] pushsymb 242 ............................ <#cursor>
+  [ 67] pushcons 15 ............................. <"cursor.arrow">
+  [ 69] pusharglistnoret 3 ...................... <tEventResult, #cursor, "cursor.arrow">
+  [ 71] objcall 165 ............................. tEventResult[#cursor] = "cursor.arrow"
+  [ 73] jmp [311]
+  [ 76] getparam 0 .............................. <me>
+  [ 78] pushsymb 497 ............................ <#pContentList>
+  [ 81] getlocal 0 .............................. <tListIndex>
+  [ 83] pusharglist 3 ........................... <me, #pContentList, tListIndex>
+  [ 85] objcall 288 ............................. <me.pContentList[tListIndex]>
+  [ 88] setlocal 2 .............................. tRequest = me.pContentList[tListIndex]
+  [ 90] getlocal 1 .............................. <tEventResult>
+  [ 92] pushsymb 254 ............................ <#request>
+  [ 94] getlocal 2 .............................. <tRequest>
+  [ 96] pusharglistnoret 3 ...................... <tEventResult, #request, tRequest>
+  [ 98] objcall 165 ............................. tEventResult[#request] = tRequest
+  [100] getparam 2 .............................. <tLocX>
+  [102] pushcons 9 .............................. <"fr.requests.reject.offset.h">
+  [104] pusharglist 1 ........................... <"fr.requests.reject.offset.h">
+  [106] extcall 46 .............................. <getVariable("fr.requests.reject.offset.h")>
+  [108] pusharglist 1 ........................... <getVariable("fr.requests.reject.offset.h")>
+  [110] extcall 105 ............................. <integer(getVariable("fr.requests.reject.offset.h"))>
+  [112] gt ...................................... <tLocX > integer(getVariable("fr.requests.reject.offset.h"))>
+  [113] getlocal 2 .............................. <tRequest>
+  [115] pushsymb 363 ............................ <#state>
+  [118] pusharglist 2 ........................... <tRequest, #state>
+  [120] objcall 93 .............................. <tRequest[#state]>
+  [122] pushsymb 463 ............................ <#pending>
+  [125] eq ...................................... <tRequest[#state] = #pending>
+  [126] and ..................................... <(tLocX > integer(getVariable("fr.requests.reject.offset.h"))) and (tRequest[#state] = #pending)>
+  [127] jmpifz [182] ............................ if (tLocX > integer(getVariable("fr.requests.reject.offset.h"))) and (tRequest[#state] = #pending) then / else
+  [130] getlocal 1 .............................. <tEventResult>
+  [132] pushsymb 240 ............................ <#element>
+  [134] pushsymb 257 ............................ <#request_reject>
+  [137] pusharglistnoret 3 ...................... <tEventResult, #element, #request_reject>
+  [139] objcall 165 ............................. tEventResult[#element] = #request_reject
+  [141] getlocal 1 .............................. <tEventResult>
+  [143] pushsymb 18 ............................. <#update>
+  [145] pushint8 1 .............................. <1>
+  [147] pusharglistnoret 3 ...................... <tEventResult, #update, 1>
+  [149] objcall 165 ............................. tEventResult[#update] = 1
+  [151] getlocal 1 .............................. <tEventResult>
+  [153] pushsymb 242 ............................ <#cursor>
+  [155] pushcons 16 ............................. <"cursor.finger">
+  [157] pusharglistnoret 3 ...................... <tEventResult, #cursor, "cursor.finger">
+  [159] objcall 165 ............................. tEventResult[#cursor] = "cursor.finger"
+  [161] getparam 0 .............................. <me>
+  [163] getlocal 2 .............................. <tRequest>
+  [165] pushsymb 115 ............................ <#id>
+  [167] pusharglist 2 ........................... <tRequest, #id>
+  [169] objcall 93 .............................. <tRequest[#id]>
+  [171] pushsymb 258 ............................ <#rejected>
+  [174] pusharglistnoret 3 ...................... <me, tRequest[#id], #rejected>
+  [176] objcall 580 ............................. me.handleRequestState(tRequest[#id], #rejected)
+  [179] jmp [311]
+  [182] getparam 2 .............................. <tLocX>
+  [184] pushcons 7 .............................. <"fr.requests.accept.offset.h">
+  [186] pusharglist 1 ........................... <"fr.requests.accept.offset.h">
+  [188] extcall 46 .............................. <getVariable("fr.requests.accept.offset.h")>
+  [190] pusharglist 1 ........................... <getVariable("fr.requests.accept.offset.h")>
+  [192] extcall 105 ............................. <integer(getVariable("fr.requests.accept.offset.h"))>
+  [194] gt ...................................... <tLocX > integer(getVariable("fr.requests.accept.offset.h"))>
+  [195] getlocal 2 .............................. <tRequest>
+  [197] pushsymb 363 ............................ <#state>
+  [200] pusharglist 2 ........................... <tRequest, #state>
+  [202] objcall 93 .............................. <tRequest[#state]>
+  [204] pushsymb 463 ............................ <#pending>
+  [207] eq ...................................... <tRequest[#state] = #pending>
+  [208] and ..................................... <(tLocX > integer(getVariable("fr.requests.accept.offset.h"))) and (tRequest[#state] = #pending)>
+  [209] jmpifz [301] ............................ if (tLocX > integer(getVariable("fr.requests.accept.offset.h"))) and (tRequest[#state] = #pending) then / else
+  [212] pushsymb 597 ............................ <#friend_list>
+  [215] pusharglist 1 ........................... <#friend_list>
+  [217] extcall 278 ............................. <threadExists(#friend_list)>
+  [220] jmpifz [298] ............................ if threadExists(#friend_list) then
+  [223] pushsymb 597 ............................ <#friend_list>
+  [226] pusharglist 1 ........................... <#friend_list>
+  [228] extcall 280 ............................. <getThread(#friend_list)>
+  [231] pusharglist 1 ........................... <getThread(#friend_list)>
+  [233] objcall 70 .............................. <getThread(#friend_list).getComponent()>
+  [235] setlocal 3 .............................. tComponent = getThread(#friend_list).getComponent()
+  [237] getlocal 3 .............................. <tComponent>
+  [239] pusharglist 1 ........................... <tComponent>
+  [241] objcall 307 ............................. <tComponent.isFriendListFull()>
+  [244] jmpifz [261] ............................ if tComponent.isFriendListFull() then
+  [247] pushsymb 374 ............................ <#alert>
+  [250] pushcons 17 ............................. <"console_fr_limit_exceeded_error">
+  [252] pusharglistnoret 2 ...................... <#alert, "console_fr_limit_exceeded_error">
+  [254] extcall 126 ............................. executeMessage(#alert, "console_fr_limit_exceeded_error")
+  [256] pushzero ................................ <0>
+  [257] pusharglistnoret 1 ...................... <0>
+  [259] extcall 63 .............................. return 0
+  [261] getlocal 1 .............................. <tEventResult>
+  [263] pushsymb 240 ............................ <#element>
+  [265] pushsymb 253 ............................ <#request_accept>
+  [267] pusharglistnoret 3 ...................... <tEventResult, #element, #request_accept>
+  [269] objcall 165 ............................. tEventResult[#element] = #request_accept
+  [271] getlocal 1 .............................. <tEventResult>
+  [273] pushsymb 18 ............................. <#update>
+  [275] pushint8 1 .............................. <1>
+  [277] pusharglistnoret 3 ...................... <tEventResult, #update, 1>
+  [279] objcall 165 ............................. tEventResult[#update] = 1
+  [281] getparam 0 .............................. <me>
+  [283] getlocal 2 .............................. <tRequest>
+  [285] pushsymb 115 ............................ <#id>
+  [287] pusharglist 2 ........................... <tRequest, #id>
+  [289] objcall 93 .............................. <tRequest[#id]>
+  [291] pushsymb 255 ............................ <#accepted>
+  [293] pusharglistnoret 3 ...................... <me, tRequest[#id], #accepted>
+  [295] objcall 580 ............................. me.handleRequestState(tRequest[#id], #accepted)
+  [298] jmp [311]
+  [301] getlocal 1 .............................. <tEventResult>
+  [303] pushsymb 240 ............................ <#element>
+  [305] pushsymb 125 ............................ <#name>
+  [307] pusharglistnoret 3 ...................... <tEventResult, #element, #name>
+  [309] objcall 165 ............................. tEventResult[#element] = #name
+  [311] getlocal 1 .............................. <tEventResult>
+  [313] pusharglistnoret 1 ...................... <tEventResult>
+  [315] extcall 63 .............................. return tEventResult
+  [317] ret
+end

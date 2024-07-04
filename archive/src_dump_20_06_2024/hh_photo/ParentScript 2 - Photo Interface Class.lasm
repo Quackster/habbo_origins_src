@@ -1,0 +1,1425 @@
+property pWindowID, pmode, pCamMember, pCamShotImage, pDisplaymem, pZoomLevel, pNextHNoiseSetup, pNextVNoiseSetup, pHNoiseCenter, pVNoiseCenter, pDialogId, pHandItemData
+
+on construct me
+  [  0] pushcons 0 .............................. <"__cam_display_mem">
+  [  2] pushsymb 22 ............................. <#bitmap>
+  [  4] pusharglist 2 ........................... <"__cam_display_mem", #bitmap>
+  [  6] extcall 21 .............................. <createMember("__cam_display_mem", #bitmap)>
+  [  8] pusharglist 1 ........................... <createMember("__cam_display_mem", #bitmap)>
+  [ 10] extcall 20 .............................. <member(createMember("__cam_display_mem", #bitmap))>
+  [ 12] setprop 19 .............................. pCamMember = member(createMember("__cam_display_mem", #bitmap))
+  [ 14] pushsymb 24 ............................. <#photo_camera_window>
+  [ 16] setprop 23 .............................. pWindowID = #photo_camera_window
+  [ 18] pushsymb 26 ............................. <#camera_dialog>
+  [ 20] setprop 25 .............................. pDialogId = #camera_dialog
+  [ 22] pushint8 1 .............................. <1>
+  [ 24] pusharglistnoret 1 ...................... <1>
+  [ 26] extcall 27 .............................. return 1
+  [ 28] ret
+end
+
+on deconstruct me
+  [  0] pushsymb 30 ............................. <#leaveRoom>
+  [  2] getparam 0 .............................. <me>
+  [  4] pusharglist 1 ........................... <me>
+  [  6] objcall 31 .............................. <me.getID()>
+  [  8] pusharglistnoret 2 ...................... <#leaveRoom, me.getID()>
+  [ 10] extcall 29 .............................. unregisterMessage(#leaveRoom, me.getID())
+  [ 12] pushsymb 32 ............................. <#changeRoom>
+  [ 14] getparam 0 .............................. <me>
+  [ 16] pusharglist 1 ........................... <me>
+  [ 18] objcall 31 .............................. <me.getID()>
+  [ 20] pusharglistnoret 2 ...................... <#changeRoom, me.getID()>
+  [ 22] extcall 29 .............................. unregisterMessage(#changeRoom, me.getID())
+  [ 24] getprop 23 .............................. <pWindowID>
+  [ 26] pusharglist 1 ........................... <pWindowID>
+  [ 28] extcall 33 .............................. <windowExists(pWindowID)>
+  [ 30] jmpifz [ 39] ............................ if windowExists(pWindowID) then
+  [ 33] getprop 23 .............................. <pWindowID>
+  [ 35] pusharglistnoret 1 ...................... <pWindowID>
+  [ 37] extcall 34 .............................. removeWindow(pWindowID)
+  [ 39] getprop 25 .............................. <pDialogId>
+  [ 41] pusharglist 1 ........................... <pDialogId>
+  [ 43] extcall 33 .............................. <windowExists(pDialogId)>
+  [ 45] jmpifz [ 54] ............................ if windowExists(pDialogId) then
+  [ 48] getprop 25 .............................. <pDialogId>
+  [ 50] pusharglistnoret 1 ...................... <pDialogId>
+  [ 52] extcall 34 .............................. removeWindow(pDialogId)
+  [ 54] pushcons 0 .............................. <"__cam_display_mem">
+  [ 56] pusharglist 1 ........................... <"__cam_display_mem">
+  [ 58] extcall 35 .............................. <memberExists("__cam_display_mem")>
+  [ 60] jmpifz [ 69] ............................ if memberExists("__cam_display_mem") then
+  [ 63] pushcons 0 .............................. <"__cam_display_mem">
+  [ 65] pusharglistnoret 1 ...................... <"__cam_display_mem">
+  [ 67] extcall 36 .............................. removeMember("__cam_display_mem")
+  [ 69] getparam 0 .............................. <me>
+  [ 71] pusharglist 1 ........................... <me>
+  [ 73] objcall 31 .............................. <me.getID()>
+  [ 75] pusharglistnoret 1 ...................... <me.getID()>
+  [ 77] extcall 37 .............................. removeUpdate(me.getID())
+  [ 79] pushint8 1 .............................. <1>
+  [ 81] pusharglistnoret 1 ...................... <1>
+  [ 83] extcall 27 .............................. return 1
+  [ 85] ret
+end
+
+on open me
+  [  0] getprop 23 .............................. <pWindowID>
+  [  2] pusharglist 1 ........................... <pWindowID>
+  [  4] extcall 38 .............................. <createWindow(pWindowID)>
+  [  6] not ..................................... <not createWindow(pWindowID)>
+  [  7] jmpifz [ 15] ............................ if not createWindow(pWindowID) then
+  [ 10] pushzero ................................ <0>
+  [ 11] pusharglistnoret 1 ...................... <0>
+  [ 13] extcall 27 .............................. return 0
+  [ 15] getprop 23 .............................. <pWindowID>
+  [ 17] pusharglist 1 ........................... <pWindowID>
+  [ 19] extcall 39 .............................. <getWindow(pWindowID)>
+  [ 21] setlocal 0 .............................. tWndObj = getWindow(pWindowID)
+  [ 23] getlocal 0 .............................. <tWndObj>
+  [ 25] pushcons 1 .............................. <"photo_camera.window">
+  [ 27] pusharglistnoret 2 ...................... <tWndObj, "photo_camera.window">
+  [ 29] objcall 40 .............................. tWndObj.merge("photo_camera.window")
+  [ 31] getlocal 0 .............................. <tWndObj>
+  [ 33] pushint8 100 ............................ <100>
+  [ 35] pushint8 100 ............................ <100>
+  [ 37] pusharglistnoret 3 ...................... <tWndObj, 100, 100>
+  [ 39] objcall 41 .............................. tWndObj.moveTo(100, 100)
+  [ 41] getlocal 0 .............................. <tWndObj>
+  [ 43] pushsymb 9 .............................. <#eventProcCameraMouseDown>
+  [ 45] getparam 0 .............................. <me>
+  [ 47] pusharglist 1 ........................... <me>
+  [ 49] objcall 31 .............................. <me.getID()>
+  [ 51] pushsymb 42 ............................. <#mouseDown>
+  [ 53] pusharglistnoret 4 ...................... <tWndObj, #eventProcCameraMouseDown, me.getID(), #mouseDown>
+  [ 55] objcall 43 .............................. tWndObj.registerProcedure(#eventProcCameraMouseDown, me.getID(), #mouseDown)
+  [ 57] getlocal 0 .............................. <tWndObj>
+  [ 59] pushsymb 7 .............................. <#eventProcCameraMouseEnter>
+  [ 61] getparam 0 .............................. <me>
+  [ 63] pusharglist 1 ........................... <me>
+  [ 65] objcall 31 .............................. <me.getID()>
+  [ 67] pushsymb 44 ............................. <#mouseEnter>
+  [ 69] pusharglistnoret 4 ...................... <tWndObj, #eventProcCameraMouseEnter, me.getID(), #mouseEnter>
+  [ 71] objcall 43 .............................. tWndObj.registerProcedure(#eventProcCameraMouseEnter, me.getID(), #mouseEnter)
+  [ 73] getlocal 0 .............................. <tWndObj>
+  [ 75] pushsymb 8 .............................. <#eventProcCameraMouseLeave>
+  [ 77] getparam 0 .............................. <me>
+  [ 79] pusharglist 1 ........................... <me>
+  [ 81] objcall 31 .............................. <me.getID()>
+  [ 83] pushsymb 45 ............................. <#mouseLeave>
+  [ 85] pusharglistnoret 4 ...................... <tWndObj, #eventProcCameraMouseLeave, me.getID(), #mouseLeave>
+  [ 87] objcall 43 .............................. tWndObj.registerProcedure(#eventProcCameraMouseLeave, me.getID(), #mouseLeave)
+  [ 89] pushsymb 47 ............................. <#live>
+  [ 91] setprop 46 .............................. pmode = #live
+  [ 93] getlocal 0 .............................. <tWndObj>
+  [ 95] pushcons 2 .............................. <"cam_display">
+  [ 97] pusharglist 2 ........................... <tWndObj, "cam_display">
+  [ 99] objcall 49 .............................. <tWndObj.getElement("cam_display")>
+  [101] pushsymb 50 ............................. <#buffer>
+  [103] pusharglist 2 ........................... <tWndObj.getElement("cam_display"), #buffer>
+  [105] objcall 51 .............................. <tWndObj.getElement("cam_display").getProperty(#buffer)>
+  [107] setprop 48 .............................. pDisplaymem = tWndObj.getElement("cam_display").getProperty(#buffer)
+  [109] getparam 0 .............................. <me>
+  [111] pusharglistnoret 1 ...................... <me>
+  [113] objcall 6 ............................... me.setCameraToLiveMode()
+  [115] getparam 0 .............................. <me>
+  [117] pusharglistnoret 1 ...................... <me>
+  [119] objcall 10 .............................. me.setButtonHilites()
+  [121] getparam 0 .............................. <me>
+  [123] pusharglistnoret 1 ...................... <me>
+  [125] objcall 4 ............................... me.updateFilm()
+  [127] getlocal 0 .............................. <tWndObj>
+  [129] pushcons 3 .............................. <"cam_savetxt">
+  [131] pusharglist 2 ........................... <tWndObj, "cam_savetxt">
+  [133] objcall 49 .............................. <tWndObj.getElement("cam_savetxt")>
+  [135] pushsymb 52 ............................. <#visible>
+  [137] pushzero ................................ <0>
+  [138] pusharglistnoret 3 ...................... <tWndObj.getElement("cam_savetxt"), #visible, 0>
+  [140] objcall 53 .............................. tWndObj.getElement("cam_savetxt").setProperty(#visible, 0)
+  [142] pushcons 4 .............................. <"connection.room.id">
+  [144] pusharglist 1 ........................... <"connection.room.id">
+  [146] extcall 55 .............................. <getVariable("connection.room.id")>
+  [148] pusharglist 1 ........................... <getVariable("connection.room.id")>
+  [150] extcall 54 .............................. <getConnection(getVariable("connection.room.id"))>
+  [152] pushcons 5 .............................. <"CARRYITEM">
+  [154] pushsymb 200 ............................ <#integer>
+  [156] pushint8 20 ............................. <20>
+  [158] pusharglist 2 ........................... <[#integer: 20]>
+  [160] pushproplist ............................ <[#integer: 20]>
+  [161] pusharglistnoret 3 ...................... <getConnection(getVariable("connection.room.id")), "CARRYITEM", [#integer: 20]>
+  [163] objcall 56 .............................. getConnection(getVariable("connection.room.id")).send("CARRYITEM", [#integer: 20])
+  [165] pushsymb 30 ............................. <#leaveRoom>
+  [167] getparam 0 .............................. <me>
+  [169] pusharglist 1 ........................... <me>
+  [171] objcall 31 .............................. <me.getID()>
+  [173] pushsymb 3 .............................. <#close>
+  [175] pusharglistnoret 3 ...................... <#leaveRoom, me.getID(), #close>
+  [177] extcall 57 .............................. registerMessage(#leaveRoom, me.getID(), #close)
+  [179] pushsymb 32 ............................. <#changeRoom>
+  [181] getparam 0 .............................. <me>
+  [183] pusharglist 1 ........................... <me>
+  [185] objcall 31 .............................. <me.getID()>
+  [187] pushsymb 3 .............................. <#close>
+  [189] pusharglistnoret 3 ...................... <#changeRoom, me.getID(), #close>
+  [191] extcall 57 .............................. registerMessage(#changeRoom, me.getID(), #close)
+  [193] getparam 0 .............................. <me>
+  [195] pusharglist 1 ........................... <me>
+  [197] objcall 31 .............................. <me.getID()>
+  [199] pusharglist 1 ........................... <me.getID()>
+  [201] extcall 58 .............................. <receiveUpdate(me.getID())>
+  [203] pusharglistnoret 1 ...................... <receiveUpdate(me.getID())>
+  [205] extcall 27 .............................. return receiveUpdate(me.getID())
+  [207] ret
+end
+
+on close me
+  [  0] pushcons 4 .............................. <"connection.room.id">
+  [  2] pusharglist 1 ........................... <"connection.room.id">
+  [  4] extcall 55 .............................. <getVariable("connection.room.id")>
+  [  6] pusharglist 1 ........................... <getVariable("connection.room.id")>
+  [  8] extcall 60 .............................. <connectionExists(getVariable("connection.room.id"))>
+  [ 10] jmpifz [ 31] ............................ if connectionExists(getVariable("connection.room.id")) then
+  [ 13] pushcons 4 .............................. <"connection.room.id">
+  [ 15] pusharglist 1 ........................... <"connection.room.id">
+  [ 17] extcall 55 .............................. <getVariable("connection.room.id")>
+  [ 19] pusharglist 1 ........................... <getVariable("connection.room.id")>
+  [ 21] extcall 54 .............................. <getConnection(getVariable("connection.room.id"))>
+  [ 23] pushcons 6 .............................. <"STOP">
+  [ 25] pushcons 7 .............................. <"CarryItem">
+  [ 27] pusharglistnoret 3 ...................... <getConnection(getVariable("connection.room.id")), "STOP", "CarryItem">
+  [ 29] objcall 56 .............................. getConnection(getVariable("connection.room.id")).send("STOP", "CarryItem")
+  [ 31] pushsymb 61 ............................. <#closed>
+  [ 33] setprop 46 .............................. pmode = #closed
+  [ 35] getprop 23 .............................. <pWindowID>
+  [ 37] pusharglist 1 ........................... <pWindowID>
+  [ 39] extcall 33 .............................. <windowExists(pWindowID)>
+  [ 41] jmpifz [ 50] ............................ if windowExists(pWindowID) then
+  [ 44] getprop 23 .............................. <pWindowID>
+  [ 46] pusharglistnoret 1 ...................... <pWindowID>
+  [ 48] extcall 34 .............................. removeWindow(pWindowID)
+  [ 50] getprop 25 .............................. <pDialogId>
+  [ 52] pusharglist 1 ........................... <pDialogId>
+  [ 54] extcall 33 .............................. <windowExists(pDialogId)>
+  [ 56] jmpifz [ 65] ............................ if windowExists(pDialogId) then
+  [ 59] getprop 25 .............................. <pDialogId>
+  [ 61] pusharglistnoret 1 ...................... <pDialogId>
+  [ 63] extcall 34 .............................. removeWindow(pDialogId)
+  [ 65] getparam 0 .............................. <me>
+  [ 67] pusharglist 1 ........................... <me>
+  [ 69] objcall 31 .............................. <me.getID()>
+  [ 71] pusharglistnoret 1 ...................... <me.getID()>
+  [ 73] extcall 37 .............................. removeUpdate(me.getID())
+  [ 75] pushsymb 30 ............................. <#leaveRoom>
+  [ 77] getparam 0 .............................. <me>
+  [ 79] pusharglist 1 ........................... <me>
+  [ 81] objcall 31 .............................. <me.getID()>
+  [ 83] pusharglistnoret 2 ...................... <#leaveRoom, me.getID()>
+  [ 85] extcall 29 .............................. unregisterMessage(#leaveRoom, me.getID())
+  [ 87] pushsymb 32 ............................. <#changeRoom>
+  [ 89] getparam 0 .............................. <me>
+  [ 91] pusharglist 1 ........................... <me>
+  [ 93] objcall 31 .............................. <me.getID()>
+  [ 95] pusharglistnoret 2 ...................... <#changeRoom, me.getID()>
+  [ 97] extcall 29 .............................. unregisterMessage(#changeRoom, me.getID())
+  [ 99] pushint8 1 .............................. <1>
+  [101] pusharglistnoret 1 ...................... <1>
+  [103] extcall 27 .............................. return 1
+  [105] ret
+end
+
+on updateFilm me
+  [  0] getprop 23 .............................. <pWindowID>
+  [  2] pusharglist 1 ........................... <pWindowID>
+  [  4] extcall 33 .............................. <windowExists(pWindowID)>
+  [  6] jmpifz [ 35] ............................ if windowExists(pWindowID) then
+  [  9] getprop 23 .............................. <pWindowID>
+  [ 11] pusharglist 1 ........................... <pWindowID>
+  [ 13] extcall 39 .............................. <getWindow(pWindowID)>
+  [ 15] pushcons 8 .............................. <"photo_picnumber">
+  [ 17] pusharglist 2 ........................... <getWindow(pWindowID), "photo_picnumber">
+  [ 19] objcall 49 .............................. <getWindow(pWindowID).getElement("photo_picnumber")>
+  [ 21] getparam 0 .............................. <me>
+  [ 23] pusharglist 1 ........................... <me>
+  [ 25] objcall 62 .............................. <me.getComponent()>
+  [ 27] pusharglist 1 ........................... <me.getComponent()>
+  [ 29] objcall 63 .............................. <me.getComponent().getFilm()>
+  [ 31] pusharglistnoret 2 ...................... <getWindow(pWindowID).getElement("photo_picnumber"), me.getComponent().getFilm()>
+  [ 33] objcall 64 .............................. getWindow(pWindowID).getElement("photo_picnumber").setText(me.getComponent().getFilm())
+  [ 35] ret
+end
+
+on update me
+  [  0] getprop 23 .............................. <pWindowID>
+  [  2] pusharglist 1 ........................... <pWindowID>
+  [  4] extcall 33 .............................. <windowExists(pWindowID)>
+  [  6] not ..................................... <not windowExists(pWindowID)>
+  [  7] jmpifz [ 24] ............................ if not windowExists(pWindowID) then
+  [ 10] getparam 0 .............................. <me>
+  [ 12] pusharglist 1 ........................... <me>
+  [ 14] objcall 31 .............................. <me.getID()>
+  [ 16] pusharglist 1 ........................... <me.getID()>
+  [ 18] extcall 37 .............................. <removeUpdate(me.getID())>
+  [ 20] pusharglistnoret 1 ...................... <removeUpdate(me.getID())>
+  [ 22] extcall 27 .............................. return removeUpdate(me.getID())
+  [ 24] getprop 46 .............................. <pmode>
+  [ 26] pushsymb 47 ............................. <#live>
+  [ 28] eq ...................................... <pmode = #live>
+  [ 29] jmpifz [382] ............................ if pmode = #live then
+  [ 32] getprop 23 .............................. <pWindowID>
+  [ 34] pusharglist 1 ........................... <pWindowID>
+  [ 36] extcall 39 .............................. <getWindow(pWindowID)>
+  [ 38] setlocal 0 .............................. tWndObj = getWindow(pWindowID)
+  [ 40] getlocal 0 .............................. <tWndObj>
+  [ 42] pushcons 2 .............................. <"cam_display">
+  [ 44] pusharglist 2 ........................... <tWndObj, "cam_display">
+  [ 46] objcall 49 .............................. <tWndObj.getElement("cam_display")>
+  [ 48] pushsymb 65 ............................. <#width>
+  [ 50] pusharglist 2 ........................... <tWndObj.getElement("cam_display"), #width>
+  [ 52] objcall 51 .............................. <tWndObj.getElement("cam_display").getProperty(#width)>
+  [ 54] setlocal 1 .............................. tDispWidth = tWndObj.getElement("cam_display").getProperty(#width)
+  [ 56] getlocal 0 .............................. <tWndObj>
+  [ 58] pushcons 2 .............................. <"cam_display">
+  [ 60] pusharglist 2 ........................... <tWndObj, "cam_display">
+  [ 62] objcall 49 .............................. <tWndObj.getElement("cam_display")>
+  [ 64] pushsymb 66 ............................. <#height>
+  [ 66] pusharglist 2 ........................... <tWndObj.getElement("cam_display"), #height>
+  [ 68] objcall 51 .............................. <tWndObj.getElement("cam_display").getProperty(#height)>
+  [ 70] setlocal 2 .............................. tDispHeight = tWndObj.getElement("cam_display").getProperty(#height)
+  [ 72] getlocal 0 .............................. <tWndObj>
+  [ 74] pushcons 2 .............................. <"cam_display">
+  [ 76] pusharglist 2 ........................... <tWndObj, "cam_display">
+  [ 78] objcall 49 .............................. <tWndObj.getElement("cam_display")>
+  [ 80] pushsymb 67 ............................. <#locH>
+  [ 82] pusharglist 2 ........................... <tWndObj.getElement("cam_display"), #locH>
+  [ 84] objcall 51 .............................. <tWndObj.getElement("cam_display").getProperty(#locH)>
+  [ 86] setlocal 3 .............................. tDispLocX = tWndObj.getElement("cam_display").getProperty(#locH)
+  [ 88] getlocal 0 .............................. <tWndObj>
+  [ 90] pushcons 2 .............................. <"cam_display">
+  [ 92] pusharglist 2 ........................... <tWndObj, "cam_display">
+  [ 94] objcall 49 .............................. <tWndObj.getElement("cam_display")>
+  [ 96] pushsymb 68 ............................. <#locV>
+  [ 98] pusharglist 2 ........................... <tWndObj.getElement("cam_display"), #locV>
+  [100] objcall 51 .............................. <tWndObj.getElement("cam_display").getProperty(#locV)>
+  [102] setlocal 4 .............................. tDispLocY = tWndObj.getElement("cam_display").getProperty(#locV)
+  [104] getmovieprop 69 ......................... <the milliSeconds>
+  [106] getprop 70 .............................. <pNextHNoiseSetup>
+  [108] sub ..................................... <the milliSeconds - pNextHNoiseSetup>
+  [109] pushzero ................................ <0>
+  [110] gt ...................................... <(the milliSeconds - pNextHNoiseSetup) > 0>
+  [111] jmpifz [147] ............................ if (the milliSeconds - pNextHNoiseSetup) > 0 then
+  [114] getmovieprop 69 ......................... <the milliSeconds>
+  [116] pushint16 12000 ......................... <12000>
+  [119] pusharglist 1 ........................... <12000>
+  [121] extcall 71 .............................. <random(12000)>
+  [123] add ..................................... <the milliSeconds + random(12000)>
+  [124] setprop 70 .............................. pNextHNoiseSetup = the milliSeconds + random(12000)
+  [126] getlocal 1 .............................. <tDispWidth>
+  [128] pushint8 2 .............................. <2>
+  [130] div ..................................... <tDispWidth / 2>
+  [131] pusharglist 1 ........................... <tDispWidth / 2>
+  [133] extcall 71 .............................. <random(tDispWidth / 2)>
+  [135] pusharglist 1 ........................... <random(tDispWidth / 2)>
+  [137] extcall 73 .............................. <abs(random(tDispWidth / 2))>
+  [139] getlocal 1 .............................. <tDispWidth>
+  [141] pushint8 4 .............................. <4>
+  [143] div ..................................... <tDispWidth / 4>
+  [144] add ..................................... <abs(random(tDispWidth / 2)) + (tDispWidth / 4)>
+  [145] setprop 72 .............................. pHNoiseCenter = abs(random(tDispWidth / 2)) + (tDispWidth / 4)
+  [147] getmovieprop 69 ......................... <the milliSeconds>
+  [149] getprop 74 .............................. <pNextVNoiseSetup>
+  [151] sub ..................................... <the milliSeconds - pNextVNoiseSetup>
+  [152] pushzero ................................ <0>
+  [153] gt ...................................... <(the milliSeconds - pNextVNoiseSetup) > 0>
+  [154] jmpifz [190] ............................ if (the milliSeconds - pNextVNoiseSetup) > 0 then
+  [157] getmovieprop 69 ......................... <the milliSeconds>
+  [159] pushint16 12000 ......................... <12000>
+  [162] pusharglist 1 ........................... <12000>
+  [164] extcall 71 .............................. <random(12000)>
+  [166] add ..................................... <the milliSeconds + random(12000)>
+  [167] setprop 74 .............................. pNextVNoiseSetup = the milliSeconds + random(12000)
+  [169] getlocal 2 .............................. <tDispHeight>
+  [171] pushint8 2 .............................. <2>
+  [173] div ..................................... <tDispHeight / 2>
+  [174] pusharglist 1 ........................... <tDispHeight / 2>
+  [176] extcall 71 .............................. <random(tDispHeight / 2)>
+  [178] pusharglist 1 ........................... <random(tDispHeight / 2)>
+  [180] extcall 73 .............................. <abs(random(tDispHeight / 2))>
+  [182] getlocal 2 .............................. <tDispHeight>
+  [184] pushint8 4 .............................. <4>
+  [186] div ..................................... <tDispHeight / 4>
+  [187] add ..................................... <abs(random(tDispHeight / 2)) + (tDispHeight / 4)>
+  [188] setprop 75 .............................. pVNoiseCenter = abs(random(tDispHeight / 2)) + (tDispHeight / 4)
+  [190] getlocal 0 .............................. <tWndObj>
+  [192] pushcons 9 .............................. <"cam_display_noise_vertical">
+  [194] pusharglist 2 ........................... <tWndObj, "cam_display_noise_vertical">
+  [196] objcall 49 .............................. <tWndObj.getElement("cam_display_noise_vertical")>
+  [198] pushsymb 67 ............................. <#locH>
+  [200] pusharglist 2 ........................... <tWndObj.getElement("cam_display_noise_vertical"), #locH>
+  [202] objcall 51 .............................. <tWndObj.getElement("cam_display_noise_vertical").getProperty(#locH)>
+  [204] setlocal 5 .............................. tLocX = tWndObj.getElement("cam_display_noise_vertical").getProperty(#locH)
+  [206] getprop 72 .............................. <pHNoiseCenter>
+  [208] getprop 74 .............................. <pNextVNoiseSetup>
+  [210] getmovieprop 69 ......................... <the milliSeconds>
+  [212] sub ..................................... <pNextVNoiseSetup - the milliSeconds>
+  [213] pushfloat32 10000.0 ..................... <10000.0>
+  [218] div ..................................... <(pNextVNoiseSetup - the milliSeconds) / 10000.0>
+  [219] pushint8 2 .............................. <2>
+  [221] mul ..................................... <(pNextVNoiseSetup - the milliSeconds) / 10000.0 * 2>
+  [222] pusharglist 0 ........................... <>
+  [224] extcall 77 .............................. <PI>
+  [226] mul ..................................... <(pNextVNoiseSetup - the milliSeconds) / 10000.0 * 2 * PI>
+  [227] pusharglist 1 ........................... <(pNextVNoiseSetup - the milliSeconds) / 10000.0 * 2 * PI>
+  [229] extcall 76 .............................. <cos((pNextVNoiseSetup - the milliSeconds) / 10000.0 * 2 * PI)>
+  [231] getlocal 2 .............................. <tDispHeight>
+  [233] mul ..................................... <cos((pNextVNoiseSetup - the milliSeconds) / 10000.0 * 2 * PI) * tDispHeight>
+  [234] pushint8 4 .............................. <4>
+  [236] div ..................................... <cos((pNextVNoiseSetup - the milliSeconds) / 10000.0 * 2 * PI) * tDispHeight / 4>
+  [237] add ..................................... <pHNoiseCenter + (cos((pNextVNoiseSetup - the milliSeconds) / 10000.0 * 2 * PI) * tDispHeight / 4)>
+  [238] setlocal 6 .............................. tLocY = pHNoiseCenter + (cos((pNextVNoiseSetup - the milliSeconds) / 10000.0 * 2 * PI) * tDispHeight / 4)
+  [240] getlocal 6 .............................. <tLocY>
+  [242] getlocal 4 .............................. <tDispLocY>
+  [244] getlocal 2 .............................. <tDispHeight>
+  [246] add ..................................... <tDispLocY + tDispHeight>
+  [247] gt ...................................... <tLocY > (tDispLocY + tDispHeight)>
+  [248] jmpifz [258] ............................ if tLocY > (tDispLocY + tDispHeight) then
+  [251] getlocal 4 .............................. <tDispLocY>
+  [253] getlocal 2 .............................. <tDispHeight>
+  [255] add ..................................... <tDispLocY + tDispHeight>
+  [256] setlocal 6 .............................. tLocY = tDispLocY + tDispHeight
+  [258] getlocal 6 .............................. <tLocY>
+  [260] getlocal 4 .............................. <tDispLocY>
+  [262] lt ...................................... <tLocY < tDispLocY>
+  [263] jmpifz [270] ............................ if tLocY < tDispLocY then
+  [266] getlocal 4 .............................. <tDispLocY>
+  [268] setlocal 6 .............................. tLocY = tDispLocY
+  [270] getlocal 0 .............................. <tWndObj>
+  [272] pushcons 9 .............................. <"cam_display_noise_vertical">
+  [274] pusharglist 2 ........................... <tWndObj, "cam_display_noise_vertical">
+  [276] objcall 49 .............................. <tWndObj.getElement("cam_display_noise_vertical")>
+  [278] getlocal 5 .............................. <tLocX>
+  [280] getlocal 6 .............................. <tLocY>
+  [282] pusharglistnoret 3 ...................... <tWndObj.getElement("cam_display_noise_vertical"), tLocX, tLocY>
+  [284] objcall 41 .............................. tWndObj.getElement("cam_display_noise_vertical").moveTo(tLocX, tLocY)
+  [286] getprop 75 .............................. <pVNoiseCenter>
+  [288] getprop 70 .............................. <pNextHNoiseSetup>
+  [290] getmovieprop 69 ......................... <the milliSeconds>
+  [292] sub ..................................... <pNextHNoiseSetup - the milliSeconds>
+  [293] pushfloat32 10000.0 ..................... <10000.0>
+  [298] div ..................................... <(pNextHNoiseSetup - the milliSeconds) / 10000.0>
+  [299] pushint8 2 .............................. <2>
+  [301] mul ..................................... <(pNextHNoiseSetup - the milliSeconds) / 10000.0 * 2>
+  [302] pusharglist 0 ........................... <>
+  [304] extcall 77 .............................. <PI>
+  [306] mul ..................................... <(pNextHNoiseSetup - the milliSeconds) / 10000.0 * 2 * PI>
+  [307] pusharglist 1 ........................... <(pNextHNoiseSetup - the milliSeconds) / 10000.0 * 2 * PI>
+  [309] extcall 78 .............................. <sin((pNextHNoiseSetup - the milliSeconds) / 10000.0 * 2 * PI)>
+  [311] getlocal 1 .............................. <tDispWidth>
+  [313] mul ..................................... <sin((pNextHNoiseSetup - the milliSeconds) / 10000.0 * 2 * PI) * tDispWidth>
+  [314] pushint8 4 .............................. <4>
+  [316] div ..................................... <sin((pNextHNoiseSetup - the milliSeconds) / 10000.0 * 2 * PI) * tDispWidth / 4>
+  [317] add ..................................... <pVNoiseCenter + (sin((pNextHNoiseSetup - the milliSeconds) / 10000.0 * 2 * PI) * tDispWidth / 4)>
+  [318] setlocal 5 .............................. tLocX = pVNoiseCenter + (sin((pNextHNoiseSetup - the milliSeconds) / 10000.0 * 2 * PI) * tDispWidth / 4)
+  [320] getlocal 0 .............................. <tWndObj>
+  [322] pushcons 10 ............................. <"cam_display_noise_horizontal">
+  [324] pusharglist 2 ........................... <tWndObj, "cam_display_noise_horizontal">
+  [326] objcall 49 .............................. <tWndObj.getElement("cam_display_noise_horizontal")>
+  [328] pushsymb 68 ............................. <#locV>
+  [330] pusharglist 2 ........................... <tWndObj.getElement("cam_display_noise_horizontal"), #locV>
+  [332] objcall 51 .............................. <tWndObj.getElement("cam_display_noise_horizontal").getProperty(#locV)>
+  [334] setlocal 6 .............................. tLocY = tWndObj.getElement("cam_display_noise_horizontal").getProperty(#locV)
+  [336] getlocal 5 .............................. <tLocX>
+  [338] getlocal 3 .............................. <tDispLocX>
+  [340] getlocal 1 .............................. <tDispWidth>
+  [342] add ..................................... <tDispLocX + tDispWidth>
+  [343] gt ...................................... <tLocX > (tDispLocX + tDispWidth)>
+  [344] jmpifz [354] ............................ if tLocX > (tDispLocX + tDispWidth) then
+  [347] getlocal 3 .............................. <tDispLocX>
+  [349] getlocal 1 .............................. <tDispWidth>
+  [351] add ..................................... <tDispLocX + tDispWidth>
+  [352] setlocal 5 .............................. tLocX = tDispLocX + tDispWidth
+  [354] getlocal 5 .............................. <tLocX>
+  [356] getlocal 3 .............................. <tDispLocX>
+  [358] lt ...................................... <tLocX < tDispLocX>
+  [359] jmpifz [366] ............................ if tLocX < tDispLocX then
+  [362] getlocal 3 .............................. <tDispLocX>
+  [364] setlocal 5 .............................. tLocX = tDispLocX
+  [366] getlocal 0 .............................. <tWndObj>
+  [368] pushcons 10 ............................. <"cam_display_noise_horizontal">
+  [370] pusharglist 2 ........................... <tWndObj, "cam_display_noise_horizontal">
+  [372] objcall 49 .............................. <tWndObj.getElement("cam_display_noise_horizontal")>
+  [374] getlocal 5 .............................. <tLocX>
+  [376] getlocal 6 .............................. <tLocY>
+  [378] pusharglistnoret 3 ...................... <tWndObj.getElement("cam_display_noise_horizontal"), tLocX, tLocY>
+  [380] objcall 41 .............................. tWndObj.getElement("cam_display_noise_horizontal").moveTo(tLocX, tLocY)
+  [382] ret
+end
+
+on setCameraToLiveMode me
+  [  0] getprop 23 .............................. <pWindowID>
+  [  2] pusharglist 1 ........................... <pWindowID>
+  [  4] extcall 39 .............................. <getWindow(pWindowID)>
+  [  6] setlocal 0 .............................. tWndObj = getWindow(pWindowID)
+  [  8] getlocal 0 .............................. <tWndObj>
+  [ 10] pushcons 10 ............................. <"cam_display_noise_horizontal">
+  [ 12] pusharglist 2 ........................... <tWndObj, "cam_display_noise_horizontal">
+  [ 14] objcall 49 .............................. <tWndObj.getElement("cam_display_noise_horizontal")>
+  [ 16] pushsymb 52 ............................. <#visible>
+  [ 18] pushint8 1 .............................. <1>
+  [ 20] pusharglistnoret 3 ...................... <tWndObj.getElement("cam_display_noise_horizontal"), #visible, 1>
+  [ 22] objcall 53 .............................. tWndObj.getElement("cam_display_noise_horizontal").setProperty(#visible, 1)
+  [ 24] getlocal 0 .............................. <tWndObj>
+  [ 26] pushcons 10 ............................. <"cam_display_noise_horizontal">
+  [ 28] pusharglist 2 ........................... <tWndObj, "cam_display_noise_horizontal">
+  [ 30] objcall 49 .............................. <tWndObj.getElement("cam_display_noise_horizontal")>
+  [ 32] pushsymb 85 ............................. <#blend>
+  [ 34] pushint8 100 ............................ <100>
+  [ 36] pusharglistnoret 3 ...................... <tWndObj.getElement("cam_display_noise_horizontal"), #blend, 100>
+  [ 38] objcall 53 .............................. tWndObj.getElement("cam_display_noise_horizontal").setProperty(#blend, 100)
+  [ 40] getlocal 0 .............................. <tWndObj>
+  [ 42] pushcons 9 .............................. <"cam_display_noise_vertical">
+  [ 44] pusharglist 2 ........................... <tWndObj, "cam_display_noise_vertical">
+  [ 46] objcall 49 .............................. <tWndObj.getElement("cam_display_noise_vertical")>
+  [ 48] pushsymb 52 ............................. <#visible>
+  [ 50] pushint8 1 .............................. <1>
+  [ 52] pusharglistnoret 3 ...................... <tWndObj.getElement("cam_display_noise_vertical"), #visible, 1>
+  [ 54] objcall 53 .............................. tWndObj.getElement("cam_display_noise_vertical").setProperty(#visible, 1)
+  [ 56] getlocal 0 .............................. <tWndObj>
+  [ 58] pushcons 9 .............................. <"cam_display_noise_vertical">
+  [ 60] pusharglist 2 ........................... <tWndObj, "cam_display_noise_vertical">
+  [ 62] objcall 49 .............................. <tWndObj.getElement("cam_display_noise_vertical")>
+  [ 64] pushsymb 85 ............................. <#blend>
+  [ 66] pushint8 100 ............................ <100>
+  [ 68] pusharglistnoret 3 ...................... <tWndObj.getElement("cam_display_noise_vertical"), #blend, 100>
+  [ 70] objcall 53 .............................. tWndObj.getElement("cam_display_noise_vertical").setProperty(#blend, 100)
+  [ 72] getlocal 0 .............................. <tWndObj>
+  [ 74] pushcons 2 .............................. <"cam_display">
+  [ 76] pusharglist 2 ........................... <tWndObj, "cam_display">
+  [ 78] objcall 49 .............................. <tWndObj.getElement("cam_display")>
+  [ 80] pushsymb 50 ............................. <#buffer>
+  [ 82] getprop 48 .............................. <pDisplaymem>
+  [ 84] pusharglistnoret 3 ...................... <tWndObj.getElement("cam_display"), #buffer, pDisplaymem>
+  [ 86] objcall 53 .............................. tWndObj.getElement("cam_display").setProperty(#buffer, pDisplaymem)
+  [ 88] getlocal 0 .............................. <tWndObj>
+  [ 90] pushcons 2 .............................. <"cam_display">
+  [ 92] pusharglist 2 ........................... <tWndObj, "cam_display">
+  [ 94] objcall 49 .............................. <tWndObj.getElement("cam_display")>
+  [ 96] pushsymb 85 ............................. <#blend>
+  [ 98] pushint8 100 ............................ <100>
+  [100] pusharglistnoret 3 ...................... <tWndObj.getElement("cam_display"), #blend, 100>
+  [102] objcall 53 .............................. tWndObj.getElement("cam_display").setProperty(#blend, 100)
+  [104] getlocal 0 .............................. <tWndObj>
+  [106] pushcons 2 .............................. <"cam_display">
+  [108] pusharglist 2 ........................... <tWndObj, "cam_display">
+  [110] objcall 49 .............................. <tWndObj.getElement("cam_display")>
+  [112] pushsymb 86 ............................. <#ink>
+  [114] pushint8 33 ............................. <33>
+  [116] pusharglistnoret 3 ...................... <tWndObj.getElement("cam_display"), #ink, 33>
+  [118] objcall 53 .............................. tWndObj.getElement("cam_display").setProperty(#ink, 33)
+  [120] getlocal 0 .............................. <tWndObj>
+  [122] pushcons 2 .............................. <"cam_display">
+  [124] pusharglist 2 ........................... <tWndObj, "cam_display">
+  [126] objcall 49 .............................. <tWndObj.getElement("cam_display")>
+  [128] pushsymb 87 ............................. <#color>
+  [130] pushcons 11 ............................. <"#000000">
+  [132] pusharglist 1 ........................... <"#000000">
+  [134] extcall 88 .............................. <rgb("#000000")>
+  [136] pusharglistnoret 3 ...................... <tWndObj.getElement("cam_display"), #color, rgb("#000000")>
+  [138] objcall 53 .............................. tWndObj.getElement("cam_display").setProperty(#color, rgb("#000000"))
+  [140] getlocal 0 .............................. <tWndObj>
+  [142] pushcons 2 .............................. <"cam_display">
+  [144] pusharglist 2 ........................... <tWndObj, "cam_display">
+  [146] objcall 49 .............................. <tWndObj.getElement("cam_display")>
+  [148] pushsymb 89 ............................. <#bgColor>
+  [150] pushcons 12 ............................. <"#ffffff">
+  [152] pusharglist 1 ........................... <"#ffffff">
+  [154] extcall 88 .............................. <rgb("#ffffff")>
+  [156] pusharglistnoret 3 ...................... <tWndObj.getElement("cam_display"), #bgColor, rgb("#ffffff")>
+  [158] objcall 53 .............................. tWndObj.getElement("cam_display").setProperty(#bgColor, rgb("#ffffff"))
+  [160] pushint8 1 .............................. <1>
+  [162] pusharglistnoret 1 ...................... <1>
+  [164] extcall 27 .............................. return 1
+  [166] ret
+end
+
+on eventProcCameraMouseEnter me, tEvent, tSprID, tParam
+  [  0] pushsymb 91 ............................. <#room>
+  [  2] pusharglist 1 ........................... <#room>
+  [  4] extcall 90 .............................. <getThread(#room)>
+  [  6] pusharglist 1 ........................... <getThread(#room)>
+  [  8] objcall 62 .............................. <getThread(#room).getComponent()>
+  [ 10] pusharglist 0 ........................... <>
+  [ 12] extcall 92 .............................. <VOID>
+  [ 14] pusharglist 2 ........................... <getThread(#room).getComponent(), VOID>
+  [ 16] objcall 93 .............................. <getThread(#room).getComponent().roomExists(VOID)>
+  [ 18] not ..................................... <not getThread(#room).getComponent().roomExists(VOID)>
+  [ 19] jmpifz [ 27] ............................ if not getThread(#room).getComponent().roomExists(VOID) then
+  [ 22] pushzero ................................ <0>
+  [ 23] pusharglistnoret 1 ...................... <0>
+  [ 25] extcall 27 .............................. return 0
+  [ 27] getparam 0 .............................. <me>
+  [ 29] getparam 2 .............................. <tSprID>
+  [ 31] pusharglistnoret 2 ...................... <me, tSprID>
+  [ 33] objcall 15 .............................. me.showHelpLine(tSprID)
+  [ 35] ret
+end
+
+on eventProcCameraMouseLeave me, tEvent, tSprID, tParam
+  [  0] pushsymb 91 ............................. <#room>
+  [  2] pusharglist 1 ........................... <#room>
+  [  4] extcall 90 .............................. <getThread(#room)>
+  [  6] pusharglist 1 ........................... <getThread(#room)>
+  [  8] objcall 62 .............................. <getThread(#room).getComponent()>
+  [ 10] pusharglist 0 ........................... <>
+  [ 12] extcall 92 .............................. <VOID>
+  [ 14] pusharglist 2 ........................... <getThread(#room).getComponent(), VOID>
+  [ 16] objcall 93 .............................. <getThread(#room).getComponent().roomExists(VOID)>
+  [ 18] not ..................................... <not getThread(#room).getComponent().roomExists(VOID)>
+  [ 19] jmpifz [ 27] ............................ if not getThread(#room).getComponent().roomExists(VOID) then
+  [ 22] pushzero ................................ <0>
+  [ 23] pusharglistnoret 1 ...................... <0>
+  [ 25] extcall 27 .............................. return 0
+  [ 27] getparam 0 .............................. <me>
+  [ 29] getparam 2 .............................. <tSprID>
+  [ 31] pusharglistnoret 2 ...................... <me, tSprID>
+  [ 33] objcall 16 .............................. me.hideHelpLine(tSprID)
+  [ 35] ret
+end
+
+on eventProcCameraMouseDown me, tEvent, tSprID, tParam
+  [  0] pushsymb 91 ............................. <#room>
+  [  2] pusharglist 1 ........................... <#room>
+  [  4] extcall 90 .............................. <getThread(#room)>
+  [  6] pusharglist 1 ........................... <getThread(#room)>
+  [  8] objcall 62 .............................. <getThread(#room).getComponent()>
+  [ 10] pusharglist 0 ........................... <>
+  [ 12] extcall 92 .............................. <VOID>
+  [ 14] pusharglist 2 ........................... <getThread(#room).getComponent(), VOID>
+  [ 16] objcall 93 .............................. <getThread(#room).getComponent().roomExists(VOID)>
+  [ 18] not ..................................... <not getThread(#room).getComponent().roomExists(VOID)>
+  [ 19] jmpifz [ 27] ............................ if not getThread(#room).getComponent().roomExists(VOID) then
+  [ 22] pushzero ................................ <0>
+  [ 23] pusharglistnoret 1 ...................... <0>
+  [ 25] extcall 27 .............................. return 0
+  [ 27] getprop 23 .............................. <pWindowID>
+  [ 29] pusharglist 1 ........................... <pWindowID>
+  [ 31] extcall 39 .............................. <getWindow(pWindowID)>
+  [ 33] setlocal 0 .............................. tWndObj = getWindow(pWindowID)
+  [ 35] getparam 2 .............................. <tSprID>
+  [ 37] peek 0 .................................. case tSprID of
+  [ 39] pushcons 13 ............................. <"cam_close">
+  [ 41] eq
+  [ 42] jmpifz [ 54] ............................ (case) "cam_close":
+  [ 45] getparam 0 .............................. <me>
+  [ 47] pusharglistnoret 1 ...................... <me>
+  [ 49] objcall 3 ............................... me.close()
+  [ 51] jmp [758]
+  [ 54] peek 0
+  [ 56] pushcons 14 ............................. <"cam_shoot">
+  [ 58] eq
+  [ 59] jmpifz [492] ............................ (case) "cam_shoot":
+  [ 62] getprop 46 .............................. <pmode>
+  [ 64] pushsymb 47 ............................. <#live>
+  [ 66] nteq .................................... <pmode <> #live>
+  [ 67] jmpifz [ 76] ............................ if pmode <> #live then
+  [ 70] pop 1
+  [ 72] pusharglistnoret 0 ...................... <>
+  [ 74] extcall 27 .............................. return 
+  [ 76] pushcons 4 .............................. <"connection.room.id">
+  [ 78] pusharglist 1 ........................... <"connection.room.id">
+  [ 80] extcall 55 .............................. <getVariable("connection.room.id")>
+  [ 82] pusharglist 1 ........................... <getVariable("connection.room.id")>
+  [ 84] extcall 54 .............................. <getConnection(getVariable("connection.room.id"))>
+  [ 86] pushcons 15 ............................. <"USEITEM">
+  [ 88] pushcons 16 ............................. <"20">
+  [ 90] pushcons 17 ............................. <TAB>
+  [ 92] joinstr ................................. <"20" & TAB>
+  [ 93] pushcons 18 ............................. <"1500">
+  [ 95] joinstr ................................. <"20" & TAB & "1500">
+  [ 96] pusharglistnoret 3 ...................... <getConnection(getVariable("connection.room.id")), "USEITEM", "20" & TAB & "1500">
+  [ 98] objcall 56 .............................. getConnection(getVariable("connection.room.id")).send("USEITEM", "20" & TAB & "1500")
+  [100] pushint8 1 .............................. <1>
+  [102] setprop 97 .............................. pZoomLevel = 1
+  [104] getlocal 0 .............................. <tWndObj>
+  [106] pushcons 2 .............................. <"cam_display">
+  [108] pusharglist 2 ........................... <tWndObj, "cam_display">
+  [110] objcall 49 .............................. <tWndObj.getElement("cam_display")>
+  [112] pushsymb 52 ............................. <#visible>
+  [114] pushzero ................................ <0>
+  [115] pusharglistnoret 3 ...................... <tWndObj.getElement("cam_display"), #visible, 0>
+  [117] objcall 53 .............................. tWndObj.getElement("cam_display").setProperty(#visible, 0)
+  [119] getlocal 0 .............................. <tWndObj>
+  [121] pushcons 10 ............................. <"cam_display_noise_horizontal">
+  [123] pusharglist 2 ........................... <tWndObj, "cam_display_noise_horizontal">
+  [125] objcall 49 .............................. <tWndObj.getElement("cam_display_noise_horizontal")>
+  [127] pushsymb 52 ............................. <#visible>
+  [129] pushzero ................................ <0>
+  [130] pusharglistnoret 3 ...................... <tWndObj.getElement("cam_display_noise_horizontal"), #visible, 0>
+  [132] objcall 53 .............................. tWndObj.getElement("cam_display_noise_horizontal").setProperty(#visible, 0)
+  [134] getlocal 0 .............................. <tWndObj>
+  [136] pushcons 9 .............................. <"cam_display_noise_vertical">
+  [138] pusharglist 2 ........................... <tWndObj, "cam_display_noise_vertical">
+  [140] objcall 49 .............................. <tWndObj.getElement("cam_display_noise_vertical")>
+  [142] pushsymb 52 ............................. <#visible>
+  [144] pushzero ................................ <0>
+  [145] pusharglistnoret 3 ...................... <tWndObj.getElement("cam_display_noise_vertical"), #visible, 0>
+  [147] objcall 53 .............................. tWndObj.getElement("cam_display_noise_vertical").setProperty(#visible, 0)
+  [149] pushsymb 91 ............................. <#room>
+  [151] pusharglist 1 ........................... <#room>
+  [153] extcall 90 .............................. <getThread(#room)>
+  [155] pusharglist 1 ........................... <getThread(#room)>
+  [157] objcall 62 .............................. <getThread(#room).getComponent()>
+  [159] pusharglist 1 ........................... <getThread(#room).getComponent()>
+  [161] objcall 98 .............................. <getThread(#room).getComponent().getBalloon()>
+  [163] pusharglistnoret 1 ...................... <getThread(#room).getComponent().getBalloon()>
+  [165] objcall 99 .............................. getThread(#room).getComponent().getBalloon().hideBalloons()
+  [167] pushsymb 91 ............................. <#room>
+  [169] pusharglist 1 ........................... <#room>
+  [171] extcall 90 .............................. <getThread(#room)>
+  [173] pusharglist 1 ........................... <getThread(#room)>
+  [175] objcall 100 ............................. <getThread(#room).getInterface()>
+  [177] pusharglist 1 ........................... <getThread(#room).getInterface()>
+  [179] objcall 101 ............................. <getThread(#room).getInterface().getContainer()>
+  [181] pusharglist 1 ........................... <getThread(#room).getInterface().getContainer()>
+  [183] objcall 102 ............................. <getThread(#room).getInterface().getContainer().getVisual()>
+  [185] setlocal 1 .............................. tHandVis = getThread(#room).getInterface().getContainer().getVisual()
+  [187] getlocal 1 .............................. <tHandVis>
+  [189] pushzero ................................ <0>
+  [190] nteq .................................... <tHandVis <> 0>
+  [191] jmpifz [200] ............................ if tHandVis <> 0 then
+  [194] getlocal 1 .............................. <tHandVis>
+  [196] pusharglistnoret 1 ...................... <tHandVis>
+  [198] objcall 103 ............................. tHandVis.hide()
+  [200] pusharglistnoret 0 ...................... <>
+  [202] extcall 104 ............................. hideWindows()
+  [204] pushsymb 106 ............................ <#takingPhoto>
+  [206] pusharglistnoret 1 ...................... <#takingPhoto>
+  [208] extcall 105 ............................. executeMessage(#takingPhoto)
+  [210] getlocal 0 .............................. <tWndObj>
+  [212] pusharglistnoret 1 ...................... <tWndObj>
+  [214] objcall 107 ............................. tWndObj.show()
+  [216] pusharglistnoret 0 ...................... <>
+  [218] extcall 108 ............................. updateStage()
+  [220] getlocal 0 .............................. <tWndObj>
+  [222] pushcons 2 .............................. <"cam_display">
+  [224] pusharglist 2 ........................... <tWndObj, "cam_display">
+  [226] objcall 49 .............................. <tWndObj.getElement("cam_display")>
+  [228] pushsymb 109 ............................ <#rect>
+  [230] pusharglist 2 ........................... <tWndObj.getElement("cam_display"), #rect>
+  [232] objcall 51 .............................. <tWndObj.getElement("cam_display").getProperty(#rect)>
+  [234] setlocal 2 .............................. tRect = tWndObj.getElement("cam_display").getProperty(#rect)
+  [236] getlocal 2 .............................. <tRect>
+  [238] getobjprop 112 .......................... <tRect.right>
+  [240] getlocal 2 .............................. <tRect>
+  [242] getobjprop 113 .......................... <tRect.left>
+  [244] sub ..................................... <tRect.right - tRect.left>
+  [245] getlocal 2 .............................. <tRect>
+  [247] getobjprop 114 .......................... <tRect.bottom>
+  [249] getlocal 2 .............................. <tRect>
+  [251] getobjprop 115 .......................... <tRect.top>
+  [253] sub ..................................... <tRect.bottom - tRect.top>
+  [254] pushint8 8 .............................. <8>
+  [256] pushsymb 116 ............................ <#grayscale>
+  [258] pusharglist 4 ........................... <tRect.right - tRect.left, tRect.bottom - tRect.top, 8, #grayscale>
+  [260] extcall 111 ............................. <image(tRect.right - tRect.left, tRect.bottom - tRect.top, 8, #grayscale)>
+  [262] setprop 110 ............................. pCamShotImage = image(tRect.right - tRect.left, tRect.bottom - tRect.top, 8, #grayscale)
+  [264] getprop 110 ............................. <pCamShotImage>
+  [266] getmovieprop 117 ........................ <the stage>
+  [268] getobjprop 111 .......................... <(the stage).image>
+  [270] getprop 110 ............................. <pCamShotImage>
+  [272] getobjprop 109 .......................... <pCamShotImage.rect>
+  [274] getlocal 2 .............................. <tRect>
+  [276] pusharglistnoret 4 ...................... <pCamShotImage, (the stage).image, pCamShotImage.rect, tRect>
+  [278] objcall 118 ............................. pCamShotImage.copyPixels((the stage).image, pCamShotImage.rect, tRect)
+  [280] getprop 110 ............................. <pCamShotImage>
+  [282] getprop 110 ............................. <pCamShotImage>
+  [284] getchainedprop 109 ...................... <pCamShotImage.rect>
+  [286] getobjprop 113 .......................... <pCamShotImage.rect.left>
+  [288] getprop 110 ............................. <pCamShotImage>
+  [290] getchainedprop 109 ...................... <pCamShotImage.rect>
+  [292] getobjprop 115 .......................... <pCamShotImage.rect.top>
+  [294] getprop 110 ............................. <pCamShotImage>
+  [296] getchainedprop 109 ...................... <pCamShotImage.rect>
+  [298] getobjprop 112 .......................... <pCamShotImage.rect.right>
+  [300] getprop 110 ............................. <pCamShotImage>
+  [302] getchainedprop 109 ...................... <pCamShotImage.rect>
+  [304] getobjprop 114 .......................... <pCamShotImage.rect.bottom>
+  [306] pushsymb 87 ............................. <#color>
+  [308] pushzero ................................ <0>
+  [309] pushzero ................................ <0>
+  [310] pushzero ................................ <0>
+  [311] pusharglist 3 ........................... <0, 0, 0>
+  [313] extcall 88 .............................. <rgb(0, 0, 0)>
+  [315] pushsymb 119 ............................ <#shapeType>
+  [317] pushsymb 109 ............................ <#rect>
+  [319] pusharglist 4 ........................... <[#color: rgb(0, 0, 0), #shapeType: #rect]>
+  [321] pushproplist ............................ <[#color: rgb(0, 0, 0), #shapeType: #rect]>
+  [322] pusharglistnoret 6 ...................... <pCamShotImage, pCamShotImage.rect.left, pCamShotImage.rect.top, pCamShotImage.rect.right, pCamShotImage.rect.bottom, [#color: rgb(0, 0, 0), #shapeType: #rect]>
+  [324] objcall 120 ............................. pCamShotImage.draw(pCamShotImage.rect.left, pCamShotImage.rect.top, pCamShotImage.rect.right, pCamShotImage.rect.bottom, [#color: rgb(0, 0, 0), #shapeType: #rect])
+  [326] getprop 19 .............................. <pCamMember>
+  [328] getprop 110 ............................. <pCamShotImage>
+  [330] setobjprop 111 .......................... pCamMember.image = pCamShotImage
+  [332] getprop 19 .............................. <pCamMember>
+  [334] pushzero ................................ <0>
+  [335] pushzero ................................ <0>
+  [336] pusharglist 2 ........................... <0, 0>
+  [338] extcall 121 ............................. <point(0, 0)>
+  [340] setobjprop 122 .......................... pCamMember.regPoint = point(0, 0)
+  [342] pushsymb 91 ............................. <#room>
+  [344] pusharglist 1 ........................... <#room>
+  [346] extcall 90 .............................. <getThread(#room)>
+  [348] pusharglist 1 ........................... <getThread(#room)>
+  [350] objcall 62 .............................. <getThread(#room).getComponent()>
+  [352] pusharglist 1 ........................... <getThread(#room).getComponent()>
+  [354] objcall 98 .............................. <getThread(#room).getComponent().getBalloon()>
+  [356] pusharglistnoret 1 ...................... <getThread(#room).getComponent().getBalloon()>
+  [358] objcall 123 ............................. getThread(#room).getComponent().getBalloon().showBalloons()
+  [360] pushsymb 91 ............................. <#room>
+  [362] pusharglist 1 ........................... <#room>
+  [364] extcall 90 .............................. <getThread(#room)>
+  [366] pusharglist 1 ........................... <getThread(#room)>
+  [368] objcall 100 ............................. <getThread(#room).getInterface()>
+  [370] pusharglist 1 ........................... <getThread(#room).getInterface()>
+  [372] objcall 101 ............................. <getThread(#room).getInterface().getContainer()>
+  [374] pusharglist 1 ........................... <getThread(#room).getInterface().getContainer()>
+  [376] objcall 102 ............................. <getThread(#room).getInterface().getContainer().getVisual()>
+  [378] setlocal 1 .............................. tHandVis = getThread(#room).getInterface().getContainer().getVisual()
+  [380] getlocal 1 .............................. <tHandVis>
+  [382] pushzero ................................ <0>
+  [383] nteq .................................... <tHandVis <> 0>
+  [384] jmpifz [393] ............................ if tHandVis <> 0 then
+  [387] getlocal 1 .............................. <tHandVis>
+  [389] pusharglistnoret 1 ...................... <tHandVis>
+  [391] objcall 107 ............................. tHandVis.show()
+  [393] pusharglistnoret 0 ...................... <>
+  [395] extcall 124 ............................. showWindows()
+  [397] pushsymb 125 ............................ <#photoTaken>
+  [399] pusharglistnoret 1 ...................... <#photoTaken>
+  [401] extcall 105 ............................. executeMessage(#photoTaken)
+  [403] getlocal 0 .............................. <tWndObj>
+  [405] pushcons 2 .............................. <"cam_display">
+  [407] pusharglist 2 ........................... <tWndObj, "cam_display">
+  [409] objcall 49 .............................. <tWndObj.getElement("cam_display")>
+  [411] setlocal 3 .............................. tDispElem = tWndObj.getElement("cam_display")
+  [413] getlocal 3 .............................. <tDispElem>
+  [415] pushsymb 50 ............................. <#buffer>
+  [417] getprop 19 .............................. <pCamMember>
+  [419] pusharglistnoret 3 ...................... <tDispElem, #buffer, pCamMember>
+  [421] objcall 53 .............................. tDispElem.setProperty(#buffer, pCamMember)
+  [423] getlocal 3 .............................. <tDispElem>
+  [425] pushsymb 52 ............................. <#visible>
+  [427] pushint8 1 .............................. <1>
+  [429] pusharglistnoret 3 ...................... <tDispElem, #visible, 1>
+  [431] objcall 53 .............................. tDispElem.setProperty(#visible, 1)
+  [433] getlocal 3 .............................. <tDispElem>
+  [435] pushsymb 85 ............................. <#blend>
+  [437] pushint8 100 ............................ <100>
+  [439] pusharglistnoret 3 ...................... <tDispElem, #blend, 100>
+  [441] objcall 53 .............................. tDispElem.setProperty(#blend, 100)
+  [443] getlocal 3 .............................. <tDispElem>
+  [445] pushsymb 87 ............................. <#color>
+  [447] pushcons 19 ............................. <"681F10">
+  [449] pusharglist 1 ........................... <"681F10">
+  [451] extcall 88 .............................. <rgb("681F10")>
+  [453] pusharglistnoret 3 ...................... <tDispElem, #color, rgb("681F10")>
+  [455] objcall 53 .............................. tDispElem.setProperty(#color, rgb("681F10"))
+  [457] getlocal 3 .............................. <tDispElem>
+  [459] pushsymb 89 ............................. <#bgColor>
+  [461] pushcons 20 ............................. <"FFCC66">
+  [463] pusharglist 1 ........................... <"FFCC66">
+  [465] extcall 88 .............................. <rgb("FFCC66")>
+  [467] pusharglistnoret 3 ...................... <tDispElem, #bgColor, rgb("FFCC66")>
+  [469] objcall 53 .............................. tDispElem.setProperty(#bgColor, rgb("FFCC66"))
+  [471] getlocal 3 .............................. <tDispElem>
+  [473] pushsymb 86 ............................. <#ink>
+  [475] pushint8 41 ............................. <41>
+  [477] pusharglistnoret 3 ...................... <tDispElem, #ink, 41>
+  [479] objcall 53 .............................. tDispElem.setProperty(#ink, 41)
+  [481] pusharglistnoret 0 ...................... <>
+  [483] extcall 108 ............................. updateStage()
+  [485] pushsymb 126 ............................ <#still>
+  [487] setprop 46 .............................. pmode = #still
+  [489] jmp [758]
+  [492] peek 0
+  [494] pushcons 21 ............................. <"cam_release">
+  [496] eq
+  [497] jmpifz [521] ............................ (case) "cam_release":
+  [500] getprop 46 .............................. <pmode>
+  [502] pushsymb 126 ............................ <#still>
+  [504] eq ...................................... <pmode = #still>
+  [505] jmpifz [518] ............................ if pmode = #still then
+  [508] getparam 0 .............................. <me>
+  [510] pusharglistnoret 1 ...................... <me>
+  [512] objcall 6 ............................... me.setCameraToLiveMode()
+  [514] pushsymb 47 ............................. <#live>
+  [516] setprop 46 .............................. pmode = #live
+  [518] jmp [758]
+  [521] peek 0
+  [523] pushcons 22 ............................. <"cam_save">
+  [525] eq
+  [526] jmpifz [659] ............................ (case) "cam_save":
+  [529] getprop 46 .............................. <pmode>
+  [531] pushsymb 126 ............................ <#still>
+  [533] eq ...................................... <pmode = #still>
+  [534] jmpifz [616] ............................ if pmode = #still then / else
+  [537] getlocal 0 .............................. <tWndObj>
+  [539] pushcons 2 .............................. <"cam_display">
+  [541] pusharglist 2 ........................... <tWndObj, "cam_display">
+  [543] objcall 49 .............................. <tWndObj.getElement("cam_display")>
+  [545] pushsymb 85 ............................. <#blend>
+  [547] pushint8 50 ............................. <50>
+  [549] pusharglistnoret 3 ...................... <tWndObj.getElement("cam_display"), #blend, 50>
+  [551] objcall 53 .............................. tWndObj.getElement("cam_display").setProperty(#blend, 50)
+  [553] getlocal 0 .............................. <tWndObj>
+  [555] pushcons 3 .............................. <"cam_savetxt">
+  [557] pusharglist 2 ........................... <tWndObj, "cam_savetxt">
+  [559] objcall 49 .............................. <tWndObj.getElement("cam_savetxt")>
+  [561] pushsymb 52 ............................. <#visible>
+  [563] pushint8 1 .............................. <1>
+  [565] pusharglistnoret 3 ...................... <tWndObj.getElement("cam_savetxt"), #visible, 1>
+  [567] objcall 53 .............................. tWndObj.getElement("cam_savetxt").setProperty(#visible, 1)
+  [569] getlocal 0 .............................. <tWndObj>
+  [571] pushcons 2 .............................. <"cam_display">
+  [573] pusharglist 2 ........................... <tWndObj, "cam_display">
+  [575] objcall 49 .............................. <tWndObj.getElement("cam_display")>
+  [577] pushsymb 50 ............................. <#buffer>
+  [579] getprop 48 .............................. <pDisplaymem>
+  [581] pusharglistnoret 3 ...................... <tWndObj.getElement("cam_display"), #buffer, pDisplaymem>
+  [583] objcall 53 .............................. tWndObj.getElement("cam_display").setProperty(#buffer, pDisplaymem)
+  [585] getparam 0 .............................. <me>
+  [587] pusharglist 1 ........................... <me>
+  [589] objcall 62 .............................. <me.getComponent()>
+  [591] getprop 19 .............................. <pCamMember>
+  [593] getlocal 0 .............................. <tWndObj>
+  [595] pushcons 23 ............................. <"photo_text">
+  [597] pusharglist 2 ........................... <tWndObj, "photo_text">
+  [599] objcall 49 .............................. <tWndObj.getElement("photo_text")>
+  [601] pusharglist 1 ........................... <tWndObj.getElement("photo_text")>
+  [603] objcall 127 ............................. <tWndObj.getElement("photo_text").getText()>
+  [605] pusharglistnoret 3 ...................... <me.getComponent(), pCamMember, tWndObj.getElement("photo_text").getText()>
+  [607] objcall 128 ............................. me.getComponent().storePicture(pCamMember, tWndObj.getElement("photo_text").getText())
+  [609] pushsymb 129 ............................ <#save>
+  [611] setprop 46 .............................. pmode = #save
+  [613] jmp [622]
+  [616] pushint8 1 .............................. <1>
+  [618] pusharglistnoret 1 ...................... <1>
+  [620] extcall 130 ............................. beep(1)
+  [622] getprop 46 .............................. <pmode>
+  [624] pushsymb 126 ............................ <#still>
+  [626] eq ...................................... <pmode = #still>
+  [627] getparam 0 .............................. <me>
+  [629] pusharglist 1 ........................... <me>
+  [631] objcall 62 .............................. <me.getComponent()>
+  [633] pusharglist 1 ........................... <me.getComponent()>
+  [635] objcall 63 .............................. <me.getComponent().getFilm()>
+  [637] pushzero ................................ <0>
+  [638] eq ...................................... <me.getComponent().getFilm() = 0>
+  [639] and ..................................... <(pmode = #still) and (me.getComponent().getFilm() = 0)>
+  [640] jmpifz [656] ............................ if (pmode = #still) and (me.getComponent().getFilm() = 0) then
+  [643] pushsymb 131 ............................ <#alert>
+  [645] pushsymb 132 ............................ <#msg>
+  [647] pushcons 24 ............................. <"cam_save_nofilm">
+  [649] pusharglist 2 ........................... <[#msg: "cam_save_nofilm"]>
+  [651] pushproplist ............................ <[#msg: "cam_save_nofilm"]>
+  [652] pusharglistnoret 2 ...................... <#alert, [#msg: "cam_save_nofilm"]>
+  [654] extcall 105 ............................. executeMessage(#alert, [#msg: "cam_save_nofilm"])
+  [656] jmp [758]
+  [659] peek 0
+  [661] pushcons 25 ............................. <"cam_zoom_in">
+  [663] eq
+  [664] jmpifz [708] ............................ (case) "cam_zoom_in":
+  [667] getprop 46 .............................. <pmode>
+  [669] pushsymb 126 ............................ <#still>
+  [671] eq ...................................... <pmode = #still>
+  [672] jmpifz [699] ............................ if pmode = #still then / else
+  [675] getprop 97 .............................. <pZoomLevel>
+  [677] pushint8 11 ............................. <11>
+  [679] lt ...................................... <pZoomLevel < 11>
+  [680] jmpifz [690] ............................ if pZoomLevel < 11 then
+  [683] getprop 97 .............................. <pZoomLevel>
+  [685] pushint8 1 .............................. <1>
+  [687] add ..................................... <pZoomLevel + 1>
+  [688] setprop 97 .............................. pZoomLevel = pZoomLevel + 1
+  [690] getparam 0 .............................. <me>
+  [692] pusharglistnoret 1 ...................... <me>
+  [694] objcall 14 .............................. me.zoom()
+  [696] jmp [705]
+  [699] pushint8 1 .............................. <1>
+  [701] pusharglistnoret 1 ...................... <1>
+  [703] extcall 130 ............................. beep(1)
+  [705] jmp [758]
+  [708] peek 0
+  [710] pushcons 26 ............................. <"cam_zoom_out">
+  [712] eq
+  [713] jmpifz [758] ............................ (case) "cam_zoom_out":
+  [716] getprop 46 .............................. <pmode>
+  [718] pushsymb 126 ............................ <#still>
+  [720] eq ...................................... <pmode = #still>
+  [721] jmpifz [752] ............................ if pmode = #still then / else
+  [724] getprop 97 .............................. <pZoomLevel>
+  [726] pushint8 1 .............................. <1>
+  [728] sub ..................................... <pZoomLevel - 1>
+  [729] setprop 97 .............................. pZoomLevel = pZoomLevel - 1
+  [731] getprop 97 .............................. <pZoomLevel>
+  [733] pushint8 1 .............................. <1>
+  [735] lt ...................................... <pZoomLevel < 1>
+  [736] jmpifz [743] ............................ if pZoomLevel < 1 then
+  [739] pushint8 1 .............................. <1>
+  [741] setprop 97 .............................. pZoomLevel = 1
+  [743] getparam 0 .............................. <me>
+  [745] pusharglistnoret 1 ...................... <me>
+  [747] objcall 14 .............................. me.zoom()
+  [749] jmp [758]
+  [752] pushint8 1 .............................. <1>
+  [754] pusharglistnoret 1 ...................... <1>
+  [756] extcall 130 ............................. beep(1)
+  [758] pop 1 ................................... end case
+  [760] getparam 0 .............................. <me>
+  [762] pusharglistnoret 1 ...................... <me>
+  [764] objcall 10 .............................. me.setButtonHilites()
+  [766] ret
+end
+
+on setButtonHilites me
+  [  0] getprop 23 .............................. <pWindowID>
+  [  2] pusharglist 1 ........................... <pWindowID>
+  [  4] extcall 33 .............................. <windowExists(pWindowID)>
+  [  6] not ..................................... <not windowExists(pWindowID)>
+  [  7] jmpifz [ 15] ............................ if not windowExists(pWindowID) then
+  [ 10] pushzero ................................ <0>
+  [ 11] pusharglistnoret 1 ...................... <0>
+  [ 13] extcall 27 .............................. return 0
+  [ 15] getprop 46 .............................. <pmode>
+  [ 17] peek 0 .................................. case pmode of
+  [ 19] pushsymb 47 ............................. <#live>
+  [ 21] eq
+  [ 22] jmpifz [ 58] ............................ (case) #live:
+  [ 25] getparam 0 .............................. <me>
+  [ 27] pushcons 14 ............................. <"cam_shoot">
+  [ 29] pusharglist 1 ........................... <["cam_shoot"]>
+  [ 31] pushlist ................................ <["cam_shoot"]>
+  [ 32] pusharglistnoret 2 ...................... <me, ["cam_shoot"]>
+  [ 34] objcall 12 .............................. me.hilite(["cam_shoot"])
+  [ 36] getparam 0 .............................. <me>
+  [ 38] pushcons 21 ............................. <"cam_release">
+  [ 40] pushcons 22 ............................. <"cam_save">
+  [ 42] pushcons 25 ............................. <"cam_zoom_in">
+  [ 44] pushcons 26 ............................. <"cam_zoom_out">
+  [ 46] pushcons 27 ............................. <"cam_txtscreen">
+  [ 48] pusharglist 5 ........................... <["cam_release", "cam_save", "cam_zoom_in", "cam_zoom_out", "cam_txtscreen"]>
+  [ 50] pushlist ................................ <["cam_release", "cam_save", "cam_zoom_in", "cam_zoom_out", "cam_txtscreen"]>
+  [ 51] pusharglistnoret 2 ...................... <me, ["cam_release", "cam_save", "cam_zoom_in", "cam_zoom_out", "cam_txtscreen"]>
+  [ 53] objcall 13 .............................. me.unhilite(["cam_release", "cam_save", "cam_zoom_in", "cam_zoom_out", "cam_txtscreen"])
+  [ 55] jmp [152]
+  [ 58] peek 0
+  [ 60] pushsymb 126 ............................ <#still>
+  [ 62] eq
+  [ 63] jmpifz [123] ............................ (case) #still:
+  [ 66] getparam 0 .............................. <me>
+  [ 68] pusharglist 1 ........................... <me>
+  [ 70] objcall 62 .............................. <me.getComponent()>
+  [ 72] pusharglist 1 ........................... <me.getComponent()>
+  [ 74] objcall 63 .............................. <me.getComponent().getFilm()>
+  [ 76] pushzero ................................ <0>
+  [ 77] gt ...................................... <me.getComponent().getFilm() > 0>
+  [ 78] jmpifz [ 96] ............................ if me.getComponent().getFilm() > 0 then
+  [ 81] getparam 0 .............................. <me>
+  [ 83] pushcons 22 ............................. <"cam_save">
+  [ 85] pushcons 25 ............................. <"cam_zoom_in">
+  [ 87] pushcons 26 ............................. <"cam_zoom_out">
+  [ 89] pusharglist 3 ........................... <["cam_save", "cam_zoom_in", "cam_zoom_out"]>
+  [ 91] pushlist ................................ <["cam_save", "cam_zoom_in", "cam_zoom_out"]>
+  [ 92] pusharglistnoret 2 ...................... <me, ["cam_save", "cam_zoom_in", "cam_zoom_out"]>
+  [ 94] objcall 12 .............................. me.hilite(["cam_save", "cam_zoom_in", "cam_zoom_out"])
+  [ 96] getparam 0 .............................. <me>
+  [ 98] pushcons 14 ............................. <"cam_shoot">
+  [100] pusharglist 1 ........................... <["cam_shoot"]>
+  [102] pushlist ................................ <["cam_shoot"]>
+  [103] pusharglistnoret 2 ...................... <me, ["cam_shoot"]>
+  [105] objcall 13 .............................. me.unhilite(["cam_shoot"])
+  [107] getparam 0 .............................. <me>
+  [109] pushcons 21 ............................. <"cam_release">
+  [111] pushcons 27 ............................. <"cam_txtscreen">
+  [113] pusharglist 2 ........................... <["cam_release", "cam_txtscreen"]>
+  [115] pushlist ................................ <["cam_release", "cam_txtscreen"]>
+  [116] pusharglistnoret 2 ...................... <me, ["cam_release", "cam_txtscreen"]>
+  [118] objcall 12 .............................. me.hilite(["cam_release", "cam_txtscreen"])
+  [120] jmp [152]
+  [123] peek 0
+  [125] pushsymb 129 ............................ <#save>
+  [127] eq
+  [128] jmpifz [152] ............................ (case) #save:
+  [131] getparam 0 .............................. <me>
+  [133] pushcons 14 ............................. <"cam_shoot">
+  [135] pushcons 21 ............................. <"cam_release">
+  [137] pushcons 22 ............................. <"cam_save">
+  [139] pushcons 25 ............................. <"cam_zoom_in">
+  [141] pushcons 26 ............................. <"cam_zoom_out">
+  [143] pushcons 27 ............................. <"cam_txtscreen">
+  [145] pusharglist 6 ........................... <["cam_shoot", "cam_release", "cam_save", "cam_zoom_in", "cam_zoom_out", "cam_txtscreen"]>
+  [147] pushlist ................................ <["cam_shoot", "cam_release", "cam_save", "cam_zoom_in", "cam_zoom_out", "cam_txtscreen"]>
+  [148] pusharglistnoret 2 ...................... <me, ["cam_shoot", "cam_release", "cam_save", "cam_zoom_in", "cam_zoom_out", "cam_txtscreen"]>
+  [150] objcall 13 .............................. me.unhilite(["cam_shoot", "cam_release", "cam_save", "cam_zoom_in", "cam_zoom_out", "cam_txtscreen"])
+  [152] pop 1 ................................... end case
+  [154] ret
+end
+
+on saveOk me
+  [  0] getprop 23 .............................. <pWindowID>
+  [  2] pusharglist 1 ........................... <pWindowID>
+  [  4] extcall 33 .............................. <windowExists(pWindowID)>
+  [  6] not ..................................... <not windowExists(pWindowID)>
+  [  7] jmpifz [ 15] ............................ if not windowExists(pWindowID) then
+  [ 10] pushzero ................................ <0>
+  [ 11] pusharglistnoret 1 ...................... <0>
+  [ 13] extcall 27 .............................. return 0
+  [ 15] pushsymb 47 ............................. <#live>
+  [ 17] setprop 46 .............................. pmode = #live
+  [ 19] getparam 0 .............................. <me>
+  [ 21] pusharglistnoret 1 ...................... <me>
+  [ 23] objcall 6 ............................... me.setCameraToLiveMode()
+  [ 25] getprop 23 .............................. <pWindowID>
+  [ 27] pusharglist 1 ........................... <pWindowID>
+  [ 29] extcall 39 .............................. <getWindow(pWindowID)>
+  [ 31] pushcons 3 .............................. <"cam_savetxt">
+  [ 33] pusharglist 2 ........................... <getWindow(pWindowID), "cam_savetxt">
+  [ 35] objcall 49 .............................. <getWindow(pWindowID).getElement("cam_savetxt")>
+  [ 37] pushsymb 52 ............................. <#visible>
+  [ 39] pushzero ................................ <0>
+  [ 40] pusharglistnoret 3 ...................... <getWindow(pWindowID).getElement("cam_savetxt"), #visible, 0>
+  [ 42] objcall 53 .............................. getWindow(pWindowID).getElement("cam_savetxt").setProperty(#visible, 0)
+  [ 44] getparam 0 .............................. <me>
+  [ 46] pusharglistnoret 1 ...................... <me>
+  [ 48] objcall 10 .............................. me.setButtonHilites()
+  [ 50] getparam 0 .............................. <me>
+  [ 52] pusharglistnoret 1 ...................... <me>
+  [ 54] objcall 4 ............................... me.updateFilm()
+  [ 56] pushint8 1 .............................. <1>
+  [ 58] pusharglistnoret 1 ...................... <1>
+  [ 60] extcall 27 .............................. return 1
+  [ 62] ret
+end
+
+on hilite me, tElements
+  [  0] getprop 23 .............................. <pWindowID>
+  [  2] pusharglist 1 ........................... <pWindowID>
+  [  4] extcall 39 .............................. <getWindow(pWindowID)>
+  [  6] setlocal 0 .............................. tWndObj = getWindow(pWindowID)
+  [  8] getparam 1 .............................. <tElements>
+  [ 10] peek 0
+  [ 12] pusharglist 1
+  [ 14] extcall 136
+  [ 16] pushint8 1
+  [ 18] peek 0
+  [ 20] peek 2
+  [ 22] lteq
+  [ 23] jmpifz [ 72] ............................ repeat with tid in tElements
+  [ 26] peek 2
+  [ 28] peek 1
+  [ 30] pusharglist 2
+  [ 32] extcall 137
+  [ 34] setlocal 1
+  [ 36] getlocal 1 .............................. <tid>
+  [ 38] pushcons 28 ............................. <"_hi">
+  [ 40] joinstr ................................. <tid & "_hi">
+  [ 41] setlocal 2 .............................. tName = tid & "_hi"
+  [ 43] getlocal 0 .............................. <tWndObj>
+  [ 45] getlocal 1 .............................. <tid>
+  [ 47] pusharglist 2 ........................... <tWndObj, tid>
+  [ 49] objcall 49 .............................. <tWndObj.getElement(tid)>
+  [ 51] pushsymb 50 ............................. <#buffer>
+  [ 53] getlocal 2 .............................. <tName>
+  [ 55] pusharglist 1 ........................... <tName>
+  [ 57] extcall 138 ............................. <getmemnum(tName)>
+  [ 59] pusharglist 1 ........................... <getmemnum(tName)>
+  [ 61] extcall 20 .............................. <member(getmemnum(tName))>
+  [ 63] pusharglistnoret 3 ...................... <tWndObj.getElement(tid), #buffer, member(getmemnum(tName))>
+  [ 65] objcall 53 .............................. tWndObj.getElement(tid).setProperty(#buffer, member(getmemnum(tName)))
+  [ 67] pushint8 1
+  [ 69] add
+  [ 70] endrepeat [ 18]
+  [ 72] pop 3
+  [ 74] ret
+end
+
+on unhilite me, tElements
+  [  0] getprop 23 .............................. <pWindowID>
+  [  2] pusharglist 1 ........................... <pWindowID>
+  [  4] extcall 39 .............................. <getWindow(pWindowID)>
+  [  6] setlocal 0 .............................. tWndObj = getWindow(pWindowID)
+  [  8] getparam 1 .............................. <tElements>
+  [ 10] peek 0
+  [ 12] pusharglist 1
+  [ 14] extcall 136
+  [ 16] pushint8 1
+  [ 18] peek 0
+  [ 20] peek 2
+  [ 22] lteq
+  [ 23] jmpifz [ 69] ............................ repeat with tid in tElements
+  [ 26] peek 2
+  [ 28] peek 1
+  [ 30] pusharglist 2
+  [ 32] extcall 137
+  [ 34] setlocal 1
+  [ 36] getlocal 1 .............................. <tid>
+  [ 38] setlocal 2 .............................. tName = tid
+  [ 40] getlocal 0 .............................. <tWndObj>
+  [ 42] getlocal 1 .............................. <tid>
+  [ 44] pusharglist 2 ........................... <tWndObj, tid>
+  [ 46] objcall 49 .............................. <tWndObj.getElement(tid)>
+  [ 48] pushsymb 50 ............................. <#buffer>
+  [ 50] getlocal 2 .............................. <tName>
+  [ 52] pusharglist 1 ........................... <tName>
+  [ 54] extcall 138 ............................. <getmemnum(tName)>
+  [ 56] pusharglist 1 ........................... <getmemnum(tName)>
+  [ 58] extcall 20 .............................. <member(getmemnum(tName))>
+  [ 60] pusharglistnoret 3 ...................... <tWndObj.getElement(tid), #buffer, member(getmemnum(tName))>
+  [ 62] objcall 51 .............................. tWndObj.getElement(tid).getProperty(#buffer, member(getmemnum(tName)))
+  [ 64] pushint8 1
+  [ 66] add
+  [ 67] endrepeat [ 18]
+  [ 69] pop 3
+  [ 71] ret
+end
+
+on zoom me
+  [  0] getprop 110 ............................. <pCamShotImage>
+  [  2] getobjprop 109 .......................... <pCamShotImage.rect>
+  [  4] setlocal 0 .............................. tRect = pCamShotImage.rect
+  [  6] getprop 110 ............................. <pCamShotImage>
+  [  8] getobjprop 66 ........................... <pCamShotImage.height>
+  [ 10] getprop 97 .............................. <pZoomLevel>
+  [ 12] div ..................................... <pCamShotImage.height / pZoomLevel>
+  [ 13] setlocal 1 .............................. tH = pCamShotImage.height / pZoomLevel
+  [ 15] getprop 110 ............................. <pCamShotImage>
+  [ 17] getobjprop 65 ........................... <pCamShotImage.width>
+  [ 19] getprop 97 .............................. <pZoomLevel>
+  [ 21] div ..................................... <pCamShotImage.width / pZoomLevel>
+  [ 22] setlocal 2 .............................. tW = pCamShotImage.width / pZoomLevel
+  [ 24] getlocal 0 .............................. <tRect>
+  [ 26] getprop 110 ............................. <pCamShotImage>
+  [ 28] getobjprop 66 ........................... <pCamShotImage.height>
+  [ 30] pushint8 2 .............................. <2>
+  [ 32] div ..................................... <pCamShotImage.height / 2>
+  [ 33] getlocal 1 .............................. <tH>
+  [ 35] pushint8 2 .............................. <2>
+  [ 37] div ..................................... <tH / 2>
+  [ 38] sub ..................................... <(pCamShotImage.height / 2) - (tH / 2)>
+  [ 39] setobjprop 115 .......................... tRect.top = (pCamShotImage.height / 2) - (tH / 2)
+  [ 41] getlocal 0 .............................. <tRect>
+  [ 43] getlocal 0 .............................. <tRect>
+  [ 45] getobjprop 115 .......................... <tRect.top>
+  [ 47] getlocal 1 .............................. <tH>
+  [ 49] add ..................................... <tRect.top + tH>
+  [ 50] setobjprop 114 .......................... tRect.bottom = tRect.top + tH
+  [ 52] getlocal 0 .............................. <tRect>
+  [ 54] getprop 110 ............................. <pCamShotImage>
+  [ 56] getobjprop 65 ........................... <pCamShotImage.width>
+  [ 58] pushint8 2 .............................. <2>
+  [ 60] div ..................................... <pCamShotImage.width / 2>
+  [ 61] getlocal 2 .............................. <tW>
+  [ 63] pushint8 2 .............................. <2>
+  [ 65] div ..................................... <tW / 2>
+  [ 66] sub ..................................... <(pCamShotImage.width / 2) - (tW / 2)>
+  [ 67] setobjprop 113 .......................... tRect.left = (pCamShotImage.width / 2) - (tW / 2)
+  [ 69] getlocal 0 .............................. <tRect>
+  [ 71] getlocal 0 .............................. <tRect>
+  [ 73] getobjprop 113 .......................... <tRect.left>
+  [ 75] getlocal 2 .............................. <tW>
+  [ 77] add ..................................... <tRect.left + tW>
+  [ 78] setobjprop 112 .......................... tRect.right = tRect.left + tW
+  [ 80] getprop 19 .............................. <pCamMember>
+  [ 82] getchainedprop 111 ...................... <pCamMember.image>
+  [ 84] getprop 110 ............................. <pCamShotImage>
+  [ 86] getprop 19 .............................. <pCamMember>
+  [ 88] getchainedprop 111 ...................... <pCamMember.image>
+  [ 90] getobjprop 109 .......................... <pCamMember.image.rect>
+  [ 92] getlocal 0 .............................. <tRect>
+  [ 94] pushsymb 89 ............................. <#bgColor>
+  [ 96] pushint16 238 ........................... <238>
+  [ 99] pushint16 238 ........................... <238>
+  [102] pushint16 238 ........................... <238>
+  [105] pusharglist 3 ........................... <238, 238, 238>
+  [107] extcall 88 .............................. <rgb(238, 238, 238)>
+  [109] pusharglist 2 ........................... <[#bgColor: rgb(238, 238, 238)]>
+  [111] pushproplist ............................ <[#bgColor: rgb(238, 238, 238)]>
+  [112] pusharglistnoret 5 ...................... <pCamMember.image, pCamShotImage, pCamMember.image.rect, tRect, [#bgColor: rgb(238, 238, 238)]>
+  [114] objcall 118 ............................. pCamMember.image.copyPixels(pCamShotImage, pCamMember.image.rect, tRect, [#bgColor: rgb(238, 238, 238)])
+  [116] ret
+end
+
+on showHelpLine me, tElemID
+  [  0] getprop 23 .............................. <pWindowID>
+  [  2] pusharglist 1 ........................... <pWindowID>
+  [  4] extcall 39 .............................. <getWindow(pWindowID)>
+  [  6] pushcons 29 ............................. <"cam_statusbar">
+  [  8] pusharglist 2 ........................... <getWindow(pWindowID), "cam_statusbar">
+  [ 10] objcall 49 .............................. <getWindow(pWindowID).getElement("cam_statusbar")>
+  [ 12] setlocal 0 .............................. tElement = getWindow(pWindowID).getElement("cam_statusbar")
+  [ 14] getparam 1 .............................. <tElemID>
+  [ 16] peek 0 .................................. case tElemID of
+  [ 18] pushcons 14 ............................. <"cam_shoot">
+  [ 20] eq
+  [ 21] jmpifz [ 35] ............................ (case) "cam_shoot":
+  [ 24] pushcons 30 ............................. <"cam_shoot.help">
+  [ 26] pusharglist 1 ........................... <"cam_shoot.help">
+  [ 28] extcall 127 ............................. <getText("cam_shoot.help")>
+  [ 30] setlocal 1 .............................. tText = getText("cam_shoot.help")
+  [ 32] jmp [146]
+  [ 35] peek 0
+  [ 37] pushcons 21 ............................. <"cam_release">
+  [ 39] eq
+  [ 40] jmpifz [ 54] ............................ (case) "cam_release":
+  [ 43] pushcons 31 ............................. <"cam_release.help">
+  [ 45] pusharglist 1 ........................... <"cam_release.help">
+  [ 47] extcall 127 ............................. <getText("cam_release.help")>
+  [ 49] setlocal 1 .............................. tText = getText("cam_release.help")
+  [ 51] jmp [146]
+  [ 54] peek 0
+  [ 56] pushcons 22 ............................. <"cam_save">
+  [ 58] eq
+  [ 59] jmpifz [ 73] ............................ (case) "cam_save":
+  [ 62] pushcons 32 ............................. <"cam_save.help">
+  [ 64] pusharglist 1 ........................... <"cam_save.help">
+  [ 66] extcall 127 ............................. <getText("cam_save.help")>
+  [ 68] setlocal 1 .............................. tText = getText("cam_save.help")
+  [ 70] jmp [146]
+  [ 73] peek 0
+  [ 75] pushcons 25 ............................. <"cam_zoom_in">
+  [ 77] eq
+  [ 78] jmpifz [ 92] ............................ (case) "cam_zoom_in":
+  [ 81] pushcons 33 ............................. <"cam_zoom_in.help">
+  [ 83] pusharglist 1 ........................... <"cam_zoom_in.help">
+  [ 85] extcall 127 ............................. <getText("cam_zoom_in.help")>
+  [ 87] setlocal 1 .............................. tText = getText("cam_zoom_in.help")
+  [ 89] jmp [146]
+  [ 92] peek 0
+  [ 94] pushcons 26 ............................. <"cam_zoom_out">
+  [ 96] eq
+  [ 97] jmpifz [111] ............................ (case) "cam_zoom_out":
+  [100] pushcons 34 ............................. <"cam_zoom_out.help">
+  [102] pusharglist 1 ........................... <"cam_zoom_out.help">
+  [104] extcall 127 ............................. <getText("cam_zoom_out.help")>
+  [106] setlocal 1 .............................. tText = getText("cam_zoom_out.help")
+  [108] jmp [146]
+  [111] peek 0
+  [113] pushcons 27 ............................. <"cam_txtscreen">
+  [115] eq
+  [116] jmpifz [130] ............................ (case) "cam_txtscreen":
+  [119] pushcons 35 ............................. <"cam_txtscreen.help">
+  [121] pusharglist 1 ........................... <"cam_txtscreen.help">
+  [123] extcall 127 ............................. <getText("cam_txtscreen.help")>
+  [125] setlocal 1 .............................. tText = getText("cam_txtscreen.help")
+  [127] jmp [146]
+  [130] peek 0
+  [132] pushcons 8 .............................. <"photo_picnumber">
+  [134] eq
+  [135] jmpifz [146] ............................ (case) "photo_picnumber":
+  [138] pushcons 36 ............................. <"cam_film.help">
+  [140] pusharglist 1 ........................... <"cam_film.help">
+  [142] extcall 127 ............................. <getText("cam_film.help")>
+  [144] setlocal 1 .............................. tText = getText("cam_film.help")
+  [146] pop 1 ................................... end case
+  [148] getlocal 1 .............................. <tText>
+  [150] pusharglist 0 ........................... <>
+  [152] extcall 92 .............................. <VOID>
+  [154] nteq .................................... <tText <> VOID>
+  [155] jmpifz [166] ............................ if tText <> VOID then
+  [158] getlocal 0 .............................. <tElement>
+  [160] getlocal 1 .............................. <tText>
+  [162] pusharglistnoret 2 ...................... <tElement, tText>
+  [164] objcall 64 .............................. tElement.setText(tText)
+  [166] ret
+end
+
+on hideHelpLine me
+  [  0] getprop 23 .............................. <pWindowID>
+  [  2] pusharglist 1 ........................... <pWindowID>
+  [  4] extcall 39 .............................. <getWindow(pWindowID)>
+  [  6] pushcons 29 ............................. <"cam_statusbar">
+  [  8] pusharglist 2 ........................... <getWindow(pWindowID), "cam_statusbar">
+  [ 10] objcall 49 .............................. <getWindow(pWindowID).getElement("cam_statusbar")>
+  [ 12] pushcons 37 ............................. <EMPTY>
+  [ 14] pusharglistnoret 2 ...................... <getWindow(pWindowID).getElement("cam_statusbar"), EMPTY>
+  [ 16] objcall 64 .............................. getWindow(pWindowID).getElement("cam_statusbar").setText(EMPTY)
+  [ 18] ret
+end
+
+on handItemSelect me, tdata
+  [  0] pushsymb 91 ............................. <#room>
+  [  2] pusharglist 1 ........................... <#room>
+  [  4] extcall 90 .............................. <getThread(#room)>
+  [  6] pusharglist 1 ........................... <getThread(#room)>
+  [  8] objcall 62 .............................. <getThread(#room).getComponent()>
+  [ 10] pusharglist 1 ........................... <getThread(#room).getComponent()>
+  [ 12] objcall 147 ............................. <getThread(#room).getComponent().getRoomID()>
+  [ 14] pushcons 38 ............................. <"private">
+  [ 16] nteq .................................... <getThread(#room).getComponent().getRoomID() <> "private">
+  [ 17] jmpifz [ 29] ............................ if getThread(#room).getComponent().getRoomID() <> "private" then / else
+  [ 20] getparam 0 .............................. <me>
+  [ 22] pusharglistnoret 1 ...................... <me>
+  [ 24] objcall 2 ............................... me.open()
+  [ 26] jmp [ 79]
+  [ 29] getparam 1 .............................. <tdata>
+  [ 31] setprop 148 ............................. pHandItemData = tdata
+  [ 33] getprop 25 .............................. <pDialogId>
+  [ 35] pushcons 39 ............................. <"habbo_simple.window">
+  [ 37] pushint16 300 ........................... <300>
+  [ 40] pushint16 300 ........................... <300>
+  [ 43] pusharglistnoret 4 ...................... <pDialogId, "habbo_simple.window", 300, 300>
+  [ 45] extcall 38 .............................. createWindow(pDialogId, "habbo_simple.window", 300, 300)
+  [ 47] getprop 25 .............................. <pDialogId>
+  [ 49] pusharglist 1 ........................... <pDialogId>
+  [ 51] extcall 39 .............................. <getWindow(pDialogId)>
+  [ 53] setlocal 0 .............................. tWndObj = getWindow(pDialogId)
+  [ 55] getlocal 0 .............................. <tWndObj>
+  [ 57] pushcons 40 ............................. <"camera_dialog.window">
+  [ 59] pusharglistnoret 2 ...................... <tWndObj, "camera_dialog.window">
+  [ 61] objcall 40 .............................. tWndObj.merge("camera_dialog.window")
+  [ 63] getlocal 0 .............................. <tWndObj>
+  [ 65] pushsymb 18 ............................. <#eventProcDialogMouseUp>
+  [ 67] getparam 0 .............................. <me>
+  [ 69] pusharglist 1 ........................... <me>
+  [ 71] objcall 31 .............................. <me.getID()>
+  [ 73] pushsymb 149 ............................ <#mouseUp>
+  [ 75] pusharglistnoret 4 ...................... <tWndObj, #eventProcDialogMouseUp, me.getID(), #mouseUp>
+  [ 77] objcall 43 .............................. tWndObj.registerProcedure(#eventProcDialogMouseUp, me.getID(), #mouseUp)
+  [ 79] ret
+end
+
+on eventProcDialogMouseUp me, tEvent, tElemID, tParam
+  [  0] getparam 2 .............................. <tElemID>
+  [  2] peek 0 .................................. case tElemID of
+  [  4] pushcons 41 ............................. <"camera_dialog_open">
+  [  6] eq
+  [  7] jmpifz [ 25] ............................ (case) "camera_dialog_open":
+  [ 10] getparam 0 .............................. <me>
+  [ 12] pusharglistnoret 1 ...................... <me>
+  [ 14] objcall 2 ............................... me.open()
+  [ 16] getprop 25 .............................. <pDialogId>
+  [ 18] pusharglistnoret 1 ...................... <pDialogId>
+  [ 20] extcall 34 .............................. removeWindow(pDialogId)
+  [ 22] jmp [ 68]
+  [ 25] peek 0
+  [ 27] pushcons 42 ............................. <"camera_dialog_place">
+  [ 29] eq
+  [ 30] jmpifz [ 68] ............................ (case) "camera_dialog_place":
+  [ 33] getprop 25 .............................. <pDialogId>
+  [ 35] pusharglistnoret 1 ...................... <pDialogId>
+  [ 37] extcall 34 .............................. removeWindow(pDialogId)
+  [ 39] pushsymb 91 ............................. <#room>
+  [ 41] pusharglist 1 ........................... <#room>
+  [ 43] extcall 151 ............................. <threadExists(#room)>
+  [ 45] jmpifz [ 68] ............................ if threadExists(#room) then
+  [ 48] pushsymb 91 ............................. <#room>
+  [ 50] pusharglist 1 ........................... <#room>
+  [ 52] extcall 90 .............................. <getThread(#room)>
+  [ 54] pusharglist 1 ........................... <getThread(#room)>
+  [ 56] objcall 100 ............................. <getThread(#room).getInterface()>
+  [ 58] pusharglist 1 ........................... <getThread(#room).getInterface()>
+  [ 60] objcall 101 ............................. <getThread(#room).getInterface().getContainer()>
+  [ 62] getprop 148 ............................. <pHandItemData>
+  [ 64] pusharglistnoret 2 ...................... <getThread(#room).getInterface().getContainer(), pHandItemData>
+  [ 66] objcall 152 ............................. getThread(#room).getInterface().getContainer().startItemPlacing(pHandItemData)
+  [ 68] pop 1 ................................... end case
+  [ 70] ret
+end

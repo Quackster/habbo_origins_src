@@ -1,0 +1,172 @@
+on construct me
+  [  0] getparam 0 .............................. <me>
+  [  2] pushint8 1 .............................. <1>
+  [  4] pusharglistnoret 2 ...................... <me, 1>
+  [  6] objcall 1142 ............................ me.regMessageListener(1)
+  [  9] ret
+end
+
+on deconstruct me
+  [  0] getparam 0 .............................. <me>
+  [  2] pushzero ................................ <0>
+  [  3] pusharglistnoret 2 ...................... <me, 0>
+  [  5] objcall 1142 ............................ me.regMessageListener(0)
+  [  8] ret
+end
+
+on changeStatus me, tMsg
+  [  0] getparam 1 .............................. <tMsg>
+  [  2] pushsymb 444 ............................ <#connection>
+  [  5] pusharglist 2 ........................... <tMsg, #connection>
+  [  7] objcall 149 ............................. <tMsg.getaProp(#connection)>
+  [  9] setlocal 0 .............................. tConnection = tMsg.getaProp(#connection)
+  [ 11] getlocal 0 .............................. <tConnection>
+  [ 13] pusharglist 1 ........................... <tConnection>
+  [ 15] extcall 54 .............................. <voidp(tConnection)>
+  [ 17] jmpifz [ 25] ............................ if voidp(tConnection) then
+  [ 20] pushzero ................................ <0>
+  [ 21] pusharglistnoret 1 ...................... <0>
+  [ 23] extcall 50 .............................. return 0
+  [ 25] getlocal 0 .............................. <tConnection>
+  [ 27] pusharglist 1 ........................... <tConnection>
+  [ 29] objcall 484 ............................. <tConnection.GetIntFrom()>
+  [ 32] setlocal 1 .............................. tID = tConnection.GetIntFrom()
+  [ 34] getlocal 0 .............................. <tConnection>
+  [ 36] pusharglist 1 ........................... <tConnection>
+  [ 38] objcall 484 ............................. <tConnection.GetIntFrom()>
+  [ 41] setlocal 2 .............................. tStatus = tConnection.GetIntFrom()
+  [ 43] pushsymb 77 ............................. <#room>
+  [ 45] pusharglist 1 ........................... <#room>
+  [ 47] extcall 126 ............................. <threadExists(#room)>
+  [ 49] not ..................................... <not threadExists(#room)>
+  [ 50] jmpifz [ 72] ............................ if not threadExists(#room) then
+  [ 53] getparam 0 .............................. <me>
+  [ 55] pushcons 0 .............................. <"Room thread not found.">
+  [ 57] pushsymb 1141 ........................... <#changeStatus>
+  [ 60] pushsymb 1143 ........................... <#critical>
+  [ 63] pusharglistnoret 4 ...................... <me, "Room thread not found.", #changeStatus, #critical>
+  [ 65] extcall 123 ............................. error(me, "Room thread not found.", #changeStatus, #critical)
+  [ 67] pushzero ................................ <0>
+  [ 68] pusharglistnoret 1 ...................... <0>
+  [ 70] extcall 50 .............................. return 0
+  [ 72] pushsymb 77 ............................. <#room>
+  [ 74] pusharglist 1 ........................... <#room>
+  [ 76] extcall 76 .............................. <getThread(#room)>
+  [ 78] pusharglist 1 ........................... <getThread(#room)>
+  [ 80] objcall 82 .............................. <getThread(#room).getComponent()>
+  [ 82] setlocal 3 .............................. tComponent = getThread(#room).getComponent()
+  [ 84] getlocal 3 .............................. <tComponent>
+  [ 86] pusharglist 1 ........................... <tComponent>
+  [ 88] extcall 54 .............................. <voidp(tComponent)>
+  [ 90] jmpifz [112] ............................ if voidp(tComponent) then
+  [ 93] getparam 0 .............................. <me>
+  [ 95] pushcons 1 .............................. <"Room component not found.">
+  [ 97] pushsymb 1141 ........................... <#changeStatus>
+  [100] pushsymb 1143 ........................... <#critical>
+  [103] pusharglistnoret 4 ...................... <me, "Room component not found.", #changeStatus, #critical>
+  [105] extcall 123 ............................. error(me, "Room component not found.", #changeStatus, #critical)
+  [107] pushzero ................................ <0>
+  [108] pusharglistnoret 1 ...................... <0>
+  [110] extcall 50 .............................. return 0
+  [112] getlocal 3 .............................. <tComponent>
+  [114] getlocal 1 .............................. <tID>
+  [116] pusharglist 2 ........................... <tComponent, tID>
+  [118] objcall 705 ............................. <tComponent.getActiveObject(tID)>
+  [121] setlocal 4 .............................. tActiveObject = tComponent.getActiveObject(tID)
+  [123] getlocal 4 .............................. <tActiveObject>
+  [125] pusharglist 1 ........................... <tActiveObject>
+  [127] extcall 54 .............................. <voidp(tActiveObject)>
+  [129] getlocal 4 .............................. <tActiveObject>
+  [131] pushzero ................................ <0>
+  [132] eq ...................................... <tActiveObject = 0>
+  [133] or ...................................... <voidp(tActiveObject) or (tActiveObject = 0)>
+  [134] jmpifz [162] ............................ if voidp(tActiveObject) or (tActiveObject = 0) then
+  [137] getparam 0 .............................. <me>
+  [139] pushcons 2 .............................. <"One way door object">
+  [141] getlocal 1 .............................. <tID>
+  [143] joinpadstr .............................. <"One way door object" && tID>
+  [144] pushcons 3 .............................. <"not found.">
+  [146] joinpadstr .............................. <"One way door object" && tID && "not found.">
+  [147] pushsymb 1141 ........................... <#changeStatus>
+  [150] pushsymb 389 ............................ <#minor>
+  [153] pusharglistnoret 4 ...................... <me, "One way door object" && tID && "not found.", #changeStatus, #minor>
+  [155] extcall 123 ............................. error(me, "One way door object" && tID && "not found.", #changeStatus, #minor)
+  [157] pushzero ................................ <0>
+  [158] pusharglistnoret 1 ...................... <0>
+  [160] extcall 50 .............................. return 0
+  [162] getlocal 4 .............................. <tActiveObject>
+  [164] pushsymb 1144 ........................... <#setDoor>
+  [167] pusharglist 2 ........................... <tActiveObject, #setDoor>
+  [169] objcall 1145 ............................ <tActiveObject.handler(#setDoor)>
+  [172] jmpifz [184] ............................ if tActiveObject.handler(#setDoor) then
+  [175] getlocal 4 .............................. <tActiveObject>
+  [177] getlocal 2 .............................. <tStatus>
+  [179] pusharglistnoret 2 ...................... <tActiveObject, tStatus>
+  [181] objcall 1144 ............................ tActiveObject.setDoor(tStatus)
+  [184] pushint8 1 .............................. <1>
+  [186] pusharglistnoret 1 ...................... <1>
+  [188] extcall 50 .............................. return 1
+  [190] ret
+end
+
+on regMessageListener me, tBool
+  [  0] pusharglist 0 ........................... <[:]>
+  [  2] pushproplist ............................ <[:]>
+  [  3] setlocal 0 .............................. tMsgs = [:]
+  [  5] getlocal 0 .............................. <tMsgs>
+  [  7] pushint16 312 ........................... <312>
+  [ 10] pushsymb 1141 ........................... <#changeStatus>
+  [ 13] pusharglistnoret 3 ...................... <tMsgs, 312, #changeStatus>
+  [ 15] objcall 154 ............................. tMsgs.setaProp(312, #changeStatus)
+  [ 17] pusharglist 0 ........................... <[:]>
+  [ 19] pushproplist ............................ <[:]>
+  [ 20] setlocal 1 .............................. tCmds = [:]
+  [ 22] getlocal 1 .............................. <tCmds>
+  [ 24] pushcons 4 .............................. <"ENTER_ONEWAY_DOOR">
+  [ 26] pushint16 232 ........................... <232>
+  [ 29] pusharglistnoret 3 ...................... <tCmds, "ENTER_ONEWAY_DOOR", 232>
+  [ 31] objcall 154 ............................. tCmds.setaProp("ENTER_ONEWAY_DOOR", 232)
+  [ 33] getparam 1 .............................. <tBool>
+  [ 35] jmpifz [ 81] ............................ if tBool then / else
+  [ 38] pushcons 5 .............................. <"connection.info.id">
+  [ 40] pusharglist 1 ........................... <"connection.info.id">
+  [ 42] extcall 267 ............................. <getVariable("connection.info.id")>
+  [ 45] getparam 0 .............................. <me>
+  [ 47] pusharglist 1 ........................... <me>
+  [ 49] objcall 89 .............................. <me.getID()>
+  [ 51] getlocal 0 .............................. <tMsgs>
+  [ 53] pusharglistnoret 3 ...................... <getVariable("connection.info.id"), me.getID(), tMsgs>
+  [ 55] extcall 486 ............................. registerListener(getVariable("connection.info.id"), me.getID(), tMsgs)
+  [ 58] pushcons 5 .............................. <"connection.info.id">
+  [ 60] pusharglist 1 ........................... <"connection.info.id">
+  [ 62] extcall 267 ............................. <getVariable("connection.info.id")>
+  [ 65] getparam 0 .............................. <me>
+  [ 67] pusharglist 1 ........................... <me>
+  [ 69] objcall 89 .............................. <me.getID()>
+  [ 71] getlocal 1 .............................. <tCmds>
+  [ 73] pusharglistnoret 3 ...................... <getVariable("connection.info.id"), me.getID(), tCmds>
+  [ 75] extcall 488 ............................. registerCommands(getVariable("connection.info.id"), me.getID(), tCmds)
+  [ 78] jmp [121]
+  [ 81] pushcons 5 .............................. <"connection.info.id">
+  [ 83] pusharglist 1 ........................... <"connection.info.id">
+  [ 85] extcall 267 ............................. <getVariable("connection.info.id")>
+  [ 88] getparam 0 .............................. <me>
+  [ 90] pusharglist 1 ........................... <me>
+  [ 92] objcall 89 .............................. <me.getID()>
+  [ 94] getlocal 0 .............................. <tMsgs>
+  [ 96] pusharglistnoret 3 ...................... <getVariable("connection.info.id"), me.getID(), tMsgs>
+  [ 98] extcall 489 ............................. unregisterListener(getVariable("connection.info.id"), me.getID(), tMsgs)
+  [101] pushcons 5 .............................. <"connection.info.id">
+  [103] pusharglist 1 ........................... <"connection.info.id">
+  [105] extcall 267 ............................. <getVariable("connection.info.id")>
+  [108] getparam 0 .............................. <me>
+  [110] pusharglist 1 ........................... <me>
+  [112] objcall 89 .............................. <me.getID()>
+  [114] getlocal 1 .............................. <tCmds>
+  [116] pusharglistnoret 3 ...................... <getVariable("connection.info.id"), me.getID(), tCmds>
+  [118] extcall 490 ............................. unregisterCommands(getVariable("connection.info.id"), me.getID(), tCmds)
+  [121] pushint8 1 .............................. <1>
+  [123] pusharglistnoret 1 ...................... <1>
+  [125] extcall 50 .............................. return 1
+  [127] ret
+end

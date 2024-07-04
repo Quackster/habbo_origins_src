@@ -1,0 +1,1594 @@
+property pWaitList, pTaskList, pAvailableDynCasts, pPermanentLevelList, pLatestTaskID, pCurrentDownLoads, pLoadedCasts, pTempWaitList, pCastLibCount, pSysCastNum, pBinCastNum, pNullCastName, pFileExtension
+
+on construct me
+  [  0] getmovieprop 82 ......................... <the runMode>
+  [  2] pushcons 0 .............................. <"Author">
+  [  4] eq ...................................... <the runMode = "Author">
+  [  5] jmpifz [ 16] ............................ if the runMode = "Author" then / else
+  [  8] pushcons 1 .............................. <".cst">
+  [ 10] setprop 793 ............................. pFileExtension = ".cst"
+  [ 13] jmp [ 21]
+  [ 16] pushcons 2 .............................. <".cct">
+  [ 18] setprop 793 ............................. pFileExtension = ".cct"
+  [ 21] pusharglist 0 ........................... <[:]>
+  [ 23] pushproplist ............................ <[:]>
+  [ 24] setprop 794 ............................. pLoadedCasts = [:]
+  [ 27] pusharglist 0 ........................... <[]>
+  [ 29] pushlist ................................ <[]>
+  [ 30] setprop 795 ............................. pTempWaitList = []
+  [ 33] pushzero ................................ <0>
+  [ 34] setprop 796 ............................. pCastLibCount = 0
+  [ 37] pushcons 3 .............................. <"empty">
+  [ 39] setprop 797 ............................. pNullCastName = "empty"
+  [ 42] pushcons 4 .............................. <"fuse_client">
+  [ 44] pusharglist 1 ........................... <"fuse_client">
+  [ 46] extcall 717 ............................. <castLib("fuse_client")>
+  [ 49] getobjprop 651 .......................... <castLib("fuse_client").number>
+  [ 52] setprop 798 ............................. pSysCastNum = castLib("fuse_client").number
+  [ 55] pushcons 5 .............................. <"dynamic.bin.cast">
+  [ 57] pusharglist 1 ........................... <"dynamic.bin.cast">
+  [ 59] extcall 364 ............................. <getVariable("dynamic.bin.cast")>
+  [ 62] pusharglist 1 ........................... <getVariable("dynamic.bin.cast")>
+  [ 64] extcall 717 ............................. <castLib(getVariable("dynamic.bin.cast"))>
+  [ 67] getobjprop 651 .......................... <castLib(getVariable("dynamic.bin.cast")).number>
+  [ 70] setprop 799 ............................. pBinCastNum = castLib(getVariable("dynamic.bin.cast")).number
+  [ 73] pushint8 1 .............................. <1>
+  [ 75] pusharglistnoret 1 ...................... <1>
+  [ 77] extcall 25 .............................. return 1
+  [ 79] ret
+end
+
+on startCastLoad me, tCasts, tPermanentFlag, tAdd
+  [  0] getparam 2 .............................. <tPermanentFlag>
+  [  2] pusharglist 1 ........................... <tPermanentFlag>
+  [  4] extcall 20 .............................. <voidp(tPermanentFlag)>
+  [  6] jmpifz [ 12] ............................ if voidp(tPermanentFlag) then
+  [  9] pushzero ................................ <0>
+  [ 10] setparam 2 .............................. tPermanentFlag = 0
+  [ 12] pusharglist 0 ........................... <[]>
+  [ 14] pushlist ................................ <[]>
+  [ 15] setprop 795 ............................. pTempWaitList = []
+  [ 18] pusharglist 0 ........................... <[]>
+  [ 20] pushlist ................................ <[]>
+  [ 21] setlocal 0 .............................. tCastList = []
+  [ 23] getparam 1 .............................. <tCasts>
+  [ 25] getobjprop 480 .......................... <tCasts.ilk>
+  [ 28] peek 0 .................................. case tCasts.ilk of
+  [ 30] pushsymb 800 ............................ <#propList>
+  [ 33] eq
+  [ 34] jmpifz [102] ............................ (case) #propList:
+  [ 37] pushint8 1 .............................. <1>
+  [ 39] setlocal 1
+  [ 41] getlocal 1
+  [ 43] getparam 1 .............................. <tCasts>
+  [ 45] getobjprop 22 ........................... <tCasts.count>
+  [ 47] lteq
+  [ 48] jmpifz [ 99] ............................ repeat with f = 1 to tCasts.count
+  [ 51] getparam 1 .............................. <tCasts>
+  [ 53] getlocal 1 .............................. <f>
+  [ 55] pusharglist 2 ........................... <tCasts, f>
+  [ 57] objcall 23 .............................. <tCasts.getPropAt(f)>
+  [ 59] setlocal 2 .............................. tPermanentLevel = tCasts.getPropAt(f)
+  [ 61] getparam 1 .............................. <tCasts>
+  [ 63] getlocal 1 .............................. <f>
+  [ 65] pusharglist 2 ........................... <tCasts, f>
+  [ 67] objcall 54 .............................. <tCasts[f]>
+  [ 69] setlocal 3 .............................. tCastName = tCasts[f]
+  [ 71] getlocal 0 .............................. <tCastList>
+  [ 73] getlocal 3 .............................. <tCastName>
+  [ 75] pusharglistnoret 2 ...................... <tCastList, tCastName>
+  [ 77] objcall 122 ............................. tCastList.add(tCastName)
+  [ 79] getparam 0 .............................. <me>
+  [ 81] getlocal 3 .............................. <tCastName>
+  [ 83] getlocal 2 .............................. <tPermanentLevel>
+  [ 85] pusharglistnoret 3 ...................... <me, tCastName, tPermanentLevel>
+  [ 87] objcall 791 ............................. me.addOneCastToWaitList(tCastName, tPermanentLevel)
+  [ 90] pushint8 1
+  [ 92] getlocal 1
+  [ 94] add
+  [ 95] setlocal 1
+  [ 97] endrepeat [ 41]
+  [ 99] jmp [231]
+  [102] peek 0
+  [104] pushsymb 481 ............................ <#list>
+  [107] eq
+  [108] jmpifz [168] ............................ (case) #list:
+  [111] getparam 1 .............................. <tCasts>
+  [113] peek 0
+  [115] pusharglist 1
+  [117] extcall 22
+  [119] pushint8 1
+  [121] peek 0
+  [123] peek 2
+  [125] lteq
+  [126] jmpifz [163] ............................ repeat with tCastName in tCasts
+  [129] peek 2
+  [131] peek 1
+  [133] pusharglist 2
+  [135] extcall 54
+  [137] setlocal 3
+  [139] getlocal 0 .............................. <tCastList>
+  [141] getlocal 3 .............................. <tCastName>
+  [143] pusharglistnoret 2 ...................... <tCastList, tCastName>
+  [145] objcall 122 ............................. tCastList.add(tCastName)
+  [147] getparam 0 .............................. <me>
+  [149] getlocal 3 .............................. <tCastName>
+  [151] getparam 2 .............................. <tPermanentFlag>
+  [153] pusharglistnoret 3 ...................... <me, tCastName, tPermanentFlag>
+  [155] objcall 791 ............................. me.addOneCastToWaitList(tCastName, tPermanentFlag)
+  [158] pushint8 1
+  [160] add
+  [161] endrepeat [121]
+  [163] pop 3
+  [165] jmp [231] ............................... (case) otherwise:
+  [168] getparam 1 .............................. <tCasts>
+  [170] pusharglist 1 ........................... <tCasts>
+  [172] extcall 481 ............................. <list(tCasts)>
+  [175] setparam 1 .............................. tCasts = list(tCasts)
+  [177] getparam 1 .............................. <tCasts>
+  [179] peek 0
+  [181] pusharglist 1
+  [183] extcall 22
+  [185] pushint8 1
+  [187] peek 0
+  [189] peek 2
+  [191] lteq
+  [192] jmpifz [229] ............................ repeat with tCastName in tCasts
+  [195] peek 2
+  [197] peek 1
+  [199] pusharglist 2
+  [201] extcall 54
+  [203] setlocal 3
+  [205] getlocal 0 .............................. <tCastList>
+  [207] getlocal 3 .............................. <tCastName>
+  [209] pusharglistnoret 2 ...................... <tCastList, tCastName>
+  [211] objcall 122 ............................. tCastList.add(tCastName)
+  [213] getparam 0 .............................. <me>
+  [215] getlocal 3 .............................. <tCastName>
+  [217] getparam 2 .............................. <tPermanentFlag>
+  [219] pusharglistnoret 3 ...................... <me, tCastName, tPermanentFlag>
+  [221] objcall 791 ............................. me.addOneCastToWaitList(tCastName, tPermanentFlag)
+  [224] pushint8 1
+  [226] add
+  [227] endrepeat [187]
+  [229] pop 3
+  [231] pop 1 ................................... end case
+  [233] getparam 1 .............................. <tCasts>
+  [235] pusharglist 1 ........................... <tCasts>
+  [237] extcall 22 .............................. <count(tCasts)>
+  [239] pushzero ................................ <0>
+  [240] eq ...................................... <count(tCasts) = 0>
+  [241] jmpifz [249] ............................ if count(tCasts) = 0 then
+  [244] pushzero ................................ <0>
+  [245] pusharglistnoret 1 ...................... <0>
+  [247] extcall 25 .............................. return 0
+  [249] getparam 3 .............................. <tAdd>
+  [251] pusharglist 1 ........................... <tAdd>
+  [253] extcall 20 .............................. <voidp(tAdd)>
+  [255] jmpifz [261] ............................ if voidp(tAdd) then
+  [258] pushzero ................................ <0>
+  [259] setparam 3 .............................. tAdd = 0
+  [261] pusharglist 0 ........................... <>
+  [263] extcall 401 ............................. <getUniqueID()>
+  [266] setlocal 4 .............................. tid = getUniqueID()
+  [268] getlocal 4 .............................. <tid>
+  [270] setprop 801 ............................. pLatestTaskID = tid
+  [273] getparam 3 .............................. <tAdd>
+  [275] pushzero ................................ <0>
+  [276] eq ...................................... <tAdd = 0>
+  [277] jmpifz [289] ............................ if tAdd = 0 then
+  [280] getparam 0 .............................. <me>
+  [282] getlocal 0 .............................. <tCastList>
+  [284] pusharglistnoret 2 ...................... <me, tCastList>
+  [286] objcall 790 ............................. me.removeTemporaryCast(tCastList)
+  [289] getprop 795 ............................. <pTempWaitList>
+  [292] getobjprop 22 ........................... <pTempWaitList.count>
+  [294] pushzero ................................ <0>
+  [295] gt ...................................... <pTempWaitList.count > 0>
+  [296] jmpifz [316] ............................ if pTempWaitList.count > 0 then
+  [299] getprop 802 ............................. <pWaitList>
+  [302] getlocal 4 .............................. <tid>
+  [304] getprop 795 ............................. <pTempWaitList>
+  [307] pusharglist 1 ........................... <pTempWaitList>
+  [309] objcall 544 ............................. <pTempWaitList.duplicate()>
+  [312] pusharglistnoret 3 ...................... <pWaitList, tid, pTempWaitList.duplicate()>
+  [314] objcall 24 .............................. pWaitList[tid] = pTempWaitList.duplicate()
+  [316] getprop 802 ............................. <pWaitList>
+  [319] getobjprop 22 ........................... <pWaitList.count>
+  [321] pushzero ................................ <0>
+  [322] eq ...................................... <pWaitList.count = 0>
+  [323] jmpifz [341] ............................ if pWaitList.count = 0 then / else
+  [326] pushsymb 803 ............................ <#ready>
+  [329] setlocal 5 .............................. tStatus = #ready
+  [331] pushfloat32 1.0 ......................... <1.0>
+  [336] setlocal 6 .............................. tPercent = 1.0
+  [338] jmp [349]
+  [341] pushsymb 804 ............................ <#LOADING>
+  [344] setlocal 5 .............................. tStatus = #LOADING
+  [346] pushzero ................................ <0>
+  [347] setlocal 6 .............................. tPercent = 0
+  [349] getprop 805 ............................. <pTaskList>
+  [352] getlocal 4 .............................. <tid>
+  [354] pushsymb 649 ............................ <#temp>
+  [357] pushcons 6 .............................. <"castload.task.class">
+  [359] pusharglist 1 ........................... <"castload.task.class">
+  [361] extcall 155 ............................. <getClassVariable("castload.task.class")>
+  [363] pusharglist 2 ........................... <#temp, getClassVariable("castload.task.class")>
+  [365] extcall 94 .............................. <createObject(#temp, getClassVariable("castload.task.class"))>
+  [367] pusharglistnoret 3 ...................... <pTaskList, tid, createObject(#temp, getClassVariable("castload.task.class"))>
+  [369] objcall 24 .............................. pTaskList[tid] = createObject(#temp, getClassVariable("castload.task.class"))
+  [371] pusharglist 0 ........................... <[:]>
+  [373] pushproplist ............................ <[:]>
+  [374] setlocal 7 .............................. tProps = [:]
+  [376] getlocal 7 .............................. <tProps>
+  [378] pushsymb 34 ............................. <#id>
+  [380] getlocal 4 .............................. <tid>
+  [382] pusharglistnoret 3 ...................... <tProps, #id, tid>
+  [384] objcall 24 .............................. tProps[#id] = tid
+  [386] getlocal 7 .............................. <tProps>
+  [388] pushsymb 758 ............................ <#status>
+  [391] getlocal 5 .............................. <tStatus>
+  [393] pusharglistnoret 3 ...................... <tProps, #status, tStatus>
+  [395] objcall 24 .............................. tProps[#status] = tStatus
+  [397] getlocal 7 .............................. <tProps>
+  [399] pushsymb 766 ............................ <#Percent>
+  [402] getlocal 6 .............................. <tPercent>
+  [404] pusharglistnoret 3 ...................... <tProps, #Percent, tPercent>
+  [406] objcall 24 .............................. tProps[#Percent] = tPercent
+  [408] getlocal 7 .............................. <tProps>
+  [410] pushsymb 806 ............................ <#sofar>
+  [413] pushzero ................................ <0>
+  [414] pusharglistnoret 3 ...................... <tProps, #sofar, 0>
+  [416] objcall 24 .............................. tProps[#sofar] = 0
+  [418] getlocal 7 .............................. <tProps>
+  [420] pushsymb 807 ............................ <#casts>
+  [423] getprop 795 ............................. <pTempWaitList>
+  [426] pusharglist 1 ........................... <pTempWaitList>
+  [428] objcall 544 ............................. <pTempWaitList.duplicate()>
+  [431] pusharglistnoret 3 ...................... <tProps, #casts, pTempWaitList.duplicate()>
+  [433] objcall 24 .............................. tProps[#casts] = pTempWaitList.duplicate()
+  [435] getlocal 7 .............................. <tProps>
+  [437] pushsymb 757 ............................ <#callback>
+  [440] pusharglist 0 ........................... <>
+  [442] extcall 32 .............................. <VOID>
+  [444] pusharglistnoret 3 ...................... <tProps, #callback, VOID>
+  [446] objcall 24 .............................. tProps[#callback] = VOID
+  [448] getprop 805 ............................. <pTaskList>
+  [451] getlocal 4 .............................. <tid>
+  [453] pusharglist 2 ........................... <pTaskList, tid>
+  [455] objcall 54 .............................. <pTaskList[tid]>
+  [457] getlocal 7 .............................. <tProps>
+  [459] pusharglistnoret 2 ...................... <pTaskList[tid], tProps>
+  [461] objcall 426 ............................. pTaskList[tid].define(tProps)
+  [464] pushint8 1 .............................. <1>
+  [466] setlocal 8
+  [468] getlocal 8
+  [470] pushcons 7 .............................. <"net.operation.count">
+  [472] pushint8 2 .............................. <2>
+  [474] pusharglist 2 ........................... <"net.operation.count", 2>
+  [476] extcall 365 ............................. <getIntVariable("net.operation.count", 2)>
+  [479] lteq
+  [480] jmpifz [499] ............................ repeat with i = 1 to getIntVariable("net.operation.count", 2)
+  [483] getparam 0 .............................. <me>
+  [485] pusharglistnoret 1 ...................... <me>
+  [487] objcall 783 ............................. me.AddNextpreloadNetThing()
+  [490] pushint8 1
+  [492] getlocal 8
+  [494] add
+  [495] setlocal 8
+  [497] endrepeat [468]
+  [499] getlocal 4 .............................. <tid>
+  [501] pusharglistnoret 1 ...................... <tid>
+  [503] extcall 25 .............................. return tid
+  [505] ret
+end
+
+on registerCallback me, tid, tMethod, tClientID, tArgument
+  [  0] getprop 805 ............................. <pTaskList>
+  [  3] getparam 1 .............................. <tid>
+  [  5] pusharglist 2 ........................... <pTaskList, tid>
+  [  7] objcall 815 ............................. <pTaskList.findPos(tid)>
+  [ 10] pusharglist 1 ........................... <pTaskList.findPos(tid)>
+  [ 12] extcall 20 .............................. <voidp(pTaskList.findPos(tid))>
+  [ 14] jmpifz [ 25] ............................ if voidp(pTaskList.findPos(tid)) then / else
+  [ 17] pushzero ................................ <0>
+  [ 18] pusharglistnoret 1 ...................... <0>
+  [ 20] extcall 25 .............................. return 0
+  [ 22] jmp [ 53]
+  [ 25] pushsymb 764 ............................ <#addCallBack>
+  [ 28] getprop 805 ............................. <pTaskList>
+  [ 31] getparam 1 .............................. <tid>
+  [ 33] pusharglist 2 ........................... <pTaskList, tid>
+  [ 35] objcall 54 .............................. <pTaskList[tid]>
+  [ 37] getparam 1 .............................. <tid>
+  [ 39] getparam 2 .............................. <tMethod>
+  [ 41] getparam 3 .............................. <tClientID>
+  [ 43] getparam 4 .............................. <tArgument>
+  [ 45] pusharglist 6 ........................... <#addCallBack, pTaskList[tid], tid, tMethod, tClientID, tArgument>
+  [ 47] extcall 68 .............................. <call(#addCallBack, pTaskList[tid], tid, tMethod, tClientID, tArgument)>
+  [ 49] pusharglistnoret 1 ...................... <call(#addCallBack, pTaskList[tid], tid, tMethod, tClientID, tArgument)>
+  [ 51] extcall 25 .............................. return call(#addCallBack, pTaskList[tid], tid, tMethod, tClientID, tArgument)
+  [ 53] ret
+end
+
+on resetCastLibs me, tClean, tForced
+  [  0] getparam 1 .............................. <tClean>
+  [  2] pushint8 1 .............................. <1>
+  [  4] nteq .................................... <tClean <> 1>
+  [  5] jmpifz [ 11] ............................ if tClean <> 1 then
+  [  8] pushzero ................................ <0>
+  [  9] setparam 1 .............................. tClean = 0
+  [ 11] pusharglist 0 ........................... <[]>
+  [ 13] pushlist ................................ <[]>
+  [ 14] setlocal 0 .............................. tTempList = []
+  [ 16] getmovieprop 82 ......................... <the runMode>
+  [ 18] pushcons 0 .............................. <"Author">
+  [ 20] eq ...................................... <the runMode = "Author">
+  [ 21] getparam 2 .............................. <tForced>
+  [ 23] pushint8 1 .............................. <1>
+  [ 25] nteq .................................... <tForced <> 1>
+  [ 26] and ..................................... <(the runMode = "Author") and (tForced <> 1)>
+  [ 27] jmpifz [ 83] ............................ if (the runMode = "Author") and (tForced <> 1) then
+  [ 30] pushint8 1 .............................. <1>
+  [ 32] setlocal 1 .............................. f = 1
+  [ 34] pushint8 1 .............................. <1>
+  [ 36] jmpifz [ 83] ............................ repeat while 1
+  [ 39] pushcons 8 .............................. <"cast.dev.">
+  [ 41] getlocal 1 .............................. <f>
+  [ 43] joinstr ................................. <"cast.dev." & f>
+  [ 44] pusharglist 1 ........................... <"cast.dev." & f>
+  [ 46] extcall 368 ............................. <variableExists("cast.dev." & f)>
+  [ 49] jmpifz [ 71] ............................ if variableExists("cast.dev." & f) then / else
+  [ 52] getlocal 0 .............................. <tTempList>
+  [ 54] pushcons 8 .............................. <"cast.dev.">
+  [ 56] getlocal 1 .............................. <f>
+  [ 58] joinstr ................................. <"cast.dev." & f>
+  [ 59] pusharglist 1 ........................... <"cast.dev." & f>
+  [ 61] extcall 364 ............................. <getVariable("cast.dev." & f)>
+  [ 64] pusharglistnoret 2 ...................... <tTempList, getVariable("cast.dev." & f)>
+  [ 66] objcall 122 ............................. tTempList.add(getVariable("cast.dev." & f))
+  [ 68] jmp [ 74]
+  [ 71] jmp [ 83] ............................... exit repeat
+  [ 74] getlocal 1 .............................. <f>
+  [ 76] pushint8 1 .............................. <1>
+  [ 78] add ..................................... <f + 1>
+  [ 79] setlocal 1 .............................. f = f + 1
+  [ 81] endrepeat [ 34]
+  [ 83] pushint8 4 .............................. <4>
+  [ 85] get 8 ................................... <the number of castLibs>
+  [ 87] setprop 796 ............................. pCastLibCount = the number of castLibs
+  [ 90] pushint8 1 .............................. <1>
+  [ 92] setlocal 2 .............................. tEmptyCastNum = 1
+  [ 94] pushint8 2 .............................. <2>
+  [ 96] setlocal 3
+  [ 98] getlocal 3
+  [100] getprop 796 ............................. <pCastLibCount>
+  [103] lteq
+  [104] jmpifz [253] ............................ repeat with tCastNum = 2 to pCastLibCount
+  [107] getlocal 3 .............................. <tCastNum>
+  [109] getprop 798 ............................. <pSysCastNum>
+  [112] nteq .................................... <tCastNum <> pSysCastNum>
+  [113] getlocal 3 .............................. <tCastNum>
+  [115] getprop 799 ............................. <pBinCastNum>
+  [118] nteq .................................... <tCastNum <> pBinCastNum>
+  [119] and ..................................... <(tCastNum <> pSysCastNum) and (tCastNum <> pBinCastNum)>
+  [120] jmpifz [244] ............................ if (tCastNum <> pSysCastNum) and (tCastNum <> pBinCastNum) then
+  [123] getlocal 3 .............................. <tCastNum>
+  [125] pusharglist 1 ........................... <tCastNum>
+  [127] extcall 717 ............................. <castLib(tCastNum)>
+  [130] getobjprop 718 .......................... <castLib(tCastNum).name>
+  [133] setlocal 4 .............................. tCastName = castLib(tCastNum).name
+  [135] getlocal 0 .............................. <tTempList>
+  [137] getlocal 4 .............................. <tCastName>
+  [139] pusharglist 2 ........................... <tTempList, tCastName>
+  [141] objcall 815 ............................. <tTempList.findPos(tCastName)>
+  [144] pushzero ................................ <0>
+  [145] eq ...................................... <tTempList.findPos(tCastName) = 0>
+  [146] jmpifz [228] ............................ if tTempList.findPos(tCastName) = 0 then
+  [149] getparam 1 .............................. <tClean>
+  [151] jmpifz [164] ............................ if tClean then
+  [154] pusharglist 0 ........................... <>
+  [156] extcall 79 .............................. <getThreadManager()>
+  [158] getlocal 3 .............................. <tCastNum>
+  [160] pusharglistnoret 2 ...................... <getThreadManager(), tCastNum>
+  [162] objcall 151 ............................. getThreadManager().closeThread(tCastNum)
+  [164] getparam 1 .............................. <tClean>
+  [166] jmpifz [180] ............................ if tClean then
+  [169] pusharglist 0 ........................... <>
+  [171] extcall 76 .............................. <getResourceManager()>
+  [173] getlocal 3 .............................. <tCastNum>
+  [175] pusharglistnoret 2 ...................... <getResourceManager(), tCastNum>
+  [177] objcall 703 ............................. getResourceManager().unregisterMembers(tCastNum)
+  [180] getlocal 3 .............................. <tCastNum>
+  [182] pusharglist 1 ........................... <tCastNum>
+  [184] extcall 717 ............................. <castLib(tCastNum)>
+  [187] getprop 797 ............................. <pNullCastName>
+  [190] getlocal 2 .............................. <tEmptyCastNum>
+  [192] joinpadstr .............................. <pNullCastName && tEmptyCastNum>
+  [193] setobjprop 718 .......................... castLib(tCastNum).name = pNullCastName && tEmptyCastNum
+  [196] getlocal 3 .............................. <tCastNum>
+  [198] pusharglist 1 ........................... <tCastNum>
+  [200] extcall 717 ............................. <castLib(tCastNum)>
+  [203] pusharglist 0 ........................... <>
+  [205] extcall 87 .............................. <getMoviePath()>
+  [207] getprop 797 ............................. <pNullCastName>
+  [210] joinstr ................................. <getMoviePath() & pNullCastName>
+  [211] getprop 793 ............................. <pFileExtension>
+  [214] joinstr ................................. <getMoviePath() & pNullCastName & pFileExtension>
+  [215] setobjprop 816 .......................... castLib(tCastNum).fileName = getMoviePath() & pNullCastName & pFileExtension
+  [218] getlocal 2 .............................. <tEmptyCastNum>
+  [220] pushint8 1 .............................. <1>
+  [222] add ..................................... <tEmptyCastNum + 1>
+  [223] setlocal 2 .............................. tEmptyCastNum = tEmptyCastNum + 1
+  [225] jmp [244] ............................... next repeat
+  [228] getprop 794 ............................. <pLoadedCasts>
+  [231] getlocal 4 .............................. <tCastName>
+  [233] getlocal 3 .............................. <tCastNum>
+  [235] pusharglist 1 ........................... <tCastNum>
+  [237] extcall 585 ............................. <string(tCastNum)>
+  [240] pusharglistnoret 3 ...................... <pLoadedCasts, tCastName, string(tCastNum)>
+  [242] objcall 24 .............................. pLoadedCasts[tCastName] = string(tCastNum)
+  [244] pushint8 1
+  [246] getlocal 3
+  [248] add
+  [249] setlocal 3
+  [251] endrepeat [ 98]
+  [253] getparam 0 .............................. <me>
+  [255] pusharglist 1 ........................... <me>
+  [257] objcall 782 ............................. <me.InitPreloader()>
+  [260] pusharglistnoret 1 ...................... <me.InitPreloader()>
+  [262] extcall 25 .............................. return me.InitPreloader()
+  [264] ret
+end
+
+on getLoadPercent me, tid
+  [  0] getparam 1 .............................. <tid>
+  [  2] pusharglist 1 ........................... <tid>
+  [  4] extcall 20 .............................. <voidp(tid)>
+  [  6] jmpifz [ 14] ............................ if voidp(tid) then
+  [  9] getprop 801 ............................. <pLatestTaskID>
+  [ 12] setparam 1 .............................. tid = pLatestTaskID
+  [ 14] getprop 805 ............................. <pTaskList>
+  [ 17] getparam 1 .............................. <tid>
+  [ 19] pusharglist 2 ........................... <pTaskList, tid>
+  [ 21] objcall 54 .............................. <pTaskList[tid]>
+  [ 23] pusharglist 1 ........................... <pTaskList[tid]>
+  [ 25] extcall 20 .............................. <voidp(pTaskList[tid])>
+  [ 27] not ..................................... <not voidp(pTaskList[tid])>
+  [ 28] jmpifz [ 85] ............................ if not voidp(pTaskList[tid]) then / else
+  [ 31] getprop 805 ............................. <pTaskList>
+  [ 34] getparam 1 .............................. <tid>
+  [ 36] pusharglist 2 ........................... <pTaskList, tid>
+  [ 38] objcall 54 .............................. <pTaskList[tid]>
+  [ 40] pusharglist 1 ........................... <pTaskList[tid]>
+  [ 42] objcall 819 ............................. <pTaskList[tid].getTaskState()>
+  [ 45] pushsymb 803 ............................ <#ready>
+  [ 48] eq ...................................... <pTaskList[tid].getTaskState() = #ready>
+  [ 49] jmpifz [ 64] ............................ if pTaskList[tid].getTaskState() = #ready then / else
+  [ 52] pushfloat32 1.0 ......................... <1.0>
+  [ 57] pusharglistnoret 1 ...................... <1.0>
+  [ 59] extcall 25 .............................. return 1.0
+  [ 61] jmp [ 82]
+  [ 64] getprop 805 ............................. <pTaskList>
+  [ 67] getparam 1 .............................. <tid>
+  [ 69] pusharglist 2 ........................... <pTaskList, tid>
+  [ 71] objcall 54 .............................. <pTaskList[tid]>
+  [ 73] pusharglist 1 ........................... <pTaskList[tid]>
+  [ 75] objcall 820 ............................. <pTaskList[tid].getTaskPercent()>
+  [ 78] pusharglistnoret 1 ...................... <pTaskList[tid].getTaskPercent()>
+  [ 80] extcall 25 .............................. return pTaskList[tid].getTaskPercent()
+  [ 82] jmp [ 94]
+  [ 85] pushfloat32 1.0 ......................... <1.0>
+  [ 90] pusharglistnoret 1 ...................... <1.0>
+  [ 92] extcall 25 .............................. return 1.0
+  [ 94] ret
+end
+
+on FindCastNumber me, tCast
+  [  0] pushint8 1 .............................. <1>
+  [  2] setlocal 0
+  [  4] getlocal 0
+  [  6] pushint8 4 .............................. <4>
+  [  8] get 8 ................................... <the number of castLibs>
+  [ 10] lteq
+  [ 11] jmpifz [125] ............................ repeat with j = 1 to the number of castLibs
+  [ 14] getlocal 0 .............................. <j>
+  [ 16] pusharglist 1 ........................... <j>
+  [ 18] extcall 717 ............................. <castLib(j)>
+  [ 21] getobjprop 816 .......................... <castLib(j).fileName>
+  [ 24] setlocal 1 .............................. tFileName = castLib(j).fileName
+  [ 26] getlocal 1 .............................. <tFileName>
+  [ 28] pushsymb 286 ............................ <#char>
+  [ 31] getlocal 1 .............................. <tFileName>
+  [ 33] pusharglist 1 ........................... <tFileName>
+  [ 35] extcall 288 ............................. <length(tFileName)>
+  [ 38] pushint8 2 .............................. <2>
+  [ 40] sub ..................................... <length(tFileName) - 2>
+  [ 41] getlocal 1 .............................. <tFileName>
+  [ 43] pusharglist 1 ........................... <tFileName>
+  [ 45] extcall 288 ............................. <length(tFileName)>
+  [ 48] pusharglist 4 ........................... <tFileName, #char, length(tFileName) - 2, length(tFileName)>
+  [ 50] objcall 285 ............................. <tFileName.char[length(tFileName) - 2..length(tFileName)]>
+  [ 53] setlocal 2 .............................. tFileExtension = tFileName.char[length(tFileName) - 2..length(tFileName)]
+  [ 55] getlocal 0 .............................. <j>
+  [ 57] pusharglist 1 ........................... <j>
+  [ 59] extcall 717 ............................. <castLib(j)>
+  [ 62] getobjprop 718 .......................... <castLib(j).name>
+  [ 65] pushcons 9 .............................. <"Internal">
+  [ 67] nteq .................................... <castLib(j).name <> "Internal">
+  [ 68] getlocal 2 .............................. <tFileExtension>
+  [ 70] pushcons 10 ............................. <"dcr">
+  [ 72] nteq .................................... <tFileExtension <> "dcr">
+  [ 73] and ..................................... <(castLib(j).name <> "Internal") and (tFileExtension <> "dcr")>
+  [ 74] getlocal 2 .............................. <tFileExtension>
+  [ 76] pushcons 11 ............................. <"dir">
+  [ 78] nteq .................................... <tFileExtension <> "dir">
+  [ 79] and ..................................... <(castLib(j).name <> "Internal") and (tFileExtension <> "dcr") and (tFileExtension <> "dir")>
+  [ 80] jmpifz [116] ............................ if (castLib(j).name <> "Internal") and (tFileExtension <> "dcr") and (tFileExtension <> "dir") then
+  [ 83] getlocal 0 .............................. <j>
+  [ 85] pusharglist 1 ........................... <j>
+  [ 87] extcall 717 ............................. <castLib(j)>
+  [ 90] getobjprop 718 .......................... <castLib(j).name>
+  [ 93] getparam 1 .............................. <tCast>
+  [ 95] eq ...................................... <castLib(j).name = tCast>
+  [ 96] jmpifz [116] ............................ if castLib(j).name = tCast then
+  [ 99] getparam 1 .............................. <tCast>
+  [101] pusharglist 1 ........................... <tCast>
+  [103] extcall 717 ............................. <castLib(tCast)>
+  [106] getobjprop 651 .......................... <castLib(tCast).number>
+  [109] pusharglistnoret 1 ...................... <castLib(tCast).number>
+  [111] extcall 25 .............................. return castLib(tCast).number
+  [113] jmp [125] ............................... exit repeat
+  [116] pushint8 1
+  [118] getlocal 0
+  [120] add
+  [121] setlocal 0
+  [123] endrepeat [  4]
+  [125] pushzero ................................ <0>
+  [126] pusharglistnoret 1 ...................... <0>
+  [128] extcall 25 .............................. return 0
+  [130] ret
+end
+
+on exists me, tCastName
+  [  0] getparam 1 .............................. <tCastName>
+  [  2] pushcons 12 ............................. <"internal">
+  [  4] eq ...................................... <tCastName = "internal">
+  [  5] jmpifz [ 14] ............................ if tCastName = "internal" then
+  [  8] pushint8 1 .............................. <1>
+  [ 10] pusharglistnoret 1 ...................... <1>
+  [ 12] extcall 25 .............................. return 1
+  [ 14] getprop 794 ............................. <pLoadedCasts>
+  [ 17] getparam 1 .............................. <tCastName>
+  [ 19] pusharglist 2 ........................... <pLoadedCasts, tCastName>
+  [ 21] objcall 54 .............................. <pLoadedCasts[tCastName]>
+  [ 23] pusharglist 1 ........................... <pLoadedCasts[tCastName]>
+  [ 25] extcall 20 .............................. <voidp(pLoadedCasts[tCastName])>
+  [ 27] jmpifz [ 38] ............................ if voidp(pLoadedCasts[tCastName]) then / else
+  [ 30] pushzero ................................ <0>
+  [ 31] pusharglistnoret 1 ...................... <0>
+  [ 33] extcall 25 .............................. return 0
+  [ 35] jmp [ 44]
+  [ 38] pushint8 1 .............................. <1>
+  [ 40] pusharglistnoret 1 ...................... <1>
+  [ 42] extcall 25 .............................. return 1
+  [ 44] ret
+end
+
+on print me
+  [  0] pushint8 1 .............................. <1>
+  [  2] setlocal 0
+  [  4] getlocal 0
+  [  6] pushint8 4 .............................. <4>
+  [  8] get 8 ................................... <the number of castLibs>
+  [ 10] lteq
+  [ 11] jmpifz [ 38] ............................ repeat with i = 1 to the number of castLibs
+  [ 14] getlocal 0 .............................. <i>
+  [ 16] pusharglist 1 ........................... <i>
+  [ 18] extcall 717 ............................. <castLib(i)>
+  [ 21] getobjprop 718 .......................... <castLib(i).name>
+  [ 24] pusharglistnoret 1 ...................... <castLib(i).name>
+  [ 26] extcall 635 ............................. put castLib(i).name
+  [ 29] pushint8 1
+  [ 31] getlocal 0
+  [ 33] add
+  [ 34] setlocal 0
+  [ 36] endrepeat [  4]
+  [ 38] getprop 825 ............................. <pCurrentDownLoads>
+  [ 41] peek 0
+  [ 43] pusharglist 1
+  [ 45] extcall 22
+  [ 47] pushint8 1
+  [ 49] peek 0
+  [ 51] peek 2
+  [ 53] lteq
+  [ 54] jmpifz [ 96] ............................ repeat with tObj in pCurrentDownLoads
+  [ 57] peek 2
+  [ 59] peek 1
+  [ 61] pusharglist 2
+  [ 63] extcall 54
+  [ 65] setlocal 1
+  [ 67] getlocal 1 .............................. <tObj>
+  [ 69] pushsymb 826 ............................ <#pFile>
+  [ 72] pusharglist 2 ........................... <tObj, #pFile>
+  [ 74] objcall 54 .............................. <tObj[#pFile]>
+  [ 76] getlocal 1 .............................. <tObj>
+  [ 78] pushsymb 827 ............................ <#pPercent>
+  [ 81] pusharglist 2 ........................... <tObj, #pPercent>
+  [ 83] objcall 54 .............................. <tObj[#pPercent]>
+  [ 85] joinpadstr .............................. <tObj[#pFile] && tObj[#pPercent]>
+  [ 86] pusharglistnoret 1 ...................... <tObj[#pFile] && tObj[#pPercent]>
+  [ 88] extcall 635 ............................. put tObj[#pFile] && tObj[#pPercent]
+  [ 91] pushint8 1
+  [ 93] add
+  [ 94] endrepeat [ 49]
+  [ 96] pop 3
+  [ 98] ret
+end
+
+on prepare me
+  [  0] getprop 805 ............................. <pTaskList>
+  [  3] pusharglist 1 ........................... <pTaskList>
+  [  5] extcall 22 .............................. <count(pTaskList)>
+  [  7] pushzero ................................ <0>
+  [  8] gt ...................................... <count(pTaskList) > 0>
+  [  9] jmpifz [ 39] ............................ if count(pTaskList) > 0 then
+  [ 12] getparam 0 .............................. <me>
+  [ 14] pusharglistnoret 1 ...................... <me>
+  [ 16] objcall 783 ............................. me.AddNextpreloadNetThing()
+  [ 19] pushsymb 828 ............................ <#resetPercentCounter>
+  [ 22] getprop 805 ............................. <pTaskList>
+  [ 25] pusharglistnoret 2 ...................... <#resetPercentCounter, pTaskList>
+  [ 27] extcall 68 .............................. call(#resetPercentCounter, pTaskList)
+  [ 29] pushsymb 665 ............................ <#update>
+  [ 32] getprop 825 ............................. <pCurrentDownLoads>
+  [ 35] pusharglistnoret 2 ...................... <#update, pCurrentDownLoads>
+  [ 37] extcall 68 .............................. call(#update, pCurrentDownLoads)
+  [ 39] ret
+end
+
+on InitPreloader me
+  [  0] pusharglist 0 ........................... <[:]>
+  [  2] pushproplist ............................ <[:]>
+  [  3] setprop 802 ............................. pWaitList = [:]
+  [  6] pusharglist 0 ........................... <[:]>
+  [  8] pushproplist ............................ <[:]>
+  [  9] setprop 805 ............................. pTaskList = [:]
+  [ 12] pusharglist 0 ........................... <[:]>
+  [ 14] pushproplist ............................ <[:]>
+  [ 15] setprop 829 ............................. pAvailableDynCasts = [:]
+  [ 18] pusharglist 0 ........................... <[:]>
+  [ 20] pushproplist ............................ <[:]>
+  [ 21] setprop 830 ............................. pPermanentLevelList = [:]
+  [ 24] pusharglist 0 ........................... <[:]>
+  [ 26] pushproplist ............................ <[:]>
+  [ 27] setprop 825 ............................. pCurrentDownLoads = [:]
+  [ 30] pushcons 13 ............................. <EMPTY>
+  [ 32] setprop 801 ............................. pLatestTaskID = EMPTY
+  [ 35] pushint8 1 .............................. <1>
+  [ 37] setlocal 0
+  [ 39] getlocal 0
+  [ 41] pushint8 4 .............................. <4>
+  [ 43] get 8 ................................... <the number of castLibs>
+  [ 45] lteq
+  [ 46] jmpifz [ 95] ............................ repeat with f = 1 to the number of castLibs
+  [ 49] getparam 0 .............................. <me>
+  [ 51] getprop 797 ............................. <pNullCastName>
+  [ 54] getlocal 0 .............................. <f>
+  [ 56] joinpadstr .............................. <pNullCastName && f>
+  [ 57] pusharglist 2 ........................... <me, pNullCastName && f>
+  [ 59] objcall 183 ............................. <me.FindCastNumber(pNullCastName && f)>
+  [ 61] setlocal 1 .............................. tCastNumber = me.FindCastNumber(pNullCastName && f)
+  [ 63] getlocal 1 .............................. <tCastNumber>
+  [ 65] pushzero ................................ <0>
+  [ 66] gt ...................................... <tCastNumber > 0>
+  [ 67] jmpifz [ 86] ............................ if tCastNumber > 0 then
+  [ 70] getprop 829 ............................. <pAvailableDynCasts>
+  [ 73] getprop 797 ............................. <pNullCastName>
+  [ 76] getlocal 0 .............................. <f>
+  [ 78] joinpadstr .............................. <pNullCastName && f>
+  [ 79] getlocal 1 .............................. <tCastNumber>
+  [ 81] pusharglistnoret 3 ...................... <pAvailableDynCasts, pNullCastName && f, tCastNumber>
+  [ 83] objcall 565 ............................. pAvailableDynCasts.addProp(pNullCastName && f, tCastNumber)
+  [ 86] pushint8 1
+  [ 88] getlocal 0
+  [ 90] add
+  [ 91] setlocal 0
+  [ 93] endrepeat [ 39]
+  [ 95] pushint8 1 .............................. <1>
+  [ 97] pusharglistnoret 1 ...................... <1>
+  [ 99] extcall 25 .............................. return 1
+  [101] ret
+end
+
+on AddNextpreloadNetThing me
+  [  0] getprop 825 ............................. <pCurrentDownLoads>
+  [  3] getobjprop 22 ........................... <pCurrentDownLoads.count>
+  [  5] pushcons 7 .............................. <"net.operation.count">
+  [  7] pushint8 2 .............................. <2>
+  [  9] pusharglist 2 ........................... <"net.operation.count", 2>
+  [ 11] extcall 365 ............................. <getIntVariable("net.operation.count", 2)>
+  [ 14] lt ...................................... <pCurrentDownLoads.count < getIntVariable("net.operation.count", 2)>
+  [ 15] jmpifz [212] ............................ if pCurrentDownLoads.count < getIntVariable("net.operation.count", 2) then
+  [ 18] getprop 802 ............................. <pWaitList>
+  [ 21] getobjprop 22 ........................... <pWaitList.count>
+  [ 23] pushzero ................................ <0>
+  [ 24] gt ...................................... <pWaitList.count > 0>
+  [ 25] jmpifz [212] ............................ if pWaitList.count > 0 then
+  [ 28] getprop 802 ............................. <pWaitList>
+  [ 31] pushint8 1 .............................. <1>
+  [ 33] pusharglist 2 ........................... <pWaitList, 1>
+  [ 35] objcall 54 .............................. <pWaitList[1]>
+  [ 37] pusharglist 1 ........................... <pWaitList[1]>
+  [ 39] extcall 22 .............................. <count(pWaitList[1])>
+  [ 41] pushzero ................................ <0>
+  [ 42] gt ...................................... <count(pWaitList[1]) > 0>
+  [ 43] jmpifz [212] ............................ if count(pWaitList[1]) > 0 then
+  [ 46] getprop 802 ............................. <pWaitList>
+  [ 49] pushint8 1 .............................. <1>
+  [ 51] pusharglist 2 ........................... <pWaitList, 1>
+  [ 53] objcall 54 .............................. <pWaitList[1]>
+  [ 55] pushint8 1 .............................. <1>
+  [ 57] pusharglist 2 ........................... <pWaitList[1], 1>
+  [ 59] objcall 54 .............................. <pWaitList[1][1]>
+  [ 61] setlocal 0 .............................. tFile = pWaitList[1][1]
+  [ 63] pusharglist 0 ........................... <>
+  [ 65] extcall 87 .............................. <getMoviePath()>
+  [ 67] getlocal 0 .............................. <tFile>
+  [ 69] joinstr ................................. <getMoviePath() & tFile>
+  [ 70] getprop 793 ............................. <pFileExtension>
+  [ 73] joinstr ................................. <getMoviePath() & tFile & pFileExtension>
+  [ 74] setlocal 1 .............................. tURL = getMoviePath() & tFile & pFileExtension
+  [ 76] getprop 802 ............................. <pWaitList>
+  [ 79] pushint8 1 .............................. <1>
+  [ 81] pusharglist 2 ........................... <pWaitList, 1>
+  [ 83] objcall 23 .............................. <pWaitList.getPropAt(1)>
+  [ 85] setlocal 2 .............................. tid = pWaitList.getPropAt(1)
+  [ 87] getprop 802 ............................. <pWaitList>
+  [ 90] pushint8 1 .............................. <1>
+  [ 92] pusharglist 2 ........................... <pWaitList, 1>
+  [ 94] objcall 54 .............................. <pWaitList[1]>
+  [ 96] pushint8 1 .............................. <1>
+  [ 98] pusharglistnoret 2 ...................... <pWaitList[1], 1>
+  [100] objcall 716 ............................. pWaitList[1].deleteAt(1)
+  [103] getprop 802 ............................. <pWaitList>
+  [106] pushint8 1 .............................. <1>
+  [108] pusharglist 2 ........................... <pWaitList, 1>
+  [110] objcall 54 .............................. <pWaitList[1]>
+  [112] pusharglist 1 ........................... <pWaitList[1]>
+  [114] extcall 22 .............................. <count(pWaitList[1])>
+  [116] pushzero ................................ <0>
+  [117] eq ...................................... <count(pWaitList[1]) = 0>
+  [118] jmpifz [138] ............................ if count(pWaitList[1]) = 0 then
+  [121] getprop 802 ............................. <pWaitList>
+  [124] getprop 802 ............................. <pWaitList>
+  [127] pushint8 1 .............................. <1>
+  [129] pusharglist 2 ........................... <pWaitList, 1>
+  [131] objcall 23 .............................. <pWaitList.getPropAt(1)>
+  [133] pusharglistnoret 2 ...................... <pWaitList, pWaitList.getPropAt(1)>
+  [135] objcall 652 ............................. pWaitList.deleteProp(pWaitList.getPropAt(1))
+  [138] getprop 825 ............................. <pCurrentDownLoads>
+  [141] getlocal 0 .............................. <tFile>
+  [143] pushsymb 649 ............................ <#temp>
+  [146] pushcons 14 ............................. <"castload.instance.class">
+  [148] pusharglist 1 ........................... <"castload.instance.class">
+  [150] extcall 155 ............................. <getClassVariable("castload.instance.class")>
+  [152] pusharglist 2 ........................... <#temp, getClassVariable("castload.instance.class")>
+  [154] extcall 94 .............................. <createObject(#temp, getClassVariable("castload.instance.class"))>
+  [156] pusharglistnoret 3 ...................... <pCurrentDownLoads, tFile, createObject(#temp, getClassVariable("castload.instance.class"))>
+  [158] objcall 24 .............................. pCurrentDownLoads[tFile] = createObject(#temp, getClassVariable("castload.instance.class"))
+  [160] getprop 825 ............................. <pCurrentDownLoads>
+  [163] getlocal 0 .............................. <tFile>
+  [165] pusharglist 2 ........................... <pCurrentDownLoads, tFile>
+  [167] objcall 54 .............................. <pCurrentDownLoads[tFile]>
+  [169] getlocal 0 .............................. <tFile>
+  [171] getlocal 1 .............................. <tURL>
+  [173] getlocal 2 .............................. <tid>
+  [175] pusharglistnoret 4 ...................... <pCurrentDownLoads[tFile], tFile, tURL, tid>
+  [177] objcall 426 ............................. pCurrentDownLoads[tFile].define(tFile, tURL, tid)
+  [180] getprop 805 ............................. <pTaskList>
+  [183] getlocal 2 .............................. <tid>
+  [185] pusharglist 2 ........................... <pTaskList, tid>
+  [187] objcall 54 .............................. <pTaskList[tid]>
+  [189] pushint8 1 .............................. <1>
+  [191] pusharglistnoret 2 ...................... <pTaskList[tid], 1>
+  [193] objcall 832 ............................. pTaskList[tid].changeLoadingCount(1)
+  [196] getparam 0 .............................. <me>
+  [198] pusharglist 1 ........................... <me>
+  [200] objcall 3 ............................... <me.getID()>
+  [202] pusharglistnoret 1 ...................... <me.getID()>
+  [204] extcall 106 ............................. receivePrepare(me.getID())
+  [206] pushint8 1 .............................. <1>
+  [208] pusharglistnoret 1 ...................... <1>
+  [210] extcall 25 .............................. return 1
+  [212] pushzero ................................ <0>
+  [213] pusharglistnoret 1 ...................... <0>
+  [215] extcall 25 .............................. return 0
+  [217] ret
+end
+
+on DoneCurrentDownLoad me, tFile, tURL, tid, tstate
+  [  0] getparam 4 .............................. <tstate>
+  [  2] pushsymb 39 ............................. <#error>
+  [  4] nteq .................................... <tstate <> #error>
+  [  5] jmpifz [ 41] ............................ if tstate <> #error then
+  [  8] getparam 0 .............................. <me>
+  [ 10] pusharglist 1 ........................... <me>
+  [ 12] objcall 789 ............................. <me.getAvailableEmptyCast()>
+  [ 15] setlocal 0 .............................. tCastNumber = me.getAvailableEmptyCast()
+  [ 17] getlocal 0 .............................. <tCastNumber>
+  [ 19] pushzero ................................ <0>
+  [ 20] gt ...................................... <tCastNumber > 0>
+  [ 21] jmpifz [ 41] ............................ if tCastNumber > 0 then
+  [ 24] getparam 1 .............................. <tFile>
+  [ 26] setlocal 1 .............................. tCastName = tFile
+  [ 28] getparam 0 .............................. <me>
+  [ 30] getlocal 0 .............................. <tCastNumber>
+  [ 32] getlocal 1 .............................. <tCastName>
+  [ 34] getparam 2 .............................. <tURL>
+  [ 36] pusharglistnoret 4 ...................... <me, tCastNumber, tCastName, tURL>
+  [ 38] objcall 788 ............................. me.setImportedCast(tCastNumber, tCastName, tURL)
+  [ 41] getprop 825 ............................. <pCurrentDownLoads>
+  [ 44] getparam 1 .............................. <tFile>
+  [ 46] pusharglist 2 ........................... <pCurrentDownLoads, tFile>
+  [ 48] objcall 54 .............................. <pCurrentDownLoads[tFile]>
+  [ 50] pusharglist 1 ........................... <pCurrentDownLoads[tFile]>
+  [ 52] extcall 20 .............................. <voidp(pCurrentDownLoads[tFile])>
+  [ 54] jmpifz [ 75] ............................ if voidp(pCurrentDownLoads[tFile]) then
+  [ 57] getparam 0 .............................. <me>
+  [ 59] pushcons 15 ............................. <"CastLoad task was lost!">
+  [ 61] getparam 1 .............................. <tFile>
+  [ 63] joinpadstr .............................. <"CastLoad task was lost!" && tFile>
+  [ 64] pushsymb 784 ............................ <#DoneCurrentDownLoad>
+  [ 67] pusharglist 3 ........................... <me, "CastLoad task was lost!" && tFile, #DoneCurrentDownLoad>
+  [ 69] extcall 39 .............................. <error(me, "CastLoad task was lost!" && tFile, #DoneCurrentDownLoad)>
+  [ 71] pusharglistnoret 1 ...................... <error(me, "CastLoad task was lost!" && tFile, #DoneCurrentDownLoad)>
+  [ 73] extcall 25 .............................. return error(me, "CastLoad task was lost!" && tFile, #DoneCurrentDownLoad)
+  [ 75] getprop 805 ............................. <pTaskList>
+  [ 78] getparam 3 .............................. <tid>
+  [ 80] pusharglist 2 ........................... <pTaskList, tid>
+  [ 82] objcall 54 .............................. <pTaskList[tid]>
+  [ 84] getparam 1 .............................. <tFile>
+  [ 86] pusharglistnoret 2 ...................... <pTaskList[tid], tFile>
+  [ 88] objcall 834 ............................. pTaskList[tid].OneCastDone(tFile)
+  [ 91] getprop 805 ............................. <pTaskList>
+  [ 94] getparam 3 .............................. <tid>
+  [ 96] pusharglist 2 ........................... <pTaskList, tid>
+  [ 98] objcall 54 .............................. <pTaskList[tid]>
+  [100] pushint8 1 .............................. <1>
+  [102] inv ..................................... <-1>
+  [103] pusharglistnoret 2 ...................... <pTaskList[tid], -1>
+  [105] objcall 832 ............................. pTaskList[tid].changeLoadingCount(-1)
+  [108] getprop 825 ............................. <pCurrentDownLoads>
+  [111] getparam 1 .............................. <tFile>
+  [113] pusharglist 2 ........................... <pCurrentDownLoads, tFile>
+  [115] objcall 54 .............................. <pCurrentDownLoads[tFile]>
+  [117] pusharglistnoret 1 ...................... <pCurrentDownLoads[tFile]>
+  [119] objcall 119 ............................. pCurrentDownLoads[tFile].deconstruct()
+  [121] getparam 0 .............................. <me>
+  [123] pushint8 50 ............................. <50>
+  [125] pushsymb 785 ............................ <#removeCastLoadInstance>
+  [128] getparam 1 .............................. <tFile>
+  [130] pusharglistnoret 4 ...................... <me, 50, #removeCastLoadInstance, tFile>
+  [132] objcall 541 ............................. me.delay(50, #removeCastLoadInstance, tFile)
+  [135] getparam 0 .............................. <me>
+  [137] getparam 3 .............................. <tid>
+  [139] pusharglistnoret 2 ...................... <me, tid>
+  [141] objcall 786 ............................. me.removeCastLoadTask(tid)
+  [144] pushint8 1 .............................. <1>
+  [146] pusharglistnoret 1 ...................... <1>
+  [148] extcall 25 .............................. return 1
+  [150] ret
+end
+
+on removeCastLoadInstance me, tFile
+  [  0] getparam 1 .............................. <tFile>
+  [  2] getobjprop 480 .......................... <tFile.ilk>
+  [  5] pushsymb 585 ............................ <#string>
+  [  8] nteq .................................... <tFile.ilk <> #string>
+  [  9] jmpifz [ 17] ............................ if tFile.ilk <> #string then
+  [ 12] pushzero ................................ <0>
+  [ 13] pusharglistnoret 1 ...................... <0>
+  [ 15] extcall 25 .............................. return 0
+  [ 17] getprop 825 ............................. <pCurrentDownLoads>
+  [ 20] getparam 1 .............................. <tFile>
+  [ 22] pusharglist 2 ........................... <pCurrentDownLoads, tFile>
+  [ 24] objcall 54 .............................. <pCurrentDownLoads[tFile]>
+  [ 26] pusharglist 1 ........................... <pCurrentDownLoads[tFile]>
+  [ 28] extcall 20 .............................. <voidp(pCurrentDownLoads[tFile])>
+  [ 30] jmpifz [ 54] ............................ if voidp(pCurrentDownLoads[tFile]) then / else
+  [ 33] getparam 0 .............................. <me>
+  [ 35] pushcons 16 ............................. <"CastLoad instance was lost!">
+  [ 37] getparam 1 .............................. <tFile>
+  [ 39] joinpadstr .............................. <"CastLoad instance was lost!" && tFile>
+  [ 40] pushsymb 785 ............................ <#removeCastLoadInstance>
+  [ 43] pusharglist 3 ........................... <me, "CastLoad instance was lost!" && tFile, #removeCastLoadInstance>
+  [ 45] extcall 39 .............................. <error(me, "CastLoad instance was lost!" && tFile, #removeCastLoadInstance)>
+  [ 47] pusharglistnoret 1 ...................... <error(me, "CastLoad instance was lost!" && tFile, #removeCastLoadInstance)>
+  [ 49] extcall 25 .............................. return error(me, "CastLoad instance was lost!" && tFile, #removeCastLoadInstance)
+  [ 51] jmp [ 68]
+  [ 54] getprop 825 ............................. <pCurrentDownLoads>
+  [ 57] getparam 1 .............................. <tFile>
+  [ 59] pusharglist 2 ........................... <pCurrentDownLoads, tFile>
+  [ 61] objcall 652 ............................. <pCurrentDownLoads.deleteProp(tFile)>
+  [ 64] pusharglistnoret 1 ...................... <pCurrentDownLoads.deleteProp(tFile)>
+  [ 66] extcall 25 .............................. return pCurrentDownLoads.deleteProp(tFile)
+  [ 68] ret
+end
+
+on removeCastLoadTask me, tid
+  [  0] getprop 805 ............................. <pTaskList>
+  [  3] getparam 1 .............................. <tid>
+  [  5] pusharglist 2 ........................... <pTaskList, tid>
+  [  7] objcall 54 .............................. <pTaskList[tid]>
+  [  9] pusharglist 1 ........................... <pTaskList[tid]>
+  [ 11] objcall 819 ............................. <pTaskList[tid].getTaskState()>
+  [ 14] pushsymb 803 ............................ <#ready>
+  [ 17] eq ...................................... <pTaskList[tid].getTaskState() = #ready>
+  [ 18] jmpifz [ 80] ............................ if pTaskList[tid].getTaskState() = #ready then
+  [ 21] getprop 805 ............................. <pTaskList>
+  [ 24] getparam 1 .............................. <tid>
+  [ 26] pusharglist 2 ........................... <pTaskList, tid>
+  [ 28] objcall 54 .............................. <pTaskList[tid]>
+  [ 30] pusharglistnoret 1 ...................... <pTaskList[tid]>
+  [ 32] objcall 835 ............................. pTaskList[tid].DoCallBack()
+  [ 35] getprop 805 ............................. <pTaskList>
+  [ 38] getparam 1 .............................. <tid>
+  [ 40] pusharglist 2 ........................... <pTaskList, tid>
+  [ 42] objcall 54 .............................. <pTaskList[tid]>
+  [ 44] pusharglistnoret 1 ...................... <pTaskList[tid]>
+  [ 46] objcall 119 ............................. pTaskList[tid].deconstruct()
+  [ 48] getprop 805 ............................. <pTaskList>
+  [ 51] getparam 1 .............................. <tid>
+  [ 53] pusharglistnoret 2 ...................... <pTaskList, tid>
+  [ 55] objcall 652 ............................. pTaskList.deleteProp(tid)
+  [ 58] getprop 805 ............................. <pTaskList>
+  [ 61] pusharglist 1 ........................... <pTaskList>
+  [ 63] extcall 22 .............................. <count(pTaskList)>
+  [ 65] pushzero ................................ <0>
+  [ 66] eq ...................................... <count(pTaskList) = 0>
+  [ 67] jmpifz [ 80] ............................ if count(pTaskList) = 0 then
+  [ 70] getparam 0 .............................. <me>
+  [ 72] pusharglist 1 ........................... <me>
+  [ 74] objcall 3 ............................... <me.getID()>
+  [ 76] pusharglistnoret 1 ...................... <me.getID()>
+  [ 78] extcall 107 ............................. removePrepare(me.getID())
+  [ 80] ret
+end
+
+on TellStreamState me, tFileName, tstate, tPercent, tid
+  [  0] pushsymb 836 ............................ <#UpdateTaskPercent>
+  [  3] getprop 805 ............................. <pTaskList>
+  [  6] getparam 4 .............................. <tid>
+  [  8] pusharglist 2 ........................... <pTaskList, tid>
+  [ 10] objcall 54 .............................. <pTaskList[tid]>
+  [ 12] getparam 3 .............................. <tPercent>
+  [ 14] getparam 1 .............................. <tFileName>
+  [ 16] pusharglistnoret 4 ...................... <#UpdateTaskPercent, pTaskList[tid], tPercent, tFileName>
+  [ 18] extcall 68 .............................. call(#UpdateTaskPercent, pTaskList[tid], tPercent, tFileName)
+  [ 20] ret
+end
+
+on setImportedCast me, tCastNum, tCastName, tFileName
+  [  0] getparam 1 .............................. <tCastNum>
+  [  2] pusharglist 1 ........................... <tCastNum>
+  [  4] extcall 717 ............................. <castLib(tCastNum)>
+  [  7] setlocal 0 .............................. tCastLib = castLib(tCastNum)
+  [  9] getlocal 0 .............................. <tCastLib>
+  [ 11] getobjprop 718 .......................... <tCastLib.name>
+  [ 14] getprop 797 ............................. <pNullCastName>
+  [ 17] containsstr ............................. <tCastLib.name contains pNullCastName>
+  [ 18] jmpifz [ 78] ............................ if tCastLib.name contains pNullCastName then
+  [ 21] getlocal 0 .............................. <tCastLib>
+  [ 23] getparam 3 .............................. <tFileName>
+  [ 25] setobjprop 816 .......................... tCastLib.fileName = tFileName
+  [ 28] getlocal 0 .............................. <tCastLib>
+  [ 30] getparam 2 .............................. <tCastName>
+  [ 32] setobjprop 718 .......................... tCastLib.name = tCastName
+  [ 35] getprop 830 ............................. <pPermanentLevelList>
+  [ 38] getparam 2 .............................. <tCastName>
+  [ 40] pusharglist 2 ........................... <pPermanentLevelList, tCastName>
+  [ 42] objcall 54 .............................. <pPermanentLevelList[tCastName]>
+  [ 44] pushint8 2 .............................. <2>
+  [ 46] getparam 1 .............................. <tCastNum>
+  [ 48] pusharglistnoret 3 ...................... <pPermanentLevelList[tCastName], 2, tCastNum>
+  [ 50] objcall 24 .............................. pPermanentLevelList[tCastName][2] = tCastNum
+  [ 52] pusharglist 0 ........................... <>
+  [ 54] extcall 76 .............................. <getResourceManager()>
+  [ 56] getparam 1 .............................. <tCastNum>
+  [ 58] pusharglistnoret 2 ...................... <getResourceManager(), tCastNum>
+  [ 60] objcall 77 .............................. getResourceManager().preIndexMembers(tCastNum)
+  [ 62] getprop 794 ............................. <pLoadedCasts>
+  [ 65] getparam 2 .............................. <tCastName>
+  [ 67] getparam 1 .............................. <tCastNum>
+  [ 69] pusharglist 1 ........................... <tCastNum>
+  [ 71] extcall 585 ............................. <string(tCastNum)>
+  [ 74] pusharglistnoret 3 ...................... <pLoadedCasts, tCastName, string(tCastNum)>
+  [ 76] objcall 24 .............................. pLoadedCasts[tCastName] = string(tCastNum)
+  [ 78] ret
+end
+
+on getAvailableEmptyCast me
+  [  0] getprop 829 ............................. <pAvailableDynCasts>
+  [  3] getobjprop 22 ........................... <pAvailableDynCasts.count>
+  [  5] pushzero ................................ <0>
+  [  6] gt ...................................... <pAvailableDynCasts.count > 0>
+  [  7] jmpifz [ 42] ............................ if pAvailableDynCasts.count > 0 then / else
+  [ 10] getprop 829 ............................. <pAvailableDynCasts>
+  [ 13] pusharglist 1 ........................... <pAvailableDynCasts>
+  [ 15] objcall 656 ............................. <pAvailableDynCasts.getLast()>
+  [ 18] setlocal 0 .............................. tCastNum = pAvailableDynCasts.getLast()
+  [ 20] getprop 829 ............................. <pAvailableDynCasts>
+  [ 23] getprop 829 ............................. <pAvailableDynCasts>
+  [ 26] getobjprop 22 ........................... <pAvailableDynCasts.count>
+  [ 28] pusharglistnoret 2 ...................... <pAvailableDynCasts, pAvailableDynCasts.count>
+  [ 30] objcall 716 ............................. pAvailableDynCasts.deleteAt(pAvailableDynCasts.count)
+  [ 33] getlocal 0 .............................. <tCastNum>
+  [ 35] pusharglistnoret 1 ...................... <tCastNum>
+  [ 37] extcall 25 .............................. return tCastNum
+  [ 39] jmp [ 55]
+  [ 42] getparam 0 .............................. <me>
+  [ 44] pushcons 17 ............................. <"Out of free cast entries! CastLoad failed.">
+  [ 46] pusharglistnoret 2 ...................... <me, "Out of free cast entries! CastLoad failed.">
+  [ 48] extcall 134 ............................. SystemAlert(me, "Out of free cast entries! CastLoad failed.")
+  [ 50] pushzero ................................ <0>
+  [ 51] pusharglistnoret 1 ...................... <0>
+  [ 53] extcall 25 .............................. return 0
+  [ 55] ret
+end
+
+on removeTemporaryCast me, tNewLoadListOfcasts
+  [  0] getprop 830 ............................. <pPermanentLevelList>
+  [  3] pusharglist 1 ........................... <pPermanentLevelList>
+  [  5] objcall 544 ............................. <pPermanentLevelList.duplicate()>
+  [  8] setlocal 0 .............................. tTempList = pPermanentLevelList.duplicate()
+  [ 10] pushint8 1 .............................. <1>
+  [ 12] setlocal 1
+  [ 14] getlocal 1
+  [ 16] getlocal 0 .............................. <tTempList>
+  [ 18] getobjprop 22 ........................... <tTempList.count>
+  [ 20] lteq
+  [ 21] jmpifz [174] ............................ repeat with f = 1 to tTempList.count
+  [ 24] getlocal 0 .............................. <tTempList>
+  [ 26] getlocal 1 .............................. <f>
+  [ 28] pusharglist 2 ........................... <tTempList, f>
+  [ 30] objcall 54 .............................. <tTempList[f]>
+  [ 32] pushint8 1 .............................. <1>
+  [ 34] pusharglist 2 ........................... <tTempList[f], 1>
+  [ 36] objcall 54 .............................. <tTempList[f][1]>
+  [ 38] setlocal 2 .............................. tPermanent = tTempList[f][1]
+  [ 40] getlocal 0 .............................. <tTempList>
+  [ 42] getlocal 1 .............................. <f>
+  [ 44] pusharglist 2 ........................... <tTempList, f>
+  [ 46] objcall 54 .............................. <tTempList[f]>
+  [ 48] pushint8 2 .............................. <2>
+  [ 50] pusharglist 2 ........................... <tTempList[f], 2>
+  [ 52] objcall 54 .............................. <tTempList[f][2]>
+  [ 54] setlocal 3 .............................. tCstNumber = tTempList[f][2]
+  [ 56] getlocal 2 .............................. <tPermanent>
+  [ 58] pushzero ................................ <0>
+  [ 59] eq ...................................... <tPermanent = 0>
+  [ 60] getlocal 3 .............................. <tCstNumber>
+  [ 62] pushzero ................................ <0>
+  [ 63] gt ...................................... <tCstNumber > 0>
+  [ 64] and ..................................... <(tPermanent = 0) and (tCstNumber > 0)>
+  [ 65] jmpifz [165] ............................ if (tPermanent = 0) and (tCstNumber > 0) then
+  [ 68] getlocal 0 .............................. <tTempList>
+  [ 70] getlocal 1 .............................. <f>
+  [ 72] pusharglist 2 ........................... <tTempList, f>
+  [ 74] objcall 23 .............................. <tTempList.getPropAt(f)>
+  [ 76] setlocal 4 .............................. tCastName = tTempList.getPropAt(f)
+  [ 78] getparam 1 .............................. <tNewLoadListOfcasts>
+  [ 80] getlocal 4 .............................. <tCastName>
+  [ 82] pusharglist 2 ........................... <tNewLoadListOfcasts, tCastName>
+  [ 84] objcall 634 ............................. <tNewLoadListOfcasts.getOne(tCastName)>
+  [ 87] not ..................................... <not tNewLoadListOfcasts.getOne(tCastName)>
+  [ 88] jmpifz [165] ............................ if not tNewLoadListOfcasts.getOne(tCastName) then
+  [ 91] getprop 830 ............................. <pPermanentLevelList>
+  [ 94] getlocal 4 .............................. <tCastName>
+  [ 96] pusharglistnoret 2 ...................... <pPermanentLevelList, tCastName>
+  [ 98] objcall 652 ............................. pPermanentLevelList.deleteProp(tCastName)
+  [101] getparam 0 .............................. <me>
+  [103] getlocal 3 .............................. <tCstNumber>
+  [105] pusharglistnoret 2 ...................... <me, tCstNumber>
+  [107] objcall 792 ............................. me.ResetOneDynamicCast(tCstNumber)
+  [110] getprop 796 ............................. <pCastLibCount>
+  [113] pushint8 4 .............................. <4>
+  [115] get 8 ................................... <the number of castLibs>
+  [117] nteq .................................... <pCastLibCount <> the number of castLibs>
+  [118] jmpifz [165] ............................ if pCastLibCount <> the number of castLibs then
+  [121] pushint8 4 .............................. <4>
+  [123] get 8 ................................... <the number of castLibs>
+  [125] setprop 796 ............................. pCastLibCount = the number of castLibs
+  [128] pushcons 18 ............................. <"CastLib count was changed!!!">
+  [130] pushcons 19 ............................. <RETURN>
+  [132] joinstr ................................. <"CastLib count was changed!!!" & RETURN>
+  [133] setlocal 5 .............................. tError = "CastLib count was changed!!!" & RETURN
+  [135] getlocal 5 .............................. <tError>
+  [137] pushcons 20 ............................. <"CastLib with problems:">
+  [139] joinstr ................................. <tError & "CastLib with problems:">
+  [140] getprop 796 ............................. <pCastLibCount>
+  [143] pusharglist 1 ........................... <pCastLibCount>
+  [145] extcall 717 ............................. <castLib(pCastLibCount)>
+  [148] getobjprop 718 .......................... <castLib(pCastLibCount).name>
+  [151] joinpadstr .............................. <tError & "CastLib with problems:" && castLib(pCastLibCount).name>
+  [152] setlocal 5 .............................. tError = tError & "CastLib with problems:" && castLib(pCastLibCount).name
+  [154] getparam 0 .............................. <me>
+  [156] getlocal 5 .............................. <tError>
+  [158] pushsymb 790 ............................ <#removeTemporaryCast>
+  [161] pusharglistnoret 3 ...................... <me, tError, #removeTemporaryCast>
+  [163] extcall 39 .............................. error(me, tError, #removeTemporaryCast)
+  [165] pushint8 1
+  [167] getlocal 1
+  [169] add
+  [170] setlocal 1
+  [172] endrepeat [ 14]
+  [174] ret
+end
+
+on addOneCastToWaitList me, tCastName, tPermanentOrNot
+  [  0] getparam 0 .............................. <me>
+  [  2] getparam 1 .............................. <tCastName>
+  [  4] pusharglist 2 ........................... <me, tCastName>
+  [  6] objcall 183 ............................. <me.FindCastNumber(tCastName)>
+  [  8] not ..................................... <not me.FindCastNumber(tCastName)>
+  [  9] getprop 802 ............................. <pWaitList>
+  [ 12] getparam 1 .............................. <tCastName>
+  [ 14] pusharglist 2 ........................... <pWaitList, tCastName>
+  [ 16] objcall 634 ............................. <pWaitList.getOne(tCastName)>
+  [ 19] not ..................................... <not pWaitList.getOne(tCastName)>
+  [ 20] and ..................................... <not me.FindCastNumber(tCastName) and not pWaitList.getOne(tCastName)>
+  [ 21] jmpifz [ 52] ............................ if not me.FindCastNumber(tCastName) and not pWaitList.getOne(tCastName) then / else
+  [ 24] getprop 795 ............................. <pTempWaitList>
+  [ 27] getparam 1 .............................. <tCastName>
+  [ 29] pusharglistnoret 2 ...................... <pTempWaitList, tCastName>
+  [ 31] objcall 122 ............................. pTempWaitList.add(tCastName)
+  [ 33] getprop 830 ............................. <pPermanentLevelList>
+  [ 36] getparam 1 .............................. <tCastName>
+  [ 38] getparam 2 .............................. <tPermanentOrNot>
+  [ 40] pushzero ................................ <0>
+  [ 41] pusharglist 2 ........................... <[tPermanentOrNot, 0]>
+  [ 43] pushlist ................................ <[tPermanentOrNot, 0]>
+  [ 44] pusharglistnoret 3 ...................... <pPermanentLevelList, tCastName, [tPermanentOrNot, 0]>
+  [ 46] objcall 565 ............................. pPermanentLevelList.addProp(tCastName, [tPermanentOrNot, 0])
+  [ 49] jmp [ 90]
+  [ 52] getprop 794 ............................. <pLoadedCasts>
+  [ 55] getparam 1 .............................. <tCastName>
+  [ 57] pusharglist 2 ........................... <pLoadedCasts, tCastName>
+  [ 59] objcall 54 .............................. <pLoadedCasts[tCastName]>
+  [ 61] pusharglist 1 ........................... <pLoadedCasts[tCastName]>
+  [ 63] extcall 20 .............................. <voidp(pLoadedCasts[tCastName])>
+  [ 65] jmpifz [ 90] ............................ if voidp(pLoadedCasts[tCastName]) then
+  [ 68] getprop 794 ............................. <pLoadedCasts>
+  [ 71] getparam 1 .............................. <tCastName>
+  [ 73] getparam 0 .............................. <me>
+  [ 75] getparam 1 .............................. <tCastName>
+  [ 77] pusharglist 2 ........................... <me, tCastName>
+  [ 79] objcall 183 ............................. <me.FindCastNumber(tCastName)>
+  [ 81] pusharglist 1 ........................... <me.FindCastNumber(tCastName)>
+  [ 83] extcall 585 ............................. <string(me.FindCastNumber(tCastName))>
+  [ 86] pusharglistnoret 3 ...................... <pLoadedCasts, tCastName, string(me.FindCastNumber(tCastName))>
+  [ 88] objcall 24 .............................. pLoadedCasts[tCastName] = string(me.FindCastNumber(tCastName))
+  [ 90] ret
+end
+
+on ResetOneDynamicCast me, tCastNum
+  [  0] getprop 794 ............................. <pLoadedCasts>
+  [  3] getparam 1 .............................. <tCastNum>
+  [  5] pusharglist 1 ........................... <tCastNum>
+  [  7] extcall 585 ............................. <string(tCastNum)>
+  [ 10] pusharglist 2 ........................... <pLoadedCasts, string(tCastNum)>
+  [ 12] objcall 634 ............................. <pLoadedCasts.getOne(string(tCastNum))>
+  [ 15] pushzero ................................ <0>
+  [ 16] nteq .................................... <pLoadedCasts.getOne(string(tCastNum)) <> 0>
+  [ 17] jmpifz [ 46] ............................ if pLoadedCasts.getOne(string(tCastNum)) <> 0 then / else
+  [ 20] getprop 794 ............................. <pLoadedCasts>
+  [ 23] getprop 794 ............................. <pLoadedCasts>
+  [ 26] getparam 1 .............................. <tCastNum>
+  [ 28] pusharglist 1 ........................... <tCastNum>
+  [ 30] extcall 585 ............................. <string(tCastNum)>
+  [ 33] pusharglist 2 ........................... <pLoadedCasts, string(tCastNum)>
+  [ 35] objcall 634 ............................. <pLoadedCasts.getOne(string(tCastNum))>
+  [ 38] pusharglistnoret 2 ...................... <pLoadedCasts, pLoadedCasts.getOne(string(tCastNum))>
+  [ 40] objcall 652 ............................. pLoadedCasts.deleteProp(pLoadedCasts.getOne(string(tCastNum)))
+  [ 43] jmp [ 60]
+  [ 46] getparam 0 .............................. <me>
+  [ 48] pushcons 21 ............................. <"Couldn't remove cast:">
+  [ 50] getparam 1 .............................. <tCastNum>
+  [ 52] joinpadstr .............................. <"Couldn't remove cast:" && tCastNum>
+  [ 53] pushsymb 792 ............................ <#ResetOneDynamicCast>
+  [ 56] pusharglistnoret 3 ...................... <me, "Couldn't remove cast:" && tCastNum, #ResetOneDynamicCast>
+  [ 58] extcall 39 .............................. error(me, "Couldn't remove cast:" && tCastNum, #ResetOneDynamicCast)
+  [ 60] pusharglist 0 ........................... <>
+  [ 62] extcall 79 .............................. <getThreadManager()>
+  [ 64] getparam 1 .............................. <tCastNum>
+  [ 66] pusharglistnoret 2 ...................... <getThreadManager(), tCastNum>
+  [ 68] objcall 151 ............................. getThreadManager().closeThread(tCastNum)
+  [ 70] pusharglist 0 ........................... <>
+  [ 72] extcall 76 .............................. <getResourceManager()>
+  [ 74] getparam 1 .............................. <tCastNum>
+  [ 76] pusharglistnoret 2 ...................... <getResourceManager(), tCastNum>
+  [ 78] objcall 703 ............................. getResourceManager().unregisterMembers(tCastNum)
+  [ 81] getparam 1 .............................. <tCastNum>
+  [ 83] pusharglist 1 ........................... <tCastNum>
+  [ 85] extcall 717 ............................. <castLib(tCastNum)>
+  [ 88] getprop 797 ............................. <pNullCastName>
+  [ 91] getparam 1 .............................. <tCastNum>
+  [ 93] pushint8 2 .............................. <2>
+  [ 95] sub ..................................... <tCastNum - 2>
+  [ 96] joinpadstr .............................. <pNullCastName && tCastNum - 2>
+  [ 97] setobjprop 718 .......................... castLib(tCastNum).name = pNullCastName && tCastNum - 2
+  [100] getprop 797 ............................. <pNullCastName>
+  [103] getparam 1 .............................. <tCastNum>
+  [105] pushint8 2 .............................. <2>
+  [107] sub ..................................... <tCastNum - 2>
+  [108] joinpadstr .............................. <pNullCastName && tCastNum - 2>
+  [109] pusharglist 1 ........................... <pNullCastName && tCastNum - 2>
+  [111] extcall 717 ............................. <castLib(pNullCastName && tCastNum - 2)>
+  [114] pusharglist 0 ........................... <>
+  [116] extcall 87 .............................. <getMoviePath()>
+  [118] getprop 797 ............................. <pNullCastName>
+  [121] joinstr ................................. <getMoviePath() & pNullCastName>
+  [122] getprop 793 ............................. <pFileExtension>
+  [125] joinstr ................................. <getMoviePath() & pNullCastName & pFileExtension>
+  [126] setobjprop 816 .......................... castLib(pNullCastName && tCastNum - 2).fileName = getMoviePath() & pNullCastName & pFileExtension
+  [129] getprop 829 ............................. <pAvailableDynCasts>
+  [132] getprop 797 ............................. <pNullCastName>
+  [135] getparam 1 .............................. <tCastNum>
+  [137] pushint8 2 .............................. <2>
+  [139] sub ..................................... <tCastNum - 2>
+  [140] joinstr ................................. <pNullCastName & tCastNum - 2>
+  [141] getparam 1 .............................. <tCastNum>
+  [143] pusharglistnoret 3 ...................... <pAvailableDynCasts, pNullCastName & tCastNum - 2, tCastNum>
+  [145] objcall 565 ............................. pAvailableDynCasts.addProp(pNullCastName & tCastNum - 2, tCastNum)
+  [148] pushint8 1 .............................. <1>
+  [150] pusharglistnoret 1 ...................... <1>
+  [152] extcall 25 .............................. return 1
+  [154] ret
+end
+
+on solveNetErrorMsg me, tErrorCode
+  [  0] getparam 1 .............................. <tErrorCode>
+  [  2] peek 0 .................................. case tErrorCode of
+  [  4] pushcons 13 ............................. <EMPTY>
+  [  6] eq
+  [  7] jmpifz [ 21] ............................ (case) EMPTY:
+  [ 10] pop 1
+  [ 12] pushcons 22 ............................. <"Unknown error.">
+  [ 14] pusharglistnoret 1 ...................... <"Unknown error.">
+  [ 16] extcall 25 .............................. return "Unknown error."
+  [ 18] jmp [746]
+  [ 21] peek 0
+  [ 23] pushcons 23 ............................. <"OK">
+  [ 25] eq
+  [ 26] jmpifz [ 40] ............................ (case) "OK":
+  [ 29] pop 1
+  [ 31] pushcons 23 ............................. <"OK">
+  [ 33] pusharglistnoret 1 ...................... <"OK">
+  [ 35] extcall 25 .............................. return "OK"
+  [ 37] jmp [746]
+  [ 40] peek 0
+  [ 42] pushint16 128 ........................... <128>
+  [ 45] inv ..................................... <-128>
+  [ 46] eq
+  [ 47] jmpifz [ 61] ............................ (case) (-128):
+  [ 50] pop 1
+  [ 52] pushcons 24 ............................. <"Operation was cancelled.">
+  [ 54] pusharglistnoret 1 ...................... <"Operation was cancelled.">
+  [ 56] extcall 25 .............................. return "Operation was cancelled."
+  [ 58] jmp [746]
+  [ 61] peek 0
+  [ 63] pushzero ................................ <0>
+  [ 64] eq
+  [ 65] jmpifz [ 79] ............................ (case) 0:
+  [ 68] pop 1
+  [ 70] pushcons 23 ............................. <"OK">
+  [ 72] pusharglistnoret 1 ...................... <"OK">
+  [ 74] extcall 25 .............................. return "OK"
+  [ 76] jmp [746]
+  [ 79] peek 0
+  [ 81] pushint8 4 .............................. <4>
+  [ 83] eq
+  [ 84] jmpifz [ 98] ............................ (case) 4:
+  [ 87] pop 1
+  [ 89] pushcons 25 ............................. <"Bad MOA Class. Network Xtras may be improperly installed.">
+  [ 91] pusharglistnoret 1 ...................... <"Bad MOA Class. Network Xtras may be improperly installed.">
+  [ 93] extcall 25 .............................. return "Bad MOA Class. Network Xtras may be improperly installed."
+  [ 95] jmp [746]
+  [ 98] peek 0
+  [100] pushint8 5 .............................. <5>
+  [102] eq
+  [103] jmpifz [117] ............................ (case) 5:
+  [106] pop 1
+  [108] pushcons 26 ............................. <"Bad MOA Interface. Network Xtras may be improperly installed.">
+  [110] pusharglistnoret 1 ...................... <"Bad MOA Interface. Network Xtras may be improperly installed.">
+  [112] extcall 25 .............................. return "Bad MOA Interface. Network Xtras may be improperly installed."
+  [114] jmp [746]
+  [117] peek 0
+  [119] pushint8 6 .............................. <6>
+  [121] eq
+  [122] jmpifz [136] ............................ (case) 6:
+  [125] pop 1
+  [127] pushcons 27 ............................. <"General transfer error.">
+  [129] pusharglistnoret 1 ...................... <"General transfer error.">
+  [131] extcall 25 .............................. return "General transfer error."
+  [133] jmp [746]
+  [136] peek 0
+  [138] pushint8 20 ............................. <20>
+  [140] eq
+  [141] jmpifz [155] ............................ (case) 20:
+  [144] pop 1
+  [146] pushcons 28 ............................. <"Internal error.">
+  [148] pusharglistnoret 1 ...................... <"Internal error.">
+  [150] extcall 25 .............................. return "Internal error."
+  [152] jmp [746]
+  [155] peek 0
+  [157] pushint16 900 ........................... <900>
+  [160] eq
+  [161] jmpifz [175] ............................ (case) 900:
+  [164] pop 1
+  [166] pushcons 29 ............................. <"Failed attempt to write to locked media.">
+  [168] pusharglistnoret 1 ...................... <"Failed attempt to write to locked media.">
+  [170] extcall 25 .............................. return "Failed attempt to write to locked media."
+  [172] jmp [746]
+  [175] peek 0
+  [177] pushint16 903 ........................... <903>
+  [180] eq
+  [181] jmpifz [195] ............................ (case) 903:
+  [184] pop 1
+  [186] pushcons 30 ............................. <"Disk is full.">
+  [188] pusharglistnoret 1 ...................... <"Disk is full.">
+  [190] extcall 25 .............................. return "Disk is full."
+  [192] jmp [746]
+  [195] peek 0
+  [197] pushint16 905 ........................... <905>
+  [200] eq
+  [201] jmpifz [215] ............................ (case) 905:
+  [204] pop 1
+  [206] pushcons 31 ............................. <"Bad URL.">
+  [208] pusharglistnoret 1 ...................... <"Bad URL.">
+  [210] extcall 25 .............................. return "Bad URL."
+  [212] jmp [746]
+  [215] peek 0
+  [217] pushint16 4144 .......................... <4144>
+  [220] eq
+  [221] jmpifz [235] ............................ (case) 4144:
+  [224] pop 1
+  [226] pushcons 32 ............................. <"Failed network operation.">
+  [228] pusharglistnoret 1 ...................... <"Failed network operation.">
+  [230] extcall 25 .............................. return "Failed network operation."
+  [232] jmp [746]
+  [235] peek 0
+  [237] pushint16 4145 .......................... <4145>
+  [240] eq
+  [241] jmpifz [255] ............................ (case) 4145:
+  [244] pop 1
+  [246] pushcons 32 ............................. <"Failed network operation.">
+  [248] pusharglistnoret 1 ...................... <"Failed network operation.">
+  [250] extcall 25 .............................. return "Failed network operation."
+  [252] jmp [746]
+  [255] peek 0
+  [257] pushint16 4146 .......................... <4146>
+  [260] eq
+  [261] jmpifz [275] ............................ (case) 4146:
+  [264] pop 1
+  [266] pushcons 33 ............................. <"Connection could not be established with the remote host.">
+  [268] pusharglistnoret 1 ...................... <"Connection could not be established with the remote host.">
+  [270] extcall 25 .............................. return "Connection could not be established with the remote host."
+  [272] jmp [746]
+  [275] peek 0
+  [277] pushint16 4147 .......................... <4147>
+  [280] eq
+  [281] jmpifz [295] ............................ (case) 4147:
+  [284] pop 1
+  [286] pushcons 32 ............................. <"Failed network operation.">
+  [288] pusharglistnoret 1 ...................... <"Failed network operation.">
+  [290] extcall 25 .............................. return "Failed network operation."
+  [292] jmp [746]
+  [295] peek 0
+  [297] pushint16 4148 .......................... <4148>
+  [300] eq
+  [301] jmpifz [315] ............................ (case) 4148:
+  [304] pop 1
+  [306] pushcons 32 ............................. <"Failed network operation.">
+  [308] pusharglistnoret 1 ...................... <"Failed network operation.">
+  [310] extcall 25 .............................. return "Failed network operation."
+  [312] jmp [746]
+  [315] peek 0
+  [317] pushint16 4149 .......................... <4149>
+  [320] eq
+  [321] jmpifz [335] ............................ (case) 4149:
+  [324] pop 1
+  [326] pushcons 34 ............................. <"Data supplied by the server was in an unexpected format.">
+  [328] pusharglistnoret 1 ...................... <"Data supplied by the server was in an unexpected format.">
+  [330] extcall 25 .............................. return "Data supplied by the server was in an unexpected format."
+  [332] jmp [746]
+  [335] peek 0
+  [337] pushint16 4150 .......................... <4150>
+  [340] eq
+  [341] jmpifz [355] ............................ (case) 4150:
+  [344] pop 1
+  [346] pushcons 35 ............................. <"Unexpected early closing of connection.">
+  [348] pusharglistnoret 1 ...................... <"Unexpected early closing of connection.">
+  [350] extcall 25 .............................. return "Unexpected early closing of connection."
+  [352] jmp [746]
+  [355] peek 0
+  [357] pushint16 4151 .......................... <4151>
+  [360] eq
+  [361] jmpifz [375] ............................ (case) 4151:
+  [364] pop 1
+  [366] pushcons 32 ............................. <"Failed network operation.">
+  [368] pusharglistnoret 1 ...................... <"Failed network operation.">
+  [370] extcall 25 .............................. return "Failed network operation."
+  [372] jmp [746]
+  [375] peek 0
+  [377] pushint16 4152 .......................... <4152>
+  [380] eq
+  [381] jmpifz [395] ............................ (case) 4152:
+  [384] pop 1
+  [386] pushcons 36 ............................. <"Data returned is truncated.">
+  [388] pusharglistnoret 1 ...................... <"Data returned is truncated.">
+  [390] extcall 25 .............................. return "Data returned is truncated."
+  [392] jmp [746]
+  [395] peek 0
+  [397] pushint16 4153 .......................... <4153>
+  [400] eq
+  [401] jmpifz [415] ............................ (case) 4153:
+  [404] pop 1
+  [406] pushcons 32 ............................. <"Failed network operation.">
+  [408] pusharglistnoret 1 ...................... <"Failed network operation.">
+  [410] extcall 25 .............................. return "Failed network operation."
+  [412] jmp [746]
+  [415] peek 0
+  [417] pushint16 4154 .......................... <4154>
+  [420] eq
+  [421] jmpifz [435] ............................ (case) 4154:
+  [424] pop 1
+  [426] pushcons 37 ............................. <"Operation could not be completed due to timeout.">
+  [428] pusharglistnoret 1 ...................... <"Operation could not be completed due to timeout.">
+  [430] extcall 25 .............................. return "Operation could not be completed due to timeout."
+  [432] jmp [746]
+  [435] peek 0
+  [437] pushint16 4155 .......................... <4155>
+  [440] eq
+  [441] jmpifz [455] ............................ (case) 4155:
+  [444] pop 1
+  [446] pushcons 38 ............................. <"Not enough memory available to complete the transaction.">
+  [448] pusharglistnoret 1 ...................... <"Not enough memory available to complete the transaction.">
+  [450] extcall 25 .............................. return "Not enough memory available to complete the transaction."
+  [452] jmp [746]
+  [455] peek 0
+  [457] pushint16 4156 .......................... <4156>
+  [460] eq
+  [461] jmpifz [475] ............................ (case) 4156:
+  [464] pop 1
+  [466] pushcons 39 ............................. <"Protocol reply to request indicates an error in the reply.">
+  [468] pusharglistnoret 1 ...................... <"Protocol reply to request indicates an error in the reply.">
+  [470] extcall 25 .............................. return "Protocol reply to request indicates an error in the reply."
+  [472] jmp [746]
+  [475] peek 0
+  [477] pushint16 4157 .......................... <4157>
+  [480] eq
+  [481] jmpifz [495] ............................ (case) 4157:
+  [484] pop 1
+  [486] pushcons 40 ............................. <"Transaction failed to be authenticated.">
+  [488] pusharglistnoret 1 ...................... <"Transaction failed to be authenticated.">
+  [490] extcall 25 .............................. return "Transaction failed to be authenticated."
+  [492] jmp [746]
+  [495] peek 0
+  [497] pushint16 4159 .......................... <4159>
+  [500] eq
+  [501] jmpifz [515] ............................ (case) 4159:
+  [504] pop 1
+  [506] pushcons 41 ............................. <"Invalid URL.">
+  [508] pusharglistnoret 1 ...................... <"Invalid URL.">
+  [510] extcall 25 .............................. return "Invalid URL."
+  [512] jmp [746]
+  [515] peek 0
+  [517] pushint16 4160 .......................... <4160>
+  [520] eq
+  [521] jmpifz [535] ............................ (case) 4160:
+  [524] pop 1
+  [526] pushcons 32 ............................. <"Failed network operation.">
+  [528] pusharglistnoret 1 ...................... <"Failed network operation.">
+  [530] extcall 25 .............................. return "Failed network operation."
+  [532] jmp [746]
+  [535] peek 0
+  [537] pushint16 4161 .......................... <4161>
+  [540] eq
+  [541] jmpifz [555] ............................ (case) 4161:
+  [544] pop 1
+  [546] pushcons 32 ............................. <"Failed network operation.">
+  [548] pusharglistnoret 1 ...................... <"Failed network operation.">
+  [550] extcall 25 .............................. return "Failed network operation."
+  [552] jmp [746]
+  [555] peek 0
+  [557] pushint16 4162 .......................... <4162>
+  [560] eq
+  [561] jmpifz [575] ............................ (case) 4162:
+  [564] pop 1
+  [566] pushcons 32 ............................. <"Failed network operation.">
+  [568] pusharglistnoret 1 ...................... <"Failed network operation.">
+  [570] extcall 25 .............................. return "Failed network operation."
+  [572] jmp [746]
+  [575] peek 0
+  [577] pushint16 4163 .......................... <4163>
+  [580] eq
+  [581] jmpifz [595] ............................ (case) 4163:
+  [584] pop 1
+  [586] pushcons 32 ............................. <"Failed network operation.">
+  [588] pusharglistnoret 1 ...................... <"Failed network operation.">
+  [590] extcall 25 .............................. return "Failed network operation."
+  [592] jmp [746]
+  [595] peek 0
+  [597] pushint16 4164 .......................... <4164>
+  [600] eq
+  [601] jmpifz [615] ............................ (case) 4164:
+  [604] pop 1
+  [606] pushcons 42 ............................. <"Could not create a socket">
+  [608] pusharglistnoret 1 ...................... <"Could not create a socket">
+  [610] extcall 25 .............................. return "Could not create a socket"
+  [612] jmp [746]
+  [615] peek 0
+  [617] pushint16 4165 .......................... <4165>
+  [620] eq
+  [621] jmpifz [635] ............................ (case) 4165:
+  [624] pop 1
+  [626] pushcons 43 ............................. <"Requested Object could not be found (URL may be incorrect).">
+  [628] pusharglistnoret 1 ...................... <"Requested Object could not be found (URL may be incorrect).">
+  [630] extcall 25 .............................. return "Requested Object could not be found (URL may be incorrect)."
+  [632] jmp [746]
+  [635] peek 0
+  [637] pushint16 4166 .......................... <4166>
+  [640] eq
+  [641] jmpifz [655] ............................ (case) 4166:
+  [644] pop 1
+  [646] pushcons 44 ............................. <"Generic proxy failure.">
+  [648] pusharglistnoret 1 ...................... <"Generic proxy failure.">
+  [650] extcall 25 .............................. return "Generic proxy failure."
+  [652] jmp [746]
+  [655] peek 0
+  [657] pushint16 4167 .......................... <4167>
+  [660] eq
+  [661] jmpifz [675] ............................ (case) 4167:
+  [664] pop 1
+  [666] pushcons 45 ............................. <"Transfer was intentionally interrupted by client.">
+  [668] pusharglistnoret 1 ...................... <"Transfer was intentionally interrupted by client.">
+  [670] extcall 25 .............................. return "Transfer was intentionally interrupted by client."
+  [672] jmp [746]
+  [675] peek 0
+  [677] pushint16 4168 .......................... <4168>
+  [680] eq
+  [681] jmpifz [695] ............................ (case) 4168:
+  [684] pop 1
+  [686] pushcons 32 ............................. <"Failed network operation.">
+  [688] pusharglistnoret 1 ...................... <"Failed network operation.">
+  [690] extcall 25 .............................. return "Failed network operation."
+  [692] jmp [746]
+  [695] peek 0
+  [697] pushint16 4242 .......................... <4242>
+  [700] eq
+  [701] jmpifz [715] ............................ (case) 4242:
+  [704] pop 1
+  [706] pushcons 46 ............................. <"Download stopped by netAbort(url).">
+  [708] pusharglistnoret 1 ...................... <"Download stopped by netAbort(url).">
+  [710] extcall 25 .............................. return "Download stopped by netAbort(url)."
+  [712] jmp [746]
+  [715] peek 0
+  [717] pushint16 4836 .......................... <4836>
+  [720] eq
+  [721] jmpifz [735] ............................ (case) 4836:
+  [724] pop 1
+  [726] pushcons 47 ............................. <"Cache download stopped for an unknown reason.">
+  [728] pusharglistnoret 1 ...................... <"Cache download stopped for an unknown reason.">
+  [730] extcall 25 .............................. return "Cache download stopped for an unknown reason."
+  [732] jmp [746] ............................... (case) otherwise:
+  [735] pop 1
+  [737] pushcons 48 ............................. <"Other network error:">
+  [739] getparam 1 .............................. <tErrorCode>
+  [741] joinpadstr .............................. <"Other network error:" && tErrorCode>
+  [742] pusharglistnoret 1 ...................... <"Other network error:" && tErrorCode>
+  [744] extcall 25 .............................. return "Other network error:" && tErrorCode
+  [746] pop 1 ................................... end case
+  [748] ret
+end

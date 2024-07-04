@@ -1,0 +1,298 @@
+property pConnectionId
+
+on construct me
+  [  0] pushcons 0 .............................. <"connection.info.id">
+  [  2] pusharglist 1 ........................... <"connection.info.id">
+  [  4] extcall 288 ............................. <getVariableValue("connection.info.id")>
+  [  7] setprop 287 ............................. pConnectionId = getVariableValue("connection.info.id")
+  [ 10] pushsymb 290 ............................ <#create_user>
+  [ 13] getparam 0 .............................. <me>
+  [ 15] pusharglist 1 ........................... <me>
+  [ 17] objcall 245 ............................. <me.getID()>
+  [ 19] pushsymb 284 ............................ <#handleUserCreated>
+  [ 22] pusharglistnoret 3 ...................... <#create_user, me.getID(), #handleUserCreated>
+  [ 24] extcall 289 ............................. registerMessage(#create_user, me.getID(), #handleUserCreated)
+  [ 27] pushint8 1 .............................. <1>
+  [ 29] pusharglistnoret 1 ...................... <1>
+  [ 31] extcall 28 .............................. return 1
+  [ 33] ret
+end
+
+on deconstruct me
+  [  0] pushsymb 290 ............................ <#create_user>
+  [  3] getparam 0 .............................. <me>
+  [  5] pusharglist 1 ........................... <me>
+  [  7] objcall 245 ............................. <me.getID()>
+  [  9] pusharglistnoret 2 ...................... <#create_user, me.getID()>
+  [ 11] extcall 291 ............................. unregisterMessage(#create_user, me.getID())
+  [ 14] pushint8 1 .............................. <1>
+  [ 16] pusharglistnoret 1 ...................... <1>
+  [ 18] extcall 28 .............................. return 1
+  [ 20] ret
+end
+
+on Refresh me, tTopic, tdata
+  [  0] getparam 1 .............................. <tTopic>
+  [  2] peek 0 .................................. case tTopic of
+  [  4] pushsymb 292 ............................ <#send_set_target>
+  [  7] eq
+  [  8] jmpifz [ 23] ............................ (case) #send_set_target:
+  [ 11] getparam 0 .............................. <me>
+  [ 13] getparam 2 .............................. <tdata>
+  [ 15] pusharglistnoret 2 ...................... <me, tdata>
+  [ 17] objcall 283 ............................. me.sendSetTarget(tdata)
+  [ 20] jmp [ 39]
+  [ 23] peek 0
+  [ 25] pushsymb 293 ............................ <#gamestart>
+  [ 28] eq
+  [ 29] jmpifz [ 39] ............................ (case) #gamestart:
+  [ 32] getparam 0 .............................. <me>
+  [ 34] pusharglistnoret 1 ...................... <me>
+  [ 36] objcall 285 ............................. me.hideArrowHiliter()
+  [ 39] pop 1 ................................... end case
+  [ 41] pushint8 1 .............................. <1>
+  [ 43] pusharglistnoret 1 ...................... <1>
+  [ 45] extcall 28 .............................. return 1
+  [ 47] ret
+end
+
+on sendSetTarget me, tdata
+  [  0] getparam 0 .............................. <me>
+  [  2] pusharglist 1 ........................... <me>
+  [  4] objcall 201 ............................. <me.getGameSystem()>
+  [  6] setlocal 0 .............................. tGameSystem = me.getGameSystem()
+  [  8] getlocal 0 .............................. <tGameSystem>
+  [ 10] pushzero ................................ <0>
+  [ 11] eq ...................................... <tGameSystem = 0>
+  [ 12] jmpifz [ 20] ............................ if tGameSystem = 0 then
+  [ 15] pushzero ................................ <0>
+  [ 16] pusharglistnoret 1 ...................... <0>
+  [ 18] extcall 28 .............................. return 0
+  [ 20] getlocal 0 .............................. <tGameSystem>
+  [ 22] pusharglist 1 ........................... <tGameSystem>
+  [ 24] objcall 294 ............................. <tGameSystem.getSpectatorModeFlag()>
+  [ 27] jmpifz [ 35] ............................ if tGameSystem.getSpectatorModeFlag() then
+  [ 30] pushzero ................................ <0>
+  [ 31] pusharglistnoret 1 ...................... <0>
+  [ 33] extcall 28 .............................. return 0
+  [ 35] getlocal 0 .............................. <tGameSystem>
+  [ 37] pusharglist 1 ........................... <tGameSystem>
+  [ 39] objcall 295 ............................. <tGameSystem.getGamestatus()>
+  [ 42] setlocal 1 .............................. tGameState = tGameSystem.getGamestatus()
+  [ 44] getparam 0 .............................. <me>
+  [ 46] pusharglist 1 ........................... <me>
+  [ 48] objcall 286 ............................. <me.getRoomConnection()>
+  [ 51] setlocal 2 .............................. tConnection = me.getRoomConnection()
+  [ 53] getlocal 2 .............................. <tConnection>
+  [ 55] pusharglist 1 ........................... <tConnection>
+  [ 57] extcall 26 .............................. <objectp(tConnection)>
+  [ 59] not ..................................... <not objectp(tConnection)>
+  [ 60] jmpifz [ 78] ............................ if not objectp(tConnection) then
+  [ 63] getparam 0 .............................. <me>
+  [ 65] pushcons 1 .............................. <"Info connection has disappeared!">
+  [ 67] pushsymb 296 ............................ <#sendMoveGoal>
+  [ 70] pusharglist 3 ........................... <me, "Info connection has disappeared!", #sendMoveGoal>
+  [ 72] extcall 173 ............................. <error(me, "Info connection has disappeared!", #sendMoveGoal)>
+  [ 74] pusharglistnoret 1 ...................... <error(me, "Info connection has disappeared!", #sendMoveGoal)>
+  [ 76] extcall 28 .............................. return error(me, "Info connection has disappeared!", #sendMoveGoal)
+  [ 78] getlocal 1 .............................. <tGameState>
+  [ 80] pushsymb 297 ............................ <#game_started>
+  [ 83] eq ...................................... <tGameState = #game_started>
+  [ 84] jmpifz [175] ............................ if tGameState = #game_started then / else
+  [ 87] getparam 0 .............................. <me>
+  [ 89] pusharglist 1 ........................... <me>
+  [ 91] objcall 213 ............................. <me.getGameObject()>
+  [ 93] setlocal 3 .............................. tGameObject = me.getGameObject()
+  [ 95] getlocal 3 .............................. <tGameObject>
+  [ 97] pushzero ................................ <0>
+  [ 98] eq ...................................... <tGameObject = 0>
+  [ 99] jmpifz [117] ............................ if tGameObject = 0 then
+  [102] getparam 0 .............................. <me>
+  [104] pushcons 2 .............................. <"Own user not found.">
+  [106] pushsymb 283 ............................ <#sendSetTarget>
+  [109] pusharglist 3 ........................... <me, "Own user not found.", #sendSetTarget>
+  [111] extcall 173 ............................. <error(me, "Own user not found.", #sendSetTarget)>
+  [113] pusharglistnoret 1 ...................... <error(me, "Own user not found.", #sendSetTarget)>
+  [115] extcall 28 .............................. return error(me, "Own user not found.", #sendSetTarget)
+  [117] getlocal 3 .............................. <tGameObject>
+  [119] pusharglist 1 ........................... <tGameObject>
+  [121] objcall 298 ............................. <tGameObject.checkStateAllowsMoving()>
+  [124] not ..................................... <not tGameObject.checkStateAllowsMoving()>
+  [125] jmpifz [134] ............................ if not tGameObject.checkStateAllowsMoving() then
+  [128] pushint8 1 .............................. <1>
+  [130] pusharglistnoret 1 ...................... <1>
+  [132] extcall 28 .............................. return 1
+  [134] getlocal 0 .............................. <tGameSystem>
+  [136] pushsymb 181 ............................ <#integer>
+  [138] pushint8 2 .............................. <2>
+  [140] pushsymb 181 ............................ <#integer>
+  [142] getparam 1 .............................. <tdata>
+  [144] pushint8 1 .............................. <1>
+  [146] pusharglist 2 ........................... <tdata, 1>
+  [148] objcall 31 .............................. <tdata[1]>
+  [150] pushsymb 181 ............................ <#integer>
+  [152] getparam 1 .............................. <tdata>
+  [154] pushint8 2 .............................. <2>
+  [156] pusharglist 2 ........................... <tdata, 2>
+  [158] objcall 31 .............................. <tdata[2]>
+  [160] pusharglist 6 ........................... <[#integer: 2, #integer: tdata[1], #integer: tdata[2]]>
+  [162] pushproplist ............................ <[#integer: 2, #integer: tdata[1], #integer: tdata[2]]>
+  [163] pusharglist 2 ........................... <tGameSystem, [#integer: 2, #integer: tdata[1], #integer: tdata[2]]>
+  [165] objcall 299 ............................. <tGameSystem.sendGameEventMessage([#integer: 2, #integer: tdata[1], #integer: tdata[2]])>
+  [168] pusharglistnoret 1 ...................... <tGameSystem.sendGameEventMessage([#integer: 2, #integer: tdata[1], #integer: tdata[2]])>
+  [170] extcall 28 .............................. return tGameSystem.sendGameEventMessage([#integer: 2, #integer: tdata[1], #integer: tdata[2]])
+  [172] jmp [213]
+  [175] getlocal 2 .............................. <tConnection>
+  [177] pushcons 3 .............................. <"MOVE">
+  [179] pushsymb 300 ............................ <#short>
+  [182] getparam 1 .............................. <tdata>
+  [184] pushint8 1 .............................. <1>
+  [186] pusharglist 2 ........................... <tdata, 1>
+  [188] objcall 31 .............................. <tdata[1]>
+  [190] pushsymb 300 ............................ <#short>
+  [193] getparam 1 .............................. <tdata>
+  [195] pushint8 2 .............................. <2>
+  [197] pusharglist 2 ........................... <tdata, 2>
+  [199] objcall 31 .............................. <tdata[2]>
+  [201] pusharglist 4 ........................... <[#short: tdata[1], #short: tdata[2]]>
+  [203] pushproplist ............................ <[#short: tdata[1], #short: tdata[2]]>
+  [204] pusharglist 3 ........................... <tConnection, "MOVE", [#short: tdata[1], #short: tdata[2]]>
+  [206] objcall 301 ............................. <tConnection.send("MOVE", [#short: tdata[1], #short: tdata[2]])>
+  [209] pusharglistnoret 1 ...................... <tConnection.send("MOVE", [#short: tdata[1], #short: tdata[2]])>
+  [211] extcall 28 .............................. return tConnection.send("MOVE", [#short: tdata[1], #short: tdata[2]])
+  [213] ret
+end
+
+on handleUserCreated me, tName, tUserStrId
+  [  0] getparam 0 .............................. <me>
+  [  2] pusharglist 1 ........................... <me>
+  [  4] objcall 201 ............................. <me.getGameSystem()>
+  [  6] pusharglist 1 ........................... <me.getGameSystem()>
+  [  8] objcall 294 ............................. <me.getGameSystem().getSpectatorModeFlag()>
+  [ 11] jmpifz [ 20] ............................ if me.getGameSystem().getSpectatorModeFlag() then
+  [ 14] pushint8 1 .............................. <1>
+  [ 16] pusharglistnoret 1 ...................... <1>
+  [ 18] extcall 28 .............................. return 1
+  [ 20] pushsymb 304 ............................ <#session>
+  [ 23] pusharglist 1 ........................... <#session>
+  [ 25] extcall 166 ............................. <getObject(#session)>
+  [ 27] pushcons 4 .............................. <"user_index">
+  [ 29] pusharglist 2 ........................... <getObject(#session), "user_index">
+  [ 31] objcall 305 ............................. <getObject(#session).exists("user_index")>
+  [ 34] not ..................................... <not getObject(#session).exists("user_index")>
+  [ 35] jmpifz [ 43] ............................ if not getObject(#session).exists("user_index") then
+  [ 38] pushzero ................................ <0>
+  [ 39] pusharglistnoret 1 ...................... <0>
+  [ 41] extcall 28 .............................. return 0
+  [ 43] getparam 2 .............................. <tUserStrId>
+  [ 45] pushsymb 304 ............................ <#session>
+  [ 48] pusharglist 1 ........................... <#session>
+  [ 50] extcall 166 ............................. <getObject(#session)>
+  [ 52] pushcons 4 .............................. <"user_index">
+  [ 54] pusharglist 2 ........................... <getObject(#session), "user_index">
+  [ 56] objcall 306 ............................. <getObject(#session).GET("user_index")>
+  [ 59] nteq .................................... <tUserStrId <> getObject(#session).GET("user_index")>
+  [ 60] jmpifz [ 68] ............................ if tUserStrId <> getObject(#session).GET("user_index") then
+  [ 63] pushzero ................................ <0>
+  [ 64] pusharglistnoret 1 ...................... <0>
+  [ 66] extcall 28 .............................. return 0
+  [ 68] pushsymb 167 ............................ <#room_interface>
+  [ 70] pusharglist 1 ........................... <#room_interface>
+  [ 72] extcall 166 ............................. <getObject(#room_interface)>
+  [ 74] getparam 2 .............................. <tUserStrId>
+  [ 76] pusharglist 2 ........................... <getObject(#room_interface), tUserStrId>
+  [ 78] objcall 307 ............................. <getObject(#room_interface).showArrowHiliter(tUserStrId)>
+  [ 81] pusharglistnoret 1 ...................... <getObject(#room_interface).showArrowHiliter(tUserStrId)>
+  [ 83] extcall 28 .............................. return getObject(#room_interface).showArrowHiliter(tUserStrId)
+  [ 85] ret
+end
+
+on hideArrowHiliter me
+  [  0] pushsymb 167 ............................ <#room_interface>
+  [  2] pusharglist 1 ........................... <#room_interface>
+  [  4] extcall 309 ............................. <objectExists(#room_interface)>
+  [  7] not ..................................... <not objectExists(#room_interface)>
+  [  8] jmpifz [ 16] ............................ if not objectExists(#room_interface) then
+  [ 11] pushzero ................................ <0>
+  [ 12] pusharglistnoret 1 ...................... <0>
+  [ 14] extcall 28 .............................. return 0
+  [ 16] pushsymb 167 ............................ <#room_interface>
+  [ 18] pusharglist 1 ........................... <#room_interface>
+  [ 20] extcall 166 ............................. <getObject(#room_interface)>
+  [ 22] pusharglist 1 ........................... <getObject(#room_interface)>
+  [ 24] objcall 285 ............................. <getObject(#room_interface).hideArrowHiliter()>
+  [ 27] pusharglistnoret 1 ...................... <getObject(#room_interface).hideArrowHiliter()>
+  [ 29] extcall 28 .............................. return getObject(#room_interface).hideArrowHiliter()
+  [ 31] ret
+end
+
+on getGameObject me
+  [  0] getparam 0 .............................. <me>
+  [  2] pusharglist 1 ........................... <me>
+  [  4] objcall 201 ............................. <me.getGameSystem()>
+  [  6] setlocal 0 .............................. tGameSystem = me.getGameSystem()
+  [  8] getlocal 0 .............................. <tGameSystem>
+  [ 10] pushzero ................................ <0>
+  [ 11] eq ...................................... <tGameSystem = 0>
+  [ 12] jmpifz [ 20] ............................ if tGameSystem = 0 then
+  [ 15] pushzero ................................ <0>
+  [ 16] pusharglistnoret 1 ...................... <0>
+  [ 18] extcall 28 .............................. return 0
+  [ 20] pushsymb 304 ............................ <#session>
+  [ 23] pusharglist 1 ........................... <#session>
+  [ 25] extcall 166 ............................. <getObject(#session)>
+  [ 27] setlocal 1 .............................. tSession = getObject(#session)
+  [ 29] getlocal 1 .............................. <tSession>
+  [ 31] pushzero ................................ <0>
+  [ 32] eq ...................................... <tSession = 0>
+  [ 33] jmpifz [ 41] ............................ if tSession = 0 then
+  [ 36] pushzero ................................ <0>
+  [ 37] pusharglistnoret 1 ...................... <0>
+  [ 39] extcall 28 .............................. return 0
+  [ 41] getlocal 1 .............................. <tSession>
+  [ 43] pushcons 5 .............................. <"user_game_index">
+  [ 45] pusharglist 2 ........................... <tSession, "user_game_index">
+  [ 47] objcall 305 ............................. <tSession.exists("user_game_index")>
+  [ 50] not ..................................... <not tSession.exists("user_game_index")>
+  [ 51] jmpifz [ 68] ............................ if not tSession.exists("user_game_index") then
+  [ 54] getparam 0 .............................. <me>
+  [ 56] pushcons 2 .............................. <"Own user not found.">
+  [ 58] pushsymb 213 ............................ <#getGameObject>
+  [ 60] pusharglist 3 ........................... <me, "Own user not found.", #getGameObject>
+  [ 62] extcall 173 ............................. <error(me, "Own user not found.", #getGameObject)>
+  [ 64] pusharglistnoret 1 ...................... <error(me, "Own user not found.", #getGameObject)>
+  [ 66] extcall 28 .............................. return error(me, "Own user not found.", #getGameObject)
+  [ 68] getlocal 1 .............................. <tSession>
+  [ 70] pushcons 5 .............................. <"user_game_index">
+  [ 72] pusharglist 2 ........................... <tSession, "user_game_index">
+  [ 74] objcall 306 ............................. <tSession.GET("user_game_index")>
+  [ 77] setlocal 2 .............................. tUserIndex = tSession.GET("user_game_index")
+  [ 79] getlocal 0 .............................. <tGameSystem>
+  [ 81] getlocal 2 .............................. <tUserIndex>
+  [ 83] pusharglist 2 ........................... <tGameSystem, tUserIndex>
+  [ 85] objcall 213 ............................. <tGameSystem.getGameObject(tUserIndex)>
+  [ 87] pusharglistnoret 1 ...................... <tGameSystem.getGameObject(tUserIndex)>
+  [ 89] extcall 28 .............................. return tGameSystem.getGameObject(tUserIndex)
+  [ 91] ret
+end
+
+on getRoomConnection me
+  [  0] getprop 287 ............................. <pConnectionId>
+  [  3] pusharglist 1 ........................... <pConnectionId>
+  [  5] extcall 312 ............................. <connectionExists(pConnectionId)>
+  [  8] not ..................................... <not connectionExists(pConnectionId)>
+  [  9] jmpifz [ 27] ............................ if not connectionExists(pConnectionId) then
+  [ 12] getparam 0 .............................. <me>
+  [ 14] pushcons 6 .............................. <"Info connection not found!">
+  [ 16] pushsymb 286 ............................ <#getRoomConnection>
+  [ 19] pusharglist 3 ........................... <me, "Info connection not found!", #getRoomConnection>
+  [ 21] extcall 173 ............................. <error(me, "Info connection not found!", #getRoomConnection)>
+  [ 23] pusharglistnoret 1 ...................... <error(me, "Info connection not found!", #getRoomConnection)>
+  [ 25] extcall 28 .............................. return error(me, "Info connection not found!", #getRoomConnection)
+  [ 27] getprop 287 ............................. <pConnectionId>
+  [ 30] pusharglist 1 ........................... <pConnectionId>
+  [ 32] extcall 313 ............................. <getConnection(pConnectionId)>
+  [ 35] pusharglistnoret 1 ...................... <getConnection(pConnectionId)>
+  [ 37] extcall 28 .............................. return getConnection(pConnectionId)
+  [ 39] ret
+end

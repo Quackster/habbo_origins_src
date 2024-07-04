@@ -1,0 +1,444 @@
+property pTipID, pTipWidth
+
+on construct me
+  [  0] pushcons 0 .............................. <"help_tooltip">
+  [  2] setprop 683 ............................. pTipID = "help_tooltip"
+  [  5] pushint16 150 ........................... <150>
+  [  8] setprop 684 ............................. pTipWidth = 150
+  [ 11] pushsymb 685 ............................ <#helptooltip>
+  [ 14] getparam 0 .............................. <me>
+  [ 16] pusharglist 1 ........................... <me>
+  [ 18] objcall 42 .............................. <me.getID()>
+  [ 20] pushsymb 677 ............................ <#createHelpTooltip>
+  [ 23] pusharglistnoret 3 ...................... <#helptooltip, me.getID(), #createHelpTooltip>
+  [ 25] extcall 40 .............................. registerMessage(#helptooltip, me.getID(), #createHelpTooltip)
+  [ 27] pushint8 1 .............................. <1>
+  [ 29] pusharglistnoret 1 ...................... <1>
+  [ 31] extcall 44 .............................. return 1
+  [ 33] ret
+end
+
+on deconstruct me
+  [  0] pushsymb 686 ............................ <#tooltip>
+  [  3] getparam 0 .............................. <me>
+  [  5] pusharglist 1 ........................... <me>
+  [  7] objcall 42 .............................. <me.getID()>
+  [  9] pusharglistnoret 2 ...................... <#tooltip, me.getID()>
+  [ 11] extcall 53 .............................. unregisterMessage(#tooltip, me.getID())
+  [ 13] getprop 683 ............................. <pTipID>
+  [ 16] pusharglist 1 ........................... <pTipID>
+  [ 18] extcall 47 .............................. <windowExists(pTipID)>
+  [ 20] jmpifz [ 30] ............................ if windowExists(pTipID) then
+  [ 23] getprop 683 ............................. <pTipID>
+  [ 26] pusharglistnoret 1 ...................... <pTipID>
+  [ 28] extcall 48 .............................. removeWindow(pTipID)
+  [ 30] pushint8 1 .............................. <1>
+  [ 32] pusharglistnoret 1 ...................... <1>
+  [ 34] extcall 44 .............................. return 1
+  [ 36] ret
+end
+
+on createHelpTooltip me, tParams
+  [  0] getparam 1 .............................. <tParams>
+  [  2] getobjprop 78 ........................... <tParams.count>
+  [  4] pushint8 2 .............................. <2>
+  [  6] lt ...................................... <tParams.count < 2>
+  [  7] jmpifz [ 25] ............................ if tParams.count < 2 then
+  [ 10] getparam 0 .............................. <me>
+  [ 12] pushcons 1 .............................. <"Wrong param count">
+  [ 14] pushsymb 677 ............................ <#createHelpTooltip>
+  [ 17] pusharglist 3 ........................... <me, "Wrong param count", #createHelpTooltip>
+  [ 19] extcall 106 ............................. <error(me, "Wrong param count", #createHelpTooltip)>
+  [ 21] pusharglistnoret 1 ...................... <error(me, "Wrong param count", #createHelpTooltip)>
+  [ 23] extcall 44 .............................. return error(me, "Wrong param count", #createHelpTooltip)
+  [ 25] getparam 1 .............................. <tParams>
+  [ 27] pushsymb 97 ............................. <#msg>
+  [ 29] pusharglist 2 ........................... <tParams, #msg>
+  [ 31] extcall 104 ............................. <getProp(tParams, #msg)>
+  [ 33] setlocal 0 .............................. tMsg = getProp(tParams, #msg)
+  [ 35] getlocal 0 .............................. <tMsg>
+  [ 37] pusharglist 1 ........................... <tMsg>
+  [ 39] extcall 687 ............................. <textExists(tMsg)>
+  [ 42] jmpifz [ 53] ............................ if textExists(tMsg) then
+  [ 45] getlocal 0 .............................. <tMsg>
+  [ 47] pusharglist 1 ........................... <tMsg>
+  [ 49] extcall 27 .............................. <getText(tMsg)>
+  [ 51] setlocal 0 .............................. tMsg = getText(tMsg)
+  [ 53] getparam 1 .............................. <tParams>
+  [ 55] pushsymb 688 ............................ <#pos>
+  [ 58] pusharglist 2 ........................... <tParams, #pos>
+  [ 60] extcall 235 ............................. <getaProp(tParams, #pos)>
+  [ 62] setlocal 1 .............................. tPos = getaProp(tParams, #pos)
+  [ 64] getlocal 1 .............................. <tPos>
+  [ 66] pusharglist 1 ........................... <tPos>
+  [ 68] extcall 49 .............................. <ilk(tPos)>
+  [ 70] pushsymb 59 ............................. <#point>
+  [ 72] eq ...................................... <ilk(tPos) = #point>
+  [ 73] jmpifz [ 90] ............................ if ilk(tPos) = #point then / else
+  [ 76] getparam 0 .............................. <me>
+  [ 78] getlocal 0 .............................. <tMsg>
+  [ 80] getlocal 1 .............................. <tPos>
+  [ 82] pusharglistnoret 3 ...................... <me, tMsg, tPos>
+  [ 84] objcall 679 ............................. me.createTooltipToPoint(tMsg, tPos)
+  [ 87] jmp [114]
+  [ 90] getlocal 1 .............................. <tPos>
+  [ 92] pusharglist 1 ........................... <tPos>
+  [ 94] extcall 49 .............................. <ilk(tPos)>
+  [ 96] pushsymb 387 ............................ <#rect>
+  [ 99] eq ...................................... <ilk(tPos) = #rect>
+  [100] jmpifz [114] ............................ if ilk(tPos) = #rect then
+  [103] getparam 0 .............................. <me>
+  [105] getlocal 0 .............................. <tMsg>
+  [107] getlocal 1 .............................. <tPos>
+  [109] pusharglistnoret 3 ...................... <me, tMsg, tPos>
+  [111] objcall 678 ............................. me.createTooltipToRect(tMsg, tPos)
+  [114] ret
+end
+
+on createTooltipToRect me, tMsg, tRect
+  [  0] getparam 1 .............................. <tMsg>
+  [  2] pusharglist 1 ........................... <tMsg>
+  [  4] extcall 71 .............................. <voidp(tMsg)>
+  [  6] jmpifz [ 14] ............................ if voidp(tMsg) then
+  [  9] pushzero ................................ <0>
+  [ 10] pusharglistnoret 1 ...................... <0>
+  [ 12] extcall 44 .............................. return 0
+  [ 14] getparam 2 .............................. <tRect>
+  [ 16] pusharglist 1 ........................... <tRect>
+  [ 18] extcall 71 .............................. <voidp(tRect)>
+  [ 20] jmpifz [ 28] ............................ if voidp(tRect) then
+  [ 23] pushzero ................................ <0>
+  [ 24] pusharglistnoret 1 ...................... <0>
+  [ 26] extcall 44 .............................. return 0
+  [ 28] getparam 2 .............................. <tRect>
+  [ 30] pusharglist 1 ........................... <tRect>
+  [ 32] extcall 49 .............................. <ilk(tRect)>
+  [ 34] pushsymb 387 ............................ <#rect>
+  [ 37] nteq .................................... <ilk(tRect) <> #rect>
+  [ 38] jmpifz [ 56] ............................ if ilk(tRect) <> #rect then
+  [ 41] getparam 0 .............................. <me>
+  [ 43] pushcons 2 .............................. <"No rect">
+  [ 45] pushsymb 678 ............................ <#createTooltipToRect>
+  [ 48] pusharglist 3 ........................... <me, "No rect", #createTooltipToRect>
+  [ 50] extcall 106 ............................. <error(me, "No rect", #createTooltipToRect)>
+  [ 52] pusharglistnoret 1 ...................... <error(me, "No rect", #createTooltipToRect)>
+  [ 54] extcall 44 .............................. return error(me, "No rect", #createTooltipToRect)
+  [ 56] pushint8 7 .............................. <7>
+  [ 58] setlocal 0 .............................. tSpacing = 7
+  [ 60] pusharglist 0 ........................... <>
+  [ 62] thebuiltin 690 .......................... <the stageRight>
+  [ 65] pusharglist 0 ........................... <>
+  [ 67] thebuiltin 691 .......................... <the stageLeft>
+  [ 70] sub ..................................... <the stageRight - the stageLeft>
+  [ 71] setlocal 1 .............................. tStageWidth = the stageRight - the stageLeft
+  [ 73] getparam 0 .............................. <me>
+  [ 75] getparam 1 .............................. <tMsg>
+  [ 77] pushzero ................................ <0>
+  [ 78] pushzero ................................ <0>
+  [ 79] pusharglist 2 ........................... <0, 0>
+  [ 81] extcall 59 .............................. <point(0, 0)>
+  [ 83] pusharglist 3 ........................... <me, tMsg, point(0, 0)>
+  [ 85] objcall 679 ............................. <me.createTooltipToPoint(tMsg, point(0, 0))>
+  [ 88] not ..................................... <not me.createTooltipToPoint(tMsg, point(0, 0))>
+  [ 89] jmpifz [ 97] ............................ if not me.createTooltipToPoint(tMsg, point(0, 0)) then
+  [ 92] pushzero ................................ <0>
+  [ 93] pusharglistnoret 1 ...................... <0>
+  [ 95] extcall 44 .............................. return 0
+  [ 97] getprop 683 ............................. <pTipID>
+  [100] pusharglist 1 ........................... <pTipID>
+  [102] extcall 75 .............................. <getWindow(pTipID)>
+  [104] setlocal 2 .............................. tWndObj = getWindow(pTipID)
+  [106] getparam 2 .............................. <tRect>
+  [108] getobjprop 692 .......................... <tRect.top>
+  [111] getlocal 2 .............................. <tWndObj>
+  [113] getobjprop 693 .......................... <tWndObj.pheight>
+  [116] sub ..................................... <tRect.top - tWndObj.pheight>
+  [117] getlocal 0 .............................. <tSpacing>
+  [119] sub ..................................... <tRect.top - tWndObj.pheight - tSpacing>
+  [120] pushzero ................................ <0>
+  [121] gt ...................................... <(tRect.top - tWndObj.pheight - tSpacing) > 0>
+  [122] jmpifz [157] ............................ if (tRect.top - tWndObj.pheight - tSpacing) > 0 then / else
+  [125] getlocal 2 .............................. <tWndObj>
+  [127] getparam 2 .............................. <tRect>
+  [129] getobjprop 694 .......................... <tRect.left>
+  [132] getlocal 0 .............................. <tSpacing>
+  [134] add ..................................... <tRect.left + tSpacing>
+  [135] getparam 2 .............................. <tRect>
+  [137] getobjprop 692 .......................... <tRect.top>
+  [140] getlocal 2 .............................. <tWndObj>
+  [142] getobjprop 693 .......................... <tWndObj.pheight>
+  [145] sub ..................................... <tRect.top - tWndObj.pheight>
+  [146] getlocal 0 .............................. <tSpacing>
+  [148] sub ..................................... <tRect.top - tWndObj.pheight - tSpacing>
+  [149] pusharglistnoret 3 ...................... <tWndObj, tRect.left + tSpacing, tRect.top - tWndObj.pheight - tSpacing>
+  [151] objcall 695 ............................. tWndObj.moveTo(tRect.left + tSpacing, tRect.top - tWndObj.pheight - tSpacing)
+  [154] jmp [180]
+  [157] getlocal 2 .............................. <tWndObj>
+  [159] getparam 2 .............................. <tRect>
+  [161] getobjprop 694 .......................... <tRect.left>
+  [164] getlocal 0 .............................. <tSpacing>
+  [166] add ..................................... <tRect.left + tSpacing>
+  [167] getparam 2 .............................. <tRect>
+  [169] getobjprop 696 .......................... <tRect.bottom>
+  [172] getlocal 0 .............................. <tSpacing>
+  [174] add ..................................... <tRect.bottom + tSpacing>
+  [175] pusharglistnoret 3 ...................... <tWndObj, tRect.left + tSpacing, tRect.bottom + tSpacing>
+  [177] objcall 695 ............................. tWndObj.moveTo(tRect.left + tSpacing, tRect.bottom + tSpacing)
+  [180] getlocal 2 .............................. <tWndObj>
+  [182] getobjprop 581 .......................... <tWndObj.pLocX>
+  [185] getlocal 2 .............................. <tWndObj>
+  [187] getobjprop 697 .......................... <tWndObj.pwidth>
+  [190] add ..................................... <tWndObj.pLocX + tWndObj.pwidth>
+  [191] getlocal 1 .............................. <tStageWidth>
+  [193] gt ...................................... <(tWndObj.pLocX + tWndObj.pwidth) > tStageWidth>
+  [194] jmpifz [217] ............................ if (tWndObj.pLocX + tWndObj.pwidth) > tStageWidth then
+  [197] getlocal 2 .............................. <tWndObj>
+  [199] getlocal 1 .............................. <tStageWidth>
+  [201] getlocal 2 .............................. <tWndObj>
+  [203] getobjprop 697 .......................... <tWndObj.pwidth>
+  [206] sub ..................................... <tStageWidth - tWndObj.pwidth>
+  [207] getlocal 2 .............................. <tWndObj>
+  [209] getobjprop 579 .......................... <tWndObj.pLocY>
+  [212] pusharglistnoret 3 ...................... <tWndObj, tStageWidth - tWndObj.pwidth, tWndObj.pLocY>
+  [214] objcall 695 ............................. tWndObj.moveTo(tStageWidth - tWndObj.pwidth, tWndObj.pLocY)
+  [217] ret
+end
+
+on createTooltipToPoint me, tMsg, tloc
+  [  0] getparam 2 .............................. <tloc>
+  [  2] pusharglist 1 ........................... <tloc>
+  [  4] extcall 49 .............................. <ilk(tloc)>
+  [  6] pushsymb 59 ............................. <#point>
+  [  8] nteq .................................... <ilk(tloc) <> #point>
+  [  9] jmpifz [ 27] ............................ if ilk(tloc) <> #point then
+  [ 12] getparam 0 .............................. <me>
+  [ 14] pushcons 3 .............................. <"No point">
+  [ 16] pushsymb 679 ............................ <#createTooltipToPoint>
+  [ 19] pusharglist 3 ........................... <me, "No point", #createTooltipToPoint>
+  [ 21] extcall 106 ............................. <error(me, "No point", #createTooltipToPoint)>
+  [ 23] pusharglistnoret 1 ...................... <error(me, "No point", #createTooltipToPoint)>
+  [ 25] extcall 44 .............................. return error(me, "No point", #createTooltipToPoint)
+  [ 27] pushcons 4 .............................. <"help_tooltip.window">
+  [ 29] setlocal 0 .............................. tLayout = "help_tooltip.window"
+  [ 31] getprop 684 ............................. <pTipWidth>
+  [ 34] setlocal 1 .............................. tLineWidth = pTipWidth
+  [ 36] pushcons 5 .............................. <"struct.font.plain">
+  [ 38] pusharglist 1 ........................... <"struct.font.plain">
+  [ 40] extcall 700 ............................. <getStructVariable("struct.font.plain")>
+  [ 43] setlocal 2 .............................. tFontStruct = getStructVariable("struct.font.plain")
+  [ 45] pushcons 6 .............................. <"help_tooltip.txt">
+  [ 47] pusharglist 1 ........................... <"help_tooltip.txt">
+  [ 49] extcall 127 ............................. <memberExists("help_tooltip.txt")>
+  [ 51] not ..................................... <not memberExists("help_tooltip.txt")>
+  [ 52] jmpifz [ 74] ............................ if not memberExists("help_tooltip.txt") then / else
+  [ 55] pushcons 6 .............................. <"help_tooltip.txt">
+  [ 57] pushsymb 469 ............................ <#field>
+  [ 60] pusharglist 2 ........................... <"help_tooltip.txt", #field>
+  [ 62] extcall 569 ............................. <createMember("help_tooltip.txt", #field)>
+  [ 65] pusharglist 1 ........................... <createMember("help_tooltip.txt", #field)>
+  [ 67] extcall 99 .............................. <member(createMember("help_tooltip.txt", #field))>
+  [ 69] setlocal 3 .............................. tmember = member(createMember("help_tooltip.txt", #field))
+  [ 71] jmp [ 82]
+  [ 74] pushcons 6 .............................. <"help_tooltip.txt">
+  [ 76] pusharglist 1 ........................... <"help_tooltip.txt">
+  [ 78] extcall 99 .............................. <member("help_tooltip.txt")>
+  [ 80] setlocal 3 .............................. tmember = member("help_tooltip.txt")
+  [ 82] getlocal 3 .............................. <tmember>
+  [ 84] pushint8 1 .............................. <1>
+  [ 86] setobjprop 701 .......................... tmember.wordWrap = 1
+  [ 89] getlocal 3 .............................. <tmember>
+  [ 91] pushsymb 702 ............................ <#adjust>
+  [ 94] setobjprop 703 .......................... tmember.boxType = #adjust
+  [ 97] getlocal 3 .............................. <tmember>
+  [ 99] getlocal 2 .............................. <tFontStruct>
+  [101] pushsymb 704 ............................ <#font>
+  [104] pusharglist 2 ........................... <tFontStruct, #font>
+  [106] objcall 235 ............................. <tFontStruct.getaProp(#font)>
+  [108] setobjprop 704 .......................... tmember.font = tFontStruct.getaProp(#font)
+  [111] getlocal 3 .............................. <tmember>
+  [113] getlocal 2 .............................. <tFontStruct>
+  [115] pushsymb 705 ............................ <#fontSize>
+  [118] pusharglist 2 ........................... <tFontStruct, #fontSize>
+  [120] objcall 235 ............................. <tFontStruct.getaProp(#fontSize)>
+  [122] setobjprop 705 .......................... tmember.fontSize = tFontStruct.getaProp(#fontSize)
+  [125] getlocal 3 .............................. <tmember>
+  [127] getlocal 1 .............................. <tLineWidth>
+  [129] setobjprop 706 .......................... tmember.margin = tLineWidth
+  [132] getlocal 3 .............................. <tmember>
+  [134] getparam 1 .............................. <tMsg>
+  [136] pushcons 7 .............................. <" ">
+  [138] joinstr ................................. <tMsg & " ">
+  [139] setobjprop 302 .......................... tmember.text = tMsg & " "
+  [142] getlocal 3 .............................. <tmember>
+  [144] getlocal 2 .............................. <tFontStruct>
+  [146] pushsymb 705 ............................ <#fontSize>
+  [149] pusharglist 2 ........................... <tFontStruct, #fontSize>
+  [151] objcall 235 ............................. <tFontStruct.getaProp(#fontSize)>
+  [153] setobjprop 707 .......................... tmember.lineHeight = tFontStruct.getaProp(#fontSize)
+  [156] pushint8 11 ............................. <11>
+  [158] setlocal 4 .............................. tMargin = 11
+  [160] getlocal 3 .............................. <tmember>
+  [162] getobjprop 708 .......................... <tmember.lineCount>
+  [165] setlocal 5 .............................. tLineCount = tmember.lineCount
+  [167] pushint8 2 .............................. <2>
+  [169] getlocal 4 .............................. <tMargin>
+  [171] mul ..................................... <2 * tMargin>
+  [172] getlocal 5 .............................. <tLineCount>
+  [174] getlocal 2 .............................. <tFontStruct>
+  [176] pushsymb 705 ............................ <#fontSize>
+  [179] pusharglist 2 ........................... <tFontStruct, #fontSize>
+  [181] objcall 235 ............................. <tFontStruct.getaProp(#fontSize)>
+  [183] mul ..................................... <tLineCount * tFontStruct.getaProp(#fontSize)>
+  [184] add ..................................... <(2 * tMargin) + (tLineCount * tFontStruct.getaProp(#fontSize))>
+  [185] setlocal 6 .............................. tHelpHeight = (2 * tMargin) + (tLineCount * tFontStruct.getaProp(#fontSize))
+  [187] getlocal 6 .............................. <tHelpHeight>
+  [189] pushint8 40 ............................. <40>
+  [191] lt ...................................... <tHelpHeight < 40>
+  [192] jmpifz [199] ............................ if tHelpHeight < 40 then
+  [195] pushint8 40 ............................. <40>
+  [197] setlocal 6 .............................. tHelpHeight = 40
+  [199] getprop 683 ............................. <pTipID>
+  [202] getlocal 0 .............................. <tLayout>
+  [204] getparam 2 .............................. <tloc>
+  [206] getobjprop 662 .......................... <tloc.locH>
+  [209] getparam 2 .............................. <tloc>
+  [211] getobjprop 663 .......................... <tloc.locV>
+  [214] pusharglist 4 ........................... <pTipID, tLayout, tloc.locH, tloc.locV>
+  [216] extcall 79 .............................. <createWindow(pTipID, tLayout, tloc.locH, tloc.locV)>
+  [218] not ..................................... <not createWindow(pTipID, tLayout, tloc.locH, tloc.locV)>
+  [219] jmpifz [227] ............................ if not createWindow(pTipID, tLayout, tloc.locH, tloc.locV) then
+  [222] pushzero ................................ <0>
+  [223] pusharglistnoret 1 ...................... <0>
+  [225] extcall 44 .............................. return 0
+  [227] getprop 683 ............................. <pTipID>
+  [230] pusharglist 1 ........................... <pTipID>
+  [232] extcall 75 .............................. <getWindow(pTipID)>
+  [234] setlocal 7 .............................. tWndObj = getWindow(pTipID)
+  [236] getlocal 7 .............................. <tWndObj>
+  [238] getlocal 1 .............................. <tLineWidth>
+  [240] pushint8 30 ............................. <30>
+  [242] add ..................................... <tLineWidth + 30>
+  [243] getlocal 6 .............................. <tHelpHeight>
+  [245] pusharglistnoret 3 ...................... <tWndObj, tLineWidth + 30, tHelpHeight>
+  [247] objcall 709 ............................. tWndObj.resizeTo(tLineWidth + 30, tHelpHeight)
+  [250] getlocal 7 .............................. <tWndObj>
+  [252] pushcons 8 .............................. <"tt_text">
+  [254] pusharglist 2 ........................... <tWndObj, "tt_text">
+  [256] objcall 89 .............................. <tWndObj.elementExists("tt_text")>
+  [258] jmpifz [275] ............................ if tWndObj.elementExists("tt_text") then
+  [261] getlocal 7 .............................. <tWndObj>
+  [263] pushcons 8 .............................. <"tt_text">
+  [265] pusharglist 2 ........................... <tWndObj, "tt_text">
+  [267] objcall 82 .............................. <tWndObj.getElement("tt_text")>
+  [269] getparam 1 .............................. <tMsg>
+  [271] pusharglistnoret 2 ...................... <tWndObj.getElement("tt_text"), tMsg>
+  [273] objcall 90 .............................. tWndObj.getElement("tt_text").setText(tMsg)
+  [275] getlocal 7 .............................. <tWndObj>
+  [277] getobjprop 710 .......................... <tWndObj.pSpriteList>
+  [280] peek 0
+  [282] pusharglist 1
+  [284] extcall 78
+  [286] pushint8 1
+  [288] peek 0
+  [290] peek 2
+  [292] lteq
+  [293] jmpifz [323] ............................ repeat with tSpr in tWndObj.pSpriteList
+  [296] peek 2
+  [298] peek 1
+  [300] pusharglist 2
+  [302] extcall 96
+  [304] setlocal 8
+  [306] getlocal 8 .............................. <tSpr>
+  [308] getlocal 8 .............................. <tSpr>
+  [310] getobjprop 61 ........................... <tSpr.locZ>
+  [312] pushint16 1000 .......................... <1000>
+  [315] add ..................................... <tSpr.locZ + 1000>
+  [316] setobjprop 61 ........................... tSpr.locZ = tSpr.locZ + 1000
+  [318] pushint8 1
+  [320] add
+  [321] endrepeat [288]
+  [323] pop 3
+  [325] pushint16 2500 .......................... <2500>
+  [328] getparam 1 .............................. <tMsg>
+  [330] getobjprop 103 .......................... <tMsg.length>
+  [332] pushint8 100 ............................ <100>
+  [334] mul ..................................... <tMsg.length * 100>
+  [335] pushint16 10000 ......................... <10000>
+  [338] pusharglist 3 ........................... <[2500, tMsg.length * 100, 10000]>
+  [340] pushlist ................................ <[2500, tMsg.length * 100, 10000]>
+  [341] setlocal 9 .............................. tTimeOutList = [2500, tMsg.length * 100, 10000]
+  [343] getlocal 9 .............................. <tTimeOutList>
+  [345] pusharglistnoret 1 ...................... <tTimeOutList>
+  [347] objcall 711 ............................. tTimeOutList.sort()
+  [350] getparam 0 .............................. <me>
+  [352] getlocal 9 .............................. <tTimeOutList>
+  [354] pushint8 2 .............................. <2>
+  [356] pusharglist 2 ........................... <tTimeOutList, 2>
+  [358] objcall 96 .............................. <tTimeOutList[2]>
+  [360] pusharglistnoret 2 ...................... <me, tTimeOutList[2]>
+  [362] objcall 681 ............................. me.createTipTimeout(tTimeOutList[2])
+  [365] getlocal 7 .............................. <tWndObj>
+  [367] pushsymb 682 ............................ <#eventProcHelpTooltip>
+  [370] getparam 0 .............................. <me>
+  [372] pusharglist 1 ........................... <me>
+  [374] objcall 42 .............................. <me.getID()>
+  [376] pushsymb 0 .............................. <#mouseUp>
+  [378] pusharglistnoret 4 ...................... <tWndObj, #eventProcHelpTooltip, me.getID(), #mouseUp>
+  [380] objcall 63 .............................. tWndObj.registerProcedure(#eventProcHelpTooltip, me.getID(), #mouseUp)
+  [382] pushint8 1 .............................. <1>
+  [384] pusharglistnoret 1 ...................... <1>
+  [386] extcall 44 .............................. return 1
+  [388] ret
+end
+
+on removeTip me, tTipID
+  [  0] pushsymb 720 ............................ <#tipTimeout>
+  [  3] pusharglist 1 ........................... <#tipTimeout>
+  [  5] extcall 495 ............................. <objectExists(#tipTimeout)>
+  [  8] jmpifz [ 19] ............................ if objectExists(#tipTimeout) then
+  [ 11] pushsymb 720 ............................ <#tipTimeout>
+  [ 14] pusharglistnoret 1 ...................... <#tipTimeout>
+  [ 16] extcall 273 ............................. removeTimeout(#tipTimeout)
+  [ 19] getparam 1 .............................. <tTipID>
+  [ 21] pusharglist 1 ........................... <tTipID>
+  [ 23] extcall 47 .............................. <windowExists(tTipID)>
+  [ 25] jmpifz [ 34] ............................ if windowExists(tTipID) then
+  [ 28] getparam 1 .............................. <tTipID>
+  [ 30] pusharglistnoret 1 ...................... <tTipID>
+  [ 32] extcall 48 .............................. removeWindow(tTipID)
+  [ 34] ret
+end
+
+on createTipTimeout me, tTime
+  [  0] getparam 1 .............................. <tTime>
+  [  2] pusharglist 1 ........................... <tTime>
+  [  4] extcall 71 .............................. <voidp(tTime)>
+  [  6] jmpifz [ 14] ............................ if voidp(tTime) then
+  [  9] pushint16 4000 .......................... <4000>
+  [ 12] setparam 1 .............................. tTime = 4000
+  [ 14] pushsymb 720 ............................ <#tipTimeout>
+  [ 17] pusharglist 1 ........................... <#tipTimeout>
+  [ 19] extcall 272 ............................. <timeoutExists(#tipTimeout)>
+  [ 22] jmpifz [ 33] ............................ if timeoutExists(#tipTimeout) then
+  [ 25] pushsymb 720 ............................ <#tipTimeout>
+  [ 28] pusharglistnoret 1 ...................... <#tipTimeout>
+  [ 30] extcall 273 ............................. removeTimeout(#tipTimeout)
+  [ 33] pushsymb 720 ............................ <#tipTimeout>
+  [ 36] getparam 1 .............................. <tTime>
+  [ 38] pushsymb 680 ............................ <#removeTip>
+  [ 41] getparam 0 .............................. <me>
+  [ 43] pusharglist 1 ........................... <me>
+  [ 45] objcall 42 .............................. <me.getID()>
+  [ 47] getprop 683 ............................. <pTipID>
+  [ 50] pusharglistnoret 5 ...................... <#tipTimeout, tTime, #removeTip, me.getID(), pTipID>
+  [ 52] extcall 271 ............................. createTimeout(#tipTimeout, tTime, #removeTip, me.getID(), pTipID)
+  [ 55] ret
+end
+
+on eventProcHelpTooltip me
+  [  0] getparam 0 .............................. <me>
+  [  2] getprop 683 ............................. <pTipID>
+  [  5] pusharglistnoret 2 ...................... <me, pTipID>
+  [  7] objcall 680 ............................. me.removeTip(pTipID)
+  [ 10] ret
+end

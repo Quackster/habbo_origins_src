@@ -1,0 +1,503 @@
+property pTableStr, pTableList, pLineMaxLength, pLineBreak, pPaddingChar
+
+on construct me
+  [  0] pushint8 72 ............................. <72>
+  [  2] setprop 352 ............................. pLineMaxLength = 72
+  [  5] pushcons 0 .............................. <RETURN>
+  [  7] setprop 353 ............................. pLineBreak = RETURN
+  [ 10] pushcons 1 .............................. <"=">
+  [ 12] setprop 354 ............................. pPaddingChar = "="
+  [ 15] pushcons 2 .............................. <"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/">
+  [ 17] setprop 355 ............................. pTableStr = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"
+  [ 20] pusharglist 0 ........................... <[:]>
+  [ 22] pushproplist ............................ <[:]>
+  [ 23] setprop 356 ............................. pTableList = [:]
+  [ 26] pushint8 1 .............................. <1>
+  [ 28] setlocal 0
+  [ 30] getlocal 0
+  [ 32] getprop 355 ............................. <pTableStr>
+  [ 35] getobjprop 27 ........................... <pTableStr.length>
+  [ 37] lteq
+  [ 38] jmpifz [ 70] ............................ repeat with tNum = 1 to pTableStr.length
+  [ 41] getprop 356 ............................. <pTableList>
+  [ 44] getprop 355 ............................. <pTableStr>
+  [ 47] pushsymb 26 ............................. <#char>
+  [ 49] getlocal 0 .............................. <tNum>
+  [ 51] pusharglist 3 ........................... <pTableStr, #char, tNum>
+  [ 53] objcall 24 .............................. <pTableStr.char[tNum]>
+  [ 55] getlocal 0 .............................. <tNum>
+  [ 57] pusharglistnoret 3 ...................... <pTableList, pTableStr.char[tNum], tNum>
+  [ 59] objcall 41 .............................. pTableList.addProp(pTableStr.char[tNum], tNum)
+  [ 61] pushint8 1
+  [ 63] getlocal 0
+  [ 65] add
+  [ 66] setlocal 0
+  [ 68] endrepeat [ 30]
+  [ 70] pushint8 1 .............................. <1>
+  [ 72] pusharglistnoret 1 ...................... <1>
+  [ 74] extcall 48 .............................. return 1
+  [ 76] ret
+end
+
+on deconstruct me
+  [  0] pusharglist 0 ........................... <>
+  [  2] extcall 37 .............................. <VOID>
+  [  4] setprop 355 ............................. pTableStr = VOID
+  [  7] pusharglist 0 ........................... <>
+  [  9] extcall 37 .............................. <VOID>
+  [ 11] setprop 356 ............................. pTableList = VOID
+  [ 14] pushint8 1 .............................. <1>
+  [ 16] pusharglistnoret 1 ...................... <1>
+  [ 18] extcall 48 .............................. return 1
+  [ 20] ret
+end
+
+on encode me, tStr
+  [  0] pushcons 3 .............................. <EMPTY>
+  [  2] setlocal 0 .............................. tOutputStr = EMPTY
+  [  4] pushzero ................................ <0>
+  [  5] setlocal 1 .............................. tLineCharCount = 0
+  [  7] pushint8 1 .............................. <1>
+  [  9] setlocal 2
+  [ 11] getlocal 2
+  [ 13] getparam 1 .............................. <tStr>
+  [ 15] getobjprop 27 ........................... <tStr.length>
+  [ 17] lteq
+  [ 18] jmpifz [150] ............................ repeat with tOffset = 1 to tStr.length
+  [ 21] getparam 0 .............................. <me>
+  [ 23] getparam 1 .............................. <tStr>
+  [ 25] pushsymb 26 ............................. <#char>
+  [ 27] getlocal 2 .............................. <tOffset>
+  [ 29] getlocal 2 .............................. <tOffset>
+  [ 31] pushint8 2 .............................. <2>
+  [ 33] add ..................................... <tOffset + 2>
+  [ 34] pusharglist 4 ........................... <tStr, #char, tOffset, tOffset + 2>
+  [ 36] objcall 24 .............................. <tStr.char[tOffset..tOffset + 2]>
+  [ 38] pusharglist 2 ........................... <me, tStr.char[tOffset..tOffset + 2]>
+  [ 40] objcall 350 ............................. <me.encodeBlock(tStr.char[tOffset..tOffset + 2])>
+  [ 43] setlocal 3 .............................. tChars = me.encodeBlock(tStr.char[tOffset..tOffset + 2])
+  [ 45] getlocal 3 .............................. <tChars>
+  [ 47] getobjprop 27 ........................... <tChars.length>
+  [ 49] pushint8 3 .............................. <3>
+  [ 51] lt ...................................... <tChars.length < 3>
+  [ 52] jmpifz [ 63] ............................ if tChars.length < 3 then
+  [ 55] getlocal 3 .............................. <tChars>
+  [ 57] getprop 354 ............................. <pPaddingChar>
+  [ 60] joinstr ................................. <tChars & pPaddingChar>
+  [ 61] setlocal 3 .............................. tChars = tChars & pPaddingChar
+  [ 63] getlocal 3 .............................. <tChars>
+  [ 65] getobjprop 27 ........................... <tChars.length>
+  [ 67] pushint8 4 .............................. <4>
+  [ 69] lt ...................................... <tChars.length < 4>
+  [ 70] jmpifz [ 81] ............................ if tChars.length < 4 then
+  [ 73] getlocal 3 .............................. <tChars>
+  [ 75] getprop 354 ............................. <pPaddingChar>
+  [ 78] joinstr ................................. <tChars & pPaddingChar>
+  [ 79] setlocal 3 .............................. tChars = tChars & pPaddingChar
+  [ 81] getlocal 0 .............................. <tOutputStr>
+  [ 83] getlocal 3 .............................. <tChars>
+  [ 85] joinstr ................................. <tOutputStr & tChars>
+  [ 86] setlocal 0 .............................. tOutputStr = tOutputStr & tChars
+  [ 88] getlocal 1 .............................. <tLineCharCount>
+  [ 90] pushint8 4 .............................. <4>
+  [ 92] add ..................................... <tLineCharCount + 4>
+  [ 93] setlocal 1 .............................. tLineCharCount = tLineCharCount + 4
+  [ 95] getlocal 1 .............................. <tLineCharCount>
+  [ 97] getprop 352 ............................. <pLineMaxLength>
+  [100] gteq .................................... <tLineCharCount >= pLineMaxLength>
+  [101] getprop 352 ............................. <pLineMaxLength>
+  [104] pushzero ................................ <0>
+  [105] gt ...................................... <pLineMaxLength > 0>
+  [106] and ..................................... <(tLineCharCount >= pLineMaxLength) and (pLineMaxLength > 0)>
+  [107] jmpifz [121] ............................ if (tLineCharCount >= pLineMaxLength) and (pLineMaxLength > 0) then
+  [110] getlocal 0 .............................. <tOutputStr>
+  [112] getprop 353 ............................. <pLineBreak>
+  [115] joinstr ................................. <tOutputStr & pLineBreak>
+  [116] setlocal 0 .............................. tOutputStr = tOutputStr & pLineBreak
+  [118] pushzero ................................ <0>
+  [119] setlocal 1 .............................. tLineCharCount = 0
+  [121] getlocal 2 .............................. <tOffset>
+  [123] pushint8 2 .............................. <2>
+  [125] add ..................................... <tOffset + 2>
+  [126] setlocal 2 .............................. tOffset = tOffset + 2
+  [128] getlocal 2 .............................. <tOffset>
+  [130] getparam 1 .............................. <tStr>
+  [132] getobjprop 27 ........................... <tStr.length>
+  [134] gt ...................................... <tOffset > tStr.length>
+  [135] jmpifz [141] ............................ if tOffset > tStr.length then
+  [138] jmp [150] ............................... exit repeat
+  [141] pushint8 1
+  [143] getlocal 2
+  [145] add
+  [146] setlocal 2
+  [148] endrepeat [ 11]
+  [150] getlocal 0 .............................. <tOutputStr>
+  [152] pusharglistnoret 1 ...................... <tOutputStr>
+  [154] extcall 48 .............................. return tOutputStr
+  [156] ret
+end
+
+on decode me, tStr
+  [  0] getparam 1 .............................. <tStr>
+  [  2] getprop 354 ............................. <pPaddingChar>
+  [  5] containsstr ............................. <tStr contains pPaddingChar>
+  [  6] jmpifz [ 35] ............................ repeat while tStr contains pPaddingChar
+  [  9] getparam 1 .............................. <tStr>
+  [ 11] pushsymb 26 ............................. <#char>
+  [ 13] pushint8 1 .............................. <1>
+  [ 15] getprop 354 ............................. <pPaddingChar>
+  [ 18] getparam 1 .............................. <tStr>
+  [ 20] pusharglist 2 ........................... <pPaddingChar, tStr>
+  [ 22] extcall 25 .............................. <offset(pPaddingChar, tStr)>
+  [ 24] pushint8 1 .............................. <1>
+  [ 26] sub ..................................... <offset(pPaddingChar, tStr) - 1>
+  [ 27] pusharglist 4 ........................... <tStr, #char, 1, offset(pPaddingChar, tStr) - 1>
+  [ 29] objcall 24 .............................. <tStr.char[1..offset(pPaddingChar, tStr) - 1]>
+  [ 31] setparam 1 .............................. tStr = tStr.char[1..offset(pPaddingChar, tStr) - 1]
+  [ 33] endrepeat [  0]
+  [ 35] getparam 1 .............................. <tStr>
+  [ 37] getprop 353 ............................. <pLineBreak>
+  [ 40] containsstr ............................. <tStr contains pLineBreak>
+  [ 41] jmpifz [ 92] ............................ repeat while tStr contains pLineBreak
+  [ 44] getprop 353 ............................. <pLineBreak>
+  [ 47] getparam 1 .............................. <tStr>
+  [ 49] pusharglist 2 ........................... <pLineBreak, tStr>
+  [ 51] extcall 25 .............................. <offset(pLineBreak, tStr)>
+  [ 53] setlocal 0 .............................. tOffset = offset(pLineBreak, tStr)
+  [ 55] getparam 1 .............................. <tStr>
+  [ 57] pushsymb 26 ............................. <#char>
+  [ 59] pushint8 1 .............................. <1>
+  [ 61] getlocal 0 .............................. <tOffset>
+  [ 63] pushint8 1 .............................. <1>
+  [ 65] sub ..................................... <tOffset - 1>
+  [ 66] pusharglist 4 ........................... <tStr, #char, 1, tOffset - 1>
+  [ 68] objcall 24 .............................. <tStr.char[1..tOffset - 1]>
+  [ 70] getparam 1 .............................. <tStr>
+  [ 72] pushsymb 26 ............................. <#char>
+  [ 74] getlocal 0 .............................. <tOffset>
+  [ 76] pushint8 1 .............................. <1>
+  [ 78] add ..................................... <tOffset + 1>
+  [ 79] getparam 1 .............................. <tStr>
+  [ 81] getobjprop 27 ........................... <tStr.length>
+  [ 83] pusharglist 4 ........................... <tStr, #char, tOffset + 1, tStr.length>
+  [ 85] objcall 24 .............................. <tStr.char[tOffset + 1..tStr.length]>
+  [ 87] joinstr ................................. <tStr.char[1..tOffset - 1] & tStr.char[tOffset + 1..tStr.length]>
+  [ 88] setparam 1 .............................. tStr = tStr.char[1..tOffset - 1] & tStr.char[tOffset + 1..tStr.length]
+  [ 90] endrepeat [ 35]
+  [ 92] pushcons 3 .............................. <EMPTY>
+  [ 94] setlocal 1 .............................. tOutputStr = EMPTY
+  [ 96] pushint8 1 .............................. <1>
+  [ 98] setlocal 0
+  [100] getlocal 0
+  [102] getparam 1 .............................. <tStr>
+  [104] getobjprop 27 ........................... <tStr.length>
+  [106] lteq
+  [107] jmpifz [198] ............................ repeat with tOffset = 1 to tStr.length
+  [110] getparam 1 .............................. <tStr>
+  [112] getobjprop 27 ........................... <tStr.length>
+  [114] getlocal 0 .............................. <tOffset>
+  [116] pushint8 1 .............................. <1>
+  [118] sub ..................................... <tOffset - 1>
+  [119] sub ..................................... <tStr.length - (tOffset - 1)>
+  [120] setlocal 2 .............................. tBytes = tStr.length - (tOffset - 1)
+  [122] getlocal 2 .............................. <tBytes>
+  [124] pushint8 4 .............................. <4>
+  [126] gt ...................................... <tBytes > 4>
+  [127] jmpifz [134] ............................ if tBytes > 4 then
+  [130] pushint8 4 .............................. <4>
+  [132] setlocal 2 .............................. tBytes = 4
+  [134] getlocal 2 .............................. <tBytes>
+  [136] pushint8 2 .............................. <2>
+  [138] lt ...................................... <tBytes < 2>
+  [139] jmpifz [145] ............................ if tBytes < 2 then
+  [142] jmp [198] ............................... exit repeat
+  [145] getparam 0 .............................. <me>
+  [147] getparam 1 .............................. <tStr>
+  [149] pushsymb 26 ............................. <#char>
+  [151] getlocal 0 .............................. <tOffset>
+  [153] getlocal 0 .............................. <tOffset>
+  [155] getlocal 2 .............................. <tBytes>
+  [157] add ..................................... <tOffset + tBytes>
+  [158] pushint8 1 .............................. <1>
+  [160] sub ..................................... <tOffset + tBytes - 1>
+  [161] pusharglist 4 ........................... <tStr, #char, tOffset, tOffset + tBytes - 1>
+  [163] objcall 24 .............................. <tStr.char[tOffset..tOffset + tBytes - 1]>
+  [165] pusharglist 2 ........................... <me, tStr.char[tOffset..tOffset + tBytes - 1]>
+  [167] objcall 351 ............................. <me.decodeBlock(tStr.char[tOffset..tOffset + tBytes - 1])>
+  [170] setlocal 3 .............................. tChars = me.decodeBlock(tStr.char[tOffset..tOffset + tBytes - 1])
+  [172] getlocal 1 .............................. <tOutputStr>
+  [174] getlocal 3 .............................. <tChars>
+  [176] joinstr ................................. <tOutputStr & tChars>
+  [177] setlocal 1 .............................. tOutputStr = tOutputStr & tChars
+  [179] getlocal 0 .............................. <tOffset>
+  [181] getlocal 2 .............................. <tBytes>
+  [183] pushint8 1 .............................. <1>
+  [185] sub ..................................... <tBytes - 1>
+  [186] add ..................................... <tOffset + (tBytes - 1)>
+  [187] setlocal 0 .............................. tOffset = tOffset + (tBytes - 1)
+  [189] pushint8 1
+  [191] getlocal 0
+  [193] add
+  [194] setlocal 0
+  [196] endrepeat [100]
+  [198] getlocal 1 .............................. <tOutputStr>
+  [200] pusharglistnoret 1 ...................... <tOutputStr>
+  [202] extcall 48 .............................. return tOutputStr
+  [204] ret
+end
+
+on encodeBlock me, tStr
+  [  0] getparam 1 .............................. <tStr>
+  [  2] pushsymb 26 ............................. <#char>
+  [  4] pushint8 1 .............................. <1>
+  [  6] pusharglist 3 ........................... <tStr, #char, 1>
+  [  8] objcall 24 .............................. <tStr.char[1]>
+  [ 10] pusharglist 1 ........................... <tStr.char[1]>
+  [ 12] extcall 363 ............................. <charToNum(tStr.char[1])>
+  [ 15] setlocal 0 .............................. tNum1 = charToNum(tStr.char[1])
+  [ 17] getparam 1 .............................. <tStr>
+  [ 19] pushsymb 26 ............................. <#char>
+  [ 21] pushint8 2 .............................. <2>
+  [ 23] pusharglist 3 ........................... <tStr, #char, 2>
+  [ 25] objcall 24 .............................. <tStr.char[2]>
+  [ 27] pusharglist 1 ........................... <tStr.char[2]>
+  [ 29] extcall 363 ............................. <charToNum(tStr.char[2])>
+  [ 32] setlocal 1 .............................. tNum2 = charToNum(tStr.char[2])
+  [ 34] getparam 1 .............................. <tStr>
+  [ 36] pushsymb 26 ............................. <#char>
+  [ 38] pushint8 3 .............................. <3>
+  [ 40] pusharglist 3 ........................... <tStr, #char, 3>
+  [ 42] objcall 24 .............................. <tStr.char[3]>
+  [ 44] pusharglist 1 ........................... <tStr.char[3]>
+  [ 46] extcall 363 ............................. <charToNum(tStr.char[3])>
+  [ 49] setlocal 2 .............................. tNum3 = charToNum(tStr.char[3])
+  [ 51] getlocal 0 .............................. <tNum1>
+  [ 53] pushint16 252 ........................... <252>
+  [ 56] pusharglist 2 ........................... <tNum1, 252>
+  [ 58] extcall 364 ............................. <bitAnd(tNum1, 252)>
+  [ 61] pushint8 4 .............................. <4>
+  [ 63] div ..................................... <bitAnd(tNum1, 252) / 4>
+  [ 64] setlocal 3 .............................. tByte1 = bitAnd(tNum1, 252) / 4
+  [ 66] getlocal 0 .............................. <tNum1>
+  [ 68] pushint8 3 .............................. <3>
+  [ 70] pusharglist 2 ........................... <tNum1, 3>
+  [ 72] extcall 364 ............................. <bitAnd(tNum1, 3)>
+  [ 75] pushint8 16 ............................. <16>
+  [ 77] mul ..................................... <bitAnd(tNum1, 3) * 16>
+  [ 78] setlocal 4 .............................. tByte2a = bitAnd(tNum1, 3) * 16
+  [ 80] getlocal 1 .............................. <tNum2>
+  [ 82] pushint16 240 ........................... <240>
+  [ 85] pusharglist 2 ........................... <tNum2, 240>
+  [ 87] extcall 364 ............................. <bitAnd(tNum2, 240)>
+  [ 90] pushint8 16 ............................. <16>
+  [ 92] div ..................................... <bitAnd(tNum2, 240) / 16>
+  [ 93] setlocal 5 .............................. tByte2b = bitAnd(tNum2, 240) / 16
+  [ 95] getlocal 4 .............................. <tByte2a>
+  [ 97] getlocal 5 .............................. <tByte2b>
+  [ 99] pusharglist 2 ........................... <tByte2a, tByte2b>
+  [101] extcall 365 ............................. <bitOr(tByte2a, tByte2b)>
+  [104] setlocal 6 .............................. tByte2 = bitOr(tByte2a, tByte2b)
+  [106] getprop 355 ............................. <pTableStr>
+  [109] pushsymb 26 ............................. <#char>
+  [111] getlocal 3 .............................. <tByte1>
+  [113] pushint8 1 .............................. <1>
+  [115] add ..................................... <tByte1 + 1>
+  [116] pusharglist 3 ........................... <pTableStr, #char, tByte1 + 1>
+  [118] objcall 24 .............................. <pTableStr.char[tByte1 + 1]>
+  [120] getprop 355 ............................. <pTableStr>
+  [123] pushsymb 26 ............................. <#char>
+  [125] getlocal 6 .............................. <tByte2>
+  [127] pushint8 1 .............................. <1>
+  [129] add ..................................... <tByte2 + 1>
+  [130] pusharglist 3 ........................... <pTableStr, #char, tByte2 + 1>
+  [132] objcall 24 .............................. <pTableStr.char[tByte2 + 1]>
+  [134] joinstr ................................. <pTableStr.char[tByte1 + 1] & pTableStr.char[tByte2 + 1]>
+  [135] setlocal 7 .............................. tOutputStr = pTableStr.char[tByte1 + 1] & pTableStr.char[tByte2 + 1]
+  [137] getparam 1 .............................. <tStr>
+  [139] getobjprop 27 ........................... <tStr.length>
+  [141] pushint8 1 .............................. <1>
+  [143] gt ...................................... <tStr.length > 1>
+  [144] jmpifz [206] ............................ if tStr.length > 1 then
+  [147] getlocal 1 .............................. <tNum2>
+  [149] pushint8 15 ............................. <15>
+  [151] pusharglist 2 ........................... <tNum2, 15>
+  [153] extcall 364 ............................. <bitAnd(tNum2, 15)>
+  [156] pushint8 4 .............................. <4>
+  [158] mul ..................................... <bitAnd(tNum2, 15) * 4>
+  [159] setlocal 8 .............................. tByte3a = bitAnd(tNum2, 15) * 4
+  [161] getlocal 2 .............................. <tNum3>
+  [163] pushint16 192 ........................... <192>
+  [166] pusharglist 2 ........................... <tNum3, 192>
+  [168] extcall 364 ............................. <bitAnd(tNum3, 192)>
+  [171] pushint8 64 ............................. <64>
+  [173] div ..................................... <bitAnd(tNum3, 192) / 64>
+  [174] setlocal 9 .............................. tByte3b = bitAnd(tNum3, 192) / 64
+  [176] getlocal 8 .............................. <tByte3a>
+  [178] getlocal 9 .............................. <tByte3b>
+  [180] pusharglist 2 ........................... <tByte3a, tByte3b>
+  [182] extcall 365 ............................. <bitOr(tByte3a, tByte3b)>
+  [185] setlocal 10 ............................. tByte3 = bitOr(tByte3a, tByte3b)
+  [187] getlocal 7 .............................. <tOutputStr>
+  [189] getprop 355 ............................. <pTableStr>
+  [192] pushsymb 26 ............................. <#char>
+  [194] getlocal 10 ............................. <tByte3>
+  [196] pushint8 1 .............................. <1>
+  [198] add ..................................... <tByte3 + 1>
+  [199] pusharglist 3 ........................... <pTableStr, #char, tByte3 + 1>
+  [201] objcall 24 .............................. <pTableStr.char[tByte3 + 1]>
+  [203] joinstr ................................. <tOutputStr & pTableStr.char[tByte3 + 1]>
+  [204] setlocal 7 .............................. tOutputStr = tOutputStr & pTableStr.char[tByte3 + 1]
+  [206] getparam 1 .............................. <tStr>
+  [208] getobjprop 27 ........................... <tStr.length>
+  [210] pushint8 2 .............................. <2>
+  [212] gt ...................................... <tStr.length > 2>
+  [213] jmpifz [246] ............................ if tStr.length > 2 then
+  [216] getlocal 2 .............................. <tNum3>
+  [218] pushint8 63 ............................. <63>
+  [220] pusharglist 2 ........................... <tNum3, 63>
+  [222] extcall 364 ............................. <bitAnd(tNum3, 63)>
+  [225] setlocal 11 ............................. tByte4 = bitAnd(tNum3, 63)
+  [227] getlocal 7 .............................. <tOutputStr>
+  [229] getprop 355 ............................. <pTableStr>
+  [232] pushsymb 26 ............................. <#char>
+  [234] getlocal 11 ............................. <tByte4>
+  [236] pushint8 1 .............................. <1>
+  [238] add ..................................... <tByte4 + 1>
+  [239] pusharglist 3 ........................... <pTableStr, #char, tByte4 + 1>
+  [241] objcall 24 .............................. <pTableStr.char[tByte4 + 1]>
+  [243] joinstr ................................. <tOutputStr & pTableStr.char[tByte4 + 1]>
+  [244] setlocal 7 .............................. tOutputStr = tOutputStr & pTableStr.char[tByte4 + 1]
+  [246] getlocal 7 .............................. <tOutputStr>
+  [248] pusharglistnoret 1 ...................... <tOutputStr>
+  [250] extcall 48 .............................. return tOutputStr
+  [252] ret
+end
+
+on decodeBlock me, tStr
+  [  0] getprop 356 ............................. <pTableList>
+  [  3] getparam 1 .............................. <tStr>
+  [  5] pushsymb 26 ............................. <#char>
+  [  7] pushint8 1 .............................. <1>
+  [  9] pusharglist 3 ........................... <tStr, #char, 1>
+  [ 11] objcall 24 .............................. <tStr.char[1]>
+  [ 13] pusharglist 2 ........................... <pTableList, tStr.char[1]>
+  [ 15] objcall 36 .............................. <pTableList[tStr.char[1]]>
+  [ 17] pushint8 1 .............................. <1>
+  [ 19] sub ..................................... <pTableList[tStr.char[1]] - 1>
+  [ 20] setlocal 0 .............................. tNum1 = pTableList[tStr.char[1]] - 1
+  [ 22] getprop 356 ............................. <pTableList>
+  [ 25] getparam 1 .............................. <tStr>
+  [ 27] pushsymb 26 ............................. <#char>
+  [ 29] pushint8 2 .............................. <2>
+  [ 31] pusharglist 3 ........................... <tStr, #char, 2>
+  [ 33] objcall 24 .............................. <tStr.char[2]>
+  [ 35] pusharglist 2 ........................... <pTableList, tStr.char[2]>
+  [ 37] objcall 36 .............................. <pTableList[tStr.char[2]]>
+  [ 39] pushint8 1 .............................. <1>
+  [ 41] sub ..................................... <pTableList[tStr.char[2]] - 1>
+  [ 42] setlocal 1 .............................. tNum2 = pTableList[tStr.char[2]] - 1
+  [ 44] getlocal 0 .............................. <tNum1>
+  [ 46] pushint8 4 .............................. <4>
+  [ 48] mul ..................................... <tNum1 * 4>
+  [ 49] setlocal 2 .............................. tByte1a = tNum1 * 4
+  [ 51] getlocal 1 .............................. <tNum2>
+  [ 53] pushint8 48 ............................. <48>
+  [ 55] pusharglist 2 ........................... <tNum2, 48>
+  [ 57] extcall 364 ............................. <bitAnd(tNum2, 48)>
+  [ 60] pushint8 16 ............................. <16>
+  [ 62] div ..................................... <bitAnd(tNum2, 48) / 16>
+  [ 63] setlocal 3 .............................. tByte1b = bitAnd(tNum2, 48) / 16
+  [ 65] getlocal 2 .............................. <tByte1a>
+  [ 67] getlocal 3 .............................. <tByte1b>
+  [ 69] pusharglist 2 ........................... <tByte1a, tByte1b>
+  [ 71] extcall 365 ............................. <bitOr(tByte1a, tByte1b)>
+  [ 74] setlocal 4 .............................. tByte1 = bitOr(tByte1a, tByte1b)
+  [ 76] getlocal 4 .............................. <tByte1>
+  [ 78] pusharglist 1 ........................... <tByte1>
+  [ 80] extcall 377 ............................. <numToChar(tByte1)>
+  [ 83] setlocal 5 .............................. tOutputStr = numToChar(tByte1)
+  [ 85] getparam 1 .............................. <tStr>
+  [ 87] getobjprop 27 ........................... <tStr.length>
+  [ 89] pushint8 2 .............................. <2>
+  [ 91] gt ...................................... <tStr.length > 2>
+  [ 92] jmpifz [168] ............................ if tStr.length > 2 then
+  [ 95] getprop 356 ............................. <pTableList>
+  [ 98] getparam 1 .............................. <tStr>
+  [100] pushsymb 26 ............................. <#char>
+  [102] pushint8 3 .............................. <3>
+  [104] pusharglist 3 ........................... <tStr, #char, 3>
+  [106] objcall 24 .............................. <tStr.char[3]>
+  [108] pusharglist 2 ........................... <pTableList, tStr.char[3]>
+  [110] objcall 36 .............................. <pTableList[tStr.char[3]]>
+  [112] pushint8 1 .............................. <1>
+  [114] sub ..................................... <pTableList[tStr.char[3]] - 1>
+  [115] setlocal 6 .............................. tNum3 = pTableList[tStr.char[3]] - 1
+  [117] getlocal 1 .............................. <tNum2>
+  [119] pushint8 15 ............................. <15>
+  [121] pusharglist 2 ........................... <tNum2, 15>
+  [123] extcall 364 ............................. <bitAnd(tNum2, 15)>
+  [126] pushint8 16 ............................. <16>
+  [128] mul ..................................... <bitAnd(tNum2, 15) * 16>
+  [129] setlocal 7 .............................. tByte2a = bitAnd(tNum2, 15) * 16
+  [131] getlocal 6 .............................. <tNum3>
+  [133] pushint8 60 ............................. <60>
+  [135] pusharglist 2 ........................... <tNum3, 60>
+  [137] extcall 364 ............................. <bitAnd(tNum3, 60)>
+  [140] pushint8 4 .............................. <4>
+  [142] div ..................................... <bitAnd(tNum3, 60) / 4>
+  [143] setlocal 8 .............................. tByte2b = bitAnd(tNum3, 60) / 4
+  [145] getlocal 7 .............................. <tByte2a>
+  [147] getlocal 8 .............................. <tByte2b>
+  [149] pusharglist 2 ........................... <tByte2a, tByte2b>
+  [151] extcall 365 ............................. <bitOr(tByte2a, tByte2b)>
+  [154] setlocal 9 .............................. tByte2 = bitOr(tByte2a, tByte2b)
+  [156] getlocal 5 .............................. <tOutputStr>
+  [158] getlocal 9 .............................. <tByte2>
+  [160] pusharglist 1 ........................... <tByte2>
+  [162] extcall 377 ............................. <numToChar(tByte2)>
+  [165] joinstr ................................. <tOutputStr & numToChar(tByte2)>
+  [166] setlocal 5 .............................. tOutputStr = tOutputStr & numToChar(tByte2)
+  [168] getparam 1 .............................. <tStr>
+  [170] getobjprop 27 ........................... <tStr.length>
+  [172] pushint8 3 .............................. <3>
+  [174] gt ...................................... <tStr.length > 3>
+  [175] jmpifz [248] ............................ if tStr.length > 3 then
+  [178] getprop 356 ............................. <pTableList>
+  [181] getparam 1 .............................. <tStr>
+  [183] pushsymb 26 ............................. <#char>
+  [185] pushint8 4 .............................. <4>
+  [187] pusharglist 3 ........................... <tStr, #char, 4>
+  [189] objcall 24 .............................. <tStr.char[4]>
+  [191] pusharglist 2 ........................... <pTableList, tStr.char[4]>
+  [193] objcall 36 .............................. <pTableList[tStr.char[4]]>
+  [195] pushint8 1 .............................. <1>
+  [197] sub ..................................... <pTableList[tStr.char[4]] - 1>
+  [198] setlocal 10 ............................. tNum4 = pTableList[tStr.char[4]] - 1
+  [200] getlocal 6 .............................. <tNum3>
+  [202] pushint8 3 .............................. <3>
+  [204] pusharglist 2 ........................... <tNum3, 3>
+  [206] extcall 364 ............................. <bitAnd(tNum3, 3)>
+  [209] pushint8 64 ............................. <64>
+  [211] mul ..................................... <bitAnd(tNum3, 3) * 64>
+  [212] setlocal 11 ............................. tByte3a = bitAnd(tNum3, 3) * 64
+  [214] getlocal 10 ............................. <tNum4>
+  [216] pushint8 63 ............................. <63>
+  [218] pusharglist 2 ........................... <tNum4, 63>
+  [220] extcall 364 ............................. <bitAnd(tNum4, 63)>
+  [223] setlocal 12 ............................. tByte3b = bitAnd(tNum4, 63)
+  [225] getlocal 11 ............................. <tByte3a>
+  [227] getlocal 12 ............................. <tByte3b>
+  [229] pusharglist 2 ........................... <tByte3a, tByte3b>
+  [231] extcall 365 ............................. <bitOr(tByte3a, tByte3b)>
+  [234] setlocal 13 ............................. tByte3 = bitOr(tByte3a, tByte3b)
+  [236] getlocal 5 .............................. <tOutputStr>
+  [238] getlocal 13 ............................. <tByte3>
+  [240] pusharglist 1 ........................... <tByte3>
+  [242] extcall 377 ............................. <numToChar(tByte3)>
+  [245] joinstr ................................. <tOutputStr & numToChar(tByte3)>
+  [246] setlocal 5 .............................. tOutputStr = tOutputStr & numToChar(tByte3)
+  [248] getlocal 5 .............................. <tOutputStr>
+  [250] pusharglistnoret 1 ...................... <tOutputStr>
+  [252] extcall 48 .............................. return tOutputStr
+  [254] ret
+end

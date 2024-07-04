@@ -1,0 +1,912 @@
+property pWaitingForSync, pWaitingForSyncCounter, pWaitingForSyncThreshold, pTurnContainerClass, pTurnContainerPool, m_iAllocationModel, m_rObjectPool, m_sHandler, m_rHandler, m_rQuickRandom, m_rCurrentTurn, m_rNextTurn, m_fTurnT, m_fTurnPulse, m_ar_turnBuffer, m_syncLostTime, m_iSpeedUp, m_iLastMS, m_iLastSubTurn, m_iSubTurnSpacing, m_aLastTurnData, m_bDump
+
+on construct me
+  [  0] pushzero ................................ <0>
+  [  1] setprop 543 ............................. pWaitingForSync = 0
+  [  4] pushzero ................................ <0>
+  [  5] setprop 780 ............................. pWaitingForSyncCounter = 0
+  [  8] pushint8 90 ............................. <90>
+  [ 10] setprop 781 ............................. pWaitingForSyncThreshold = 90
+  [ 13] pushcons 0 .............................. <"gamesystem.turn.class">
+  [ 15] pusharglist 1 ........................... <"gamesystem.turn.class">
+  [ 17] extcall 138 ............................. <getClassVariable("gamesystem.turn.class")>
+  [ 19] setprop 544 ............................. pTurnContainerClass = getClassVariable("gamesystem.turn.class")
+  [ 22] pusharglist 0 ........................... <[]>
+  [ 24] pushlist ................................ <[]>
+  [ 25] setprop 545 ............................. pTurnContainerPool = []
+  [ 28] pushsymb 547 ............................ <#pool>
+  [ 31] setprop 546 ............................. m_iAllocationModel = #pool
+  [ 34] pusharglist 0 ........................... <>
+  [ 36] extcall 61 .............................. <VOID>
+  [ 38] setprop 548 ............................. m_rHandler = VOID
+  [ 41] pushcons 1 .............................. <"CMinigameHandlerPrototype">
+  [ 43] pusharglist 1 ........................... <["CMinigameHandlerPrototype"]>
+  [ 45] pushlist ................................ <["CMinigameHandlerPrototype"]>
+  [ 46] setprop 549 ............................. m_sHandler = ["CMinigameHandlerPrototype"]
+  [ 49] pusharglist 0 ........................... <>
+  [ 51] extcall 61 .............................. <VOID>
+  [ 53] setprop 550 ............................. m_rCurrentTurn = VOID
+  [ 56] pusharglist 0 ........................... <>
+  [ 58] extcall 61 .............................. <VOID>
+  [ 60] setprop 551 ............................. m_rNextTurn = VOID
+  [ 63] pushfloat32 0.0 ......................... <0.0>
+  [ 68] setprop 552 ............................. m_fTurnT = 0.0
+  [ 71] pushcons 2 .............................. <0.29999999999999999>
+  [ 73] setprop 553 ............................. m_fTurnPulse = 0.29999999999999999
+  [ 76] pushzero ................................ <0>
+  [ 77] setprop 554 ............................. m_iLastMS = 0
+  [ 80] pushzero ................................ <0>
+  [ 81] setprop 555 ............................. m_iLastSubTurn = 0
+  [ 84] pusharglist 0 ........................... <[]>
+  [ 86] pushlist ................................ <[]>
+  [ 87] setprop 556 ............................. m_ar_turnBuffer = []
+  [ 90] pushfloat32 0.0 ......................... <0.0>
+  [ 95] setprop 557 ............................. m_syncLostTime = 0.0
+  [ 98] pushint8 1 .............................. <1>
+  [100] setprop 558 ............................. m_iSpeedUp = 1
+  [103] pushfloat32 100.0 ....................... <100.0>
+  [108] setprop 559 ............................. m_iSubTurnSpacing = 100.0
+  [111] pusharglist 0 ........................... <[:]>
+  [113] pushproplist ............................ <[:]>
+  [114] setprop 560 ............................. m_aLastTurnData = [:]
+  [117] pushzero ................................ <0>
+  [118] setprop 561 ............................. m_bDump = 0
+  [121] pushcons 3 .............................. <"MGEQuickRandom">
+  [123] pushcons 4 .............................. <"CIterateSeed">
+  [125] pusharglistnoret 2 ...................... <"MGEQuickRandom", "CIterateSeed">
+  [127] extcall 137 ............................. createObject("MGEQuickRandom", "CIterateSeed")
+  [129] pushcons 3 .............................. <"MGEQuickRandom">
+  [131] pusharglist 1 ........................... <"MGEQuickRandom">
+  [133] extcall 71 .............................. <getObject("MGEQuickRandom")>
+  [135] setprop 562 ............................. m_rQuickRandom = getObject("MGEQuickRandom")
+  [138] pushsymb 563 ............................ <#SetMinigameHandler>
+  [141] getparam 0 .............................. <me>
+  [143] pusharglist 1 ........................... <me>
+  [145] objcall 63 .............................. <me.getID()>
+  [147] pushsymb 532 ............................ <#_SetMinigameHandler>
+  [150] pusharglistnoret 3 ...................... <#SetMinigameHandler, me.getID(), #_SetMinigameHandler>
+  [152] extcall 132 ............................. registerMessage(#SetMinigameHandler, me.getID(), #_SetMinigameHandler)
+  [154] pushint8 1 .............................. <1>
+  [156] pusharglistnoret 1 ...................... <1>
+  [158] extcall 53 .............................. return 1
+  [160] ret
+end
+
+on deconstruct me
+  [  0] pusharglist 0 ........................... <>
+  [  2] extcall 61 .............................. <VOID>
+  [  4] setprop 550 ............................. m_rCurrentTurn = VOID
+  [  7] pusharglist 0 ........................... <[]>
+  [  9] pushlist ................................ <[]>
+  [ 10] setprop 545 ............................. pTurnContainerPool = []
+  [ 13] pusharglist 0 ........................... <[]>
+  [ 15] pushlist ................................ <[]>
+  [ 16] setprop 556 ............................. m_ar_turnBuffer = []
+  [ 19] getprop 548 ............................. <m_rHandler>
+  [ 22] pusharglist 1 ........................... <m_rHandler>
+  [ 24] extcall 564 ............................. <voidp(m_rHandler)>
+  [ 27] not ..................................... <not voidp(m_rHandler)>
+  [ 28] jmpifz [ 42] ............................ if not voidp(m_rHandler) then
+  [ 31] getprop 548 ............................. <m_rHandler>
+  [ 34] pusharglist 1 ........................... <m_rHandler>
+  [ 36] objcall 63 .............................. <m_rHandler.getID()>
+  [ 38] pusharglistnoret 1 ...................... <m_rHandler.getID()>
+  [ 40] extcall 139 ............................. removeObject(m_rHandler.getID())
+  [ 42] getprop 562 ............................. <m_rQuickRandom>
+  [ 45] pusharglist 1 ........................... <m_rQuickRandom>
+  [ 47] objcall 63 .............................. <m_rQuickRandom.getID()>
+  [ 49] pusharglistnoret 1 ...................... <m_rQuickRandom.getID()>
+  [ 51] extcall 139 ............................. removeObject(m_rQuickRandom.getID())
+  [ 53] pushsymb 563 ............................ <#SetMinigameHandler>
+  [ 56] getparam 0 .............................. <me>
+  [ 58] pusharglist 1 ........................... <me>
+  [ 60] objcall 63 .............................. <me.getID()>
+  [ 62] pusharglistnoret 2 ...................... <#SetMinigameHandler, me.getID()>
+  [ 64] extcall 135 ............................. unregisterMessage(#SetMinigameHandler, me.getID())
+  [ 66] getparam 0 .............................. <me>
+  [ 68] pusharglist 1 ........................... <me>
+  [ 70] objcall 63 .............................. <me.getID()>
+  [ 72] pusharglistnoret 1 ...................... <me.getID()>
+  [ 74] extcall 463 ............................. removeUpdate(me.getID())
+  [ 77] pushint8 1 .............................. <1>
+  [ 79] pusharglistnoret 1 ...................... <1>
+  [ 81] extcall 53 .............................. return 1
+  [ 83] ret
+end
+
+on StartMinigameEngine me
+  [  0] pushzero ................................ <0>
+  [  1] setprop 543 ............................. pWaitingForSync = 0
+  [  4] pushzero ................................ <0>
+  [  5] setprop 780 ............................. pWaitingForSyncCounter = 0
+  [  8] pushfloat32 0.0 ......................... <0.0>
+  [ 13] setprop 552 ............................. m_fTurnT = 0.0
+  [ 16] getmovieprop 222 ........................ <the milliSeconds>
+  [ 18] setprop 554 ............................. m_iLastMS = the milliSeconds
+  [ 21] pushint8 1 .............................. <1>
+  [ 23] inv ..................................... <-1>
+  [ 24] setprop 555 ............................. m_iLastSubTurn = -1
+  [ 27] getparam 0 .............................. <me>
+  [ 29] pusharglistnoret 1 ...................... <me>
+  [ 31] objcall 538 ............................. me._ClearCurrentTurn()
+  [ 34] getparam 0 .............................. <me>
+  [ 36] pusharglistnoret 1 ...................... <me>
+  [ 38] objcall 113 ............................. me._ClearTurnBuffer()
+  [ 40] getparam 0 .............................. <me>
+  [ 42] pusharglist 1 ........................... <me>
+  [ 44] objcall 63 .............................. <me.getID()>
+  [ 46] pusharglistnoret 1 ...................... <me.getID()>
+  [ 48] extcall 462 ............................. receiveUpdate(me.getID())
+  [ 51] ret
+end
+
+on stopMinigameEngine me
+  [  0] getparam 0 .............................. <me>
+  [  2] pusharglistnoret 1 ...................... <me>
+  [  4] objcall 113 ............................. me._ClearTurnBuffer()
+  [  6] pusharglist 0 ........................... <[]>
+  [  8] pushlist ................................ <[]>
+  [  9] setprop 545 ............................. pTurnContainerPool = []
+  [ 12] pushfloat32 0.0 ......................... <0.0>
+  [ 17] setprop 552 ............................. m_fTurnT = 0.0
+  [ 20] getmovieprop 222 ........................ <the milliSeconds>
+  [ 22] setprop 554 ............................. m_iLastMS = the milliSeconds
+  [ 25] pushint8 1 .............................. <1>
+  [ 27] inv ..................................... <-1>
+  [ 28] setprop 555 ............................. m_iLastSubTurn = -1
+  [ 31] pusharglist 0 ........................... <[:]>
+  [ 33] pushproplist ............................ <[:]>
+  [ 34] setprop 560 ............................. m_aLastTurnData = [:]
+  [ 37] pushint8 1 .............................. <1>
+  [ 39] setprop 543 ............................. pWaitingForSync = 1
+  [ 42] ret
+end
+
+on getNewTurnContainer me
+  [  0] getprop 545 ............................. <pTurnContainerPool>
+  [  3] getobjprop 143 .......................... <pTurnContainerPool.count>
+  [  5] pushzero ................................ <0>
+  [  6] gt ...................................... <pTurnContainerPool.count > 0>
+  [  7] getprop 546 ............................. <m_iAllocationModel>
+  [ 10] pushsymb 565 ............................ <#simple>
+  [ 13] nteq .................................... <m_iAllocationModel <> #simple>
+  [ 14] and ..................................... <(pTurnContainerPool.count > 0) and (m_iAllocationModel <> #simple)>
+  [ 15] jmpifz [ 48] ............................ if (pTurnContainerPool.count > 0) and (m_iAllocationModel <> #simple) then / else
+  [ 18] getprop 545 ............................. <pTurnContainerPool>
+  [ 21] pushint8 1 .............................. <1>
+  [ 23] pusharglist 2 ........................... <pTurnContainerPool, 1>
+  [ 25] objcall 99 .............................. <pTurnContainerPool[1]>
+  [ 27] setlocal 0 .............................. tTurnObject = pTurnContainerPool[1]
+  [ 29] getprop 545 ............................. <pTurnContainerPool>
+  [ 32] pushint8 1 .............................. <1>
+  [ 34] pusharglistnoret 2 ...................... <pTurnContainerPool, 1>
+  [ 36] objcall 566 ............................. pTurnContainerPool.deleteAt(1)
+  [ 39] getlocal 0 .............................. <tTurnObject>
+  [ 41] pusharglistnoret 1 ...................... <tTurnObject>
+  [ 43] extcall 53 .............................. return tTurnObject
+  [ 45] jmp [ 61]
+  [ 48] pushsymb 140 ............................ <#temp>
+  [ 50] getprop 544 ............................. <pTurnContainerClass>
+  [ 53] pusharglist 2 ........................... <#temp, pTurnContainerClass>
+  [ 55] extcall 137 ............................. <createObject(#temp, pTurnContainerClass)>
+  [ 57] pusharglistnoret 1 ...................... <createObject(#temp, pTurnContainerClass)>
+  [ 59] extcall 53 .............................. return createObject(#temp, pTurnContainerClass)
+  [ 61] ret
+end
+
+on releaseTurnContainer me, tObject
+  [  0] getparam 1 .............................. <tObject>
+  [  2] pushzero ................................ <0>
+  [  3] eq ...................................... <tObject = 0>
+  [  4] jmpifz [ 13] ............................ if tObject = 0 then
+  [  7] pushint8 1 .............................. <1>
+  [  9] pusharglistnoret 1 ...................... <1>
+  [ 11] extcall 53 .............................. return 1
+  [ 13] getprop 546 ............................. <m_iAllocationModel>
+  [ 16] pushsymb 565 ............................ <#simple>
+  [ 19] eq ...................................... <m_iAllocationModel = #simple>
+  [ 20] jmpifz [ 29] ............................ if m_iAllocationModel = #simple then
+  [ 23] pushint8 1 .............................. <1>
+  [ 25] pusharglistnoret 1 ...................... <1>
+  [ 27] extcall 53 .............................. return 1
+  [ 29] getparam 1 .............................. <tObject>
+  [ 31] pusharglistnoret 1 ...................... <tObject>
+  [ 33] objcall 0 ............................... tObject.construct()
+  [ 35] getprop 545 ............................. <pTurnContainerPool>
+  [ 38] getparam 1 .............................. <tObject>
+  [ 40] pusharglistnoret 2 ...................... <pTurnContainerPool, tObject>
+  [ 42] objcall 341 ............................. pTurnContainerPool.add(tObject)
+  [ 45] pushint8 1 .............................. <1>
+  [ 47] pusharglistnoret 1 ...................... <1>
+  [ 49] extcall 53 .............................. return 1
+  [ 51] ret
+end
+
+on _SetMinigameHandler me, i_sClass
+  [  0] getparam 1 .............................. <i_sClass>
+  [  2] setprop 549 ............................. m_sHandler = i_sClass
+  [  5] pushcons 5 .............................. <"MGEHandler">
+  [  7] pushcons 1 .............................. <"CMinigameHandlerPrototype">
+  [  9] getprop 549 ............................. <m_sHandler>
+  [ 12] pusharglistnoret 3 ...................... <"MGEHandler", "CMinigameHandlerPrototype", m_sHandler>
+  [ 14] extcall 137 ............................. createObject("MGEHandler", "CMinigameHandlerPrototype", m_sHandler)
+  [ 16] pushcons 5 .............................. <"MGEHandler">
+  [ 18] pusharglist 1 ........................... <"MGEHandler">
+  [ 20] extcall 71 .............................. <getObject("MGEHandler")>
+  [ 22] setprop 548 ............................. m_rHandler = getObject("MGEHandler")
+  [ 25] ret
+end
+
+on GetQuickRandom me
+  [  0] getprop 562 ............................. <m_rQuickRandom>
+  [  3] pusharglistnoret 1 ...................... <m_rQuickRandom>
+  [  5] extcall 53 .............................. return m_rQuickRandom
+  [  7] ret
+end
+
+on GetTurnNumber me
+  [  0] getprop 550 ............................. <m_rCurrentTurn>
+  [  3] pusharglist 1 ........................... <m_rCurrentTurn>
+  [  5] objcall 569 ............................. <m_rCurrentTurn.GetNumber()>
+  [  8] pusharglistnoret 1 ...................... <m_rCurrentTurn.GetNumber()>
+  [ 10] extcall 53 .............................. return m_rCurrentTurn.GetNumber()
+  [ 12] ret
+end
+
+on GetSubturnSpacing me
+  [  0] getprop 559 ............................. <m_iSubTurnSpacing>
+  [  3] pusharglistnoret 1 ...................... <m_iSubTurnSpacing>
+  [  5] extcall 53 .............................. return m_iSubTurnSpacing
+  [  7] ret
+end
+
+on _TurnBufferState me
+  [  0] getprop 556 ............................. <m_ar_turnBuffer>
+  [  3] getobjprop 143 .......................... <m_ar_turnBuffer.count>
+  [  5] pushint8 1 .............................. <1>
+  [  7] gt ...................................... <m_ar_turnBuffer.count > 1>
+  [  8] jmpifz [ 18] ............................ if m_ar_turnBuffer.count > 1 then
+  [ 11] pushsymb 570 ............................ <#overfill>
+  [ 14] pusharglistnoret 1 ...................... <#overfill>
+  [ 16] extcall 53 .............................. return #overfill
+  [ 18] getprop 556 ............................. <m_ar_turnBuffer>
+  [ 21] getobjprop 143 .......................... <m_ar_turnBuffer.count>
+  [ 23] pushint8 1 .............................. <1>
+  [ 25] eq ...................................... <m_ar_turnBuffer.count = 1>
+  [ 26] jmpifz [ 36] ............................ if m_ar_turnBuffer.count = 1 then
+  [ 29] pushsymb 571 ............................ <#ready>
+  [ 32] pusharglistnoret 1 ...................... <#ready>
+  [ 34] extcall 53 .............................. return #ready
+  [ 36] getprop 556 ............................. <m_ar_turnBuffer>
+  [ 39] getobjprop 143 .......................... <m_ar_turnBuffer.count>
+  [ 41] pushzero ................................ <0>
+  [ 42] eq ...................................... <m_ar_turnBuffer.count = 0>
+  [ 43] jmpifz [ 53] ............................ if m_ar_turnBuffer.count = 0 then
+  [ 46] pushsymb 572 ............................ <#empty>
+  [ 49] pusharglistnoret 1 ...................... <#empty>
+  [ 51] extcall 53 .............................. return #empty
+  [ 53] ret
+end
+
+on _AdvanceTurn me
+  [  0] getparam 0 .............................. <me>
+  [  2] pusharglistnoret 1 ...................... <me>
+  [  4] objcall 538 ............................. me._ClearCurrentTurn()
+  [  7] getprop 543 ............................. <pWaitingForSync>
+  [ 10] jmpifz [ 56] ............................ if pWaitingForSync then
+  [ 13] getprop 780 ............................. <pWaitingForSyncCounter>
+  [ 16] pushint8 1 .............................. <1>
+  [ 18] add ..................................... <pWaitingForSyncCounter + 1>
+  [ 19] setprop 780 ............................. pWaitingForSyncCounter = pWaitingForSyncCounter + 1
+  [ 22] getprop 780 ............................. <pWaitingForSyncCounter>
+  [ 25] getprop 781 ............................. <pWaitingForSyncThreshold>
+  [ 28] lt ...................................... <pWaitingForSyncCounter < pWaitingForSyncThreshold>
+  [ 29] jmpifz [ 37] ............................ if pWaitingForSyncCounter < pWaitingForSyncThreshold then
+  [ 32] pushzero ................................ <0>
+  [ 33] pusharglistnoret 1 ...................... <0>
+  [ 35] extcall 53 .............................. return 0
+  [ 37] pushzero ................................ <0>
+  [ 38] setprop 780 ............................. pWaitingForSyncCounter = 0
+  [ 41] getparam 0 .............................. <me>
+  [ 43] pusharglist 1 ........................... <me>
+  [ 45] objcall 81 .............................. <me.getMessageSender()>
+  [ 47] pusharglist 1 ........................... <me.getMessageSender()>
+  [ 49] objcall 262 ............................. <me.getMessageSender().sendRequestFullStatusUpdate()>
+  [ 52] pusharglistnoret 1 ...................... <me.getMessageSender().sendRequestFullStatusUpdate()>
+  [ 54] extcall 53 .............................. return me.getMessageSender().sendRequestFullStatusUpdate()
+  [ 56] getparam 0 .............................. <me>
+  [ 58] pusharglist 1 ........................... <me>
+  [ 60] objcall 536 ............................. <me._TurnBufferState()>
+  [ 63] peek 0 .................................. case me._TurnBufferState() of
+  [ 65] pushsymb 571 ............................ <#ready>
+  [ 68] nteq
+  [ 69] jmpifz [ 81] ............................ (case) #ready, ...
+  [ 72] peek 0
+  [ 74] pushsymb 570 ............................ <#overfill>
+  [ 77] eq
+  [ 78] jmpifz [114] ............................ (case) ..., #overfill:
+  [ 81] getprop 556 ............................. <m_ar_turnBuffer>
+  [ 84] pushint8 1 .............................. <1>
+  [ 86] pusharglist 2 ........................... <m_ar_turnBuffer, 1>
+  [ 88] objcall 99 .............................. <m_ar_turnBuffer[1]>
+  [ 90] setprop 550 ............................. m_rCurrentTurn = m_ar_turnBuffer[1]
+  [ 93] getprop 556 ............................. <m_ar_turnBuffer>
+  [ 96] pushint8 1 .............................. <1>
+  [ 98] pusharglistnoret 2 ...................... <m_ar_turnBuffer, 1>
+  [100] objcall 566 ............................. m_ar_turnBuffer.deleteAt(1)
+  [103] pushfloat32 0.0 ......................... <0.0>
+  [108] setprop 552 ............................. m_fTurnT = 0.0
+  [111] jmp [148]
+  [114] peek 0
+  [116] pushsymb 572 ............................ <#empty>
+  [119] eq
+  [120] jmpifz [148] ............................ (case) #empty:
+  [123] pushint8 1 .............................. <1>
+  [125] setprop 558 ............................. m_iSpeedUp = 1
+  [128] pusharglist 0 ........................... <>
+  [130] extcall 61 .............................. <VOID>
+  [132] setprop 550 ............................. m_rCurrentTurn = VOID
+  [135] getprop 561 ............................. <m_bDump>
+  [138] jmpifz [148] ............................ if m_bDump then
+  [141] pushcons 6 .............................. <"MGEngine: No turns in buffer. Speedup off">
+  [143] pusharglistnoret 1 ...................... <"MGEngine: No turns in buffer. Speedup off">
+  [145] extcall 470 ............................. put "MGEngine: No turns in buffer. Speedup off"
+  [148] pop 1 ................................... end case
+  [150] pushzero ................................ <0>
+  [151] setprop 555 ............................. m_iLastSubTurn = 0
+  [154] pushfloat32 0.0 ......................... <0.0>
+  [159] setprop 552 ............................. m_fTurnT = 0.0
+  [162] ret
+end
+
+on addTurnToBuffer me, i_rTurn
+  [  0] getprop 543 ............................. <pWaitingForSync>
+  [  3] jmpifz [ 11] ............................ if pWaitingForSync then
+  [  6] pushzero ................................ <0>
+  [  7] pusharglistnoret 1 ...................... <0>
+  [  9] extcall 53 .............................. return 0
+  [ 11] getprop 550 ............................. <m_rCurrentTurn>
+  [ 14] pusharglist 1 ........................... <m_rCurrentTurn>
+  [ 16] extcall 564 ............................. <voidp(m_rCurrentTurn)>
+  [ 19] jmpifz [ 58] ............................ if voidp(m_rCurrentTurn) then
+  [ 22] getprop 561 ............................. <m_bDump>
+  [ 25] jmpifz [ 45] ............................ if m_bDump then / else
+  [ 28] pushcons 7 .............................. <"MGEngine: Turn sync gained after">
+  [ 30] getprop 557 ............................. <m_syncLostTime>
+  [ 33] joinpadstr .............................. <"MGEngine: Turn sync gained after" && m_syncLostTime>
+  [ 34] pushcons 8 .............................. <"seconds.">
+  [ 36] joinpadstr .............................. <"MGEngine: Turn sync gained after" && m_syncLostTime && "seconds.">
+  [ 37] pusharglistnoret 1 ...................... <"MGEngine: Turn sync gained after" && m_syncLostTime && "seconds.">
+  [ 39] extcall 470 ............................. put "MGEngine: Turn sync gained after" && m_syncLostTime && "seconds."
+  [ 42] jmp [ 58]
+  [ 45] getprop 561 ............................. <m_bDump>
+  [ 48] jmpifz [ 58] ............................ if m_bDump then
+  [ 51] pushcons 9 .............................. <"MGEngine: Extra turn in buffer">
+  [ 53] pusharglistnoret 1 ...................... <"MGEngine: Extra turn in buffer">
+  [ 55] extcall 470 ............................. put "MGEngine: Extra turn in buffer"
+  [ 58] getprop 556 ............................. <m_ar_turnBuffer>
+  [ 61] getparam 1 .............................. <i_rTurn>
+  [ 63] pusharglistnoret 2 ...................... <m_ar_turnBuffer, i_rTurn>
+  [ 65] objcall 385 ............................. m_ar_turnBuffer.append(i_rTurn)
+  [ 68] ret
+end
+
+on _ClearTurnBuffer me
+  [  0] getparam 0 .............................. <me>
+  [  2] pusharglistnoret 1 ...................... <me>
+  [  4] objcall 538 ............................. me._ClearCurrentTurn()
+  [  7] pusharglist 0 ........................... <[]>
+  [  9] pushlist ................................ <[]>
+  [ 10] setprop 556 ............................. m_ar_turnBuffer = []
+  [ 13] ret
+end
+
+on _ClearCurrentTurn me
+  [  0] getprop 550 ............................. <m_rCurrentTurn>
+  [  3] pusharglist 1 ........................... <m_rCurrentTurn>
+  [  5] extcall 564 ............................. <voidp(m_rCurrentTurn)>
+  [  8] jmpifz [ 17] ............................ if voidp(m_rCurrentTurn) then
+  [ 11] pushint8 1 .............................. <1>
+  [ 13] pusharglistnoret 1 ...................... <1>
+  [ 15] extcall 53 .............................. return 1
+  [ 17] getprop 546 ............................. <m_iAllocationModel>
+  [ 20] pushsymb 565 ............................ <#simple>
+  [ 23] nteq .................................... <m_iAllocationModel <> #simple>
+  [ 24] jmpifz [ 37] ............................ if m_iAllocationModel <> #simple then
+  [ 27] getparam 0 .............................. <me>
+  [ 29] getprop 550 ............................. <m_rCurrentTurn>
+  [ 32] pusharglistnoret 2 ...................... <me, m_rCurrentTurn>
+  [ 34] objcall 531 ............................. me.releaseTurnContainer(m_rCurrentTurn)
+  [ 37] pusharglist 0 ........................... <>
+  [ 39] extcall 61 .............................. <VOID>
+  [ 41] setprop 550 ............................. m_rCurrentTurn = VOID
+  [ 44] ret
+end
+
+on floor i_fVal
+  [  0] getparam 0 .............................. <i_fVal>
+  [  2] pusharglist 1 ........................... <i_fVal>
+  [  4] extcall 277 ............................. <integer(i_fVal)>
+  [  7] setlocal 0 .............................. tInteger = integer(i_fVal)
+  [  9] getlocal 0 .............................. <tInteger>
+  [ 11] getparam 0 .............................. <i_fVal>
+  [ 13] gt ...................................... <tInteger > i_fVal>
+  [ 14] jmpifz [ 34] ............................ if tInteger > i_fVal then / else
+  [ 17] getlocal 0 .............................. <tInteger>
+  [ 19] pushint8 1 .............................. <1>
+  [ 21] sub ..................................... <tInteger - 1>
+  [ 22] pusharglist 1 ........................... <tInteger - 1>
+  [ 24] extcall 449 ............................. <float(tInteger - 1)>
+  [ 27] pusharglistnoret 1 ...................... <float(tInteger - 1)>
+  [ 29] extcall 53 .............................. return float(tInteger - 1)
+  [ 31] jmp [ 45]
+  [ 34] getlocal 0 .............................. <tInteger>
+  [ 36] pusharglist 1 ........................... <tInteger>
+  [ 38] extcall 449 ............................. <float(tInteger)>
+  [ 41] pusharglistnoret 1 ...................... <float(tInteger)>
+  [ 43] extcall 53 .............................. return float(tInteger)
+  [ 45] ret
+end
+
+on ProcessSubTurn me, i_iSubturn
+  [  0] getparam 1 .............................. <i_iSubturn>
+  [  2] getprop 550 ............................. <m_rCurrentTurn>
+  [  5] pusharglist 1 ........................... <m_rCurrentTurn>
+  [  7] objcall 575 ............................. <m_rCurrentTurn.GetNSubTurns()>
+  [ 10] lteq .................................... <i_iSubturn <= m_rCurrentTurn.GetNSubTurns()>
+  [ 11] jmpifz [142] ............................ if i_iSubturn <= m_rCurrentTurn.GetNSubTurns() then
+  [ 14] getprop 550 ............................. <m_rCurrentTurn>
+  [ 17] getparam 1 .............................. <i_iSubturn>
+  [ 19] pusharglist 2 ........................... <m_rCurrentTurn, i_iSubturn>
+  [ 21] objcall 576 ............................. <m_rCurrentTurn.GetSubTurn(i_iSubturn)>
+  [ 24] setlocal 0 .............................. t_ar_events = m_rCurrentTurn.GetSubTurn(i_iSubturn)
+  [ 26] getlocal 0 .............................. <t_ar_events>
+  [ 28] peek 0
+  [ 30] pusharglist 1
+  [ 32] extcall 143
+  [ 34] pushint8 1
+  [ 36] peek 0
+  [ 38] peek 2
+  [ 40] lteq
+  [ 41] jmpifz [140] ............................ repeat with tEvent in t_ar_events
+  [ 44] peek 2
+  [ 46] peek 1
+  [ 48] pusharglist 2
+  [ 50] extcall 99
+  [ 52] setlocal 1
+  [ 54] getlocal 1 .............................. <tEvent>
+  [ 56] pushsymb 577 ............................ <#event_type>
+  [ 59] pusharglist 2 ........................... <tEvent, #event_type>
+  [ 61] objcall 290 ............................. <tEvent.getProp(#event_type)>
+  [ 64] setlocal 2 .............................. t_iEvent = tEvent.getProp(#event_type)
+  [ 66] pusharglist 0 ........................... <[]>
+  [ 68] pushlist ................................ <[]>
+  [ 69] setlocal 3 .............................. t_ar_iData = []
+  [ 71] getlocal 1 .............................. <tEvent>
+  [ 73] getobjprop 143 .......................... <tEvent.count>
+  [ 75] pushint8 1 .............................. <1>
+  [ 77] gt ...................................... <tEvent.count > 1>
+  [ 78] jmpifz [123] ............................ if tEvent.count > 1 then
+  [ 81] getlocal 1 .............................. <tEvent>
+  [ 83] getobjprop 143 .......................... <tEvent.count>
+  [ 85] setlocal 4 .............................. tCount = tEvent.count
+  [ 87] pushint8 2 .............................. <2>
+  [ 89] setlocal 5
+  [ 91] getlocal 5
+  [ 93] getlocal 4 .............................. <tCount>
+  [ 95] lteq
+  [ 96] jmpifz [123] ............................ repeat with i = 2 to tCount
+  [ 99] getlocal 3 .............................. <t_ar_iData>
+  [101] getlocal 1 .............................. <tEvent>
+  [103] getlocal 5 .............................. <i>
+  [105] pusharglist 2 ........................... <tEvent, i>
+  [107] objcall 99 .............................. <tEvent[i]>
+  [109] pusharglistnoret 2 ...................... <t_ar_iData, tEvent[i]>
+  [111] objcall 385 ............................. t_ar_iData.append(tEvent[i])
+  [114] pushint8 1
+  [116] getlocal 5
+  [118] add
+  [119] setlocal 5
+  [121] endrepeat [ 91]
+  [123] getprop 548 ............................. <m_rHandler>
+  [126] getlocal 2 .............................. <t_iEvent>
+  [128] getlocal 1 .............................. <tEvent>
+  [130] pusharglistnoret 3 ...................... <m_rHandler, t_iEvent, tEvent>
+  [132] objcall 578 ............................. m_rHandler.OnEvent(t_iEvent, tEvent)
+  [135] pushint8 1
+  [137] add
+  [138] endrepeat [ 36]
+  [140] pop 3
+  [142] getparam 0 .............................. <me>
+  [144] pusharglist 1 ........................... <me>
+  [146] objcall 67 .............................. <me.getComponent()>
+  [148] getprop 550 ............................. <m_rCurrentTurn>
+  [151] pusharglist 1 ........................... <m_rCurrentTurn>
+  [153] objcall 569 ............................. <m_rCurrentTurn.GetNumber()>
+  [156] getparam 1 .............................. <i_iSubturn>
+  [158] pusharglistnoret 3 ...................... <me.getComponent(), m_rCurrentTurn.GetNumber(), i_iSubturn>
+  [160] objcall 456 ............................. me.getComponent().executeSubturnMoves(m_rCurrentTurn.GetNumber(), i_iSubturn)
+  [163] ret
+end
+
+on update me
+  [  0] getmovieprop 222 ........................ <the milliSeconds>
+  [  2] setlocal 0 .............................. tTime = the milliSeconds
+  [  4] getlocal 0 .............................. <tTime>
+  [  6] getprop 554 ............................. <m_iLastMS>
+  [  9] sub ..................................... <tTime - m_iLastMS>
+  [ 10] pushfloat32 1000.0 ...................... <1000.0>
+  [ 15] div ..................................... <(tTime - m_iLastMS) / 1000.0>
+  [ 16] setlocal 1 .............................. dT = (tTime - m_iLastMS) / 1000.0
+  [ 18] getlocal 0 .............................. <tTime>
+  [ 20] setprop 554 ............................. m_iLastMS = tTime
+  [ 23] getprop 550 ............................. <m_rCurrentTurn>
+  [ 26] pusharglist 1 ........................... <m_rCurrentTurn>
+  [ 28] extcall 564 ............................. <voidp(m_rCurrentTurn)>
+  [ 31] not ..................................... <not voidp(m_rCurrentTurn)>
+  [ 32] jmpifz [341] ............................ if not voidp(m_rCurrentTurn) then / else
+  [ 35] getprop 550 ............................. <m_rCurrentTurn>
+  [ 38] pusharglist 1 ........................... <m_rCurrentTurn>
+  [ 40] objcall 583 ............................. <m_rCurrentTurn.GetTested()>
+  [ 43] not ..................................... <not m_rCurrentTurn.GetTested()>
+  [ 44] jmpifz [ 62] ............................ if not m_rCurrentTurn.GetTested() then
+  [ 47] getparam 0 .............................. <me>
+  [ 49] getprop 550 ............................. <m_rCurrentTurn>
+  [ 52] pusharglist 1 ........................... <m_rCurrentTurn>
+  [ 54] objcall 584 ............................. <m_rCurrentTurn.GetCheckSum()>
+  [ 57] pusharglistnoret 2 ...................... <me, m_rCurrentTurn.GetCheckSum()>
+  [ 59] objcall 542 ............................. me._MinigameTestChecksum(m_rCurrentTurn.GetCheckSum())
+  [ 62] pushfloat32 0.0 ......................... <0.0>
+  [ 67] setprop 557 ............................. m_syncLostTime = 0.0
+  [ 70] getparam 0 .............................. <me>
+  [ 72] pusharglist 1 ........................... <me>
+  [ 74] objcall 536 ............................. <me._TurnBufferState()>
+  [ 77] pushsymb 570 ............................ <#overfill>
+  [ 80] eq ...................................... <me._TurnBufferState() = #overfill>
+  [ 81] jmpifz [111] ............................ if me._TurnBufferState() = #overfill then
+  [ 84] getprop 556 ............................. <m_ar_turnBuffer>
+  [ 87] getobjprop 143 .......................... <m_ar_turnBuffer.count>
+  [ 89] pushfloat32 1.5 ......................... <1.5>
+  [ 94] div ..................................... <m_ar_turnBuffer.count / 1.5>
+  [ 95] setprop 558 ............................. m_iSpeedUp = m_ar_turnBuffer.count / 1.5
+  [ 98] getprop 561 ............................. <m_bDump>
+  [101] jmpifz [111] ............................ if m_bDump then
+  [104] pushcons 10 ............................. <"MGEngine: speedup on">
+  [106] pusharglistnoret 1 ...................... <"MGEngine: speedup on">
+  [108] extcall 470 ............................. put "MGEngine: speedup on"
+  [111] getprop 552 ............................. <m_fTurnT>
+  [114] getlocal 1 .............................. <dT>
+  [116] add ..................................... <m_fTurnT + dT>
+  [117] setprop 552 ............................. m_fTurnT = m_fTurnT + dT
+  [120] getprop 550 ............................. <m_rCurrentTurn>
+  [123] pusharglist 0 ........................... <>
+  [125] extcall 61 .............................. <VOID>
+  [127] eq ...................................... <m_rCurrentTurn = VOID>
+  [128] jmpifz [137] ............................ if m_rCurrentTurn = VOID then
+  [131] pushint8 1 .............................. <1>
+  [133] pusharglistnoret 1 ...................... <1>
+  [135] extcall 53 .............................. return 1
+  [137] getprop 553 ............................. <m_fTurnPulse>
+  [140] getprop 550 ............................. <m_rCurrentTurn>
+  [143] pusharglist 1 ........................... <m_rCurrentTurn>
+  [145] objcall 575 ............................. <m_rCurrentTurn.GetNSubTurns()>
+  [148] div ..................................... <m_fTurnPulse / m_rCurrentTurn.GetNSubTurns()>
+  [149] setlocal 2 .............................. tSubturnSpacing = m_fTurnPulse / m_rCurrentTurn.GetNSubTurns()
+  [151] getlocal 2 .............................. <tSubturnSpacing>
+  [153] pushfloat32 1.0 ......................... <1.0>
+  [158] getprop 558 ............................. <m_iSpeedUp>
+  [161] div ..................................... <1.0 / m_iSpeedUp>
+  [162] mul ..................................... <tSubturnSpacing * (1.0 / m_iSpeedUp)>
+  [163] setprop 559 ............................. m_iSubTurnSpacing = tSubturnSpacing * (1.0 / m_iSpeedUp)
+  [166] getprop 559 ............................. <m_iSubTurnSpacing>
+  [169] setlocal 2 .............................. tSubturnSpacing = m_iSubTurnSpacing
+  [171] getprop 552 ............................. <m_fTurnT>
+  [174] getlocal 2 .............................. <tSubturnSpacing>
+  [176] div ..................................... <m_fTurnT / tSubturnSpacing>
+  [177] pusharglist 1 ........................... <m_fTurnT / tSubturnSpacing>
+  [179] localcall 15 ............................ <floor(m_fTurnT / tSubturnSpacing)>
+  [181] pusharglist 1 ........................... <floor(m_fTurnT / tSubturnSpacing)>
+  [183] extcall 277 ............................. <integer(floor(m_fTurnT / tSubturnSpacing))>
+  [186] pushint8 1 .............................. <1>
+  [188] add ..................................... <integer(floor(m_fTurnT / tSubturnSpacing)) + 1>
+  [189] setlocal 3 .............................. tSubturn = integer(floor(m_fTurnT / tSubturnSpacing)) + 1
+  [191] getlocal 3 .............................. <tSubturn>
+  [193] getprop 550 ............................. <m_rCurrentTurn>
+  [196] pusharglist 1 ........................... <m_rCurrentTurn>
+  [198] objcall 575 ............................. <m_rCurrentTurn.GetNSubTurns()>
+  [201] gt ...................................... <tSubturn > m_rCurrentTurn.GetNSubTurns()>
+  [202] jmpifz [215] ............................ if tSubturn > m_rCurrentTurn.GetNSubTurns() then
+  [205] getprop 550 ............................. <m_rCurrentTurn>
+  [208] pusharglist 1 ........................... <m_rCurrentTurn>
+  [210] objcall 575 ............................. <m_rCurrentTurn.GetNSubTurns()>
+  [213] setlocal 3 .............................. tSubturn = m_rCurrentTurn.GetNSubTurns()
+  [215] getprop 561 ............................. <m_bDump>
+  [218] jmpifz [240] ............................ if m_bDump then
+  [221] pushcons 11 ............................. <"SubTurnSpacing :">
+  [223] getlocal 2 .............................. <tSubturnSpacing>
+  [225] joinpadstr .............................. <"SubTurnSpacing :" && tSubturnSpacing>
+  [226] pushcons 12 ............................. <"ms, buffer size :">
+  [228] joinpadstr .............................. <"SubTurnSpacing :" && tSubturnSpacing && "ms, buffer size :">
+  [229] getprop 556 ............................. <m_ar_turnBuffer>
+  [232] getobjprop 143 .......................... <m_ar_turnBuffer.count>
+  [234] joinpadstr .............................. <"SubTurnSpacing :" && tSubturnSpacing && "ms, buffer size :" && m_ar_turnBuffer.count>
+  [235] pusharglistnoret 1 ...................... <"SubTurnSpacing :" && tSubturnSpacing && "ms, buffer size :" && m_ar_turnBuffer.count>
+  [237] extcall 470 ............................. put "SubTurnSpacing :" && tSubturnSpacing && "ms, buffer size :" && m_ar_turnBuffer.count
+  [240] getlocal 3 .............................. <tSubturn>
+  [242] getprop 555 ............................. <m_iLastSubTurn>
+  [245] nteq .................................... <tSubturn <> m_iLastSubTurn>
+  [246] jmpifz [338] ............................ if tSubturn <> m_iLastSubTurn then
+  [249] getlocal 3 .............................. <tSubturn>
+  [251] pushint8 1 .............................. <1>
+  [253] sub ..................................... <tSubturn - 1>
+  [254] getprop 555 ............................. <m_iLastSubTurn>
+  [257] nteq .................................... <(tSubturn - 1) <> m_iLastSubTurn>
+  [258] jmpifz [308] ............................ if (tSubturn - 1) <> m_iLastSubTurn then
+  [261] getlocal 3 .............................. <tSubturn>
+  [263] pushint8 1 .............................. <1>
+  [265] sub ..................................... <tSubturn - 1>
+  [266] getprop 555 ............................. <m_iLastSubTurn>
+  [269] sub ..................................... <tSubturn - 1 - m_iLastSubTurn>
+  [270] setlocal 4 .............................. tMissedCount = tSubturn - 1 - m_iLastSubTurn
+  [272] getlocal 3 .............................. <tSubturn>
+  [274] getlocal 4 .............................. <tMissedCount>
+  [276] sub ..................................... <tSubturn - tMissedCount>
+  [277] setlocal 5
+  [279] getlocal 5
+  [281] getlocal 3 .............................. <tSubturn>
+  [283] pushint8 1 .............................. <1>
+  [285] sub ..................................... <tSubturn - 1>
+  [286] lteq
+  [287] jmpifz [308] ............................ repeat with missedTurn = tSubturn - tMissedCount to tSubturn - 1
+  [290] getparam 0 .............................. <me>
+  [292] getlocal 5 .............................. <missedTurn>
+  [294] pusharglistnoret 2 ...................... <me, missedTurn>
+  [296] objcall 540 ............................. me.ProcessSubTurn(missedTurn)
+  [299] pushint8 1
+  [301] getlocal 5
+  [303] add
+  [304] setlocal 5
+  [306] endrepeat [279]
+  [308] getprop 561 ............................. <m_bDump>
+  [311] jmpifz [324] ............................ if m_bDump then
+  [314] pushcons 13 ............................. <"SubTurnN :">
+  [316] getlocal 3 .............................. <tSubturn>
+  [318] joinstr ................................. <"SubTurnN :" & tSubturn>
+  [319] pusharglistnoret 1 ...................... <"SubTurnN :" & tSubturn>
+  [321] extcall 470 ............................. put "SubTurnN :" & tSubturn
+  [324] getparam 0 .............................. <me>
+  [326] getlocal 3 .............................. <tSubturn>
+  [328] pusharglistnoret 2 ...................... <me, tSubturn>
+  [330] objcall 540 ............................. me.ProcessSubTurn(tSubturn)
+  [333] getlocal 3 .............................. <tSubturn>
+  [335] setprop 555 ............................. m_iLastSubTurn = tSubturn
+  [338] jmp [350]
+  [341] getprop 557 ............................. <m_syncLostTime>
+  [344] getlocal 1 .............................. <dT>
+  [346] add ..................................... <m_syncLostTime + dT>
+  [347] setprop 557 ............................. m_syncLostTime = m_syncLostTime + dT
+  [350] pushint8 1 .............................. <1>
+  [352] setlocal 6 .............................. tFrameRateEnough = 1
+  [354] getlocal 1 .............................. <dT>
+  [356] getprop 553 ............................. <m_fTurnPulse>
+  [359] gt ...................................... <dT > m_fTurnPulse>
+  [360] jmpifz [379] ............................ if dT > m_fTurnPulse then
+  [363] getprop 561 ............................. <m_bDump>
+  [366] jmpifz [376] ............................ if m_bDump then
+  [369] pushcons 14 ............................. <"MGEngine: frame rate too slow!!!">
+  [371] pusharglistnoret 1 ...................... <"MGEngine: frame rate too slow!!!">
+  [373] extcall 470 ............................. put "MGEngine: frame rate too slow!!!"
+  [376] pushzero ................................ <0>
+  [377] setlocal 6 .............................. tFrameRateEnough = 0
+  [379] getparam 0 .............................. <me>
+  [381] pusharglist 1 ........................... <me>
+  [383] objcall 541 ............................. <me.turnDone()>
+  [386] getlocal 6 .............................. <tFrameRateEnough>
+  [388] not ..................................... <not tFrameRateEnough>
+  [389] or ...................................... <me.turnDone() or not tFrameRateEnough>
+  [390] jmpifz [563] ............................ if me.turnDone() or not tFrameRateEnough then
+  [393] getprop 550 ............................. <m_rCurrentTurn>
+  [396] pusharglist 1 ........................... <m_rCurrentTurn>
+  [398] extcall 564 ............................. <voidp(m_rCurrentTurn)>
+  [401] not ..................................... <not voidp(m_rCurrentTurn)>
+  [402] jmpifz [480] ............................ if not voidp(m_rCurrentTurn) then
+  [405] getlocal 3 .............................. <tSubturn>
+  [407] getprop 550 ............................. <m_rCurrentTurn>
+  [410] pusharglist 1 ........................... <m_rCurrentTurn>
+  [412] objcall 575 ............................. <m_rCurrentTurn.GetNSubTurns()>
+  [415] lt ...................................... <tSubturn < m_rCurrentTurn.GetNSubTurns()>
+  [416] jmpifz [480] ............................ if tSubturn < m_rCurrentTurn.GetNSubTurns() then
+  [419] getprop 550 ............................. <m_rCurrentTurn>
+  [422] pusharglist 1 ........................... <m_rCurrentTurn>
+  [424] objcall 575 ............................. <m_rCurrentTurn.GetNSubTurns()>
+  [427] getlocal 3 .............................. <tSubturn>
+  [429] sub ..................................... <m_rCurrentTurn.GetNSubTurns() - tSubturn>
+  [430] setlocal 7 .............................. tTurnsToDo = m_rCurrentTurn.GetNSubTurns() - tSubturn
+  [432] getprop 550 ............................. <m_rCurrentTurn>
+  [435] pusharglist 1 ........................... <m_rCurrentTurn>
+  [437] objcall 575 ............................. <m_rCurrentTurn.GetNSubTurns()>
+  [440] getlocal 7 .............................. <tTurnsToDo>
+  [442] sub ..................................... <m_rCurrentTurn.GetNSubTurns() - tTurnsToDo>
+  [443] pushint8 1 .............................. <1>
+  [445] add ..................................... <m_rCurrentTurn.GetNSubTurns() - tTurnsToDo + 1>
+  [446] setlocal 5
+  [448] getlocal 5
+  [450] getprop 550 ............................. <m_rCurrentTurn>
+  [453] pusharglist 1 ........................... <m_rCurrentTurn>
+  [455] objcall 575 ............................. <m_rCurrentTurn.GetNSubTurns()>
+  [458] lteq
+  [459] jmpifz [480] ............................ repeat with missedTurn = m_rCurrentTurn.GetNSubTurns() - tTurnsToDo + 1 to m_rCurrentTurn.GetNSubTurns()
+  [462] getparam 0 .............................. <me>
+  [464] getlocal 5 .............................. <missedTurn>
+  [466] pusharglistnoret 2 ...................... <me, missedTurn>
+  [468] objcall 540 ............................. me.ProcessSubTurn(missedTurn)
+  [471] pushint8 1
+  [473] getlocal 5
+  [475] add
+  [476] setlocal 5
+  [478] endrepeat [448]
+  [480] getlocal 6 .............................. <tFrameRateEnough>
+  [482] not ..................................... <not tFrameRateEnough>
+  [483] jmpifz [556] ............................ if not tFrameRateEnough then
+  [486] pushint8 1 .............................. <1>
+  [488] setlocal 8
+  [490] getlocal 8
+  [492] getprop 556 ............................. <m_ar_turnBuffer>
+  [495] getobjprop 143 .......................... <m_ar_turnBuffer.count>
+  [497] pushint8 1 .............................. <1>
+  [499] sub ..................................... <m_ar_turnBuffer.count - 1>
+  [500] lteq
+  [501] jmpifz [556] ............................ repeat with t = 1 to m_ar_turnBuffer.count - 1
+  [504] getparam 0 .............................. <me>
+  [506] pusharglistnoret 1 ...................... <me>
+  [508] objcall 537 ............................. me._AdvanceTurn()
+  [511] pushint8 1 .............................. <1>
+  [513] setlocal 3
+  [515] getlocal 3
+  [517] getprop 550 ............................. <m_rCurrentTurn>
+  [520] pusharglist 1 ........................... <m_rCurrentTurn>
+  [522] objcall 575 ............................. <m_rCurrentTurn.GetNSubTurns()>
+  [525] lteq
+  [526] jmpifz [547] ............................ repeat with tSubturn = 1 to m_rCurrentTurn.GetNSubTurns()
+  [529] getparam 0 .............................. <me>
+  [531] getlocal 3 .............................. <tSubturn>
+  [533] pusharglistnoret 2 ...................... <me, tSubturn>
+  [535] objcall 540 ............................. me.ProcessSubTurn(tSubturn)
+  [538] pushint8 1
+  [540] getlocal 3
+  [542] add
+  [543] setlocal 3
+  [545] endrepeat [515]
+  [547] pushint8 1
+  [549] getlocal 8
+  [551] add
+  [552] setlocal 8
+  [554] endrepeat [490]
+  [556] getparam 0 .............................. <me>
+  [558] pusharglistnoret 1 ...................... <me>
+  [560] objcall 537 ............................. me._AdvanceTurn()
+  [563] ret
+end
+
+on turnDone me
+  [  0] getprop 553 ............................. <m_fTurnPulse>
+  [  3] pushfloat32 1.0 ......................... <1.0>
+  [  8] getprop 558 ............................. <m_iSpeedUp>
+  [ 11] div ..................................... <1.0 / m_iSpeedUp>
+  [ 12] mul ..................................... <m_fTurnPulse * (1.0 / m_iSpeedUp)>
+  [ 13] setlocal 0 .............................. tPulse = m_fTurnPulse * (1.0 / m_iSpeedUp)
+  [ 15] getprop 552 ............................. <m_fTurnT>
+  [ 18] getlocal 0 .............................. <tPulse>
+  [ 20] gteq .................................... <m_fTurnT >= tPulse>
+  [ 21] getprop 550 ............................. <m_rCurrentTurn>
+  [ 24] pusharglist 1 ........................... <m_rCurrentTurn>
+  [ 26] extcall 564 ............................. <voidp(m_rCurrentTurn)>
+  [ 29] or ...................................... <(m_fTurnT >= tPulse) or voidp(m_rCurrentTurn)>
+  [ 30] pusharglistnoret 1 ...................... <(m_fTurnT >= tPulse) or voidp(m_rCurrentTurn)>
+  [ 32] extcall 53 .............................. return (m_fTurnT >= tPulse) or voidp(m_rCurrentTurn)
+  [ 34] ret
+end
+
+on _MinigameTestChecksum me, i_iChecksum
+  [  0] getparam 0 .............................. <me>
+  [  2] pusharglist 1 ........................... <me>
+  [  4] objcall 454 ............................. <me.calculateChecksum()>
+  [  7] setlocal 0 .............................. tMyChecksum = me.calculateChecksum()
+  [  9] getprop 550 ............................. <m_rCurrentTurn>
+  [ 12] pushint8 1 .............................. <1>
+  [ 14] pusharglistnoret 2 ...................... <m_rCurrentTurn, 1>
+  [ 16] objcall 594 ............................. m_rCurrentTurn.SetTested(1)
+  [ 19] getparam 1 .............................. <i_iChecksum>
+  [ 21] getlocal 0 .............................. <tMyChecksum>
+  [ 23] nteq .................................... <i_iChecksum <> tMyChecksum>
+  [ 24] jmpifz [114] ............................ if i_iChecksum <> tMyChecksum then
+  [ 27] pushcons 15 ............................. <"*** TURN">
+  [ 29] getprop 550 ............................. <m_rCurrentTurn>
+  [ 32] pusharglist 1 ........................... <m_rCurrentTurn>
+  [ 34] objcall 569 ............................. <m_rCurrentTurn.GetNumber()>
+  [ 37] joinpadstr .............................. <"*** TURN" && m_rCurrentTurn.GetNumber()>
+  [ 38] pushcons 16 ............................. <" - CHECKSUM MISMATCH! server says:">
+  [ 40] joinpadstr .............................. <"*** TURN" && m_rCurrentTurn.GetNumber() && " - CHECKSUM MISMATCH! server says:">
+  [ 41] getparam 1 .............................. <i_iChecksum>
+  [ 43] joinpadstr .............................. <"*** TURN" && m_rCurrentTurn.GetNumber() && " - CHECKSUM MISMATCH! server says:" && i_iChecksum>
+  [ 44] pushcons 17 ............................. <", we say:">
+  [ 46] joinstr ................................. <"*** TURN" && m_rCurrentTurn.GetNumber() && " - CHECKSUM MISMATCH! server says:" && i_iChecksum & ", we say:">
+  [ 47] getlocal 0 .............................. <tMyChecksum>
+  [ 49] joinpadstr .............................. <"*** TURN" && m_rCurrentTurn.GetNumber() && " - CHECKSUM MISMATCH! server says:" && i_iChecksum & ", we say:" && tMyChecksum>
+  [ 50] pushcons 18 ............................. <". Previous turn:">
+  [ 52] joinpadstr .............................. <"*** TURN" && m_rCurrentTurn.GetNumber() && " - CHECKSUM MISMATCH! server says:" && i_iChecksum & ", we say:" && tMyChecksum && ". Previous turn:">
+  [ 53] getprop 560 ............................. <m_aLastTurnData>
+  [ 56] joinpadstr .............................. <"*** TURN" && m_rCurrentTurn.GetNumber() && " - CHECKSUM MISMATCH! server says:" && i_iChecksum & ", we say:" && tMyChecksum && ". Previous turn:" && m_aLastTurnData>
+  [ 57] pusharglistnoret 1 ...................... <"*** TURN" && m_rCurrentTurn.GetNumber() && " - CHECKSUM MISMATCH! server says:" && i_iChecksum & ", we say:" && tMyChecksum && ". Previous turn:" && m_aLastTurnData>
+  [ 59] extcall 470 ............................. put "*** TURN" && m_rCurrentTurn.GetNumber() && " - CHECKSUM MISMATCH! server says:" && i_iChecksum & ", we say:" && tMyChecksum && ". Previous turn:" && m_aLastTurnData
+  [ 62] pushcons 19 ............................. <"Turn was ">
+  [ 64] getprop 557 ............................. <m_syncLostTime>
+  [ 67] joinstr ................................. <"Turn was " & m_syncLostTime>
+  [ 68] pushcons 20 ............................. <" seconds late.">
+  [ 70] joinstr ................................. <"Turn was " & m_syncLostTime & " seconds late.">
+  [ 71] pusharglistnoret 1 ...................... <"Turn was " & m_syncLostTime & " seconds late.">
+  [ 73] extcall 470 ............................. put "Turn was " & m_syncLostTime & " seconds late."
+  [ 76] getparam 0 .............................. <me>
+  [ 78] pusharglist 1 ........................... <me>
+  [ 80] objcall 67 .............................. <me.getComponent()>
+  [ 82] pusharglist 1 ........................... <me.getComponent()>
+  [ 84] objcall 455 ............................. <me.getComponent().dumpChecksumValues()>
+  [ 87] pusharglistnoret 1 ...................... <me.getComponent().dumpChecksumValues()>
+  [ 89] extcall 470 ............................. put me.getComponent().dumpChecksumValues()
+  [ 92] getparam 0 .............................. <me>
+  [ 94] pusharglistnoret 1 ...................... <me>
+  [ 96] objcall 113 ............................. me._ClearTurnBuffer()
+  [ 98] getparam 0 .............................. <me>
+  [100] pusharglist 1 ........................... <me>
+  [102] objcall 81 .............................. <me.getMessageSender()>
+  [104] pusharglistnoret 1 ...................... <me.getMessageSender()>
+  [106] objcall 262 ............................. me.getMessageSender().sendRequestFullStatusUpdate()
+  [109] pushint8 1 .............................. <1>
+  [111] setprop 543 ............................. pWaitingForSync = 1
+  [114] getprop 550 ............................. <m_rCurrentTurn>
+  [117] pusharglist 0 ........................... <>
+  [119] extcall 61 .............................. <VOID>
+  [121] nteq .................................... <m_rCurrentTurn <> VOID>
+  [122] jmpifz [159] ............................ if m_rCurrentTurn <> VOID then
+  [125] getprop 560 ............................. <m_aLastTurnData>
+  [128] pushcons 21 ............................. <"Turn">
+  [130] getprop 550 ............................. <m_rCurrentTurn>
+  [133] pusharglist 1 ........................... <m_rCurrentTurn>
+  [135] objcall 569 ............................. <m_rCurrentTurn.GetNumber()>
+  [138] pusharglistnoret 3 ...................... <m_aLastTurnData, "Turn", m_rCurrentTurn.GetNumber()>
+  [140] objcall 142 ............................. m_aLastTurnData.setaProp("Turn", m_rCurrentTurn.GetNumber())
+  [142] getprop 560 ............................. <m_aLastTurnData>
+  [145] pushcons 22 ............................. <"Events">
+  [147] getprop 550 ............................. <m_rCurrentTurn>
+  [150] pusharglist 1 ........................... <m_rCurrentTurn>
+  [152] objcall 595 ............................. <m_rCurrentTurn.GetSubTurns()>
+  [155] pusharglistnoret 3 ...................... <m_aLastTurnData, "Events", m_rCurrentTurn.GetSubTurns()>
+  [157] objcall 142 ............................. m_aLastTurnData.setaProp("Events", m_rCurrentTurn.GetSubTurns())
+  [159] ret
+end
+
+on calculateChecksum me
+  [  0] getprop 550 ............................. <m_rCurrentTurn>
+  [  3] pusharglist 1 ........................... <m_rCurrentTurn>
+  [  5] extcall 564 ............................. <voidp(m_rCurrentTurn)>
+  [  8] not ..................................... <not voidp(m_rCurrentTurn)>
+  [  9] jmpifz [ 51] ............................ if not voidp(m_rCurrentTurn) then
+  [ 12] getprop 562 ............................. <m_rQuickRandom>
+  [ 15] getprop 550 ............................. <m_rCurrentTurn>
+  [ 18] pusharglist 1 ........................... <m_rCurrentTurn>
+  [ 20] objcall 569 ............................. <m_rCurrentTurn.GetNumber()>
+  [ 23] pusharglist 2 ........................... <m_rQuickRandom, m_rCurrentTurn.GetNumber()>
+  [ 25] objcall 598 ............................. <m_rQuickRandom.IterateSeed(m_rCurrentTurn.GetNumber())>
+  [ 28] setlocal 0 .............................. tCheckSum = m_rQuickRandom.IterateSeed(m_rCurrentTurn.GetNumber())
+  [ 30] getparam 0 .............................. <me>
+  [ 32] pusharglist 1 ........................... <me>
+  [ 34] objcall 67 .............................. <me.getComponent()>
+  [ 36] getlocal 0 .............................. <tCheckSum>
+  [ 38] pusharglist 2 ........................... <me.getComponent(), tCheckSum>
+  [ 40] objcall 454 ............................. <me.getComponent().calculateChecksum(tCheckSum)>
+  [ 43] setlocal 0 .............................. tCheckSum = me.getComponent().calculateChecksum(tCheckSum)
+  [ 45] getlocal 0 .............................. <tCheckSum>
+  [ 47] pusharglistnoret 1 ...................... <tCheckSum>
+  [ 49] extcall 53 .............................. return tCheckSum
+  [ 51] ret
+end

@@ -1,0 +1,1099 @@
+on convertSmallFurniNames tCastName
+  [  0] pushint8 1 .............................. <1>
+  [  2] setlocal 0
+  [  4] getlocal 0
+  [  6] getparam 0 .............................. <tCastName>
+  [  8] pushint8 2 .............................. <2>
+  [ 10] get 8 ................................... <the number of castMembers of castLib tCastName>
+  [ 12] lteq
+  [ 13] jmpifz [121] ............................ repeat with i = 1 to the number of castMembers of castLib tCastName
+  [ 16] getlocal 0 .............................. <i>
+  [ 18] getparam 0 .............................. <tCastName>
+  [ 20] pusharglist 2 ........................... <i, tCastName>
+  [ 22] extcall 10 .............................. <member(i, tCastName)>
+  [ 24] setlocal 1 .............................. tMem = member(i, tCastName)
+  [ 26] getlocal 1 .............................. <tMem>
+  [ 28] getobjprop 11 ........................... <tMem.type>
+  [ 30] pushsymb 12 ............................. <#field>
+  [ 32] eq ...................................... <tMem.type = #field>
+  [ 33] getlocal 1 .............................. <tMem>
+  [ 35] getobjprop 13 ........................... <tMem.name>
+  [ 37] pushcons 0 .............................. <".props">
+  [ 39] containsstr ............................. <tMem.name contains ".props">
+  [ 40] and ..................................... <(tMem.type = #field) and (tMem.name contains ".props")>
+  [ 41] setlocal 2 .............................. tHandle = (tMem.type = #field) and (tMem.name contains ".props")
+  [ 43] getlocal 2 .............................. <tHandle>
+  [ 45] getlocal 1 .............................. <tMem>
+  [ 47] getobjprop 11 ........................... <tMem.type>
+  [ 49] pushsymb 14 ............................. <#bitmap>
+  [ 51] eq ...................................... <tMem.type = #bitmap>
+  [ 52] getlocal 1 .............................. <tMem>
+  [ 54] getobjprop 13 ........................... <tMem.name>
+  [ 56] pushcons 1 .............................. <"trophyblink">
+  [ 58] containsstr ............................. <tMem.name contains "trophyblink">
+  [ 59] not ..................................... <not (tMem.name contains "trophyblink")>
+  [ 60] and ..................................... <(tMem.type = #bitmap) and not (tMem.name contains "trophyblink")>
+  [ 61] or ...................................... <tHandle or ((tMem.type = #bitmap) and not (tMem.name contains "trophyblink"))>
+  [ 62] setlocal 2 .............................. tHandle = tHandle or ((tMem.type = #bitmap) and not (tMem.name contains "trophyblink"))
+  [ 64] getlocal 2 .............................. <tHandle>
+  [ 66] getlocal 1 .............................. <tMem>
+  [ 68] getobjprop 11 ........................... <tMem.type>
+  [ 70] pushsymb 15 ............................. <#palette>
+  [ 72] eq ...................................... <tMem.type = #palette>
+  [ 73] getlocal 1 .............................. <tMem>
+  [ 75] getobjprop 13 ........................... <tMem.name>
+  [ 77] pushcons 1 .............................. <"trophyblink">
+  [ 79] containsstr ............................. <tMem.name contains "trophyblink">
+  [ 80] not ..................................... <not (tMem.name contains "trophyblink")>
+  [ 81] and ..................................... <(tMem.type = #palette) and not (tMem.name contains "trophyblink")>
+  [ 82] or ...................................... <tHandle or ((tMem.type = #palette) and not (tMem.name contains "trophyblink"))>
+  [ 83] setlocal 2 .............................. tHandle = tHandle or ((tMem.type = #palette) and not (tMem.name contains "trophyblink"))
+  [ 85] getlocal 2 .............................. <tHandle>
+  [ 87] jmpifz [109] ............................ if tHandle then
+  [ 90] getlocal 1 .............................. <tMem>
+  [ 92] getobjprop 13 ........................... <tMem.name>
+  [ 94] pusharglistnoret 1 ...................... <tMem.name>
+  [ 96] extcall 16 .............................. put tMem.name
+  [ 98] getlocal 1 .............................. <tMem>
+  [100] pushcons 2 .............................. <"s_">
+  [102] getlocal 1 .............................. <tMem>
+  [104] getobjprop 13 ........................... <tMem.name>
+  [106] joinstr ................................. <"s_" & tMem.name>
+  [107] setobjprop 13 ........................... tMem.name = "s_" & tMem.name
+  [109] pushzero ................................ <0>
+  [110] setlocal 2 .............................. tHandle = 0
+  [112] pushint8 1
+  [114] getlocal 0
+  [116] add
+  [117] setlocal 0
+  [119] endrepeat [  4]
+  [121] ret
+end
+
+on convertSmallMemberAlias tCastName
+  [  0] pushcons 3 .............................. <"memberalias.index">
+  [  2] getparam 0 .............................. <tCastName>
+  [  4] pusharglist 2 ........................... <"memberalias.index", tCastName>
+  [  6] extcall 10 .............................. <member("memberalias.index", tCastName)>
+  [  8] getobjprop 21 ........................... <member("memberalias.index", tCastName).text>
+  [ 10] setlocal 0 .............................. tText = member("memberalias.index", tCastName).text
+  [ 12] pushcons 4 .............................. <EMPTY>
+  [ 14] setlocal 1 .............................. tNewText = EMPTY
+  [ 16] pushint8 1 .............................. <1>
+  [ 18] setlocal 2
+  [ 20] getlocal 2
+  [ 22] getlocal 0 .............................. <tText>
+  [ 24] pushsymb 22 ............................. <#line>
+  [ 26] pusharglist 2 ........................... <tText, #line>
+  [ 28] objcall 23 .............................. <tText.line.count>
+  [ 30] lteq
+  [ 31] jmpifz [121] ............................ repeat with i = 1 to tText.line.count
+  [ 34] getlocal 0 .............................. <tText>
+  [ 36] pushsymb 22 ............................. <#line>
+  [ 38] getlocal 2 .............................. <i>
+  [ 40] pusharglist 3 ........................... <tText, #line, i>
+  [ 42] objcall 24 .............................. <tText.line[i]>
+  [ 44] setlocal 3 .............................. tLine = tText.line[i]
+  [ 46] pushcons 5 .............................. <"=">
+  [ 48] getlocal 3 .............................. <tLine>
+  [ 50] pusharglist 2 ........................... <"=", tLine>
+  [ 52] extcall 25 .............................. <offset("=", tLine)>
+  [ 54] setlocal 4 .............................. tBreak = offset("=", tLine)
+  [ 56] getlocal 4 .............................. <tBreak>
+  [ 58] pushint8 1 .............................. <1>
+  [ 60] gt ...................................... <tBreak > 1>
+  [ 61] jmpifz [102] ............................ if tBreak > 1 then
+  [ 64] pushcons 2 .............................. <"s_">
+  [ 66] getlocal 3 .............................. <tLine>
+  [ 68] pushsymb 26 ............................. <#char>
+  [ 70] pushint8 1 .............................. <1>
+  [ 72] getlocal 4 .............................. <tBreak>
+  [ 74] pusharglist 4 ........................... <tLine, #char, 1, tBreak>
+  [ 76] objcall 24 .............................. <tLine.char[1..tBreak]>
+  [ 78] joinstr ................................. <"s_" & tLine.char[1..tBreak]>
+  [ 79] pushcons 2 .............................. <"s_">
+  [ 81] joinstr ................................. <"s_" & tLine.char[1..tBreak] & "s_">
+  [ 82] getlocal 3 .............................. <tLine>
+  [ 84] pushsymb 26 ............................. <#char>
+  [ 86] getlocal 4 .............................. <tBreak>
+  [ 88] pushint8 1 .............................. <1>
+  [ 90] add ..................................... <tBreak + 1>
+  [ 91] getlocal 3 .............................. <tLine>
+  [ 93] getobjprop 27 ........................... <tLine.length>
+  [ 95] pusharglist 4 ........................... <tLine, #char, tBreak + 1, tLine.length>
+  [ 97] objcall 24 .............................. <tLine.char[tBreak + 1..tLine.length]>
+  [ 99] joinstr ................................. <"s_" & tLine.char[1..tBreak] & "s_" & tLine.char[tBreak + 1..tLine.length]>
+  [100] setlocal 3 .............................. tLine = "s_" & tLine.char[1..tBreak] & "s_" & tLine.char[tBreak + 1..tLine.length]
+  [102] getlocal 1 .............................. <tNewText>
+  [104] getlocal 3 .............................. <tLine>
+  [106] joinstr ................................. <tNewText & tLine>
+  [107] pushcons 6 .............................. <RETURN>
+  [109] joinstr ................................. <tNewText & tLine & RETURN>
+  [110] setlocal 1 .............................. tNewText = tNewText & tLine & RETURN
+  [112] pushint8 1
+  [114] getlocal 2
+  [116] add
+  [117] setlocal 2
+  [119] endrepeat [ 20]
+  [121] pushcons 3 .............................. <"memberalias.index">
+  [123] getparam 0 .............................. <tCastName>
+  [125] pusharglist 2 ........................... <"memberalias.index", tCastName>
+  [127] extcall 10 .............................. <member("memberalias.index", tCastName)>
+  [129] getlocal 1 .............................. <tNewText>
+  [131] setobjprop 21 ........................... member("memberalias.index", tCastName).text = tNewText
+  [133] getlocal 1 .............................. <tNewText>
+  [135] pusharglistnoret 1 ...................... <tNewText>
+  [137] extcall 16 .............................. put tNewText
+  [139] ret
+end
+
+on mergeObjSets
+  [  0] getmovieprop 32 ......................... <the itemDelimiter>
+  [  2] setlocal 0 .............................. tDelim = the itemDelimiter
+  [  4] pushcons 7 .............................. <"_">
+  [  6] setmovieprop 32 ......................... the itemDelimiter = "_"
+  [  8] pusharglist 0 ........................... <[:]>
+  [ 10] pushproplist ............................ <[:]>
+  [ 11] setlocal 1 .............................. tCollectedList = [:]
+  [ 13] pusharglist 0 ........................... <[]>
+  [ 15] pushlist ................................ <[]>
+  [ 16] setlocal 2 .............................. tChangedCasts = []
+  [ 18] pushint8 1 .............................. <1>
+  [ 20] setlocal 3
+  [ 22] getlocal 3
+  [ 24] pushint8 4 .............................. <4>
+  [ 26] get 8 ................................... <the number of castLibs>
+  [ 28] lteq
+  [ 29] jmpifz [481] ............................ repeat with tCastNum = 1 to the number of castLibs
+  [ 32] pushint8 1 .............................. <1>
+  [ 34] setlocal 4
+  [ 36] getlocal 4
+  [ 38] getlocal 3 .............................. <tCastNum>
+  [ 40] pushint8 2 .............................. <2>
+  [ 42] get 8 ................................... <the number of castMembers of castLib tCastNum>
+  [ 44] lteq
+  [ 45] jmpifz [471] ............................ repeat with tMemNum = 1 to the number of castMembers of castLib tCastNum
+  [ 48] getlocal 4 .............................. <tMemNum>
+  [ 50] getlocal 3 .............................. <tCastNum>
+  [ 52] pusharglist 2 ........................... <tMemNum, tCastNum>
+  [ 54] extcall 10 .............................. <member(tMemNum, tCastNum)>
+  [ 56] setlocal 5 .............................. tMem = member(tMemNum, tCastNum)
+  [ 58] getlocal 5 .............................. <tMem>
+  [ 60] getobjprop 11 ........................... <tMem.type>
+  [ 62] pushsymb 12 ............................. <#field>
+  [ 64] eq ...................................... <tMem.type = #field>
+  [ 65] jmpifz [461] ............................ if tMem.type = #field then
+  [ 68] getlocal 5 .............................. <tMem>
+  [ 70] getobjprop 13 ........................... <tMem.name>
+  [ 72] setlocal 6 .............................. tName = tMem.name
+  [ 74] pushcons 4 .............................. <EMPTY>
+  [ 76] setlocal 7 .............................. tDefType = EMPTY
+  [ 78] getlocal 6 .............................. <tName>
+  [ 80] pushcons 8 .............................. <".zshift">
+  [ 82] containsstr ............................. <tName contains ".zshift">
+  [ 83] jmpifz [ 90] ............................ if tName contains ".zshift" then
+  [ 86] pushsymb 33 ............................. <#zshift>
+  [ 88] setlocal 7 .............................. tDefType = #zshift
+  [ 90] getlocal 6 .............................. <tName>
+  [ 92] pushcons 9 .............................. <".blend">
+  [ 94] containsstr ............................. <tName contains ".blend">
+  [ 95] jmpifz [102] ............................ if tName contains ".blend" then
+  [ 98] pushsymb 34 ............................. <#blend>
+  [100] setlocal 7 .............................. tDefType = #blend
+  [102] getlocal 6 .............................. <tName>
+  [104] pushcons 10 ............................. <".ink">
+  [106] containsstr ............................. <tName contains ".ink">
+  [107] jmpifz [114] ............................ if tName contains ".ink" then
+  [110] pushsymb 35 ............................. <#ink>
+  [112] setlocal 7 .............................. tDefType = #ink
+  [114] getlocal 7 .............................. <tDefType>
+  [116] pushcons 4 .............................. <EMPTY>
+  [118] nteq .................................... <tDefType <> EMPTY>
+  [119] jmpifz [461] ............................ if tDefType <> EMPTY then
+  [122] getlocal 6 .............................. <tName>
+  [124] pushsymb 26 ............................. <#char>
+  [126] pushcons 11 ............................. <".">
+  [128] getlocal 6 .............................. <tName>
+  [130] pusharglist 2 ........................... <".", tName>
+  [132] extcall 25 .............................. <offset(".", tName)>
+  [134] pushint8 1 .............................. <1>
+  [136] sub ..................................... <offset(".", tName) - 1>
+  [137] pusharglist 3 ........................... <tName, #char, offset(".", tName) - 1>
+  [139] objcall 24 .............................. <tName.char[offset(".", tName) - 1]>
+  [141] setlocal 8 .............................. tPart = tName.char[offset(".", tName) - 1]
+  [143] pushint16 -30002 ........................ <-30002>
+  [146] pushzero ................................ <0>
+  [147] pushzero ................................ <0>
+  [148] pushzero ................................ <0>
+  [149] pushzero ................................ <0>
+  [150] pushzero ................................ <0>
+  [151] pushzero ................................ <0>
+  [152] pushzero ................................ <0>
+  [153] pushint8 6 .............................. <6>
+  [155] deletechunk 5 ........................... delete char -30002 of tName
+  [157] getlocal 1 .............................. <tCollectedList>
+  [159] getlocal 6 .............................. <tName>
+  [161] pusharglist 2 ........................... <tCollectedList, tName>
+  [163] objcall 36 .............................. <tCollectedList[tName]>
+  [165] pusharglist 0 ........................... <>
+  [167] extcall 37 .............................. <VOID>
+  [169] nteq .................................... <tCollectedList[tName] <> VOID>
+  [170] jmpifz [196] ............................ if tCollectedList[tName] <> VOID then / else
+  [173] getlocal 1 .............................. <tCollectedList>
+  [175] getlocal 6 .............................. <tName>
+  [177] pusharglist 2 ........................... <tCollectedList, tName>
+  [179] objcall 36 .............................. <tCollectedList[tName]>
+  [181] setlocal 9 .............................. tNewPropsMem = tCollectedList[tName]
+  [183] getlocal 9 .............................. <tNewPropsMem>
+  [185] pushzero ................................ <0>
+  [186] getfield ................................ <field(tNewPropsMem)>
+  [187] pusharglist 1 ........................... <field(tNewPropsMem)>
+  [189] extcall 38 .............................. <value(field(tNewPropsMem))>
+  [191] setlocal 10 ............................. tPropsList = value(field(tNewPropsMem))
+  [193] jmp [276]
+  [196] pushcons 12 ............................. <"creating">
+  [198] getlocal 6 .............................. <tName>
+  [200] joinpadstr .............................. <"creating" && tName>
+  [201] pusharglistnoret 1 ...................... <"creating" && tName>
+  [203] extcall 16 .............................. put "creating" && tName
+  [205] pushsymb 12 ............................. <#field>
+  [207] getlocal 3 .............................. <tCastNum>
+  [209] pusharglist 1 ........................... <tCastNum>
+  [211] extcall 40 .............................. <castLib(tCastNum)>
+  [213] pusharglist 2 ........................... <#field, castLib(tCastNum)>
+  [215] extcall 39 .............................. <new(#field, castLib(tCastNum))>
+  [217] setlocal 9 .............................. tNewPropsMem = new(#field, castLib(tCastNum))
+  [219] getlocal 9 .............................. <tNewPropsMem>
+  [221] getlocal 6 .............................. <tName>
+  [223] pushcons 0 .............................. <".props">
+  [225] joinstr ................................. <tName & ".props">
+  [226] setobjprop 13 ........................... tNewPropsMem.name = tName & ".props"
+  [228] getlocal 1 .............................. <tCollectedList>
+  [230] getlocal 6 .............................. <tName>
+  [232] getlocal 9 .............................. <tNewPropsMem>
+  [234] pusharglistnoret 3 ...................... <tCollectedList, tName, tNewPropsMem>
+  [236] objcall 41 .............................. tCollectedList.addProp(tName, tNewPropsMem)
+  [238] getlocal 2 .............................. <tChangedCasts>
+  [240] getlocal 3 .............................. <tCastNum>
+  [242] pusharglist 1 ........................... <tCastNum>
+  [244] extcall 40 .............................. <castLib(tCastNum)>
+  [246] getobjprop 13 ........................... <castLib(tCastNum).name>
+  [248] pusharglist 2 ........................... <tChangedCasts, castLib(tCastNum).name>
+  [250] objcall 42 .............................. <tChangedCasts.getOne(castLib(tCastNum).name)>
+  [252] pushzero ................................ <0>
+  [253] eq ...................................... <tChangedCasts.getOne(castLib(tCastNum).name) = 0>
+  [254] jmpifz [271] ............................ if tChangedCasts.getOne(castLib(tCastNum).name) = 0 then
+  [257] getlocal 2 .............................. <tChangedCasts>
+  [259] getlocal 3 .............................. <tCastNum>
+  [261] pusharglist 1 ........................... <tCastNum>
+  [263] extcall 40 .............................. <castLib(tCastNum)>
+  [265] getobjprop 13 ........................... <castLib(tCastNum).name>
+  [267] pusharglistnoret 2 ...................... <tChangedCasts, castLib(tCastNum).name>
+  [269] objcall 43 .............................. tChangedCasts.append(castLib(tCastNum).name)
+  [271] pusharglist 0 ........................... <[:]>
+  [273] pushproplist ............................ <[:]>
+  [274] setlocal 10 ............................. tPropsList = [:]
+  [276] getlocal 7 .............................. <tDefType>
+  [278] pushsymb 35 ............................. <#ink>
+  [280] eq ...................................... <tDefType = #ink>
+  [281] getlocal 7 .............................. <tDefType>
+  [283] pushsymb 34 ............................. <#blend>
+  [285] eq ...................................... <tDefType = #blend>
+  [286] or ...................................... <(tDefType = #ink) or (tDefType = #blend)>
+  [287] jmpifz [311] ............................ if (tDefType = #ink) or (tDefType = #blend) then / else
+  [290] getlocal 5 .............................. <tMem>
+  [292] getchainedprop 21 ....................... <tMem.text>
+  [294] pushsymb 22 ............................. <#line>
+  [296] pushint8 1 .............................. <1>
+  [298] pusharglist 3 ........................... <tMem.text, #line, 1>
+  [300] objcall 24 .............................. <tMem.text.line[1]>
+  [302] pusharglist 1 ........................... <tMem.text.line[1]>
+  [304] extcall 44 .............................. <integer(tMem.text.line[1])>
+  [306] setlocal 11 ............................. tThisProp = integer(tMem.text.line[1])
+  [308] jmp [399]
+  [311] pusharglist 0 ........................... <[]>
+  [313] pushlist ................................ <[]>
+  [314] setlocal 11 ............................. tThisProp = []
+  [316] pushint8 1 .............................. <1>
+  [318] setlocal 12
+  [320] getlocal 12
+  [322] getlocal 5 .............................. <tMem>
+  [324] getchainedprop 21 ....................... <tMem.text>
+  [326] pushsymb 22 ............................. <#line>
+  [328] pusharglist 2 ........................... <tMem.text, #line>
+  [330] objcall 23 .............................. <tMem.text.line.count>
+  [332] lteq
+  [333] jmpifz [399] ............................ repeat with i = 1 to tMem.text.line.count
+  [336] getlocal 5 .............................. <tMem>
+  [338] getchainedprop 21 ....................... <tMem.text>
+  [340] pushsymb 22 ............................. <#line>
+  [342] getlocal 12 ............................. <i>
+  [344] pusharglist 3 ........................... <tMem.text, #line, i>
+  [346] objcall 24 .............................. <tMem.text.line[i]>
+  [348] pushcons 4 .............................. <EMPTY>
+  [350] nteq .................................... <tMem.text.line[i] <> EMPTY>
+  [351] getlocal 12 ............................. <i>
+  [353] getlocal 5 .............................. <tMem>
+  [355] getchainedprop 21 ....................... <tMem.text>
+  [357] pushsymb 22 ............................. <#line>
+  [359] pusharglist 2 ........................... <tMem.text, #line>
+  [361] objcall 23 .............................. <tMem.text.line.count>
+  [363] lt ...................................... <i < tMem.text.line.count>
+  [364] or ...................................... <(tMem.text.line[i] <> EMPTY) or (i < tMem.text.line.count)>
+  [365] jmpifz [390] ............................ if (tMem.text.line[i] <> EMPTY) or (i < tMem.text.line.count) then
+  [368] getlocal 11 ............................. <tThisProp>
+  [370] getlocal 5 .............................. <tMem>
+  [372] getchainedprop 21 ....................... <tMem.text>
+  [374] pushsymb 22 ............................. <#line>
+  [376] getlocal 12 ............................. <i>
+  [378] pusharglist 3 ........................... <tMem.text, #line, i>
+  [380] objcall 24 .............................. <tMem.text.line[i]>
+  [382] pusharglist 1 ........................... <tMem.text.line[i]>
+  [384] extcall 44 .............................. <integer(tMem.text.line[i])>
+  [386] pusharglistnoret 2 ...................... <tThisProp, integer(tMem.text.line[i])>
+  [388] objcall 43 .............................. tThisProp.append(integer(tMem.text.line[i]))
+  [390] pushint8 1
+  [392] getlocal 12
+  [394] add
+  [395] setlocal 12
+  [397] endrepeat [320]
+  [399] getlocal 10 ............................. <tPropsList>
+  [401] getlocal 8 .............................. <tPart>
+  [403] pusharglist 2 ........................... <tPropsList, tPart>
+  [405] objcall 45 .............................. <tPropsList.getaProp(tPart)>
+  [407] pusharglist 0 ........................... <>
+  [409] extcall 37 .............................. <VOID>
+  [411] eq ...................................... <tPropsList.getaProp(tPart) = VOID>
+  [412] jmpifz [426] ............................ if tPropsList.getaProp(tPart) = VOID then
+  [415] getlocal 10 ............................. <tPropsList>
+  [417] getlocal 8 .............................. <tPart>
+  [419] pusharglist 0 ........................... <[:]>
+  [421] pushproplist ............................ <[:]>
+  [422] pusharglistnoret 3 ...................... <tPropsList, tPart, [:]>
+  [424] objcall 41 .............................. tPropsList.addProp(tPart, [:])
+  [426] getlocal 10 ............................. <tPropsList>
+  [428] getlocal 8 .............................. <tPart>
+  [430] pusharglist 2 ........................... <tPropsList, tPart>
+  [432] objcall 36 .............................. <tPropsList[tPart]>
+  [434] getlocal 7 .............................. <tDefType>
+  [436] getlocal 11 ............................. <tThisProp>
+  [438] pusharglistnoret 3 ...................... <tPropsList[tPart], tDefType, tThisProp>
+  [440] objcall 41 .............................. tPropsList[tPart].addProp(tDefType, tThisProp)
+  [442] getlocal 9 .............................. <tNewPropsMem>
+  [444] getlocal 10 ............................. <tPropsList>
+  [446] pusharglist 1 ........................... <tPropsList>
+  [448] extcall 46 .............................. <string(tPropsList)>
+  [450] setobjprop 21 ........................... tNewPropsMem.text = string(tPropsList)
+  [452] getlocal 5 .............................. <tMem>
+  [454] pusharglistnoret 1 ...................... <tMem>
+  [456] objcall 47 .............................. tMem.erase()
+  [458] jmp [461] ............................... next repeat
+  [461] pushint8 1
+  [463] getlocal 4
+  [465] add
+  [466] setlocal 4
+  [468] endrepeat [ 36]
+  [471] pushint8 1
+  [473] getlocal 3
+  [475] add
+  [476] setlocal 3
+  [478] endrepeat [ 22]
+  [481] pushcons 13 ............................. <"Changed casts:">
+  [483] getlocal 2 .............................. <tChangedCasts>
+  [485] joinpadstr .............................. <"Changed casts:" && tChangedCasts>
+  [486] pusharglistnoret 1 ...................... <"Changed casts:" && tChangedCasts>
+  [488] extcall 16 .............................. put "Changed casts:" && tChangedCasts
+  [490] getlocal 0 .............................. <tDelim>
+  [492] setmovieprop 32 ......................... the itemDelimiter = tDelim
+  [494] getlocal 1 .............................. <tCollectedList>
+  [496] pusharglistnoret 1 ...................... <tCollectedList>
+  [498] extcall 48 .............................. return tCollectedList
+  [500] ret
+end
+
+on convJpChars
+  [  0] pushcons 14 ............................. <"prohibited_name_chars">
+  [  2] pusharglist 1 ........................... <"prohibited_name_chars">
+  [  4] extcall 10 .............................. <member("prohibited_name_chars")>
+  [  6] getobjprop 21 ........................... <member("prohibited_name_chars").text>
+  [  8] setlocal 0 .............................. tOldStr = member("prohibited_name_chars").text
+  [ 10] pushcons 4 .............................. <EMPTY>
+  [ 12] setlocal 1 .............................. tNewStr = EMPTY
+  [ 14] pushcons 15 ............................. <":">
+  [ 16] setmovieprop 32 ......................... the itemDelimiter = ":"
+  [ 18] pushint8 1 .............................. <1>
+  [ 20] setlocal 2
+  [ 22] getlocal 2
+  [ 24] getlocal 0 .............................. <tOldStr>
+  [ 26] pushsymb 22 ............................. <#line>
+  [ 28] pusharglist 2 ........................... <tOldStr, #line>
+  [ 30] objcall 23 .............................. <tOldStr.line.count>
+  [ 32] lteq
+  [ 33] jmpifz [121] ............................ repeat with i = 1 to tOldStr.line.count
+  [ 36] getlocal 0 .............................. <tOldStr>
+  [ 38] pushsymb 22 ............................. <#line>
+  [ 40] getlocal 2 .............................. <i>
+  [ 42] pusharglist 3 ........................... <tOldStr, #line, i>
+  [ 44] objcall 24 .............................. <tOldStr.line[i]>
+  [ 46] setlocal 3 .............................. tLine = tOldStr.line[i]
+  [ 48] getlocal 3 .............................. <tLine>
+  [ 50] pushsymb 60 ............................. <#item>
+  [ 52] pushint8 2 .............................. <2>
+  [ 54] pusharglist 3 ........................... <tLine, #item, 2>
+  [ 56] objcall 24 .............................. <tLine.item[2]>
+  [ 58] setlocal 3 .............................. tLine = tLine.item[2]
+  [ 60] pushint16 256 ........................... <256>
+  [ 63] getlocal 3 .............................. <tLine>
+  [ 65] pushsymb 61 ............................. <#word>
+  [ 67] pushint8 1 .............................. <1>
+  [ 69] pusharglist 3 ........................... <tLine, #word, 1>
+  [ 71] objcall 24 .............................. <tLine.word[1]>
+  [ 73] pusharglist 1 ........................... <tLine.word[1]>
+  [ 75] extcall 44 .............................. <integer(tLine.word[1])>
+  [ 77] mul ..................................... <256 * integer(tLine.word[1])>
+  [ 78] setlocal 4 .............................. tA = 256 * integer(tLine.word[1])
+  [ 80] getlocal 3 .............................. <tLine>
+  [ 82] pushsymb 61 ............................. <#word>
+  [ 84] pushint8 2 .............................. <2>
+  [ 86] pusharglist 3 ........................... <tLine, #word, 2>
+  [ 88] objcall 24 .............................. <tLine.word[2]>
+  [ 90] pusharglist 1 ........................... <tLine.word[2]>
+  [ 92] extcall 44 .............................. <integer(tLine.word[2])>
+  [ 94] setlocal 5 .............................. tB = integer(tLine.word[2])
+  [ 96] getlocal 4 .............................. <tA>
+  [ 98] getlocal 5 .............................. <tB>
+  [100] add ..................................... <tA + tB>
+  [101] setlocal 6 .............................. tCode = tA + tB
+  [103] getlocal 6 .............................. <tCode>
+  [105] pushcons 6 .............................. <RETURN>
+  [107] joinstr ................................. <tCode & RETURN>
+  [108] pushint8 1 .............................. <1>
+  [110] put 37 .................................. put tCode & RETURN after tNewStr
+  [112] pushint8 1
+  [114] getlocal 2
+  [116] add
+  [117] setlocal 2
+  [119] endrepeat [ 22]
+  [121] pushcons 14 ............................. <"prohibited_name_chars">
+  [123] pusharglist 1 ........................... <"prohibited_name_chars">
+  [125] extcall 10 .............................. <member("prohibited_name_chars")>
+  [127] getlocal 1 .............................. <tNewStr>
+  [129] setobjprop 21 ........................... member("prohibited_name_chars").text = tNewStr
+  [131] ret
+end
+
+on changename startnum, endnum, replaceFrom, replaceTo, cl
+  [  0] getparam 0 .............................. <startnum>
+  [  2] setlocal 0
+  [  4] getlocal 0
+  [  6] getparam 1 .............................. <endnum>
+  [  8] lteq
+  [  9] jmpifz [ 57] ............................ repeat with i = startnum to endnum
+  [ 12] getlocal 0 .............................. <i>
+  [ 14] getparam 4 .............................. <cl>
+  [ 16] pusharglist 2 ........................... <i, cl>
+  [ 18] extcall 10 .............................. <member(i, cl)>
+  [ 20] getobjprop 13 ........................... <member(i, cl).name>
+  [ 22] setlocal 1 .............................. oldName = member(i, cl).name
+  [ 24] getlocal 1 .............................. <oldName>
+  [ 26] getparam 2 .............................. <replaceFrom>
+  [ 28] getparam 3 .............................. <replaceTo>
+  [ 30] pusharglist 3 ........................... <oldName, replaceFrom, replaceTo>
+  [ 32] localcall 5 ............................. <stringReplace(oldName, replaceFrom, replaceTo)>
+  [ 34] setlocal 2 .............................. newName = stringReplace(oldName, replaceFrom, replaceTo)
+  [ 36] getlocal 0 .............................. <i>
+  [ 38] getparam 4 .............................. <cl>
+  [ 40] pusharglist 2 ........................... <i, cl>
+  [ 42] extcall 10 .............................. <member(i, cl)>
+  [ 44] getlocal 2 .............................. <newName>
+  [ 46] setobjprop 13 ........................... member(i, cl).name = newName
+  [ 48] pushint8 1
+  [ 50] getlocal 0
+  [ 52] add
+  [ 53] setlocal 0
+  [ 55] endrepeat [  4]
+  [ 57] ret
+end
+
+on stringReplace input, oldStr, newStr
+  [  0] pushcons 4 .............................. <EMPTY>
+  [  2] setlocal 0 .............................. s = EMPTY
+  [  4] getparam 0 .............................. <input>
+  [  6] getparam 1 .............................. <oldStr>
+  [  8] containsstr ............................. <input contains oldStr>
+  [  9] jmpifz [ 75] ............................ repeat while input contains oldStr
+  [ 12] getparam 1 .............................. <oldStr>
+  [ 14] getparam 0 .............................. <input>
+  [ 16] pusharglist 2 ........................... <oldStr, input>
+  [ 18] extcall 25 .............................. <offset(oldStr, input)>
+  [ 20] pushint8 1 .............................. <1>
+  [ 22] sub ..................................... <offset(oldStr, input) - 1>
+  [ 23] setlocal 1 .............................. posn = offset(oldStr, input) - 1
+  [ 25] getlocal 1 .............................. <posn>
+  [ 27] pushzero ................................ <0>
+  [ 28] gt ...................................... <posn > 0>
+  [ 29] jmpifz [ 48] ............................ if posn > 0 then
+  [ 32] pushint8 1 .............................. <1>
+  [ 34] getlocal 1 .............................. <posn>
+  [ 36] pushzero ................................ <0>
+  [ 37] pushzero ................................ <0>
+  [ 38] pushzero ................................ <0>
+  [ 39] pushzero ................................ <0>
+  [ 40] pushzero ................................ <0>
+  [ 41] pushzero ................................ <0>
+  [ 42] getparam 0 .............................. <input>
+  [ 44] getchunk ................................ <char 1 to posn of input>
+  [ 45] pushzero ................................ <0>
+  [ 46] put 37 .................................. put char 1 to posn of input after s
+  [ 48] getparam 2 .............................. <newStr>
+  [ 50] pushzero ................................ <0>
+  [ 51] put 37 .................................. put newStr after s
+  [ 53] pushint8 1 .............................. <1>
+  [ 55] getlocal 1 .............................. <posn>
+  [ 57] getparam 1 .............................. <oldStr>
+  [ 59] pusharglist 1 ........................... <oldStr>
+  [ 61] extcall 27 .............................. <length(oldStr)>
+  [ 63] add ..................................... <posn + length(oldStr)>
+  [ 64] pushzero ................................ <0>
+  [ 65] pushzero ................................ <0>
+  [ 66] pushzero ................................ <0>
+  [ 67] pushzero ................................ <0>
+  [ 68] pushzero ................................ <0>
+  [ 69] pushzero ................................ <0>
+  [ 70] pushzero ................................ <0>
+  [ 71] deletechunk 4 ........................... delete char 1 to posn + length(oldStr) of input
+  [ 73] endrepeat [  4]
+  [ 75] getparam 0 .............................. <input>
+  [ 77] pushzero ................................ <0>
+  [ 78] put 37 .................................. put input after s
+  [ 80] getlocal 0 .............................. <s>
+  [ 82] pusharglistnoret 1 ...................... <s>
+  [ 84] extcall 48 .............................. return s
+  [ 86] ret
+end
+
+on resetObject tid
+  [  0] getparam 0 .............................. <tid>
+  [  2] pusharglist 1 ........................... <tid>
+  [  4] extcall 79 .............................. <objectExists(tid)>
+  [  6] not ..................................... <not objectExists(tid)>
+  [  7] jmpifz [ 15] ............................ if not objectExists(tid) then
+  [ 10] pushzero ................................ <0>
+  [ 11] pusharglistnoret 1 ...................... <0>
+  [ 13] extcall 48 .............................. return 0
+  [ 15] getparam 0 .............................. <tid>
+  [ 17] pusharglist 1 ........................... <tid>
+  [ 19] extcall 80 .............................. <getObject(tid)>
+  [ 21] setlocal 0 .............................. tObj = getObject(tid)
+  [ 23] getlocal 0 .............................. <tObj>
+  [ 25] pusharglist 1 ........................... <tObj>
+  [ 27] extcall 46 .............................. <string(tObj)>
+  [ 29] setlocal 1 .............................. tStr = string(tObj)
+  [ 31] getlocal 1 .............................. <tStr>
+  [ 33] pushsymb 26 ............................. <#char>
+  [ 35] pushint8 13 ............................. <13>
+  [ 37] pushcons 16 ............................. <QUOTE>
+  [ 39] getlocal 1 .............................. <tStr>
+  [ 41] pushsymb 26 ............................. <#char>
+  [ 43] pushint8 14 ............................. <14>
+  [ 45] getlocal 1 .............................. <tStr>
+  [ 47] getobjprop 27 ........................... <tStr.length>
+  [ 49] pusharglist 4 ........................... <tStr, #char, 14, tStr.length>
+  [ 51] objcall 24 .............................. <tStr.char[14..tStr.length]>
+  [ 53] pusharglist 2 ........................... <QUOTE, tStr.char[14..tStr.length]>
+  [ 55] extcall 25 .............................. <offset(QUOTE, tStr.char[14..tStr.length])>
+  [ 57] pushint8 12 ............................. <12>
+  [ 59] add ..................................... <offset(QUOTE, tStr.char[14..tStr.length]) + 12>
+  [ 60] pusharglist 4 ........................... <tStr, #char, 13, offset(QUOTE, tStr.char[14..tStr.length]) + 12>
+  [ 62] objcall 24 .............................. <tStr.char[13..offset(QUOTE, tStr.char[14..tStr.length]) + 12]>
+  [ 64] setlocal 2 .............................. tScriptName = tStr.char[13..offset(QUOTE, tStr.char[14..tStr.length]) + 12]
+  [ 66] getlocal 2 .............................. <tScriptName>
+  [ 68] pusharglist 1 ........................... <tScriptName>
+  [ 70] extcall 81 .............................. <getmemnum(tScriptName)>
+  [ 72] pusharglist 1 ........................... <getmemnum(tScriptName)>
+  [ 74] extcall 82 .............................. <script(getmemnum(tScriptName))>
+  [ 76] pusharglist 1 ........................... <script(getmemnum(tScriptName))>
+  [ 78] extcall 39 .............................. <new(script(getmemnum(tScriptName)))>
+  [ 80] setlocal 3 .............................. tNewObject = new(script(getmemnum(tScriptName)))
+  [ 82] pushint8 1 .............................. <1>
+  [ 84] setlocal 4
+  [ 86] getlocal 4
+  [ 88] getlocal 0 .............................. <tObj>
+  [ 90] pusharglist 1 ........................... <tObj>
+  [ 92] extcall 23 .............................. <count(tObj)>
+  [ 94] lteq
+  [ 95] jmpifz [153] ............................ repeat with i = 1 to count(tObj)
+  [ 98] getlocal 3 .............................. <tNewObject>
+  [100] getlocal 0 .............................. <tObj>
+  [102] getlocal 4 .............................. <i>
+  [104] pusharglist 2 ........................... <tObj, i>
+  [106] objcall 83 .............................. <tObj.getPropAt(i)>
+  [108] pusharglist 2 ........................... <tNewObject, tObj.getPropAt(i)>
+  [110] objcall 36 .............................. <tNewObject[tObj.getPropAt(i)]>
+  [112] pusharglistnoret 1 ...................... <tNewObject[tObj.getPropAt(i)]>
+  [114] extcall 16 .............................. put tNewObject[tObj.getPropAt(i)]
+  [116] getlocal 3 .............................. <tNewObject>
+  [118] getlocal 0 .............................. <tObj>
+  [120] getlocal 4 .............................. <i>
+  [122] pusharglist 2 ........................... <tObj, i>
+  [124] objcall 83 .............................. <tObj.getPropAt(i)>
+  [126] getlocal 0 .............................. <tObj>
+  [128] getlocal 0 .............................. <tObj>
+  [130] getlocal 4 .............................. <i>
+  [132] pusharglist 2 ........................... <tObj, i>
+  [134] objcall 83 .............................. <tObj.getPropAt(i)>
+  [136] pusharglist 2 ........................... <tObj, tObj.getPropAt(i)>
+  [138] objcall 45 .............................. <tObj.getaProp(tObj.getPropAt(i))>
+  [140] pusharglistnoret 3 ...................... <tNewObject, tObj.getPropAt(i), tObj.getaProp(tObj.getPropAt(i))>
+  [142] objcall 84 .............................. tNewObject[tObj.getPropAt(i)] = tObj.getaProp(tObj.getPropAt(i))
+  [144] pushint8 1
+  [146] getlocal 4
+  [148] add
+  [149] setlocal 4
+  [151] endrepeat [ 86]
+  [153] pusharglist 0 ........................... <>
+  [155] extcall 85 .............................. <getObjectManager()>
+  [157] pushsymb 86 ............................. <#pObjectList>
+  [159] getparam 0 .............................. <tid>
+  [161] getlocal 3 .............................. <tNewObject>
+  [163] pusharglistnoret 4 ...................... <getObjectManager(), #pObjectList, tid, tNewObject>
+  [165] objcall 87 .............................. getObjectManager().pObjectList[tid] = tNewObject
+  [167] getlocal 3 .............................. <tNewObject>
+  [169] pusharglistnoret 1 ...................... <tNewObject>
+  [171] extcall 48 .............................. return tNewObject
+  [173] ret
+end
+
+on release
+  [  0] pushint8 4 .............................. <4>
+  [  2] get 8 ................................... <the number of castLibs>
+  [  4] setlocal 0 .............................. tCastCount = the number of castLibs
+  [  6] pushint8 1 .............................. <1>
+  [  8] setlocal 1
+  [ 10] getlocal 1
+  [ 12] getlocal 0 .............................. <tCastCount>
+  [ 14] lteq
+  [ 15] jmpifz [ 81] ............................ repeat with tCastNum = 1 to tCastCount
+  [ 18] getlocal 1 .............................. <tCastNum>
+  [ 20] pusharglist 1 ........................... <tCastNum>
+  [ 22] extcall 40 .............................. <castLib(tCastNum)>
+  [ 24] getobjprop 13 ........................... <castLib(tCastNum).name>
+  [ 26] pushcons 17 ............................. <"bin">
+  [ 28] eq ...................................... <castLib(tCastNum).name = "bin">
+  [ 29] jmpifz [ 72] ............................ if castLib(tCastNum).name = "bin" then
+  [ 32] pushint8 1 .............................. <1>
+  [ 34] setlocal 2
+  [ 36] getlocal 2
+  [ 38] getlocal 1 .............................. <tCastNum>
+  [ 40] pushint8 2 .............................. <2>
+  [ 42] get 8 ................................... <the number of castMembers of castLib tCastNum>
+  [ 44] lteq
+  [ 45] jmpifz [ 69] ............................ repeat with i = 1 to the number of castMembers of castLib tCastNum
+  [ 48] getlocal 2 .............................. <i>
+  [ 50] pushcons 17 ............................. <"bin">
+  [ 52] pusharglist 2 ........................... <i, "bin">
+  [ 54] extcall 10 .............................. <member(i, "bin")>
+  [ 56] pusharglistnoret 1 ...................... <member(i, "bin")>
+  [ 58] objcall 47 .............................. member(i, "bin").erase()
+  [ 60] pushint8 1
+  [ 62] getlocal 2
+  [ 64] add
+  [ 65] setlocal 2
+  [ 67] endrepeat [ 36]
+  [ 69] jmp [ 81] ............................... exit repeat
+  [ 72] pushint8 1
+  [ 74] getlocal 1
+  [ 76] add
+  [ 77] setlocal 1
+  [ 79] endrepeat [ 10]
+  [ 81] pushint8 1 .............................. <1>
+  [ 83] setlocal 3 .............................. tEmptyCastNum = 1
+  [ 85] pushint8 4 .............................. <4>
+  [ 87] setlocal 1
+  [ 89] getlocal 1
+  [ 91] getlocal 0 .............................. <tCastCount>
+  [ 93] lteq
+  [ 94] jmpifz [152] ............................ repeat with tCastNum = 4 to tCastCount
+  [ 97] getlocal 1 .............................. <tCastNum>
+  [ 99] pusharglist 1 ........................... <tCastNum>
+  [101] extcall 40 .............................. <castLib(tCastNum)>
+  [103] getobjprop 13 ........................... <castLib(tCastNum).name>
+  [105] setlocal 4 .............................. tCastName = castLib(tCastNum).name
+  [107] getlocal 1 .............................. <tCastNum>
+  [109] pusharglist 1 ........................... <tCastNum>
+  [111] extcall 40 .............................. <castLib(tCastNum)>
+  [113] pushcons 18 ............................. <"empty">
+  [115] getlocal 3 .............................. <tEmptyCastNum>
+  [117] joinpadstr .............................. <"empty" && tEmptyCastNum>
+  [118] setobjprop 13 ........................... castLib(tCastNum).name = "empty" && tEmptyCastNum
+  [120] getlocal 1 .............................. <tCastNum>
+  [122] pusharglist 1 ........................... <tCastNum>
+  [124] extcall 40 .............................. <castLib(tCastNum)>
+  [126] getmovieprop 93 ......................... <the moviePath>
+  [128] pushcons 18 ............................. <"empty">
+  [130] joinstr ................................. <the moviePath & "empty">
+  [131] pushcons 19 ............................. <".cst">
+  [133] joinstr ................................. <the moviePath & "empty" & ".cst">
+  [134] setobjprop 94 ........................... castLib(tCastNum).fileName = the moviePath & "empty" & ".cst"
+  [136] getlocal 3 .............................. <tEmptyCastNum>
+  [138] pushint8 1 .............................. <1>
+  [140] add ..................................... <tEmptyCastNum + 1>
+  [141] setlocal 3 .............................. tEmptyCastNum = tEmptyCastNum + 1
+  [143] pushint8 1
+  [145] getlocal 1
+  [147] add
+  [148] setlocal 1
+  [150] endrepeat [ 89]
+  [152] ret
+end
+
+on test
+  [  0] pushcons 20 ............................. <"gsjhfdg dfhg fgkhfdshg">
+  [  2] setlocal 0 .............................. s = "gsjhfdg dfhg fgkhfdshg"
+  [  4] pushint8 1 .............................. <1>
+  [  6] setlocal 1
+  [  8] getlocal 1
+  [ 10] pushint8 5 .............................. <5>
+  [ 12] lteq
+  [ 13] jmpifz [ 80] ............................ repeat with i = 1 to 5
+  [ 16] getmovieprop 97 ......................... <the milliSeconds>
+  [ 18] setlocal 2 .............................. tTime = the milliSeconds
+  [ 20] pushint8 1 .............................. <1>
+  [ 22] setlocal 3
+  [ 24] getlocal 3
+  [ 26] pushint32 1000000 ....................... <1000000>
+  [ 31] lteq
+  [ 32] jmpifz [ 58] ............................ repeat with j = 1 to 1000000
+  [ 35] getlocal 0 .............................. <s>
+  [ 37] pushsymb 26 ............................. <#char>
+  [ 39] pushint8 4 .............................. <4>
+  [ 41] pushint8 12 ............................. <12>
+  [ 43] pusharglist 4 ........................... <s, #char, 4, 12>
+  [ 45] objcall 24 .............................. <s.char[4..12]>
+  [ 47] setlocal 4 .............................. v = s.char[4..12]
+  [ 49] pushint8 1
+  [ 51] getlocal 3
+  [ 53] add
+  [ 54] setlocal 3
+  [ 56] endrepeat [ 24]
+  [ 58] getmovieprop 97 ......................... <the milliSeconds>
+  [ 60] getlocal 2 .............................. <tTime>
+  [ 62] sub ..................................... <the milliSeconds - tTime>
+  [ 63] setlocal 2 .............................. tTime = the milliSeconds - tTime
+  [ 65] getlocal 2 .............................. <tTime>
+  [ 67] pusharglistnoret 1 ...................... <tTime>
+  [ 69] extcall 16 .............................. put tTime
+  [ 71] pushint8 1
+  [ 73] getlocal 1
+  [ 75] add
+  [ 76] setlocal 1
+  [ 78] endrepeat [  8]
+  [ 80] pushcons 4 .............................. <EMPTY>
+  [ 82] pusharglistnoret 1 ...................... <EMPTY>
+  [ 84] extcall 16 .............................. put EMPTY
+  [ 86] pushcons 20 ............................. <"gsjhfdg dfhg fgkhfdshg">
+  [ 88] setlocal 0 .............................. s = "gsjhfdg dfhg fgkhfdshg"
+  [ 90] pushint8 1 .............................. <1>
+  [ 92] setlocal 1
+  [ 94] getlocal 1
+  [ 96] pushint8 5 .............................. <5>
+  [ 98] lteq
+  [ 99] jmpifz [167] ............................ repeat with i = 1 to 5
+  [102] getmovieprop 97 ......................... <the milliSeconds>
+  [104] setlocal 2 .............................. tTime = the milliSeconds
+  [106] pushint8 1 .............................. <1>
+  [108] setlocal 3
+  [110] getlocal 3
+  [112] pushint32 1000000 ....................... <1000000>
+  [117] lteq
+  [118] jmpifz [145] ............................ repeat with j = 1 to 1000000
+  [121] pushint8 4 .............................. <4>
+  [123] pushint8 12 ............................. <12>
+  [125] pushzero ................................ <0>
+  [126] pushzero ................................ <0>
+  [127] pushzero ................................ <0>
+  [128] pushzero ................................ <0>
+  [129] pushzero ................................ <0>
+  [130] pushzero ................................ <0>
+  [131] getlocal 0 .............................. <s>
+  [133] getchunk ................................ <char 4 to 12 of s>
+  [134] setlocal 4 .............................. v = char 4 to 12 of s
+  [136] pushint8 1
+  [138] getlocal 3
+  [140] add
+  [141] setlocal 3
+  [143] endrepeat [110]
+  [145] getmovieprop 97 ......................... <the milliSeconds>
+  [147] getlocal 2 .............................. <tTime>
+  [149] sub ..................................... <the milliSeconds - tTime>
+  [150] setlocal 2 .............................. tTime = the milliSeconds - tTime
+  [152] getlocal 2 .............................. <tTime>
+  [154] pusharglistnoret 1 ...................... <tTime>
+  [156] extcall 16 .............................. put tTime
+  [158] pushint8 1
+  [160] getlocal 1
+  [162] add
+  [163] setlocal 1
+  [165] endrepeat [ 94]
+  [167] ret
+end
+
+on fixErrorCallHandlers
+  [  0] pushcons 21 ............................. <"error(me,">
+  [  2] setlocal 0 .............................. tHandlerCall = "error(me,"
+  [  4] pushzero ................................ <0>
+  [  5] setlocal 1 .............................. tPutAllLines = 0
+  [  7] pusharglist 0 ........................... <>
+  [  9] extcall 37 .............................. <VOID>
+  [ 11] setlocal 2 .............................. tCurrentHandler = VOID
+  [ 13] pushint8 1 .............................. <1>
+  [ 15] setlocal 3
+  [ 17] getlocal 3
+  [ 19] pushint8 4 .............................. <4>
+  [ 21] get 8 ................................... <the number of castLibs>
+  [ 23] lteq
+  [ 24] jmpifz [491] ............................ repeat with tCastLib = 1 to the number of castLibs
+  [ 27] getlocal 3 .............................. <tCastLib>
+  [ 29] pushint8 2 .............................. <2>
+  [ 31] get 8 ................................... <the number of castMembers of castLib tCastLib>
+  [ 33] setlocal 4 .............................. tMemberAmount = the number of castMembers of castLib tCastLib
+  [ 35] pushint8 1 .............................. <1>
+  [ 37] setlocal 5
+  [ 39] getlocal 5
+  [ 41] getlocal 4 .............................. <tMemberAmount>
+  [ 43] lteq
+  [ 44] jmpifz [481] ............................ repeat with i = 1 to tMemberAmount
+  [ 47] getlocal 5 .............................. <i>
+  [ 49] getlocal 3 .............................. <tCastLib>
+  [ 51] pusharglist 2 ........................... <i, tCastLib>
+  [ 53] extcall 10 .............................. <member(i, tCastLib)>
+  [ 55] getobjprop 11 ........................... <member(i, tCastLib).type>
+  [ 57] pushsymb 82 ............................. <#script>
+  [ 59] eq ...................................... <member(i, tCastLib).type = #script>
+  [ 60] jmpifz [471] ............................ if member(i, tCastLib).type = #script then
+  [ 63] getlocal 5 .............................. <i>
+  [ 65] getlocal 3 .............................. <tCastLib>
+  [ 67] pusharglist 2 ........................... <i, tCastLib>
+  [ 69] extcall 10 .............................. <member(i, tCastLib)>
+  [ 71] getobjprop 101 .......................... <member(i, tCastLib).scriptText>
+  [ 73] setlocal 6 .............................. tText = member(i, tCastLib).scriptText
+  [ 75] pushint8 1 .............................. <1>
+  [ 77] setlocal 7
+  [ 79] getlocal 7
+  [ 81] getlocal 6 .............................. <tText>
+  [ 83] pushsymb 22 ............................. <#line>
+  [ 85] pusharglist 2 ........................... <tText, #line>
+  [ 87] objcall 23 .............................. <tText.line.count>
+  [ 89] lteq
+  [ 90] jmpifz [459] ............................ repeat with j = 1 to tText.line.count
+  [ 93] getlocal 6 .............................. <tText>
+  [ 95] pushsymb 22 ............................. <#line>
+  [ 97] getlocal 7 .............................. <j>
+  [ 99] pusharglist 3 ........................... <tText, #line, j>
+  [101] objcall 24 .............................. <tText.line[j]>
+  [103] setlocal 8 .............................. tLine = tText.line[j]
+  [105] getlocal 8 .............................. <tLine>
+  [107] pushsymb 61 ............................. <#word>
+  [109] pushint8 1 .............................. <1>
+  [111] pusharglist 3 ........................... <tLine, #word, 1>
+  [113] objcall 24 .............................. <tLine.word[1]>
+  [115] pushcons 22 ............................. <"on">
+  [117] eq ...................................... <tLine.word[1] = "on">
+  [118] getlocal 8 .............................. <tLine>
+  [120] pushsymb 26 ............................. <#char>
+  [122] pushint8 1 .............................. <1>
+  [124] pushint8 3 .............................. <3>
+  [126] pusharglist 4 ........................... <tLine, #char, 1, 3>
+  [128] objcall 24 .............................. <tLine.char[1..3]>
+  [130] pushcons 23 ............................. <"on ">
+  [132] eq ...................................... <tLine.char[1..3] = "on ">
+  [133] and ..................................... <(tLine.word[1] = "on") and (tLine.char[1..3] = "on ")>
+  [134] jmpifz [152] ............................ if (tLine.word[1] = "on") and (tLine.char[1..3] = "on ") then
+  [137] getlocal 8 .............................. <tLine>
+  [139] pushsymb 61 ............................. <#word>
+  [141] pushint8 2 .............................. <2>
+  [143] pusharglist 3 ........................... <tLine, #word, 2>
+  [145] objcall 24 .............................. <tLine.word[2]>
+  [147] setlocal 2 .............................. tCurrentHandler = tLine.word[2]
+  [149] jmp [449] ............................... next repeat
+  [152] getlocal 8 .............................. <tLine>
+  [154] pushsymb 61 ............................. <#word>
+  [156] pushint8 1 .............................. <1>
+  [158] pusharglist 3 ........................... <tLine, #word, 1>
+  [160] objcall 24 .............................. <tLine.word[1]>
+  [162] pushcons 24 ............................. <"end">
+  [164] eq ...................................... <tLine.word[1] = "end">
+  [165] getlocal 8 .............................. <tLine>
+  [167] pushsymb 61 ............................. <#word>
+  [169] pusharglist 2 ........................... <tLine, #word>
+  [171] objcall 23 .............................. <tLine.word.count>
+  [173] pushint8 1 .............................. <1>
+  [175] eq ...................................... <tLine.word.count = 1>
+  [176] and ..................................... <(tLine.word[1] = "end") and (tLine.word.count = 1)>
+  [177] jmpifz [189] ............................ if (tLine.word[1] = "end") and (tLine.word.count = 1) then
+  [180] pusharglist 0 ........................... <>
+  [182] extcall 37 .............................. <VOID>
+  [184] setlocal 2 .............................. tCurrentHandler = VOID
+  [186] jmp [449] ............................... next repeat
+  [189] getlocal 8 .............................. <tLine>
+  [191] getlocal 0 .............................. <tHandlerCall>
+  [193] containsstr ............................. <tLine contains tHandlerCall>
+  [194] jmpifz [449] ............................ if tLine contains tHandlerCall then
+  [197] getlocal 8 .............................. <tLine>
+  [199] pushcons 25 ............................. <"--">
+  [201] containsstr ............................. <tLine contains "--">
+  [202] jmpifz [243] ............................ if tLine contains "--" then
+  [205] pushcons 6 .............................. <RETURN>
+  [207] pushcons 26 ............................. <"###">
+  [209] joinstr ................................. <RETURN & "###">
+  [210] getlocal 5 .............................. <i>
+  [212] getlocal 3 .............................. <tCastLib>
+  [214] pusharglist 2 ........................... <i, tCastLib>
+  [216] extcall 10 .............................. <member(i, tCastLib)>
+  [218] getobjprop 13 ........................... <member(i, tCastLib).name>
+  [220] joinstr ................................. <RETURN & "###" & member(i, tCastLib).name>
+  [221] pushcons 27 ............................. <"/">
+  [223] joinpadstr .............................. <RETURN & "###" & member(i, tCastLib).name && "/">
+  [224] getlocal 2 .............................. <tCurrentHandler>
+  [226] joinpadstr .............................. <RETURN & "###" & member(i, tCastLib).name && "/" && tCurrentHandler>
+  [227] pushcons 27 ............................. <"/">
+  [229] joinpadstr .............................. <RETURN & "###" & member(i, tCastLib).name && "/" && tCurrentHandler && "/">
+  [230] getlocal 8 .............................. <tLine>
+  [232] joinpadstr .............................. <RETURN & "###" & member(i, tCastLib).name && "/" && tCurrentHandler && "/" && tLine>
+  [233] pushcons 6 .............................. <RETURN>
+  [235] joinstr ................................. <RETURN & "###" & member(i, tCastLib).name && "/" && tCurrentHandler && "/" && tLine & RETURN>
+  [236] pusharglistnoret 1 ...................... <RETURN & "###" & member(i, tCastLib).name && "/" && tCurrentHandler && "/" && tLine & RETURN>
+  [238] extcall 16 .............................. put RETURN & "###" & member(i, tCastLib).name && "/" && tCurrentHandler && "/" && tLine & RETURN
+  [240] jmp [449] ............................... next repeat
+  [243] getlocal 8 .............................. <tLine>
+  [245] pushsymb 26 ............................. <#char>
+  [247] getlocal 8 .............................. <tLine>
+  [249] pusharglist 1 ........................... <tLine>
+  [251] extcall 27 .............................. <length(tLine)>
+  [253] pusharglist 3 ........................... <tLine, #char, length(tLine)>
+  [255] objcall 24 .............................. <tLine.char[length(tLine)]>
+  [257] pushcons 4 .............................. <EMPTY>
+  [259] eq ...................................... <tLine.char[length(tLine)] = EMPTY>
+  [260] jmpifz [286] ............................ repeat while tLine.char[length(tLine)] = EMPTY
+  [263] getlocal 8 .............................. <tLine>
+  [265] pushsymb 26 ............................. <#char>
+  [267] pushint8 1 .............................. <1>
+  [269] getlocal 8 .............................. <tLine>
+  [271] pusharglist 1 ........................... <tLine>
+  [273] extcall 27 .............................. <length(tLine)>
+  [275] pushint8 1 .............................. <1>
+  [277] sub ..................................... <length(tLine) - 1>
+  [278] pusharglist 4 ........................... <tLine, #char, 1, length(tLine) - 1>
+  [280] objcall 24 .............................. <tLine.char[1..length(tLine) - 1]>
+  [282] setlocal 8 .............................. tLine = tLine.char[1..length(tLine) - 1]
+  [284] endrepeat [243]
+  [286] getlocal 8 .............................. <tLine>
+  [288] pushsymb 26 ............................. <#char>
+  [290] getlocal 8 .............................. <tLine>
+  [292] pusharglist 1 ........................... <tLine>
+  [294] extcall 27 .............................. <length(tLine)>
+  [296] pusharglist 3 ........................... <tLine, #char, length(tLine)>
+  [298] objcall 24 .............................. <tLine.char[length(tLine)]>
+  [300] pushcons 28 ............................. <")">
+  [302] eq ...................................... <tLine.char[length(tLine)] = ")">
+  [303] jmpifz [449] ............................ if tLine.char[length(tLine)] = ")" then
+  [306] getlocal 8 .............................. <tLine>
+  [308] pushsymb 26 ............................. <#char>
+  [310] pushint8 1 .............................. <1>
+  [312] getlocal 8 .............................. <tLine>
+  [314] pusharglist 1 ........................... <tLine>
+  [316] extcall 27 .............................. <length(tLine)>
+  [318] pushint8 1 .............................. <1>
+  [320] sub ..................................... <length(tLine) - 1>
+  [321] pusharglist 4 ........................... <tLine, #char, 1, length(tLine) - 1>
+  [323] objcall 24 .............................. <tLine.char[1..length(tLine) - 1]>
+  [325] setlocal 8 .............................. tLine = tLine.char[1..length(tLine) - 1]
+  [327] getlocal 2 .............................. <tCurrentHandler>
+  [329] pusharglist 1 ........................... <tCurrentHandler>
+  [331] extcall 102 ............................. <voidp(tCurrentHandler)>
+  [333] jmpifz [374] ............................ if voidp(tCurrentHandler) then
+  [336] pushcons 6 .............................. <RETURN>
+  [338] pushcons 26 ............................. <"###">
+  [340] joinstr ................................. <RETURN & "###">
+  [341] getlocal 5 .............................. <i>
+  [343] getlocal 3 .............................. <tCastLib>
+  [345] pusharglist 2 ........................... <i, tCastLib>
+  [347] extcall 10 .............................. <member(i, tCastLib)>
+  [349] getobjprop 13 ........................... <member(i, tCastLib).name>
+  [351] joinpadstr .............................. <RETURN & "###" && member(i, tCastLib).name>
+  [352] pushcons 27 ............................. <"/">
+  [354] joinpadstr .............................. <RETURN & "###" && member(i, tCastLib).name && "/">
+  [355] getlocal 2 .............................. <tCurrentHandler>
+  [357] joinpadstr .............................. <RETURN & "###" && member(i, tCastLib).name && "/" && tCurrentHandler>
+  [358] pushcons 27 ............................. <"/">
+  [360] joinpadstr .............................. <RETURN & "###" && member(i, tCastLib).name && "/" && tCurrentHandler && "/">
+  [361] getlocal 8 .............................. <tLine>
+  [363] joinpadstr .............................. <RETURN & "###" && member(i, tCastLib).name && "/" && tCurrentHandler && "/" && tLine>
+  [364] pushcons 6 .............................. <RETURN>
+  [366] joinstr ................................. <RETURN & "###" && member(i, tCastLib).name && "/" && tCurrentHandler && "/" && tLine & RETURN>
+  [367] pusharglistnoret 1 ...................... <RETURN & "###" && member(i, tCastLib).name && "/" && tCurrentHandler && "/" && tLine & RETURN>
+  [369] extcall 16 .............................. put RETURN & "###" && member(i, tCastLib).name && "/" && tCurrentHandler && "/" && tLine & RETURN
+  [371] jmp [449] ............................... next repeat
+  [374] getlocal 8 .............................. <tLine>
+  [376] pushsymb 61 ............................. <#word>
+  [378] getlocal 8 .............................. <tLine>
+  [380] pushsymb 61 ............................. <#word>
+  [382] pusharglist 2 ........................... <tLine, #word>
+  [384] objcall 23 .............................. <tLine.word.count>
+  [386] pusharglist 3 ........................... <tLine, #word, tLine.word.count>
+  [388] objcall 24 .............................. <tLine.word[tLine.word.count]>
+  [390] pushcons 29 ............................. <"#">
+  [392] getlocal 2 .............................. <tCurrentHandler>
+  [394] joinstr ................................. <"#" & tCurrentHandler>
+  [395] nteq .................................... <tLine.word[tLine.word.count] <> ("#" & tCurrentHandler)>
+  [396] jmpifz [412] ............................ if tLine.word[tLine.word.count] <> ("#" & tCurrentHandler) then
+  [399] getlocal 8 .............................. <tLine>
+  [401] pushcons 30 ............................. <",">
+  [403] joinstr ................................. <tLine & ",">
+  [404] pushcons 29 ............................. <"#">
+  [406] joinpadstr .............................. <tLine & "," && "#">
+  [407] getlocal 2 .............................. <tCurrentHandler>
+  [409] joinstr ................................. <tLine & "," && "#" & tCurrentHandler>
+  [410] setlocal 8 .............................. tLine = tLine & "," && "#" & tCurrentHandler
+  [412] getlocal 8 .............................. <tLine>
+  [414] pushcons 28 ............................. <")">
+  [416] joinstr ................................. <tLine & ")">
+  [417] setlocal 8 .............................. tLine = tLine & ")"
+  [419] getlocal 1 .............................. <tPutAllLines>
+  [421] jmpifz [430] ............................ if tPutAllLines then
+  [424] getlocal 8 .............................. <tLine>
+  [426] pusharglistnoret 1 ...................... <tLine>
+  [428] extcall 16 .............................. put tLine
+  [430] getlocal 8 .............................. <tLine>
+  [432] pushint8 6 .............................. <6>
+  [434] pushchunkvarref 5 ....................... <tText>
+  [436] pushsymb 22 ............................. <#line>
+  [438] getlocal 7 .............................. <j>
+  [440] pusharglist 3 ........................... <tText, #line, j>
+  [442] objcall 103 ............................. <tText.line[j]>
+  [444] swap
+  [445] pusharglistnoret 2 ...................... <tText.line[j], tLine>
+  [447] objcall 104 ............................. put tLine into tText.line[j]
+  [449] pushint8 1
+  [451] getlocal 7
+  [453] add
+  [454] setlocal 7
+  [456] endrepeat [ 79]
+  [459] getlocal 5 .............................. <i>
+  [461] getlocal 3 .............................. <tCastLib>
+  [463] pusharglist 2 ........................... <i, tCastLib>
+  [465] extcall 10 .............................. <member(i, tCastLib)>
+  [467] getlocal 6 .............................. <tText>
+  [469] setobjprop 101 .......................... member(i, tCastLib).scriptText = tText
+  [471] pushint8 1
+  [473] getlocal 5
+  [475] add
+  [476] setlocal 5
+  [478] endrepeat [ 39]
+  [481] pushint8 1
+  [483] getlocal 3
+  [485] add
+  [486] setlocal 3
+  [488] endrepeat [ 17]
+  [491] ret
+end

@@ -1,0 +1,653 @@
+property pWndID, pActive, pArrowSpr, pOwnPlayer, pKeyList, pKeyResList, pCurrAct, pCycleTime, pCurrTime, pCurrBal
+
+on construct me
+  [  0] pushcons 0 .............................. <"PaaluWindow">
+  [  2] setprop 14 .............................. pWndID = "PaaluWindow"
+  [  4] pushzero ................................ <0>
+  [  5] setprop 15 .............................. pActive = 0
+  [  7] pushcons 1 .............................. <"paalu.key.list">
+  [  9] pusharglist 1 ........................... <"paalu.key.list">
+  [ 11] extcall 17 .............................. <getVariableValue("paalu.key.list")>
+  [ 13] setprop 16 .............................. pKeyList = getVariableValue("paalu.key.list")
+  [ 15] getprop 16 .............................. <pKeyList>
+  [ 17] getobjprop 269 .......................... <pKeyList.ilk>
+  [ 20] pushsymb 327 ............................ <#propList>
+  [ 23] nteq .................................... <pKeyList.ilk <> #propList>
+  [ 24] jmpifz [ 77] ............................ if pKeyList.ilk <> #propList then
+  [ 27] getparam 0 .............................. <me>
+  [ 29] pushcons 2 .............................. <"Couldn't retrieve keymap for Wobble Squabble! Using default keys.">
+  [ 31] pushsymb 1 .............................. <#construct>
+  [ 33] pusharglistnoret 3 ...................... <me, "Couldn't retrieve keymap for Wobble Squabble! Using default keys.", #construct>
+  [ 35] extcall 200 ............................. error(me, "Couldn't retrieve keymap for Wobble Squabble! Using default keys.", #construct)
+  [ 37] pushsymb 328 ............................ <#bal1>
+  [ 40] pushcons 3 .............................. <"Q">
+  [ 42] pushsymb 329 ............................ <#bal2>
+  [ 45] pushcons 4 .............................. <"E">
+  [ 47] pushsymb 330 ............................ <#push1>
+  [ 50] pushcons 5 .............................. <"A">
+  [ 52] pushsymb 331 ............................ <#push2>
+  [ 55] pushcons 6 .............................. <"D">
+  [ 57] pushsymb 332 ............................ <#move1>
+  [ 60] pushcons 7 .............................. <"N">
+  [ 62] pushsymb 333 ............................ <#move2>
+  [ 65] pushcons 8 .............................. <"M">
+  [ 67] pushsymb 334 ............................ <#stabilise>
+  [ 70] pushcons 9 .............................. <"SPACE">
+  [ 72] pusharglist 14 .......................... <[#bal1: "Q", #bal2: "E", #push1: "A", #push2: "D", #move1: "N", #move2: "M", #stabilise: "SPACE"]>
+  [ 74] pushproplist ............................ <[#bal1: "Q", #bal2: "E", #push1: "A", #push2: "D", #move1: "N", #move2: "M", #stabilise: "SPACE"]>
+  [ 75] setprop 16 .............................. pKeyList = [#bal1: "Q", #bal2: "E", #push1: "A", #push2: "D", #move1: "N", #move2: "M", #stabilise: "SPACE"]
+  [ 77] pushcons 10 ............................. <"paalu.key.res.list">
+  [ 79] pusharglist 0 ........................... <[]>
+  [ 81] pushlist ................................ <[]>
+  [ 82] pusharglist 2 ........................... <"paalu.key.res.list", []>
+  [ 84] extcall 17 .............................. <getVariableValue("paalu.key.res.list", [])>
+  [ 86] setprop 335 ............................. pKeyResList = getVariableValue("paalu.key.res.list", [])
+  [ 89] pushcons 11 ............................. <"paalu.cycle.time">
+  [ 91] pushint8 100 ............................ <100>
+  [ 93] pusharglist 2 ........................... <"paalu.cycle.time", 100>
+  [ 95] extcall 19 .............................. <getIntVariable("paalu.cycle.time", 100)>
+  [ 97] setprop 18 .............................. pCycleTime = getIntVariable("paalu.cycle.time", 100)
+  [ 99] pushcons 12 ............................. <"-">
+  [101] setprop 20 .............................. pCurrAct = "-"
+  [103] pusharglist 0 ........................... <>
+  [105] extcall 22 .............................. <VOID>
+  [107] setprop 21 .............................. pArrowSpr = VOID
+  [109] pusharglist 0 ........................... <>
+  [111] extcall 22 .............................. <VOID>
+  [113] setprop 23 .............................. pOwnPlayer = VOID
+  [115] pushzero ................................ <0>
+  [116] setprop 24 .............................. pCurrBal = 0
+  [118] pushint8 1 .............................. <1>
+  [120] pusharglistnoret 1 ...................... <1>
+  [122] extcall 12 .............................. return 1
+  [124] ret
+end
+
+on deconstruct me
+  [  0] pushzero ................................ <0>
+  [  1] setprop 15 .............................. pActive = 0
+  [  3] pusharglist 0 ........................... <>
+  [  5] extcall 22 .............................. <VOID>
+  [  7] setprop 21 .............................. pArrowSpr = VOID
+  [  9] pusharglist 0 ........................... <>
+  [ 11] extcall 22 .............................. <VOID>
+  [ 13] setprop 23 .............................. pOwnPlayer = VOID
+  [ 15] getprop 14 .............................. <pWndID>
+  [ 17] pusharglist 1 ........................... <pWndID>
+  [ 19] extcall 25 .............................. <windowExists(pWndID)>
+  [ 21] jmpifz [ 30] ............................ if windowExists(pWndID) then
+  [ 24] getprop 14 .............................. <pWndID>
+  [ 26] pusharglistnoret 1 ...................... <pWndID>
+  [ 28] extcall 26 .............................. removeWindow(pWndID)
+  [ 30] getparam 0 .............................. <me>
+  [ 32] pusharglist 1 ........................... <me>
+  [ 34] objcall 28 .............................. <me.getID()>
+  [ 36] pusharglistnoret 1 ...................... <me.getID()>
+  [ 38] extcall 27 .............................. removeUpdate(me.getID())
+  [ 40] pushint8 1 .............................. <1>
+  [ 42] pusharglistnoret 1 ...................... <1>
+  [ 44] extcall 12 .............................. return 1
+  [ 46] ret
+end
+
+on prepare me, tOwnPlayerObj
+  [  0] getprop 14 .............................. <pWndID>
+  [  2] pusharglist 1 ........................... <pWndID>
+  [  4] extcall 25 .............................. <windowExists(pWndID)>
+  [  6] jmpifz [ 14] ............................ if windowExists(pWndID) then
+  [  9] pushzero ................................ <0>
+  [ 10] pusharglistnoret 1 ...................... <0>
+  [ 12] extcall 12 .............................. return 0
+  [ 14] getprop 14 .............................. <pWndID>
+  [ 16] pushcons 13 ............................. <"paaluUI.window">
+  [ 18] pushint8 10 ............................. <10>
+  [ 20] pushint8 10 ............................. <10>
+  [ 22] pushsymb 30 ............................. <#modal>
+  [ 24] pusharglistnoret 5 ...................... <pWndID, "paaluUI.window", 10, 10, #modal>
+  [ 26] extcall 29 .............................. createWindow(pWndID, "paaluUI.window", 10, 10, #modal)
+  [ 28] getprop 14 .............................. <pWndID>
+  [ 30] pusharglist 1 ........................... <pWndID>
+  [ 32] extcall 31 .............................. <getWindow(pWndID)>
+  [ 34] setlocal 0 .............................. tWndObj = getWindow(pWndID)
+  [ 36] getlocal 0 .............................. <tWndObj>
+  [ 38] getparam 0 .............................. <me>
+  [ 40] pusharglist 1 ........................... <me>
+  [ 42] objcall 28 .............................. <me.getID()>
+  [ 44] pusharglistnoret 2 ...................... <tWndObj, me.getID()>
+  [ 46] objcall 32 .............................. tWndObj.registerClient(me.getID())
+  [ 48] getlocal 0 .............................. <tWndObj>
+  [ 50] pushsymb 11 ............................. <#eventProcPaalu>
+  [ 52] getparam 0 .............................. <me>
+  [ 54] pusharglist 1 ........................... <me>
+  [ 56] objcall 28 .............................. <me.getID()>
+  [ 58] pushsymb 33 ............................. <#mouseUp>
+  [ 60] pusharglistnoret 4 ...................... <tWndObj, #eventProcPaalu, me.getID(), #mouseUp>
+  [ 62] objcall 34 .............................. tWndObj.registerProcedure(#eventProcPaalu, me.getID(), #mouseUp)
+  [ 64] getlocal 0 .............................. <tWndObj>
+  [ 66] pushint8 12 ............................. <12>
+  [ 68] pushint16 288 ........................... <288>
+  [ 71] pusharglistnoret 3 ...................... <tWndObj, 12, 288>
+  [ 73] objcall 299 ............................. tWndObj.moveTo(12, 288)
+  [ 76] pushsymb 30 ............................. <#modal>
+  [ 78] pusharglist 1 ........................... <#modal>
+  [ 80] extcall 25 .............................. <windowExists(#modal)>
+  [ 82] jmpifz [110] ............................ if windowExists(#modal) then / else
+  [ 85] pushsymb 30 ............................. <#modal>
+  [ 87] pusharglist 1 ........................... <#modal>
+  [ 89] extcall 31 .............................. <getWindow(#modal)>
+  [ 91] pushcons 14 ............................. <"modal">
+  [ 93] pusharglist 2 ........................... <getWindow(#modal), "modal">
+  [ 95] objcall 297 ............................. <getWindow(#modal).getElement("modal")>
+  [ 98] pushsymb 300 ............................ <#blend>
+  [101] pushzero ................................ <0>
+  [102] pusharglistnoret 3 ...................... <getWindow(#modal).getElement("modal"), #blend, 0>
+  [104] objcall 301 ............................. getWindow(#modal).getElement("modal").setProperty(#blend, 0)
+  [107] jmp [120]
+  [110] getparam 0 .............................. <me>
+  [112] pushcons 15 ............................. <"Where's the modal window?">
+  [114] pushsymb 3 .............................. <#prepare>
+  [116] pusharglistnoret 3 ...................... <me, "Where's the modal window?", #prepare>
+  [118] extcall 200 ............................. error(me, "Where's the modal window?", #prepare)
+  [120] getlocal 0 .............................. <tWndObj>
+  [122] pushcons 16 ............................. <"needle">
+  [124] pusharglist 2 ........................... <tWndObj, "needle">
+  [126] objcall 297 ............................. <tWndObj.getElement("needle")>
+  [129] pushsymb 173 ............................ <#sprite>
+  [131] pusharglist 2 ........................... <tWndObj.getElement("needle"), #sprite>
+  [133] objcall 298 ............................. <tWndObj.getElement("needle").getProperty(#sprite)>
+  [136] setprop 21 .............................. pArrowSpr = tWndObj.getElement("needle").getProperty(#sprite)
+  [138] getprop 21 .............................. <pArrowSpr>
+  [140] getchainedprop 37 ....................... <pArrowSpr.member>
+  [142] getprop 21 .............................. <pArrowSpr>
+  [144] getchainedprop 37 ....................... <pArrowSpr.member>
+  [146] getobjprop 39 ........................... <pArrowSpr.member.width>
+  [148] pushint8 2 .............................. <2>
+  [150] div ..................................... <pArrowSpr.member.width / 2>
+  [151] getprop 21 .............................. <pArrowSpr>
+  [153] getchainedprop 37 ....................... <pArrowSpr.member>
+  [155] getobjprop 40 ........................... <pArrowSpr.member.height>
+  [157] pushint8 3 .............................. <3>
+  [159] sub ..................................... <pArrowSpr.member.height - 3>
+  [160] pusharglist 2 ........................... <pArrowSpr.member.width / 2, pArrowSpr.member.height - 3>
+  [162] extcall 38 .............................. <point(pArrowSpr.member.width / 2, pArrowSpr.member.height - 3)>
+  [164] setobjprop 41 ........................... pArrowSpr.member.regPoint = point(pArrowSpr.member.width / 2, pArrowSpr.member.height - 3)
+  [166] getlocal 0 .............................. <tWndObj>
+  [168] pushcons 17 ............................. <"needle_ball">
+  [170] pusharglist 2 ........................... <tWndObj, "needle_ball">
+  [172] objcall 297 ............................. <tWndObj.getElement("needle_ball")>
+  [175] pushsymb 173 ............................ <#sprite>
+  [177] pusharglist 2 ........................... <tWndObj.getElement("needle_ball"), #sprite>
+  [179] objcall 298 ............................. <tWndObj.getElement("needle_ball").getProperty(#sprite)>
+  [182] setlocal 1 .............................. tBallSpr = tWndObj.getElement("needle_ball").getProperty(#sprite)
+  [184] getlocal 1 .............................. <tBallSpr>
+  [186] getchainedprop 37 ....................... <tBallSpr.member>
+  [188] getlocal 1 .............................. <tBallSpr>
+  [190] getchainedprop 37 ....................... <tBallSpr.member>
+  [192] getobjprop 39 ........................... <tBallSpr.member.width>
+  [194] pushint8 2 .............................. <2>
+  [196] div ..................................... <tBallSpr.member.width / 2>
+  [197] getlocal 1 .............................. <tBallSpr>
+  [199] getchainedprop 37 ....................... <tBallSpr.member>
+  [201] getobjprop 40 ........................... <tBallSpr.member.height>
+  [203] pushint8 2 .............................. <2>
+  [205] div ..................................... <tBallSpr.member.height / 2>
+  [206] pusharglist 2 ........................... <tBallSpr.member.width / 2, tBallSpr.member.height / 2>
+  [208] extcall 38 .............................. <point(tBallSpr.member.width / 2, tBallSpr.member.height / 2)>
+  [210] setobjprop 41 ........................... tBallSpr.member.regPoint = point(tBallSpr.member.width / 2, tBallSpr.member.height / 2)
+  [212] getparam 1 .............................. <tOwnPlayerObj>
+  [214] setprop 23 .............................. pOwnPlayer = tOwnPlayerObj
+  [216] pushcons 12 ............................. <"-">
+  [218] setprop 20 .............................. pCurrAct = "-"
+  [220] getmovieprop 43 ......................... <the milliSeconds>
+  [222] setprop 42 .............................. pCurrTime = the milliSeconds
+  [224] pushzero ................................ <0>
+  [225] setprop 24 .............................. pCurrBal = 0
+  [227] pushzero ................................ <0>
+  [228] setprop 15 .............................. pActive = 0
+  [230] getparam 0 .............................. <me>
+  [232] pusharglistnoret 1 ...................... <me>
+  [234] objcall 326 ............................. me.localizeKeys()
+  [237] pushint8 1 .............................. <1>
+  [239] pusharglistnoret 1 ...................... <1>
+  [241] extcall 12 .............................. return 1
+  [243] ret
+end
+
+on start me
+  [  0] pushint8 1 .............................. <1>
+  [  2] setprop 15 .............................. pActive = 1
+  [  4] pushzero ................................ <0>
+  [  5] setmovieprop 47 ......................... the keyboardFocusSprite = 0
+  [  7] getparam 0 .............................. <me>
+  [  9] pusharglist 1 ........................... <me>
+  [ 11] objcall 28 .............................. <me.getID()>
+  [ 13] pusharglistnoret 1 ...................... <me.getID()>
+  [ 15] extcall 48 .............................. receiveUpdate(me.getID())
+  [ 17] getparam 0 .............................. <me>
+  [ 19] pusharglistnoret 1 ...................... <me>
+  [ 21] objcall 7 ............................... me.resetDialog()
+  [ 23] pusharglistnoret 0 ...................... <>
+  [ 25] extcall 49 .............................. startTimer()
+  [ 27] pushint8 1 .............................. <1>
+  [ 29] pusharglistnoret 1 ...................... <1>
+  [ 31] extcall 12 .............................. return 1
+  [ 33] ret
+end
+
+on stop me
+  [  0] pushzero ................................ <0>
+  [  1] setprop 15 .............................. pActive = 0
+  [  3] pusharglist 0 ........................... <>
+  [  5] extcall 22 .............................. <VOID>
+  [  7] setprop 21 .............................. pArrowSpr = VOID
+  [  9] pusharglist 0 ........................... <>
+  [ 11] extcall 22 .............................. <VOID>
+  [ 13] setprop 23 .............................. pOwnPlayer = VOID
+  [ 15] getprop 14 .............................. <pWndID>
+  [ 17] pusharglistnoret 1 ...................... <pWndID>
+  [ 19] extcall 26 .............................. removeWindow(pWndID)
+  [ 21] getparam 0 .............................. <me>
+  [ 23] pusharglist 1 ........................... <me>
+  [ 25] objcall 28 .............................. <me.getID()>
+  [ 27] pusharglistnoret 1 ...................... <me.getID()>
+  [ 29] extcall 27 .............................. removeUpdate(me.getID())
+  [ 31] pushint8 1 .............................. <1>
+  [ 33] inv ..................................... <-1>
+  [ 34] setmovieprop 47 ......................... the keyboardFocusSprite = -1
+  [ 36] pushint8 1 .............................. <1>
+  [ 38] pusharglistnoret 1 ...................... <1>
+  [ 40] extcall 12 .............................. return 1
+  [ 42] ret
+end
+
+on update me
+  [  0] pushzero ................................ <0>
+  [  1] setmovieprop 47 ......................... the keyboardFocusSprite = 0
+  [  3] getmovieprop 43 ......................... <the milliSeconds>
+  [  5] getprop 42 .............................. <pCurrTime>
+  [  7] sub ..................................... <the milliSeconds - pCurrTime>
+  [  8] setlocal 0 .............................. tTime = the milliSeconds - pCurrTime
+  [ 10] pusharglist 0 ........................... <>
+  [ 12] thebuiltin 50 ........................... <the key>
+  [ 14] setlocal 1 .............................. tKey = the key
+  [ 16] pusharglist 0 ........................... <>
+  [ 18] thebuiltin 51 ........................... <the lastKey>
+  [ 20] pushint8 34 ............................. <34>
+  [ 22] get 7 ................................... <the timer>
+  [ 24] lt ...................................... <the lastKey < the timer>
+  [ 25] jmpifz [147] ............................ if the lastKey < the timer then
+  [ 28] getlocal 1 .............................. <tKey>
+  [ 30] pusharglist 0 ........................... <>
+  [ 32] extcall 52 .............................. <SPACE>
+  [ 34] eq ...................................... <tKey = SPACE>
+  [ 35] jmpifz [ 42] ............................ if tKey = SPACE then
+  [ 38] pushcons 9 .............................. <"SPACE">
+  [ 40] setlocal 1 .............................. tKey = "SPACE"
+  [ 42] pushint8 1 .............................. <1>
+  [ 44] setlocal 2
+  [ 46] getlocal 2
+  [ 48] getprop 16 .............................. <pKeyList>
+  [ 50] getobjprop 62 ........................... <pKeyList.count>
+  [ 52] lteq
+  [ 53] jmpifz [ 86] ............................ repeat with i = 1 to pKeyList.count
+  [ 56] getprop 16 .............................. <pKeyList>
+  [ 58] getlocal 2 .............................. <i>
+  [ 60] pusharglist 2 ........................... <pKeyList, i>
+  [ 62] objcall 54 .............................. <pKeyList[i]>
+  [ 64] getlocal 1 .............................. <tKey>
+  [ 66] eq ...................................... <pKeyList[i] = tKey>
+  [ 67] jmpifz [ 77] ............................ if pKeyList[i] = tKey then
+  [ 70] getlocal 2 .............................. <i>
+  [ 72] setlocal 3 .............................. tKeyNr = i
+  [ 74] jmp [ 86] ............................... exit repeat
+  [ 77] pushint8 1
+  [ 79] getlocal 2
+  [ 81] add
+  [ 82] setlocal 2
+  [ 84] endrepeat [ 46]
+  [ 86] getlocal 3 .............................. <tKeyNr>
+  [ 88] pushzero ................................ <0>
+  [ 89] gt ...................................... <tKeyNr > 0>
+  [ 90] jmpifz [143] ............................ if tKeyNr > 0 then
+  [ 93] getprop 335 ............................. <pKeyResList>
+  [ 96] getlocal 3 .............................. <tKeyNr>
+  [ 98] pusharglist 2 ........................... <pKeyResList, tKeyNr>
+  [100] objcall 54 .............................. <pKeyResList[tKeyNr]>
+  [102] getprop 20 .............................. <pCurrAct>
+  [104] nteq .................................... <pKeyResList[tKeyNr] <> pCurrAct>
+  [105] jmpifz [143] ............................ if pKeyResList[tKeyNr] <> pCurrAct then
+  [108] getprop 335 ............................. <pKeyResList>
+  [111] getlocal 3 .............................. <tKeyNr>
+  [113] pusharglist 2 ........................... <pKeyResList, tKeyNr>
+  [115] objcall 54 .............................. <pKeyResList[tKeyNr]>
+  [117] setprop 20 .............................. pCurrAct = pKeyResList[tKeyNr]
+  [119] getparam 0 .............................. <me>
+  [121] pusharglistnoret 1 ...................... <me>
+  [123] objcall 8 ............................... me.sendAction()
+  [125] getparam 0 .............................. <me>
+  [127] pusharglistnoret 1 ...................... <me>
+  [129] objcall 7 ............................... me.resetDialog()
+  [131] getparam 0 .............................. <me>
+  [133] getprop 20 .............................. <pCurrAct>
+  [135] pusharglistnoret 2 ...................... <me, pCurrAct>
+  [137] objcall 9 ............................... me.selectKey(pCurrAct)
+  [139] pushcons 12 ............................. <"-">
+  [141] setprop 20 .............................. pCurrAct = "-"
+  [143] pusharglistnoret 0 ...................... <>
+  [145] extcall 49 .............................. startTimer()
+  [147] getlocal 0 .............................. <tTime>
+  [149] pushint8 100 ............................ <100>
+  [151] div ..................................... <tTime / 100>
+  [152] setlocal 4 .............................. tTimerOff = tTime / 100
+  [154] getlocal 4 .............................. <tTimerOff>
+  [156] pushint8 9 .............................. <9>
+  [158] eq ...................................... <tTimerOff = 9>
+  [159] jmpifz [178] ............................ if tTimerOff = 9 then
+  [162] getprop 20 .............................. <pCurrAct>
+  [164] pushcons 12 ............................. <"-">
+  [166] nteq .................................... <pCurrAct <> "-">
+  [167] jmpifz [178] ............................ if pCurrAct <> "-" then
+  [170] getparam 0 .............................. <me>
+  [172] getprop 20 .............................. <pCurrAct>
+  [174] pusharglistnoret 2 ...................... <me, pCurrAct>
+  [176] objcall 10 .............................. me.highLightKey(pCurrAct)
+  [178] getlocal 0 .............................. <tTime>
+  [180] getprop 18 .............................. <pCycleTime>
+  [182] gteq .................................... <tTime >= pCycleTime>
+  [183] jmpifz [190] ............................ if tTime >= pCycleTime then
+  [186] getmovieprop 43 ......................... <the milliSeconds>
+  [188] setprop 42 .............................. pCurrTime = the milliSeconds
+  [190] getprop 23 .............................. <pOwnPlayer>
+  [192] pusharglist 1 ........................... <pOwnPlayer>
+  [194] objcall 55 .............................. <pOwnPlayer.getBalance()>
+  [196] setlocal 5 .............................. tBalance = pOwnPlayer.getBalance()
+  [198] getlocal 5 .............................. <tBalance>
+  [200] getprop 24 .............................. <pCurrBal>
+  [202] sub ..................................... <tBalance - pCurrBal>
+  [203] setlocal 6 .............................. tBalOff = tBalance - pCurrBal
+  [205] getprop 24 .............................. <pCurrBal>
+  [207] getlocal 6 .............................. <tBalOff>
+  [209] pushfloat32 4.0 ......................... <4.0>
+  [214] div ..................................... <tBalOff / 4.0>
+  [215] add ..................................... <pCurrBal + (tBalOff / 4.0)>
+  [216] setprop 24 .............................. pCurrBal = pCurrBal + (tBalOff / 4.0)
+  [218] getprop 21 .............................. <pArrowSpr>
+  [220] getprop 24 .............................. <pCurrBal>
+  [222] setobjprop 56 ........................... pArrowSpr.rotation = pCurrBal
+  [224] ret
+end
+
+on localizeKeys me
+  [  0] getprop 14 .............................. <pWndID>
+  [  2] pusharglist 1 ........................... <pWndID>
+  [  4] extcall 31 .............................. <getWindow(pWndID)>
+  [  6] setlocal 0 .............................. tWndObj = getWindow(pWndID)
+  [  8] getlocal 0 .............................. <tWndObj>
+  [ 10] not ..................................... <not tWndObj>
+  [ 11] jmpifz [ 18] ............................ if not tWndObj then
+  [ 14] pusharglistnoret 0 ...................... <>
+  [ 16] extcall 12 .............................. return 
+  [ 18] pushint8 1 .............................. <1>
+  [ 20] setlocal 1
+  [ 22] getlocal 1
+  [ 24] getprop 335 ............................. <pKeyResList>
+  [ 27] getobjprop 62 ........................... <pKeyResList.count>
+  [ 29] pushint8 1 .............................. <1>
+  [ 31] sub ..................................... <pKeyResList.count - 1>
+  [ 32] lteq
+  [ 33] jmpifz [ 74] ............................ repeat with i = 1 to pKeyResList.count - 1
+  [ 36] getprop 16 .............................. <pKeyList>
+  [ 38] getlocal 1 .............................. <i>
+  [ 40] pusharglist 2 ........................... <pKeyList, i>
+  [ 42] objcall 54 .............................. <pKeyList[i]>
+  [ 44] setlocal 2 .............................. tKey = pKeyList[i]
+  [ 46] getlocal 0 .............................. <tWndObj>
+  [ 48] pushcons 18 ............................. <"paalu_btext_">
+  [ 50] getlocal 1 .............................. <i>
+  [ 52] joinstr ................................. <"paalu_btext_" & i>
+  [ 53] pusharglist 2 ........................... <tWndObj, "paalu_btext_" & i>
+  [ 55] objcall 297 ............................. <tWndObj.getElement("paalu_btext_" & i)>
+  [ 58] getlocal 2 .............................. <tKey>
+  [ 60] pusharglistnoret 2 ...................... <tWndObj.getElement("paalu_btext_" & i), tKey>
+  [ 62] objcall 337 ............................. tWndObj.getElement("paalu_btext_" & i).setText(tKey)
+  [ 65] pushint8 1
+  [ 67] getlocal 1
+  [ 69] add
+  [ 70] setlocal 1
+  [ 72] endrepeat [ 22]
+  [ 74] ret
+end
+
+on resetDialog me
+  [  0] getprop 14 .............................. <pWndID>
+  [  2] pusharglist 1 ........................... <pWndID>
+  [  4] extcall 31 .............................. <getWindow(pWndID)>
+  [  6] setlocal 0 .............................. tWndObj = getWindow(pWndID)
+  [  8] getlocal 0 .............................. <tWndObj>
+  [ 10] not ..................................... <not tWndObj>
+  [ 11] jmpifz [ 19] ............................ if not tWndObj then
+  [ 14] pushzero ................................ <0>
+  [ 15] pusharglistnoret 1 ...................... <0>
+  [ 17] extcall 12 .............................. return 0
+  [ 19] pushint8 1 .............................. <1>
+  [ 21] setlocal 1
+  [ 23] getlocal 1
+  [ 25] getprop 335 ............................. <pKeyResList>
+  [ 28] getobjprop 62 ........................... <pKeyResList.count>
+  [ 30] pushint8 1 .............................. <1>
+  [ 32] sub ..................................... <pKeyResList.count - 1>
+  [ 33] lteq
+  [ 34] jmpifz [ 90] ............................ repeat with i = 1 to pKeyResList.count - 1
+  [ 37] pushcons 19 ............................. <"paaluUI_button_inactive">
+  [ 39] pusharglist 1 ........................... <"paaluUI_button_inactive">
+  [ 41] extcall 64 .............................. <getmemnum("paaluUI_button_inactive")>
+  [ 43] pusharglist 1 ........................... <getmemnum("paaluUI_button_inactive")>
+  [ 45] extcall 37 .............................. <member(getmemnum("paaluUI_button_inactive"))>
+  [ 47] setlocal 2 .............................. tmember = member(getmemnum("paaluUI_button_inactive"))
+  [ 49] getlocal 2 .............................. <tmember>
+  [ 51] getobjprop 65 ........................... <tmember.number>
+  [ 53] pushzero ................................ <0>
+  [ 54] gt ...................................... <tmember.number > 0>
+  [ 55] jmpifz [ 81] ............................ if tmember.number > 0 then
+  [ 58] getlocal 0 .............................. <tWndObj>
+  [ 60] pushcons 20 ............................. <"paalu_image_">
+  [ 62] getlocal 1 .............................. <i>
+  [ 64] joinstr ................................. <"paalu_image_" & i>
+  [ 65] pusharglist 2 ........................... <tWndObj, "paalu_image_" & i>
+  [ 67] objcall 297 ............................. <tWndObj.getElement("paalu_image_" & i)>
+  [ 70] pushsymb 173 ............................ <#sprite>
+  [ 72] pusharglist 2 ........................... <tWndObj.getElement("paalu_image_" & i), #sprite>
+  [ 74] objcall 298 ............................. <tWndObj.getElement("paalu_image_" & i).getProperty(#sprite)>
+  [ 77] getlocal 2 .............................. <tmember>
+  [ 79] setobjprop 37 ........................... tWndObj.getElement("paalu_image_" & i).getProperty(#sprite).member = tmember
+  [ 81] pushint8 1
+  [ 83] getlocal 1
+  [ 85] add
+  [ 86] setlocal 1
+  [ 88] endrepeat [ 23]
+  [ 90] pushcons 21 ............................. <"paaluUI_butt_SPACE_1">
+  [ 92] pusharglist 1 ........................... <"paaluUI_butt_SPACE_1">
+  [ 94] extcall 64 .............................. <getmemnum("paaluUI_butt_SPACE_1")>
+  [ 96] pusharglist 1 ........................... <getmemnum("paaluUI_butt_SPACE_1")>
+  [ 98] extcall 37 .............................. <member(getmemnum("paaluUI_butt_SPACE_1"))>
+  [100] setlocal 2 .............................. tmember = member(getmemnum("paaluUI_butt_SPACE_1"))
+  [102] getlocal 2 .............................. <tmember>
+  [104] getobjprop 65 ........................... <tmember.number>
+  [106] pushzero ................................ <0>
+  [107] gt ...................................... <tmember.number > 0>
+  [108] jmpifz [131] ............................ if tmember.number > 0 then
+  [111] getlocal 0 .............................. <tWndObj>
+  [113] pushcons 22 ............................. <"paalu_image_7">
+  [115] pusharglist 2 ........................... <tWndObj, "paalu_image_7">
+  [117] objcall 297 ............................. <tWndObj.getElement("paalu_image_7")>
+  [120] pushsymb 173 ............................ <#sprite>
+  [122] pusharglist 2 ........................... <tWndObj.getElement("paalu_image_7"), #sprite>
+  [124] objcall 298 ............................. <tWndObj.getElement("paalu_image_7").getProperty(#sprite)>
+  [127] getlocal 2 .............................. <tmember>
+  [129] setobjprop 37 ........................... tWndObj.getElement("paalu_image_7").getProperty(#sprite).member = tmember
+  [131] pushint8 1 .............................. <1>
+  [133] pusharglistnoret 1 ...................... <1>
+  [135] extcall 12 .............................. return 1
+  [137] ret
+end
+
+on sendAction me
+  [  0] getprop 15 .............................. <pActive>
+  [  2] jmpifz [ 29] ............................ if pActive then
+  [  5] pushsymb 279 ............................ <#room>
+  [  8] pusharglist 1 ........................... <#room>
+  [ 10] extcall 290 ............................. <getThread(#room)>
+  [ 13] pusharglist 1 ........................... <getThread(#room)>
+  [ 15] objcall 141 ............................. <getThread(#room).getComponent()>
+  [ 17] pusharglist 1 ........................... <getThread(#room).getComponent()>
+  [ 19] objcall 68 .............................. <getThread(#room).getComponent().getRoomConnection()>
+  [ 21] pushcons 23 ............................. <"PTM">
+  [ 23] getprop 20 .............................. <pCurrAct>
+  [ 25] pusharglistnoret 3 ...................... <getThread(#room).getComponent().getRoomConnection(), "PTM", pCurrAct>
+  [ 27] objcall 69 .............................. getThread(#room).getComponent().getRoomConnection().send("PTM", pCurrAct)
+  [ 29] ret
+end
+
+on selectKey me, tAction
+  [  0] getprop 335 ............................. <pKeyResList>
+  [  3] getparam 1 .............................. <tAction>
+  [  5] pusharglist 2 ........................... <pKeyResList, tAction>
+  [  7] objcall 338 ............................. <pKeyResList.getPos(tAction)>
+  [ 10] setlocal 0 .............................. tButtonNum = pKeyResList.getPos(tAction)
+  [ 12] getlocal 0 .............................. <tButtonNum>
+  [ 14] pushint8 7 .............................. <7>
+  [ 16] eq ...................................... <tButtonNum = 7>
+  [ 17] jmpifz [ 35] ............................ if tButtonNum = 7 then / else
+  [ 20] pushcons 24 ............................. <"paaluUI_butt_SPACE_2">
+  [ 22] pusharglist 1 ........................... <"paaluUI_butt_SPACE_2">
+  [ 24] extcall 64 .............................. <getmemnum("paaluUI_butt_SPACE_2")>
+  [ 26] pusharglist 1 ........................... <getmemnum("paaluUI_butt_SPACE_2")>
+  [ 28] extcall 37 .............................. <member(getmemnum("paaluUI_butt_SPACE_2"))>
+  [ 30] setlocal 1 .............................. tmember = member(getmemnum("paaluUI_butt_SPACE_2"))
+  [ 32] jmp [ 47]
+  [ 35] pushcons 25 ............................. <"paaluUI_button_active">
+  [ 37] pusharglist 1 ........................... <"paaluUI_button_active">
+  [ 39] extcall 64 .............................. <getmemnum("paaluUI_button_active")>
+  [ 41] pusharglist 1 ........................... <getmemnum("paaluUI_button_active")>
+  [ 43] extcall 37 .............................. <member(getmemnum("paaluUI_button_active"))>
+  [ 45] setlocal 1 .............................. tmember = member(getmemnum("paaluUI_button_active"))
+  [ 47] getlocal 1 .............................. <tmember>
+  [ 49] getobjprop 65 ........................... <tmember.number>
+  [ 51] pushzero ................................ <0>
+  [ 52] gt ...................................... <tmember.number > 0>
+  [ 53] jmpifz [ 83] ............................ if tmember.number > 0 then
+  [ 56] getprop 14 .............................. <pWndID>
+  [ 58] pusharglist 1 ........................... <pWndID>
+  [ 60] extcall 31 .............................. <getWindow(pWndID)>
+  [ 62] pushcons 20 ............................. <"paalu_image_">
+  [ 64] getlocal 0 .............................. <tButtonNum>
+  [ 66] joinstr ................................. <"paalu_image_" & tButtonNum>
+  [ 67] pusharglist 2 ........................... <getWindow(pWndID), "paalu_image_" & tButtonNum>
+  [ 69] objcall 297 ............................. <getWindow(pWndID).getElement("paalu_image_" & tButtonNum)>
+  [ 72] pushsymb 173 ............................ <#sprite>
+  [ 74] pusharglist 2 ........................... <getWindow(pWndID).getElement("paalu_image_" & tButtonNum), #sprite>
+  [ 76] objcall 298 ............................. <getWindow(pWndID).getElement("paalu_image_" & tButtonNum).getProperty(#sprite)>
+  [ 79] getlocal 1 .............................. <tmember>
+  [ 81] setobjprop 37 ........................... getWindow(pWndID).getElement("paalu_image_" & tButtonNum).getProperty(#sprite).member = tmember
+  [ 83] ret
+end
+
+on highLightKey me, tAction
+  [  0] getprop 335 ............................. <pKeyResList>
+  [  3] getparam 1 .............................. <tAction>
+  [  5] pusharglist 2 ........................... <pKeyResList, tAction>
+  [  7] objcall 338 ............................. <pKeyResList.getPos(tAction)>
+  [ 10] setlocal 0 .............................. tButtonNum = pKeyResList.getPos(tAction)
+  [ 12] getlocal 0 .............................. <tButtonNum>
+  [ 14] pushint8 7 .............................. <7>
+  [ 16] eq ...................................... <tButtonNum = 7>
+  [ 17] jmpifz [ 35] ............................ if tButtonNum = 7 then / else
+  [ 20] pushcons 24 ............................. <"paaluUI_butt_SPACE_2">
+  [ 22] pusharglist 1 ........................... <"paaluUI_butt_SPACE_2">
+  [ 24] extcall 64 .............................. <getmemnum("paaluUI_butt_SPACE_2")>
+  [ 26] pusharglist 1 ........................... <getmemnum("paaluUI_butt_SPACE_2")>
+  [ 28] extcall 37 .............................. <member(getmemnum("paaluUI_butt_SPACE_2"))>
+  [ 30] setlocal 1 .............................. tmember = member(getmemnum("paaluUI_butt_SPACE_2"))
+  [ 32] jmp [ 47]
+  [ 35] pushcons 25 ............................. <"paaluUI_button_active">
+  [ 37] pusharglist 1 ........................... <"paaluUI_button_active">
+  [ 39] extcall 64 .............................. <getmemnum("paaluUI_button_active")>
+  [ 41] pusharglist 1 ........................... <getmemnum("paaluUI_button_active")>
+  [ 43] extcall 37 .............................. <member(getmemnum("paaluUI_button_active"))>
+  [ 45] setlocal 1 .............................. tmember = member(getmemnum("paaluUI_button_active"))
+  [ 47] getlocal 1 .............................. <tmember>
+  [ 49] getobjprop 65 ........................... <tmember.number>
+  [ 51] pushzero ................................ <0>
+  [ 52] gt ...................................... <tmember.number > 0>
+  [ 53] jmpifz [ 83] ............................ if tmember.number > 0 then
+  [ 56] getprop 14 .............................. <pWndID>
+  [ 58] pusharglist 1 ........................... <pWndID>
+  [ 60] extcall 31 .............................. <getWindow(pWndID)>
+  [ 62] pushcons 20 ............................. <"paalu_image_">
+  [ 64] getlocal 0 .............................. <tButtonNum>
+  [ 66] joinstr ................................. <"paalu_image_" & tButtonNum>
+  [ 67] pusharglist 2 ........................... <getWindow(pWndID), "paalu_image_" & tButtonNum>
+  [ 69] objcall 297 ............................. <getWindow(pWndID).getElement("paalu_image_" & tButtonNum)>
+  [ 72] pushsymb 173 ............................ <#sprite>
+  [ 74] pusharglist 2 ........................... <getWindow(pWndID).getElement("paalu_image_" & tButtonNum), #sprite>
+  [ 76] objcall 298 ............................. <getWindow(pWndID).getElement("paalu_image_" & tButtonNum).getProperty(#sprite)>
+  [ 79] getlocal 1 .............................. <tmember>
+  [ 81] setobjprop 37 ........................... getWindow(pWndID).getElement("paalu_image_" & tButtonNum).getProperty(#sprite).member = tmember
+  [ 83] ret
+end
+
+on eventProcPaalu me, tEvent, tSprID, tParam
+  [  0] getparam 2 .............................. <tSprID>
+  [  2] pushcons 26 ............................. <"button">
+  [  4] containsstr ............................. <tSprID contains "button">
+  [  5] getparam 2 .............................. <tSprID>
+  [  7] pushcons 22 ............................. <"paalu_image_7">
+  [  9] eq ...................................... <tSprID = "paalu_image_7">
+  [ 10] or ...................................... <(tSprID contains "button") or (tSprID = "paalu_image_7")>
+  [ 11] jmpifz [102] ............................ if (tSprID contains "button") or (tSprID = "paalu_image_7") then
+  [ 14] getparam 2 .............................. <tSprID>
+  [ 16] pushsymb 153 ............................ <#char>
+  [ 18] getparam 2 .............................. <tSprID>
+  [ 20] getobjprop 154 .......................... <tSprID.length>
+  [ 22] pusharglist 3 ........................... <tSprID, #char, tSprID.length>
+  [ 24] objcall 72 .............................. <tSprID.char[tSprID.length]>
+  [ 26] pusharglist 1 ........................... <tSprID.char[tSprID.length]>
+  [ 28] extcall 340 ............................. <integer(tSprID.char[tSprID.length])>
+  [ 31] setlocal 0 .............................. tActionNum = integer(tSprID.char[tSprID.length])
+  [ 33] getlocal 0 .............................. <tActionNum>
+  [ 35] pushint8 1 .............................. <1>
+  [ 37] lt ...................................... <tActionNum < 1>
+  [ 38] getlocal 0 .............................. <tActionNum>
+  [ 40] getprop 335 ............................. <pKeyResList>
+  [ 43] getobjprop 62 ........................... <pKeyResList.count>
+  [ 45] gt ...................................... <tActionNum > pKeyResList.count>
+  [ 46] or ...................................... <(tActionNum < 1) or (tActionNum > pKeyResList.count)>
+  [ 47] jmpifz [ 55] ............................ if (tActionNum < 1) or (tActionNum > pKeyResList.count) then
+  [ 50] pushzero ................................ <0>
+  [ 51] pusharglistnoret 1 ...................... <0>
+  [ 53] extcall 12 .............................. return 0
+  [ 55] getprop 335 ............................. <pKeyResList>
+  [ 58] getlocal 0 .............................. <tActionNum>
+  [ 60] pusharglist 2 ........................... <pKeyResList, tActionNum>
+  [ 62] objcall 54 .............................. <pKeyResList[tActionNum]>
+  [ 64] setlocal 1 .............................. tAction = pKeyResList[tActionNum]
+  [ 66] getprop 20 .............................. <pCurrAct>
+  [ 68] getlocal 1 .............................. <tAction>
+  [ 70] nteq .................................... <pCurrAct <> tAction>
+  [ 71] jmpifz [102] ............................ if pCurrAct <> tAction then
+  [ 74] getlocal 1 .............................. <tAction>
+  [ 76] setprop 20 .............................. pCurrAct = tAction
+  [ 78] getparam 0 .............................. <me>
+  [ 80] pusharglistnoret 1 ...................... <me>
+  [ 82] objcall 8 ............................... me.sendAction()
+  [ 84] getparam 0 .............................. <me>
+  [ 86] pusharglistnoret 1 ...................... <me>
+  [ 88] objcall 7 ............................... me.resetDialog()
+  [ 90] getparam 0 .............................. <me>
+  [ 92] getprop 20 .............................. <pCurrAct>
+  [ 94] pusharglistnoret 2 ...................... <me, pCurrAct>
+  [ 96] objcall 10 .............................. me.highLightKey(pCurrAct)
+  [ 98] pushcons 12 ............................. <"-">
+  [100] setprop 20 .............................. pCurrAct = "-"
+  [102] ret
+end

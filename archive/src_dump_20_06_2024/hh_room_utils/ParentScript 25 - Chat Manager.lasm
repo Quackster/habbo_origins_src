@@ -1,0 +1,495 @@
+property pDisplayObjName, pHumanTimeoutList
+
+on construct me
+  [  0] getparam 0 .............................. <me>
+  [  2] pushint8 1 .............................. <1>
+  [  4] pusharglistnoret 2 ...................... <me, 1>
+  [  6] objcall 483 ............................. me.regMsgList(1)
+  [  9] pusharglist 0 ........................... <[:]>
+  [ 11] pushproplist ............................ <[:]>
+  [ 12] setprop 1156 ............................ pHumanTimeoutList = [:]
+  [ 15] pushcons 0 .............................. <"chat_display_object">
+  [ 17] setprop 1157 ............................ pDisplayObjName = "chat_display_object"
+  [ 20] getprop 1157 ............................ <pDisplayObjName>
+  [ 23] pushcons 1 .............................. <"Chat Display">
+  [ 25] pusharglistnoret 2 ...................... <pDisplayObjName, "Chat Display">
+  [ 27] extcall 228 ............................. createObject(pDisplayObjName, "Chat Display")
+  [ 29] pushsymb 509 ............................ <#leaveRoom>
+  [ 32] getparam 0 .............................. <me>
+  [ 34] pusharglist 1 ........................... <me>
+  [ 36] objcall 89 .............................. <me.getID()>
+  [ 38] pushsymb 1147 ........................... <#clearChat>
+  [ 41] pusharglistnoret 3 ...................... <#leaveRoom, me.getID(), #clearChat>
+  [ 43] extcall 374 ............................. registerMessage(#leaveRoom, me.getID(), #clearChat)
+  [ 46] ret
+end
+
+on deconstruct me
+  [  0] getparam 0 .............................. <me>
+  [  2] pushzero ................................ <0>
+  [  3] pusharglistnoret 2 ...................... <me, 0>
+  [  5] objcall 483 ............................. me.regMsgList(0)
+  [  8] getparam 0 .............................. <me>
+  [ 10] pusharglistnoret 1 ...................... <me>
+  [ 12] objcall 1147 ............................ me.clearChat()
+  [ 15] getprop 1157 ............................ <pDisplayObjName>
+  [ 18] pusharglist 1 ........................... <pDisplayObjName>
+  [ 20] extcall 158 ............................. <objectExists(pDisplayObjName)>
+  [ 22] jmpifz [ 33] ............................ if objectExists(pDisplayObjName) then
+  [ 25] getprop 1157 ............................ <pDisplayObjName>
+  [ 28] pusharglistnoret 1 ...................... <pDisplayObjName>
+  [ 30] extcall 262 ............................. removeObject(pDisplayObjName)
+  [ 33] pushint8 1 .............................. <1>
+  [ 35] setlocal 0
+  [ 37] getlocal 0
+  [ 39] getprop 1156 ............................ <pHumanTimeoutList>
+  [ 42] getobjprop 105 .......................... <pHumanTimeoutList.count>
+  [ 44] lteq
+  [ 45] jmpifz [ 76] ............................ repeat with i = 1 to pHumanTimeoutList.count
+  [ 48] getprop 1156 ............................ <pHumanTimeoutList>
+  [ 51] getlocal 0 .............................. <i>
+  [ 53] pusharglist 2 ........................... <pHumanTimeoutList, i>
+  [ 55] objcall 177 ............................. <pHumanTimeoutList.getPropAt(i)>
+  [ 57] pusharglist 1 ........................... <pHumanTimeoutList.getPropAt(i)>
+  [ 59] extcall 1158 ............................ <timeout(pHumanTimeoutList.getPropAt(i))>
+  [ 62] pusharglistnoret 1 ...................... <timeout(pHumanTimeoutList.getPropAt(i))>
+  [ 64] objcall 1159 ............................ timeout(pHumanTimeoutList.getPropAt(i)).forget()
+  [ 67] pushint8 1
+  [ 69] getlocal 0
+  [ 71] add
+  [ 72] setlocal 0
+  [ 74] endrepeat [ 37]
+  [ 76] ret
+end
+
+on clearChat me
+  [  0] getprop 1157 ............................ <pDisplayObjName>
+  [  3] pusharglist 1 ........................... <pDisplayObjName>
+  [  5] extcall 158 ............................. <objectExists(pDisplayObjName)>
+  [  7] jmpifz [ 26] ............................ if objectExists(pDisplayObjName) then
+  [ 10] getprop 1157 ............................ <pDisplayObjName>
+  [ 13] pusharglist 1 ........................... <pDisplayObjName>
+  [ 15] extcall 60 .............................. <getObject(pDisplayObjName)>
+  [ 17] setlocal 0 .............................. tObj = getObject(pDisplayObjName)
+  [ 19] getlocal 0 .............................. <tObj>
+  [ 21] pusharglistnoret 1 ...................... <tObj>
+  [ 23] objcall 1160 ............................ tObj.clearAll()
+  [ 26] ret
+end
+
+on enterChatMessage me, tChatMode, tRoomUserId, tChatMessage
+  [  0] getprop 1157 ............................ <pDisplayObjName>
+  [  3] pusharglist 1 ........................... <pDisplayObjName>
+  [  5] extcall 60 .............................. <getObject(pDisplayObjName)>
+  [  7] setlocal 0 .............................. tDisplayObj = getObject(pDisplayObjName)
+  [  9] getlocal 0 .............................. <tDisplayObj>
+  [ 11] getparam 1 .............................. <tChatMode>
+  [ 13] getparam 2 .............................. <tRoomUserId>
+  [ 15] getparam 3 .............................. <tChatMessage>
+  [ 17] pusharglistnoret 4 ...................... <tDisplayObj, tChatMode, tRoomUserId, tChatMessage>
+  [ 19] objcall 1161 ............................ tDisplayObj.insertChatMessage(tChatMode, tRoomUserId, tChatMessage)
+  [ 22] ret
+end
+
+on setAvatarSpeakAndGesture me, tUserID, tSpeakTimeout, tGesture
+  [  0] pushsymb 77 ............................. <#room>
+  [  2] pusharglist 1 ........................... <#room>
+  [  4] extcall 76 .............................. <getThread(#room)>
+  [  6] pusharglist 1 ........................... <getThread(#room)>
+  [  8] objcall 82 .............................. <getThread(#room).getComponent()>
+  [ 10] getparam 1 .............................. <tUserID>
+  [ 12] pusharglist 2 ........................... <getThread(#room).getComponent(), tUserID>
+  [ 14] objcall 335 ............................. <getThread(#room).getComponent().getUserObject(tUserID)>
+  [ 17] setlocal 0 .............................. tObj = getThread(#room).getComponent().getUserObject(tUserID)
+  [ 19] getlocal 0 .............................. <tObj>
+  [ 21] pushzero ................................ <0>
+  [ 22] eq ...................................... <tObj = 0>
+  [ 23] jmpifz [ 30] ............................ if tObj = 0 then
+  [ 26] pusharglistnoret 0 ...................... <>
+  [ 28] extcall 50 .............................. return 
+  [ 30] getlocal 0 .............................. <tObj>
+  [ 32] pushcons 2 .............................. <"talk">
+  [ 34] pusharglistnoret 2 ...................... <tObj, "talk">
+  [ 36] objcall 1166 ............................ tObj.action_talk("talk")
+  [ 39] pusharglist 0 ........................... <>
+  [ 41] extcall 768 ............................. <getUniqueID()>
+  [ 44] setlocal 1 .............................. tTimeoutID = getUniqueID()
+  [ 46] pushsymb 1167 ........................... <#human>
+  [ 49] getparam 1 .............................. <tUserID>
+  [ 51] pushsymb 1168 ........................... <#gest>
+  [ 54] getparam 3 .............................. <tGesture>
+  [ 56] pusharglist 4 ........................... <[#human: tUserID, #gest: tGesture]>
+  [ 58] pushproplist ............................ <[#human: tUserID, #gest: tGesture]>
+  [ 59] setlocal 2 .............................. tParams = [#human: tUserID, #gest: tGesture]
+  [ 61] getlocal 1 .............................. <tTimeoutID>
+  [ 63] pusharglist 1 ........................... <tTimeoutID>
+  [ 65] extcall 1158 ............................ <timeout(tTimeoutID)>
+  [ 68] getparam 2 .............................. <tSpeakTimeout>
+  [ 70] pushsymb 1150 ........................... <#stopAvatarSpeak>
+  [ 73] getparam 0 .............................. <me>
+  [ 75] pusharglistnoret 4 ...................... <timeout(tTimeoutID), tSpeakTimeout, #stopAvatarSpeak, me>
+  [ 77] objcall 1169 ............................ timeout(tTimeoutID).new(tSpeakTimeout, #stopAvatarSpeak, me)
+  [ 80] getprop 1156 ............................ <pHumanTimeoutList>
+  [ 83] getlocal 1 .............................. <tTimeoutID>
+  [ 85] getlocal 2 .............................. <tParams>
+  [ 87] pusharglistnoret 3 ...................... <pHumanTimeoutList, tTimeoutID, tParams>
+  [ 89] objcall 154 ............................. pHumanTimeoutList.setaProp(tTimeoutID, tParams)
+  [ 91] ret
+end
+
+on stopAvatarSpeak me, tTimeout
+  [  0] getprop 1156 ............................ <pHumanTimeoutList>
+  [  3] getparam 1 .............................. <tTimeout>
+  [  5] getobjprop 156 .......................... <tTimeout.name>
+  [  7] pusharglist 2 ........................... <pHumanTimeoutList, tTimeout.name>
+  [  9] objcall 75 .............................. <pHumanTimeoutList[tTimeout.name]>
+  [ 11] pushsymb 1167 ........................... <#human>
+  [ 14] pusharglist 2 ........................... <pHumanTimeoutList[tTimeout.name], #human>
+  [ 16] objcall 75 .............................. <pHumanTimeoutList[tTimeout.name][#human]>
+  [ 18] setlocal 0 .............................. tUserID = pHumanTimeoutList[tTimeout.name][#human]
+  [ 20] getprop 1156 ............................ <pHumanTimeoutList>
+  [ 23] getparam 1 .............................. <tTimeout>
+  [ 25] getobjprop 156 .......................... <tTimeout.name>
+  [ 27] pusharglist 2 ........................... <pHumanTimeoutList, tTimeout.name>
+  [ 29] objcall 75 .............................. <pHumanTimeoutList[tTimeout.name]>
+  [ 31] pushsymb 1168 ........................... <#gest>
+  [ 34] pusharglist 2 ........................... <pHumanTimeoutList[tTimeout.name], #gest>
+  [ 36] objcall 75 .............................. <pHumanTimeoutList[tTimeout.name][#gest]>
+  [ 38] setlocal 1 .............................. tGest = pHumanTimeoutList[tTimeout.name][#gest]
+  [ 40] getprop 1156 ............................ <pHumanTimeoutList>
+  [ 43] getparam 1 .............................. <tTimeout>
+  [ 45] getobjprop 156 .......................... <tTimeout.name>
+  [ 47] pusharglistnoret 2 ...................... <pHumanTimeoutList, tTimeout.name>
+  [ 49] objcall 436 ............................. pHumanTimeoutList.deleteProp(tTimeout.name)
+  [ 52] getparam 1 .............................. <tTimeout>
+  [ 54] getobjprop 156 .......................... <tTimeout.name>
+  [ 56] pusharglist 1 ........................... <tTimeout.name>
+  [ 58] extcall 1158 ............................ <timeout(tTimeout.name)>
+  [ 61] pusharglistnoret 1 ...................... <timeout(tTimeout.name)>
+  [ 63] objcall 1159 ............................ timeout(tTimeout.name).forget()
+  [ 66] pushsymb 77 ............................. <#room>
+  [ 68] pusharglist 1 ........................... <#room>
+  [ 70] extcall 76 .............................. <getThread(#room)>
+  [ 72] pusharglist 1 ........................... <getThread(#room)>
+  [ 74] objcall 82 .............................. <getThread(#room).getComponent()>
+  [ 76] getlocal 0 .............................. <tUserID>
+  [ 78] pusharglist 2 ........................... <getThread(#room).getComponent(), tUserID>
+  [ 80] objcall 335 ............................. <getThread(#room).getComponent().getUserObject(tUserID)>
+  [ 83] setlocal 2 .............................. tObj = getThread(#room).getComponent().getUserObject(tUserID)
+  [ 85] getlocal 2 .............................. <tObj>
+  [ 87] pushzero ................................ <0>
+  [ 88] eq ...................................... <tObj = 0>
+  [ 89] jmpifz [ 96] ............................ if tObj = 0 then
+  [ 92] pusharglistnoret 0 ...................... <>
+  [ 94] extcall 50 .............................. return 
+  [ 96] pushsymb 1173 ........................... <#stop_action_talk>
+  [ 99] getlocal 2 .............................. <tObj>
+  [101] pusharglist 1 ........................... <[tObj]>
+  [103] pushlist ................................ <[tObj]>
+  [104] pushcons 2 .............................. <"talk">
+  [106] pusharglistnoret 3 ...................... <#stop_action_talk, [tObj], "talk">
+  [108] extcall 845 ............................. call(#stop_action_talk, [tObj], "talk")
+  [111] getlocal 1 .............................. <tGest>
+  [113] pushcons 3 .............................. <EMPTY>
+  [115] nteq .................................... <tGest <> EMPTY>
+  [116] jmpifz [180] ............................ if tGest <> EMPTY then
+  [119] getlocal 2 .............................. <tObj>
+  [121] getlocal 1 .............................. <tGest>
+  [123] pusharglistnoret 2 ...................... <tObj, tGest>
+  [125] objcall 1174 ............................ tObj.action_gest(tGest)
+  [128] pusharglist 0 ........................... <>
+  [130] extcall 768 ............................. <getUniqueID()>
+  [133] setlocal 3 .............................. tTimeoutID = getUniqueID()
+  [135] pushsymb 1167 ........................... <#human>
+  [138] getlocal 0 .............................. <tUserID>
+  [140] pusharglist 2 ........................... <[#human: tUserID]>
+  [142] pushproplist ............................ <[#human: tUserID]>
+  [143] setlocal 4 .............................. tParams = [#human: tUserID]
+  [145] getlocal 3 .............................. <tTimeoutID>
+  [147] pusharglist 1 ........................... <tTimeoutID>
+  [149] extcall 1158 ............................ <timeout(tTimeoutID)>
+  [152] pushcons 4 .............................. <"avatar.gesture.time">
+  [154] pusharglist 1 ........................... <"avatar.gesture.time">
+  [156] extcall 326 ............................. <getIntVariable("avatar.gesture.time")>
+  [159] pushsymb 1151 ........................... <#stopAvatarGesture>
+  [162] getparam 0 .............................. <me>
+  [164] pusharglistnoret 4 ...................... <timeout(tTimeoutID), getIntVariable("avatar.gesture.time"), #stopAvatarGesture, me>
+  [166] objcall 1169 ............................ timeout(tTimeoutID).new(getIntVariable("avatar.gesture.time"), #stopAvatarGesture, me)
+  [169] getprop 1156 ............................ <pHumanTimeoutList>
+  [172] getlocal 3 .............................. <tTimeoutID>
+  [174] getlocal 4 .............................. <tParams>
+  [176] pusharglistnoret 3 ...................... <pHumanTimeoutList, tTimeoutID, tParams>
+  [178] objcall 154 ............................. pHumanTimeoutList.setaProp(tTimeoutID, tParams)
+  [180] ret
+end
+
+on stopAvatarGesture me, tTimeout
+  [  0] getprop 1156 ............................ <pHumanTimeoutList>
+  [  3] getparam 1 .............................. <tTimeout>
+  [  5] getobjprop 156 .......................... <tTimeout.name>
+  [  7] pusharglist 2 ........................... <pHumanTimeoutList, tTimeout.name>
+  [  9] objcall 75 .............................. <pHumanTimeoutList[tTimeout.name]>
+  [ 11] pushsymb 1167 ........................... <#human>
+  [ 14] pusharglist 2 ........................... <pHumanTimeoutList[tTimeout.name], #human>
+  [ 16] objcall 75 .............................. <pHumanTimeoutList[tTimeout.name][#human]>
+  [ 18] setlocal 0 .............................. tUserID = pHumanTimeoutList[tTimeout.name][#human]
+  [ 20] getprop 1156 ............................ <pHumanTimeoutList>
+  [ 23] getparam 1 .............................. <tTimeout>
+  [ 25] getobjprop 156 .......................... <tTimeout.name>
+  [ 27] pusharglistnoret 2 ...................... <pHumanTimeoutList, tTimeout.name>
+  [ 29] objcall 436 ............................. pHumanTimeoutList.deleteProp(tTimeout.name)
+  [ 32] getparam 1 .............................. <tTimeout>
+  [ 34] getobjprop 156 .......................... <tTimeout.name>
+  [ 36] pusharglist 1 ........................... <tTimeout.name>
+  [ 38] extcall 1158 ............................ <timeout(tTimeout.name)>
+  [ 41] pusharglistnoret 1 ...................... <timeout(tTimeout.name)>
+  [ 43] objcall 1159 ............................ timeout(tTimeout.name).forget()
+  [ 46] pushsymb 77 ............................. <#room>
+  [ 48] pusharglist 1 ........................... <#room>
+  [ 50] extcall 76 .............................. <getThread(#room)>
+  [ 52] pusharglist 1 ........................... <getThread(#room)>
+  [ 54] objcall 82 .............................. <getThread(#room).getComponent()>
+  [ 56] getlocal 0 .............................. <tUserID>
+  [ 58] pusharglist 2 ........................... <getThread(#room).getComponent(), tUserID>
+  [ 60] objcall 335 ............................. <getThread(#room).getComponent().getUserObject(tUserID)>
+  [ 63] setlocal 1 .............................. tObj = getThread(#room).getComponent().getUserObject(tUserID)
+  [ 65] getlocal 1 .............................. <tObj>
+  [ 67] pushzero ................................ <0>
+  [ 68] eq ...................................... <tObj = 0>
+  [ 69] jmpifz [ 76] ............................ if tObj = 0 then
+  [ 72] pusharglistnoret 0 ...................... <>
+  [ 74] extcall 50 .............................. return 
+  [ 76] getlocal 1 .............................. <tObj>
+  [ 78] pusharglistnoret 1 ...................... <tObj>
+  [ 80] objcall 1177 ............................ tObj.stop_action_gest()
+  [ 83] ret
+end
+
+on showBalloons me
+  [  0] getprop 1157 ............................ <pDisplayObjName>
+  [  3] pusharglist 1 ........................... <pDisplayObjName>
+  [  5] extcall 60 .............................. <getObject(pDisplayObjName)>
+  [  7] setlocal 0 .............................. tDisplayObj = getObject(pDisplayObjName)
+  [  9] getlocal 0 .............................. <tDisplayObj>
+  [ 11] pushint8 1 .............................. <1>
+  [ 13] pusharglistnoret 2 ...................... <tDisplayObj, 1>
+  [ 15] objcall 1152 ............................ tDisplayObj.showBalloons(1)
+  [ 18] ret
+end
+
+on hideBalloons me
+  [  0] getprop 1157 ............................ <pDisplayObjName>
+  [  3] pusharglist 1 ........................... <pDisplayObjName>
+  [  5] extcall 60 .............................. <getObject(pDisplayObjName)>
+  [  7] setlocal 0 .............................. tDisplayObj = getObject(pDisplayObjName)
+  [  9] getlocal 0 .............................. <tDisplayObj>
+  [ 11] pushzero ................................ <0>
+  [ 12] pusharglistnoret 2 ...................... <tDisplayObj, 0>
+  [ 14] objcall 1152 ............................ tDisplayObj.showBalloons(0)
+  [ 17] ret
+end
+
+on removeBalloons me
+  [  0] getprop 1157 ............................ <pDisplayObjName>
+  [  3] pusharglist 1 ........................... <pDisplayObjName>
+  [  5] extcall 60 .............................. <getObject(pDisplayObjName)>
+  [  7] setlocal 0 .............................. tDisplayObj = getObject(pDisplayObjName)
+  [  9] getlocal 0 .............................. <tDisplayObj>
+  [ 11] pusharglistnoret 1 ...................... <tDisplayObj>
+  [ 13] objcall 1160 ............................ tDisplayObj.clearAll()
+  [ 16] ret
+end
+
+on handle_chat me, tMsg
+  [  0] getparam 1 .............................. <tMsg>
+  [  2] pushsymb 444 ............................ <#connection>
+  [  5] pusharglist 2 ........................... <tMsg, #connection>
+  [  7] objcall 149 ............................. <tMsg.getaProp(#connection)>
+  [  9] setlocal 0 .............................. tConn = tMsg.getaProp(#connection)
+  [ 11] getlocal 0 .............................. <tConn>
+  [ 13] pusharglist 1 ........................... <tConn>
+  [ 15] objcall 484 ............................. <tConn.GetIntFrom()>
+  [ 18] pusharglist 1 ........................... <tConn.GetIntFrom()>
+  [ 20] extcall 192 ............................. <string(tConn.GetIntFrom())>
+  [ 22] setlocal 1 .............................. tuser = string(tConn.GetIntFrom())
+  [ 24] getlocal 0 .............................. <tConn>
+  [ 26] pusharglist 1 ........................... <tConn>
+  [ 28] objcall 445 ............................. <tConn.GetStrFrom()>
+  [ 31] setlocal 2 .............................. tChat = tConn.GetStrFrom()
+  [ 33] getlocal 0 .............................. <tConn>
+  [ 35] pusharglist 1 ........................... <tConn>
+  [ 37] objcall 484 ............................. <tConn.GetIntFrom()>
+  [ 40] setlocal 3 .............................. tGest = tConn.GetIntFrom()
+  [ 42] getparam 1 .............................. <tMsg>
+  [ 44] pushsymb 1178 ........................... <#subject>
+  [ 47] pusharglist 2 ........................... <tMsg, #subject>
+  [ 49] objcall 149 ............................. <tMsg.getaProp(#subject)>
+  [ 51] peek 0 .................................. case tMsg.getaProp(#subject) of
+  [ 53] pushint8 24 ............................. <24>
+  [ 55] eq
+  [ 56] jmpifz [ 66] ............................ (case) 24:
+  [ 59] pushcons 5 .............................. <"CHAT">
+  [ 61] setlocal 4 .............................. tMode = "CHAT"
+  [ 63] jmp [ 93]
+  [ 66] peek 0
+  [ 68] pushint8 25 ............................. <25>
+  [ 70] eq
+  [ 71] jmpifz [ 81] ............................ (case) 25:
+  [ 74] pushcons 6 .............................. <"WHISPER">
+  [ 76] setlocal 4 .............................. tMode = "WHISPER"
+  [ 78] jmp [ 93]
+  [ 81] peek 0
+  [ 83] pushint8 26 ............................. <26>
+  [ 85] eq
+  [ 86] jmpifz [ 93] ............................ (case) 26:
+  [ 89] pushcons 7 .............................. <"SHOUT">
+  [ 91] setlocal 4 .............................. tMode = "SHOUT"
+  [ 93] pop 1 ................................... end case
+  [ 95] getlocal 2 .............................. <tChat>
+  [ 97] pushcons 3 .............................. <EMPTY>
+  [ 99] eq ...................................... <tChat = EMPTY>
+  [100] jmpifz [107] ............................ if tChat = EMPTY then
+  [103] pushcons 8 .............................. <"UNHEARD">
+  [105] setlocal 4 .............................. tMode = "UNHEARD"
+  [107] getparam 0 .............................. <me>
+  [109] getlocal 4 .............................. <tMode>
+  [111] getlocal 1 .............................. <tuser>
+  [113] getlocal 2 .............................. <tChat>
+  [115] pusharglistnoret 4 ...................... <me, tMode, tuser, tChat>
+  [117] objcall 1148 ............................ me.enterChatMessage(tMode, tuser, tChat)
+  [120] getlocal 2 .............................. <tChat>
+  [122] getobjprop 277 .......................... <tChat.length>
+  [125] pushint8 100 ............................ <100>
+  [127] mul ..................................... <tChat.length * 100>
+  [128] setlocal 5 .............................. tSpeakingLength = tChat.length * 100
+  [130] getlocal 3 .............................. <tGest>
+  [132] peek 0 .................................. case tGest of
+  [134] pushint8 1 .............................. <1>
+  [136] eq
+  [137] jmpifz [147] ............................ (case) 1:
+  [140] pushcons 9 .............................. <"gest sml">
+  [142] setlocal 6 .............................. tGestStr = "gest sml"
+  [144] jmp [196]
+  [147] peek 0
+  [149] pushint8 2 .............................. <2>
+  [151] eq
+  [152] jmpifz [162] ............................ (case) 2:
+  [155] pushcons 10 ............................. <"gest agr">
+  [157] setlocal 6 .............................. tGestStr = "gest agr"
+  [159] jmp [196]
+  [162] peek 0
+  [164] pushint8 3 .............................. <3>
+  [166] eq
+  [167] jmpifz [177] ............................ (case) 3:
+  [170] pushcons 11 ............................. <"gest srp">
+  [172] setlocal 6 .............................. tGestStr = "gest srp"
+  [174] jmp [196]
+  [177] peek 0
+  [179] pushint8 4 .............................. <4>
+  [181] eq
+  [182] jmpifz [192] ............................ (case) 4:
+  [185] pushcons 12 ............................. <"gest sad">
+  [187] setlocal 6 .............................. tGestStr = "gest sad"
+  [189] jmp [196] ............................... (case) otherwise:
+  [192] pushcons 3 .............................. <EMPTY>
+  [194] setlocal 6 .............................. tGestStr = EMPTY
+  [196] pop 1 ................................... end case
+  [198] getparam 0 .............................. <me>
+  [200] getlocal 1 .............................. <tuser>
+  [202] getlocal 5 .............................. <tSpeakingLength>
+  [204] getlocal 6 .............................. <tGestStr>
+  [206] pusharglistnoret 4 ...................... <me, tuser, tSpeakingLength, tGestStr>
+  [208] objcall 1149 ............................ me.setAvatarSpeakAndGesture(tuser, tSpeakingLength, tGestStr)
+  [211] pushsymb 77 ............................. <#room>
+  [213] pusharglist 1 ........................... <#room>
+  [215] extcall 76 .............................. <getThread(#room)>
+  [217] pusharglist 1 ........................... <getThread(#room)>
+  [219] objcall 82 .............................. <getThread(#room).getComponent()>
+  [221] getlocal 1 .............................. <tuser>
+  [223] pushzero ................................ <0>
+  [224] pusharglistnoret 3 ...................... <getThread(#room).getComponent(), tuser, 0>
+  [226] objcall 1179 ............................ getThread(#room).getComponent().setUserTypingStatus(tuser, 0)
+  [229] ret
+end
+
+on regMsgList me, tBool
+  [  0] pusharglist 0 ........................... <[:]>
+  [  2] pushproplist ............................ <[:]>
+  [  3] setlocal 0 .............................. tMsgs = [:]
+  [  5] getlocal 0 .............................. <tMsgs>
+  [  7] pushint8 24 ............................. <24>
+  [  9] pushsymb 1155 ........................... <#handle_chat>
+  [ 12] pusharglistnoret 3 ...................... <tMsgs, 24, #handle_chat>
+  [ 14] objcall 154 ............................. tMsgs.setaProp(24, #handle_chat)
+  [ 16] getlocal 0 .............................. <tMsgs>
+  [ 18] pushint8 25 ............................. <25>
+  [ 20] pushsymb 1155 ........................... <#handle_chat>
+  [ 23] pusharglistnoret 3 ...................... <tMsgs, 25, #handle_chat>
+  [ 25] objcall 154 ............................. tMsgs.setaProp(25, #handle_chat)
+  [ 27] getlocal 0 .............................. <tMsgs>
+  [ 29] pushint8 26 ............................. <26>
+  [ 31] pushsymb 1155 ........................... <#handle_chat>
+  [ 34] pusharglistnoret 3 ...................... <tMsgs, 26, #handle_chat>
+  [ 36] objcall 154 ............................. tMsgs.setaProp(26, #handle_chat)
+  [ 38] pusharglist 0 ........................... <[:]>
+  [ 40] pushproplist ............................ <[:]>
+  [ 41] setlocal 1 .............................. tCmds = [:]
+  [ 43] getlocal 1 .............................. <tCmds>
+  [ 45] pushcons 5 .............................. <"CHAT">
+  [ 47] pushint8 52 ............................. <52>
+  [ 49] pusharglistnoret 3 ...................... <tCmds, "CHAT", 52>
+  [ 51] objcall 154 ............................. tCmds.setaProp("CHAT", 52)
+  [ 53] getlocal 1 .............................. <tCmds>
+  [ 55] pushcons 7 .............................. <"SHOUT">
+  [ 57] pushint8 55 ............................. <55>
+  [ 59] pusharglistnoret 3 ...................... <tCmds, "SHOUT", 55>
+  [ 61] objcall 154 ............................. tCmds.setaProp("SHOUT", 55)
+  [ 63] getlocal 1 .............................. <tCmds>
+  [ 65] pushcons 6 .............................. <"WHISPER">
+  [ 67] pushint8 56 ............................. <56>
+  [ 69] pusharglistnoret 3 ...................... <tCmds, "WHISPER", 56>
+  [ 71] objcall 154 ............................. tCmds.setaProp("WHISPER", 56)
+  [ 73] getparam 1 .............................. <tBool>
+  [ 75] jmpifz [121] ............................ if tBool then / else
+  [ 78] pushcons 13 ............................. <"connection.room.id">
+  [ 80] pusharglist 1 ........................... <"connection.room.id">
+  [ 82] extcall 267 ............................. <getVariable("connection.room.id")>
+  [ 85] getparam 0 .............................. <me>
+  [ 87] pusharglist 1 ........................... <me>
+  [ 89] objcall 89 .............................. <me.getID()>
+  [ 91] getlocal 0 .............................. <tMsgs>
+  [ 93] pusharglistnoret 3 ...................... <getVariable("connection.room.id"), me.getID(), tMsgs>
+  [ 95] extcall 486 ............................. registerListener(getVariable("connection.room.id"), me.getID(), tMsgs)
+  [ 98] pushcons 13 ............................. <"connection.room.id">
+  [100] pusharglist 1 ........................... <"connection.room.id">
+  [102] extcall 267 ............................. <getVariable("connection.room.id")>
+  [105] getparam 0 .............................. <me>
+  [107] pusharglist 1 ........................... <me>
+  [109] objcall 89 .............................. <me.getID()>
+  [111] getlocal 1 .............................. <tCmds>
+  [113] pusharglistnoret 3 ...................... <getVariable("connection.room.id"), me.getID(), tCmds>
+  [115] extcall 488 ............................. registerCommands(getVariable("connection.room.id"), me.getID(), tCmds)
+  [118] jmp [161]
+  [121] pushcons 13 ............................. <"connection.room.id">
+  [123] pusharglist 1 ........................... <"connection.room.id">
+  [125] extcall 267 ............................. <getVariable("connection.room.id")>
+  [128] getparam 0 .............................. <me>
+  [130] pusharglist 1 ........................... <me>
+  [132] objcall 89 .............................. <me.getID()>
+  [134] getlocal 0 .............................. <tMsgs>
+  [136] pusharglistnoret 3 ...................... <getVariable("connection.room.id"), me.getID(), tMsgs>
+  [138] extcall 489 ............................. unregisterListener(getVariable("connection.room.id"), me.getID(), tMsgs)
+  [141] pushcons 13 ............................. <"connection.room.id">
+  [143] pusharglist 1 ........................... <"connection.room.id">
+  [145] extcall 267 ............................. <getVariable("connection.room.id")>
+  [148] getparam 0 .............................. <me>
+  [150] pusharglist 1 ........................... <me>
+  [152] objcall 89 .............................. <me.getID()>
+  [154] getlocal 1 .............................. <tCmds>
+  [156] pusharglistnoret 3 ...................... <getVariable("connection.room.id"), me.getID(), tCmds>
+  [158] extcall 490 ............................. unregisterCommands(getVariable("connection.room.id"), me.getID(), tCmds)
+  [161] pushint8 1 .............................. <1>
+  [163] pusharglistnoret 1 ...................... <1>
+  [165] extcall 50 .............................. return 1
+  [167] ret
+end

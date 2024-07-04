@@ -1,0 +1,177 @@
+property pPersistentFurniData
+
+on construct me
+  [  0] pusharglist 0 ........................... <>
+  [  2] extcall 23 .............................. <VOID>
+  [  4] setprop 213 ............................. pPersistentFurniData = VOID
+  [  6] getparam 0 .............................. <me>
+  [  8] pushint8 1 .............................. <1>
+  [ 10] pusharglist 2 ........................... <me, 1>
+  [ 12] objcall 212 ............................. <me.regMsgList(1)>
+  [ 14] pusharglistnoret 1 ...................... <me.regMsgList(1)>
+  [ 16] extcall 36 .............................. return me.regMsgList(1)
+  [ 18] ret
+end
+
+on deconstruct me
+  [  0] getparam 0 .............................. <me>
+  [  2] pushzero ................................ <0>
+  [  3] pusharglist 2 ........................... <me, 0>
+  [  5] objcall 212 ............................. <me.regMsgList(0)>
+  [  7] pusharglistnoret 1 ...................... <me.regMsgList(0)>
+  [  9] extcall 36 .............................. return me.regMsgList(0)
+  [ 11] ret
+end
+
+on handle_recycler_status me, tMsg
+  [  0] getparam 1 .............................. <tMsg>
+  [  2] pushsymb 214 ............................ <#connection>
+  [  4] pusharglist 2 ........................... <tMsg, #connection>
+  [  6] objcall 215 ............................. <tMsg.getaProp(#connection)>
+  [  8] setlocal 0 .............................. tConn = tMsg.getaProp(#connection)
+  [ 10] getlocal 0 .............................. <tConn>
+  [ 12] not ..................................... <not tConn>
+  [ 13] jmpifz [ 21] ............................ if not tConn then
+  [ 16] pushzero ................................ <0>
+  [ 17] pusharglistnoret 1 ...................... <0>
+  [ 19] extcall 36 .............................. return 0
+  [ 21] getlocal 0 .............................. <tConn>
+  [ 23] pusharglist 1 ........................... <tConn>
+  [ 25] objcall 216 ............................. <tConn.GetIntFrom()>
+  [ 27] setlocal 1 .............................. tstate = tConn.GetIntFrom()
+  [ 29] getlocal 1 .............................. <tstate>
+  [ 31] peek 0 .................................. case tstate of
+  [ 33] pushint8 1 .............................. <1>
+  [ 35] eq
+  [ 36] jmpifz [ 46] ............................ (case) 1:
+  [ 39] pushsymb 64 ............................. <#open>
+  [ 41] setlocal 1 .............................. tstate = #open
+  [ 43] jmp [ 81]
+  [ 46] peek 0
+  [ 48] pushint8 2 .............................. <2>
+  [ 50] eq
+  [ 51] jmpifz [ 61] ............................ (case) 2:
+  [ 54] pushsymb 99 ............................. <#closed>
+  [ 56] setlocal 1 .............................. tstate = #closed
+  [ 58] jmp [ 81]
+  [ 61] peek 0
+  [ 63] pushint8 3 .............................. <3>
+  [ 65] eq
+  [ 66] jmpifz [ 81] ............................ (case) 3:
+  [ 69] pushsymb 100 ............................ <#timeout>
+  [ 71] setlocal 1 .............................. tstate = #timeout
+  [ 73] getlocal 0 .............................. <tConn>
+  [ 75] pusharglist 1 ........................... <tConn>
+  [ 77] objcall 216 ............................. <tConn.GetIntFrom()>
+  [ 79] setlocal 2 .............................. tTimeout = tConn.GetIntFrom()
+  [ 81] pop 1 ................................... end case
+  [ 83] getparam 0 .............................. <me>
+  [ 85] pusharglist 1 ........................... <me>
+  [ 87] objcall 124 ............................. <me.getComponent()>
+  [ 89] getlocal 1 .............................. <tstate>
+  [ 91] getlocal 2 .............................. <tTimeout>
+  [ 93] pusharglistnoret 3 ...................... <me.getComponent(), tstate, tTimeout>
+  [ 95] objcall 4 ............................... me.getComponent().setState(tstate, tTimeout)
+  [ 97] ret
+end
+
+on handle_recycler_finished me, tMsg
+  [  0] getparam 1 .............................. <tMsg>
+  [  2] pushsymb 214 ............................ <#connection>
+  [  4] pusharglist 2 ........................... <tMsg, #connection>
+  [  6] objcall 215 ............................. <tMsg.getaProp(#connection)>
+  [  8] setlocal 0 .............................. tConn = tMsg.getaProp(#connection)
+  [ 10] getlocal 0 .............................. <tConn>
+  [ 12] not ..................................... <not tConn>
+  [ 13] jmpifz [ 21] ............................ if not tConn then
+  [ 16] pushzero ................................ <0>
+  [ 17] pusharglistnoret 1 ...................... <0>
+  [ 19] extcall 36 .............................. return 0
+  [ 21] getlocal 0 .............................. <tConn>
+  [ 23] pusharglist 1 ........................... <tConn>
+  [ 25] objcall 216 ............................. <tConn.GetIntFrom()>
+  [ 27] setlocal 1 .............................. tSuccess = tConn.GetIntFrom()
+  [ 29] getlocal 0 .............................. <tConn>
+  [ 31] pusharglist 1 ........................... <tConn>
+  [ 33] objcall 216 ............................. <tConn.GetIntFrom()>
+  [ 35] setlocal 2 .............................. tPrizeID = tConn.GetIntFrom()
+  [ 37] getparam 0 .............................. <me>
+  [ 39] pusharglist 1 ........................... <me>
+  [ 41] objcall 124 ............................. <me.getComponent()>
+  [ 43] getlocal 1 .............................. <tSuccess>
+  [ 45] pusharglistnoret 2 ...................... <me.getComponent(), tSuccess>
+  [ 47] objcall 5 ............................... me.getComponent().recyclingFinished(tSuccess)
+  [ 49] ret
+end
+
+on regMsgList me, tBool
+  [  0] pusharglist 0 ........................... <[:]>
+  [  2] pushproplist ............................ <[:]>
+  [  3] setlocal 0 .............................. tMsgs = [:]
+  [  5] getlocal 0 .............................. <tMsgs>
+  [  7] pushint16 507 ........................... <507>
+  [ 10] pushsymb 210 ............................ <#handle_recycler_status>
+  [ 12] pusharglistnoret 3 ...................... <tMsgs, 507, #handle_recycler_status>
+  [ 14] objcall 219 ............................. tMsgs.setaProp(507, #handle_recycler_status)
+  [ 16] getlocal 0 .............................. <tMsgs>
+  [ 18] pushint16 508 ........................... <508>
+  [ 21] pushsymb 211 ............................ <#handle_recycler_finished>
+  [ 23] pusharglistnoret 3 ...................... <tMsgs, 508, #handle_recycler_finished>
+  [ 25] objcall 219 ............................. tMsgs.setaProp(508, #handle_recycler_finished)
+  [ 27] pusharglist 0 ........................... <[:]>
+  [ 29] pushproplist ............................ <[:]>
+  [ 30] setlocal 1 .............................. tCmds = [:]
+  [ 32] getlocal 1 .............................. <tCmds>
+  [ 34] pushcons 0 .............................. <"GET_RECYCLER_STATUS">
+  [ 36] pushint16 413 ........................... <413>
+  [ 39] pusharglistnoret 3 ...................... <tCmds, "GET_RECYCLER_STATUS", 413>
+  [ 41] objcall 219 ............................. tCmds.setaProp("GET_RECYCLER_STATUS", 413)
+  [ 43] getlocal 1 .............................. <tCmds>
+  [ 45] pushcons 1 .............................. <"RECYCLE_ITEMS">
+  [ 47] pushint16 414 ........................... <414>
+  [ 50] pusharglistnoret 3 ...................... <tCmds, "RECYCLE_ITEMS", 414>
+  [ 52] objcall 219 ............................. tCmds.setaProp("RECYCLE_ITEMS", 414)
+  [ 54] getparam 1 .............................. <tBool>
+  [ 56] jmpifz [ 98] ............................ if tBool then / else
+  [ 59] pushcons 2 .............................. <"connection.room.id">
+  [ 61] pusharglist 1 ........................... <"connection.room.id">
+  [ 63] extcall 42 .............................. <getVariable("connection.room.id")>
+  [ 65] getparam 0 .............................. <me>
+  [ 67] pusharglist 1 ........................... <me>
+  [ 69] objcall 35 .............................. <me.getID()>
+  [ 71] getlocal 0 .............................. <tMsgs>
+  [ 73] pusharglistnoret 3 ...................... <getVariable("connection.room.id"), me.getID(), tMsgs>
+  [ 75] extcall 220 ............................. registerListener(getVariable("connection.room.id"), me.getID(), tMsgs)
+  [ 77] pushcons 2 .............................. <"connection.room.id">
+  [ 79] pusharglist 1 ........................... <"connection.room.id">
+  [ 81] extcall 42 .............................. <getVariable("connection.room.id")>
+  [ 83] getparam 0 .............................. <me>
+  [ 85] pusharglist 1 ........................... <me>
+  [ 87] objcall 35 .............................. <me.getID()>
+  [ 89] getlocal 1 .............................. <tCmds>
+  [ 91] pusharglistnoret 3 ...................... <getVariable("connection.room.id"), me.getID(), tCmds>
+  [ 93] extcall 221 ............................. registerCommands(getVariable("connection.room.id"), me.getID(), tCmds)
+  [ 95] jmp [134]
+  [ 98] pushcons 2 .............................. <"connection.room.id">
+  [100] pusharglist 1 ........................... <"connection.room.id">
+  [102] extcall 42 .............................. <getVariable("connection.room.id")>
+  [104] getparam 0 .............................. <me>
+  [106] pusharglist 1 ........................... <me>
+  [108] objcall 35 .............................. <me.getID()>
+  [110] getlocal 0 .............................. <tMsgs>
+  [112] pusharglistnoret 3 ...................... <getVariable("connection.room.id"), me.getID(), tMsgs>
+  [114] extcall 222 ............................. unregisterListener(getVariable("connection.room.id"), me.getID(), tMsgs)
+  [116] pushcons 2 .............................. <"connection.room.id">
+  [118] pusharglist 1 ........................... <"connection.room.id">
+  [120] extcall 42 .............................. <getVariable("connection.room.id")>
+  [122] getparam 0 .............................. <me>
+  [124] pusharglist 1 ........................... <me>
+  [126] objcall 35 .............................. <me.getID()>
+  [128] getlocal 1 .............................. <tCmds>
+  [130] pusharglistnoret 3 ...................... <getVariable("connection.room.id"), me.getID(), tCmds>
+  [132] extcall 223 ............................. unregisterCommands(getVariable("connection.room.id"), me.getID(), tCmds)
+  [134] pushint8 1 .............................. <1>
+  [136] pusharglistnoret 1 ...................... <1>
+  [138] extcall 36 .............................. return 1
+  [140] ret
+end

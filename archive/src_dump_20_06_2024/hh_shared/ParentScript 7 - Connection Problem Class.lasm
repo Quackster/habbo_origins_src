@@ -1,0 +1,205 @@
+property pTimeOutID, pWindowID, pDelayLength
+
+on construct me
+  [  0] pushcons 0 .............................. <"connection_problem_timeout">
+  [  2] setprop 265 ............................. pTimeOutID = "connection_problem_timeout"
+  [  5] pushcons 1 .............................. <"connection_problem_window">
+  [  7] setprop 266 ............................. pWindowID = "connection_problem_window"
+  [ 10] pushcons 2 .............................. <"failed.connection.delay">
+  [ 12] pusharglist 1 ........................... <"failed.connection.delay">
+  [ 14] extcall 267 ............................. <variableExists("failed.connection.delay")>
+  [ 17] jmpifz [ 33] ............................ if variableExists("failed.connection.delay") then / else
+  [ 20] pushcons 2 .............................. <"failed.connection.delay">
+  [ 22] pusharglist 1 ........................... <"failed.connection.delay">
+  [ 24] extcall 269 ............................. <getIntVariable("failed.connection.delay")>
+  [ 27] setprop 268 ............................. pDelayLength = getIntVariable("failed.connection.delay")
+  [ 30] jmp [ 39]
+  [ 33] pushint16 20000 ......................... <20000>
+  [ 36] setprop 268 ............................. pDelayLength = 20000
+  [ 39] pushsymb 54 ............................. <#userlogin>
+  [ 41] getparam 0 .............................. <me>
+  [ 43] pusharglist 1 ........................... <me>
+  [ 45] objcall 42 .............................. <me.getID()>
+  [ 47] pushsymb 262 ............................ <#Remove>
+  [ 50] pusharglistnoret 3 ...................... <#userlogin, me.getID(), #Remove>
+  [ 52] extcall 40 .............................. registerMessage(#userlogin, me.getID(), #Remove)
+  [ 54] getprop 268 ............................. <pDelayLength>
+  [ 57] pushzero ................................ <0>
+  [ 58] eq ...................................... <pDelayLength = 0>
+  [ 59] jmpifz [ 80] ............................ if pDelayLength = 0 then / else
+  [ 62] getparam 0 .............................. <me>
+  [ 64] pusharglist 1 ........................... <me>
+  [ 66] objcall 42 .............................. <me.getID()>
+  [ 68] pusharglist 1 ........................... <me.getID()>
+  [ 70] extcall 270 ............................. <removeObject(me.getID())>
+  [ 73] pusharglistnoret 1 ...................... <removeObject(me.getID())>
+  [ 75] extcall 44 .............................. return removeObject(me.getID())
+  [ 77] jmp [110]
+  [ 80] getprop 265 ............................. <pTimeOutID>
+  [ 83] getprop 268 ............................. <pDelayLength>
+  [ 86] pushsymb 263 ............................ <#showDialog>
+  [ 89] getparam 0 .............................. <me>
+  [ 91] pusharglist 1 ........................... <me>
+  [ 93] objcall 42 .............................. <me.getID()>
+  [ 95] pusharglist 0 ........................... <>
+  [ 97] extcall 30 .............................. <VOID>
+  [ 99] pushint8 1 .............................. <1>
+  [101] pusharglist 6 ........................... <pTimeOutID, pDelayLength, #showDialog, me.getID(), VOID, 1>
+  [103] extcall 271 ............................. <createTimeout(pTimeOutID, pDelayLength, #showDialog, me.getID(), VOID, 1)>
+  [106] pusharglistnoret 1 ...................... <createTimeout(pTimeOutID, pDelayLength, #showDialog, me.getID(), VOID, 1)>
+  [108] extcall 44 .............................. return createTimeout(pTimeOutID, pDelayLength, #showDialog, me.getID(), VOID, 1)
+  [110] ret
+end
+
+on deconstruct me
+  [  0] getprop 265 ............................. <pTimeOutID>
+  [  3] pusharglist 1 ........................... <pTimeOutID>
+  [  5] extcall 272 ............................. <timeoutExists(pTimeOutID)>
+  [  8] jmpifz [ 19] ............................ if timeoutExists(pTimeOutID) then
+  [ 11] getprop 265 ............................. <pTimeOutID>
+  [ 14] pusharglistnoret 1 ...................... <pTimeOutID>
+  [ 16] extcall 273 ............................. removeTimeout(pTimeOutID)
+  [ 19] getprop 266 ............................. <pWindowID>
+  [ 22] pusharglist 1 ........................... <pWindowID>
+  [ 24] extcall 47 .............................. <windowExists(pWindowID)>
+  [ 26] jmpifz [ 36] ............................ if windowExists(pWindowID) then
+  [ 29] getprop 266 ............................. <pWindowID>
+  [ 32] pusharglistnoret 1 ...................... <pWindowID>
+  [ 34] extcall 48 .............................. removeWindow(pWindowID)
+  [ 36] pushsymb 54 ............................. <#userlogin>
+  [ 38] getparam 0 .............................. <me>
+  [ 40] pusharglist 1 ........................... <me>
+  [ 42] objcall 42 .............................. <me.getID()>
+  [ 44] pusharglistnoret 2 ...................... <#userlogin, me.getID()>
+  [ 46] extcall 53 .............................. unregisterMessage(#userlogin, me.getID())
+  [ 48] pushint8 1 .............................. <1>
+  [ 50] pusharglistnoret 1 ...................... <1>
+  [ 52] extcall 44 .............................. return 1
+  [ 54] ret
+end
+
+on Remove me
+  [  0] getparam 0 .............................. <me>
+  [  2] pusharglist 1 ........................... <me>
+  [  4] objcall 42 .............................. <me.getID()>
+  [  6] pusharglist 1 ........................... <me.getID()>
+  [  8] extcall 270 ............................. <removeObject(me.getID())>
+  [ 11] pusharglistnoret 1 ...................... <removeObject(me.getID())>
+  [ 13] extcall 44 .............................. return removeObject(me.getID())
+  [ 15] ret
+end
+
+on showDialog me
+  [  0] getprop 266 ............................. <pWindowID>
+  [  3] pusharglist 1 ........................... <pWindowID>
+  [  5] extcall 79 .............................. <createWindow(pWindowID)>
+  [  7] jmpifz [151] ............................ if createWindow(pWindowID) then
+  [ 10] getprop 266 ............................. <pWindowID>
+  [ 13] pusharglist 1 ........................... <pWindowID>
+  [ 15] extcall 75 .............................. <getWindow(pWindowID)>
+  [ 17] setlocal 0 .............................. tWndObj = getWindow(pWindowID)
+  [ 19] getlocal 0 .............................. <tWndObj>
+  [ 21] pushsymb 248 ............................ <#title>
+  [ 23] pushcons 3 .............................. <"log_problem_title">
+  [ 25] pusharglist 1 ........................... <"log_problem_title">
+  [ 27] extcall 27 .............................. <getText("log_problem_title")>
+  [ 29] pusharglistnoret 3 ...................... <tWndObj, #title, getText("log_problem_title")>
+  [ 31] objcall 274 ............................. tWndObj.setProperty(#title, getText("log_problem_title"))
+  [ 34] getlocal 0 .............................. <tWndObj>
+  [ 36] pushcons 4 .............................. <"habbo_basic.window">
+  [ 38] pusharglistnoret 2 ...................... <tWndObj, "habbo_basic.window">
+  [ 40] objcall 80 .............................. tWndObj.merge("habbo_basic.window")
+  [ 42] getlocal 0 .............................. <tWndObj>
+  [ 44] pushcons 5 .............................. <"habbo_alert_c.window">
+  [ 46] pusharglistnoret 2 ...................... <tWndObj, "habbo_alert_c.window">
+  [ 48] objcall 80 .............................. tWndObj.merge("habbo_alert_c.window")
+  [ 50] getlocal 0 .............................. <tWndObj>
+  [ 52] pushint8 40 ............................. <40>
+  [ 54] pushint8 30 ............................. <30>
+  [ 56] pusharglistnoret 3 ...................... <tWndObj, 40, 30>
+  [ 58] objcall 275 ............................. tWndObj.resizeBy(40, 30)
+  [ 61] getlocal 0 .............................. <tWndObj>
+  [ 63] pusharglistnoret 1 ...................... <tWndObj>
+  [ 65] objcall 276 ............................. tWndObj.center()
+  [ 68] getlocal 0 .............................. <tWndObj>
+  [ 70] pushcons 6 .............................. <"alert_title">
+  [ 72] pusharglist 2 ........................... <tWndObj, "alert_title">
+  [ 74] objcall 82 .............................. <tWndObj.getElement("alert_title")>
+  [ 76] pushcons 3 .............................. <"log_problem_title">
+  [ 78] pusharglist 1 ........................... <"log_problem_title">
+  [ 80] extcall 27 .............................. <getText("log_problem_title")>
+  [ 82] pusharglistnoret 2 ...................... <tWndObj.getElement("alert_title"), getText("log_problem_title")>
+  [ 84] objcall 90 .............................. tWndObj.getElement("alert_title").setText(getText("log_problem_title"))
+  [ 86] getlocal 0 .............................. <tWndObj>
+  [ 88] pushcons 7 .............................. <"alert_text">
+  [ 90] pusharglist 2 ........................... <tWndObj, "alert_text">
+  [ 92] objcall 82 .............................. <tWndObj.getElement("alert_text")>
+  [ 94] pushcons 8 .............................. <"log_problem_text">
+  [ 96] pusharglist 1 ........................... <"log_problem_text">
+  [ 98] extcall 27 .............................. <getText("log_problem_text")>
+  [100] pusharglistnoret 2 ...................... <tWndObj.getElement("alert_text"), getText("log_problem_text")>
+  [102] objcall 90 .............................. tWndObj.getElement("alert_text").setText(getText("log_problem_text"))
+  [104] getlocal 0 .............................. <tWndObj>
+  [106] pushcons 9 .............................. <"alert_link">
+  [108] pusharglist 2 ........................... <tWndObj, "alert_link">
+  [110] objcall 82 .............................. <tWndObj.getElement("alert_link")>
+  [112] pushcons 10 ............................. <"log_problem_link">
+  [114] pusharglist 1 ........................... <"log_problem_link">
+  [116] extcall 27 .............................. <getText("log_problem_link")>
+  [118] pusharglistnoret 2 ...................... <tWndObj.getElement("alert_link"), getText("log_problem_link")>
+  [120] objcall 90 .............................. tWndObj.getElement("alert_link").setText(getText("log_problem_link"))
+  [122] getlocal 0 .............................. <tWndObj>
+  [124] getparam 0 .............................. <me>
+  [126] pusharglist 1 ........................... <me>
+  [128] objcall 42 .............................. <me.getID()>
+  [130] pusharglistnoret 2 ...................... <tWndObj, me.getID()>
+  [132] objcall 81 .............................. tWndObj.registerClient(me.getID())
+  [134] getlocal 0 .............................. <tWndObj>
+  [136] pushsymb 264 ............................ <#eventProc>
+  [139] getparam 0 .............................. <me>
+  [141] pusharglist 1 ........................... <me>
+  [143] objcall 42 .............................. <me.getID()>
+  [145] pushsymb 0 .............................. <#mouseUp>
+  [147] pusharglistnoret 4 ...................... <tWndObj, #eventProc, me.getID(), #mouseUp>
+  [149] objcall 63 .............................. tWndObj.registerProcedure(#eventProc, me.getID(), #mouseUp)
+  [151] ret
+end
+
+on eventProc me, tEvent, tElemID
+  [  0] getparam 1 .............................. <tEvent>
+  [  2] pushsymb 0 .............................. <#mouseUp>
+  [  4] eq ...................................... <tEvent = #mouseUp>
+  [  5] jmpifz [ 72] ............................ if tEvent = #mouseUp then
+  [  8] getparam 2 .............................. <tElemID>
+  [ 10] peek 0 .................................. case tElemID of
+  [ 12] pushcons 11 ............................. <"close">
+  [ 14] nteq
+  [ 15] jmpifz [ 26] ............................ (case) "close", ...
+  [ 18] peek 0
+  [ 20] pushcons 12 ............................. <"alert_ok">
+  [ 22] eq
+  [ 23] jmpifz [ 46] ............................ (case) ..., "alert_ok":
+  [ 26] pop 1
+  [ 28] getparam 0 .............................. <me>
+  [ 30] pusharglist 1 ........................... <me>
+  [ 32] objcall 42 .............................. <me.getID()>
+  [ 34] pusharglist 1 ........................... <me.getID()>
+  [ 36] extcall 270 ............................. <removeObject(me.getID())>
+  [ 39] pusharglistnoret 1 ...................... <removeObject(me.getID())>
+  [ 41] extcall 44 .............................. return removeObject(me.getID())
+  [ 43] jmp [ 70]
+  [ 46] peek 0
+  [ 48] pushcons 9 .............................. <"alert_link">
+  [ 50] eq
+  [ 51] jmpifz [ 70] ............................ (case) "alert_link":
+  [ 54] pop 1
+  [ 56] pushcons 13 ............................. <"log_problem_url">
+  [ 58] pusharglist 1 ........................... <"log_problem_url">
+  [ 60] extcall 27 .............................. <getText("log_problem_url")>
+  [ 62] pusharglist 1 ........................... <getText("log_problem_url")>
+  [ 64] extcall 159 ............................. <openNetPage(getText("log_problem_url"))>
+  [ 66] pusharglistnoret 1 ...................... <openNetPage(getText("log_problem_url"))>
+  [ 68] extcall 44 .............................. return openNetPage(getText("log_problem_url"))
+  [ 70] pop 1 ................................... end case
+  [ 72] ret
+end

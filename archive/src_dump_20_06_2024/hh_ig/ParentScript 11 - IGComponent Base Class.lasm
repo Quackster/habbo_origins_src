@@ -1,0 +1,777 @@
+property pIGComponentId, pActiveFlag, pTimeoutUpdates, pHiddenUpdates, pMainThreadId, pUpdateLastTimestamp, pUpdateInterval, pFeederList, pListenerList
+
+on construct me
+  [  0] pushzero ................................ <0>
+  [  1] setprop 434 ............................. pActiveFlag = 0
+  [  4] pushzero ................................ <0>
+  [  5] setprop 435 ............................. pTimeoutUpdates = 0
+  [  8] pushzero ................................ <0>
+  [  9] setprop 436 ............................. pHiddenUpdates = 0
+  [ 12] pushzero ................................ <0>
+  [ 13] setprop 437 ............................. pUpdateLastTimestamp = 0
+  [ 16] pushcons 0 .............................. <"ig.update.interval">
+  [ 18] pusharglist 1 ........................... <"ig.update.interval">
+  [ 20] extcall 388 ............................. <variableExists("ig.update.interval")>
+  [ 23] jmpifz [ 39] ............................ if variableExists("ig.update.interval") then / else
+  [ 26] pushcons 0 .............................. <"ig.update.interval">
+  [ 28] pusharglist 1 ........................... <"ig.update.interval">
+  [ 30] extcall 1302 ............................ <getIntVariable("ig.update.interval")>
+  [ 33] setprop 438 ............................. pUpdateInterval = getIntVariable("ig.update.interval")
+  [ 36] jmp [ 45]
+  [ 39] pushint16 5000 .......................... <5000>
+  [ 42] setprop 438 ............................. pUpdateInterval = 5000
+  [ 45] pusharglist 0 ........................... <[]>
+  [ 47] pushlist ................................ <[]>
+  [ 48] setprop 439 ............................. pFeederList = []
+  [ 51] pusharglist 0 ........................... <[]>
+  [ 53] pushlist ................................ <[]>
+  [ 54] setprop 440 ............................. pListenerList = []
+  [ 57] pushint8 1 .............................. <1>
+  [ 59] pusharglistnoret 1 ...................... <1>
+  [ 61] extcall 38 .............................. return 1
+  [ 63] ret
+end
+
+on deconstruct me
+  [  0] getparam 0 .............................. <me>
+  [  2] pushzero ................................ <0>
+  [  3] pusharglistnoret 2 ...................... <me, 0>
+  [  5] objcall 430 ............................. me.setContentUpdatePollingTimeout(0)
+  [  8] getparam 0 .............................. <me>
+  [ 10] pushzero ................................ <0>
+  [ 11] pusharglistnoret 2 ...................... <me, 0>
+  [ 13] objcall 55 .............................. me.setActiveFlag(0)
+  [ 15] pusharglist 0 ........................... <[]>
+  [ 17] pushlist ................................ <[]>
+  [ 18] setprop 440 ............................. pListenerList = []
+  [ 21] getprop 439 ............................. <pFeederList>
+  [ 24] peek 0
+  [ 26] pusharglist 1
+  [ 28] extcall 180
+  [ 30] pushint8 1
+  [ 32] peek 0
+  [ 34] peek 2
+  [ 36] lteq
+  [ 37] jmpifz [ 82] ............................ repeat with tServiceId in pFeederList
+  [ 40] peek 2
+  [ 42] peek 1
+  [ 44] pusharglist 2
+  [ 46] extcall 181
+  [ 48] setlocal 0
+  [ 50] getparam 0 .............................. <me>
+  [ 52] getlocal 0 .............................. <tServiceId>
+  [ 54] pusharglist 2 ........................... <me, tServiceId>
+  [ 56] objcall 52 .............................. <me.getIGComponent(tServiceId)>
+  [ 58] setlocal 1 .............................. tService = me.getIGComponent(tServiceId)
+  [ 60] getlocal 1 .............................. <tService>
+  [ 62] pushzero ................................ <0>
+  [ 63] nteq .................................... <tService <> 0>
+  [ 64] jmpifz [ 77] ............................ if tService <> 0 then
+  [ 67] getlocal 1 .............................. <tService>
+  [ 69] getprop 392 ............................. <pIGComponentId>
+  [ 72] pusharglistnoret 2 ...................... <tService, pIGComponentId>
+  [ 74] objcall 425 ............................. tService.unregisterUpdates(pIGComponentId)
+  [ 77] pushint8 1
+  [ 79] add
+  [ 80] endrepeat [ 32]
+  [ 82] pop 3
+  [ 84] pusharglist 0 ........................... <[]>
+  [ 86] pushlist ................................ <[]>
+  [ 87] setprop 439 ............................. pFeederList = []
+  [ 90] getparam 0 .............................. <me>
+  [ 92] pusharglist 1 ........................... <me>
+  [ 94] objcall 429 ............................. <me.getRendererID()>
+  [ 97] pusharglist 1 ........................... <me.getRendererID()>
+  [ 99] extcall 387 ............................. <objectExists(me.getRendererID())>
+  [102] jmpifz [116] ............................ if objectExists(me.getRendererID()) then
+  [105] getparam 0 .............................. <me>
+  [107] pusharglist 1 ........................... <me>
+  [109] objcall 429 ............................. <me.getRendererID()>
+  [112] pusharglistnoret 1 ...................... <me.getRendererID()>
+  [114] extcall 41 .............................. removeObject(me.getRendererID())
+  [116] pushint8 1 .............................. <1>
+  [118] pusharglistnoret 1 ...................... <1>
+  [120] extcall 38 .............................. return 1
+  [122] ret
+end
+
+on Initialize me
+  [  0] pushint8 1 .............................. <1>
+  [  2] pusharglistnoret 1 ...................... <1>
+  [  4] extcall 38 .............................. return 1
+  [  6] ret
+end
+
+on setActiveFlag me, tstate, tHoldUpdates
+  [  0] getparam 1 .............................. <tstate>
+  [  2] setprop 434 ............................. pActiveFlag = tstate
+  [  5] getparam 0 .............................. <me>
+  [  7] getobjprop 436 .......................... <me.pHiddenUpdates>
+  [ 10] not ..................................... <not me.pHiddenUpdates>
+  [ 11] jmpifz [ 40] ............................ if not me.pHiddenUpdates then
+  [ 14] getparam 2 .............................. <tHoldUpdates>
+  [ 16] not ..................................... <not tHoldUpdates>
+  [ 17] jmpifz [ 32] ............................ if not tHoldUpdates then / else
+  [ 20] getparam 0 .............................. <me>
+  [ 22] getparam 1 .............................. <tstate>
+  [ 24] pusharglistnoret 2 ...................... <me, tstate>
+  [ 26] objcall 430 ............................. me.setContentUpdatePollingTimeout(tstate)
+  [ 29] jmp [ 40]
+  [ 32] getparam 0 .............................. <me>
+  [ 34] pushzero ................................ <0>
+  [ 35] pusharglistnoret 2 ...................... <me, 0>
+  [ 37] objcall 430 ............................. me.setContentUpdatePollingTimeout(0)
+  [ 40] getparam 1 .............................. <tstate>
+  [ 42] pushint8 1 .............................. <1>
+  [ 44] eq ...................................... <tstate = 1>
+  [ 45] jmpifz [ 62] ............................ if tstate = 1 then / else
+  [ 48] getparam 0 .............................. <me>
+  [ 50] pusharglist 1 ........................... <me>
+  [ 52] objcall 31 .............................. <me.getID()>
+  [ 54] pusharglistnoret 1 ...................... <me.getID()>
+  [ 56] extcall 441 ............................. receiveUpdate(me.getID())
+  [ 59] jmp [ 80]
+  [ 62] getparam 0 .............................. <me>
+  [ 64] pusharglist 1 ........................... <me>
+  [ 66] objcall 31 .............................. <me.getID()>
+  [ 68] pusharglistnoret 1 ...................... <me.getID()>
+  [ 70] extcall 442 ............................. removeUpdate(me.getID())
+  [ 73] getparam 0 .............................. <me>
+  [ 75] pusharglistnoret 1 ...................... <me>
+  [ 77] objcall 428 ............................. me.discardRenderer()
+  [ 80] pushint8 1 .............................. <1>
+  [ 82] pusharglistnoret 1 ...................... <1>
+  [ 84] extcall 38 .............................. return 1
+  [ 86] ret
+end
+
+on getActiveFlag me
+  [  0] getprop 434 ............................. <pActiveFlag>
+  [  3] pusharglistnoret 1 ...................... <pActiveFlag>
+  [  5] extcall 38 .............................. return pActiveFlag
+  [  7] ret
+end
+
+on update me
+  [  0] pushint8 1 .............................. <1>
+  [  2] pusharglistnoret 1 ...................... <1>
+  [  4] extcall 38 .............................. return 1
+  [  6] ret
+end
+
+on displayEvent me, ttype, tParam
+  [  0] getparam 0 .............................. <me>
+  [  2] pushint8 1 .............................. <1>
+  [  4] pusharglist 2 ........................... <me, 1>
+  [  6] objcall 64 .............................. <me.getRenderer(1)>
+  [  8] setlocal 0 .............................. tRenderObj = me.getRenderer(1)
+  [ 10] getlocal 0 .............................. <tRenderObj>
+  [ 12] pushzero ................................ <0>
+  [ 13] nteq .................................... <tRenderObj <> 0>
+  [ 14] jmpifz [ 32] ............................ if tRenderObj <> 0 then
+  [ 17] getlocal 0 .............................. <tRenderObj>
+  [ 19] getparam 1 .............................. <ttype>
+  [ 21] getparam 2 .............................. <tParam>
+  [ 23] pusharglist 3 ........................... <tRenderObj, ttype, tParam>
+  [ 25] objcall 272 ............................. <tRenderObj.displayEvent(ttype, tParam)>
+  [ 28] pusharglistnoret 1 ...................... <tRenderObj.displayEvent(ttype, tParam)>
+  [ 30] extcall 38 .............................. return tRenderObj.displayEvent(ttype, tParam)
+  [ 32] pushzero ................................ <0>
+  [ 33] pusharglistnoret 1 ...................... <0>
+  [ 35] extcall 38 .............................. return 0
+  [ 37] ret
+end
+
+on Remove me
+  [  0] getparam 0 .............................. <me>
+  [  2] pusharglist 1 ........................... <me>
+  [  4] objcall 43 .............................. <me.getComponent()>
+  [  6] getprop 392 ............................. <pIGComponentId>
+  [  9] pusharglistnoret 2 ...................... <me.getComponent(), pIGComponentId>
+  [ 11] objcall 68 .............................. me.getComponent().removeIGComponent(pIGComponentId)
+  [ 13] ret
+end
+
+on getMainThread me
+  [  0] getprop 391 ............................. <pMainThreadId>
+  [  3] pusharglist 1 ........................... <pMainThreadId>
+  [  5] extcall 85 .............................. <getObject(pMainThreadId)>
+  [  7] pusharglistnoret 1 ...................... <getObject(pMainThreadId)>
+  [  9] extcall 38 .............................. return getObject(pMainThreadId)
+  [ 11] ret
+end
+
+on getHandler me
+  [  0] getparam 0 .............................. <me>
+  [  2] pusharglist 1 ........................... <me>
+  [  4] objcall 419 ............................. <me.getMainThread()>
+  [  7] setlocal 0 .............................. tMainThreadRef = me.getMainThread()
+  [  9] getlocal 0 .............................. <tMainThreadRef>
+  [ 11] pusharglist 1 ........................... <tMainThreadRef>
+  [ 13] extcall 97 .............................. <objectp(tMainThreadRef)>
+  [ 15] not ..................................... <not objectp(tMainThreadRef)>
+  [ 16] jmpifz [ 24] ............................ if not objectp(tMainThreadRef) then
+  [ 19] pushzero ................................ <0>
+  [ 20] pusharglistnoret 1 ...................... <0>
+  [ 22] extcall 38 .............................. return 0
+  [ 24] getlocal 0 .............................. <tMainThreadRef>
+  [ 26] pusharglist 1 ........................... <tMainThreadRef>
+  [ 28] objcall 100 ............................. <tMainThreadRef.getHandler()>
+  [ 30] pusharglistnoret 1 ...................... <tMainThreadRef.getHandler()>
+  [ 32] extcall 38 .............................. return tMainThreadRef.getHandler()
+  [ 34] ret
+end
+
+on getComponent me
+  [  0] getparam 0 .............................. <me>
+  [  2] pusharglist 1 ........................... <me>
+  [  4] objcall 419 ............................. <me.getMainThread()>
+  [  7] setlocal 0 .............................. tMainThreadRef = me.getMainThread()
+  [  9] getlocal 0 .............................. <tMainThreadRef>
+  [ 11] pusharglist 1 ........................... <tMainThreadRef>
+  [ 13] extcall 97 .............................. <objectp(tMainThreadRef)>
+  [ 15] not ..................................... <not objectp(tMainThreadRef)>
+  [ 16] jmpifz [ 24] ............................ if not objectp(tMainThreadRef) then
+  [ 19] pushzero ................................ <0>
+  [ 20] pusharglistnoret 1 ...................... <0>
+  [ 22] extcall 38 .............................. return 0
+  [ 24] getlocal 0 .............................. <tMainThreadRef>
+  [ 26] pusharglist 1 ........................... <tMainThreadRef>
+  [ 28] objcall 43 .............................. <tMainThreadRef.getComponent()>
+  [ 30] pusharglistnoret 1 ...................... <tMainThreadRef.getComponent()>
+  [ 32] extcall 38 .............................. return tMainThreadRef.getComponent()
+  [ 34] ret
+end
+
+on getInterface me
+  [  0] getparam 0 .............................. <me>
+  [  2] pusharglist 1 ........................... <me>
+  [  4] objcall 419 ............................. <me.getMainThread()>
+  [  7] setlocal 0 .............................. tMainThreadRef = me.getMainThread()
+  [  9] getlocal 0 .............................. <tMainThreadRef>
+  [ 11] pusharglist 1 ........................... <tMainThreadRef>
+  [ 13] extcall 97 .............................. <objectp(tMainThreadRef)>
+  [ 15] not ..................................... <not objectp(tMainThreadRef)>
+  [ 16] jmpifz [ 24] ............................ if not objectp(tMainThreadRef) then
+  [ 19] pushzero ................................ <0>
+  [ 20] pusharglistnoret 1 ...................... <0>
+  [ 22] extcall 38 .............................. return 0
+  [ 24] getlocal 0 .............................. <tMainThreadRef>
+  [ 26] pusharglist 1 ........................... <tMainThreadRef>
+  [ 28] objcall 204 ............................. <tMainThreadRef.getInterface()>
+  [ 30] pusharglistnoret 1 ...................... <tMainThreadRef.getInterface()>
+  [ 32] extcall 38 .............................. return tMainThreadRef.getInterface()
+  [ 34] ret
+end
+
+on ChangeWindowView me, tMode
+  [  0] getparam 0 .............................. <me>
+  [  2] pusharglist 1 ........................... <me>
+  [  4] objcall 204 ............................. <me.getInterface()>
+  [  6] setlocal 0 .............................. tInterface = me.getInterface()
+  [  8] getlocal 0 .............................. <tInterface>
+  [ 10] pushzero ................................ <0>
+  [ 11] eq ...................................... <tInterface = 0>
+  [ 12] jmpifz [ 20] ............................ if tInterface = 0 then
+  [ 15] pushzero ................................ <0>
+  [ 16] pusharglistnoret 1 ...................... <0>
+  [ 18] extcall 38 .............................. return 0
+  [ 20] getlocal 0 .............................. <tInterface>
+  [ 22] getparam 1 .............................. <tMode>
+  [ 24] pusharglist 2 ........................... <tInterface, tMode>
+  [ 26] objcall 11 .............................. <tInterface.ChangeWindowView(tMode)>
+  [ 28] pusharglistnoret 1 ...................... <tInterface.ChangeWindowView(tMode)>
+  [ 30] extcall 38 .............................. return tInterface.ChangeWindowView(tMode)
+  [ 32] ret
+end
+
+on renderUI me, tComponentSpec
+  [  0] getparam 0 .............................. <me>
+  [  2] pusharglist 1 ........................... <me>
+  [  4] objcall 429 ............................. <me.getRendererID()>
+  [  7] pusharglist 1 ........................... <me.getRendererID()>
+  [  9] extcall 85 .............................. <getObject(me.getRendererID())>
+  [ 11] setlocal 0 .............................. tRenderObj = getObject(me.getRendererID())
+  [ 13] getlocal 0 .............................. <tRenderObj>
+  [ 15] pushzero ................................ <0>
+  [ 16] eq ...................................... <tRenderObj = 0>
+  [ 17] jmpifz [ 26] ............................ if tRenderObj = 0 then
+  [ 20] pushint8 1 .............................. <1>
+  [ 22] pusharglistnoret 1 ...................... <1>
+  [ 24] extcall 38 .............................. return 1
+  [ 26] getlocal 0 .............................. <tRenderObj>
+  [ 28] getparam 1 .............................. <tComponentSpec>
+  [ 30] pusharglist 2 ........................... <tRenderObj, tComponentSpec>
+  [ 32] objcall 420 ............................. <tRenderObj.renderUI(tComponentSpec)>
+  [ 35] pusharglistnoret 1 ...................... <tRenderObj.renderUI(tComponentSpec)>
+  [ 37] extcall 38 .............................. return tRenderObj.renderUI(tComponentSpec)
+  [ 39] ret
+end
+
+on resetSubComponent me, tID
+  [  0] getparam 0 .............................. <me>
+  [  2] pusharglist 1 ........................... <me>
+  [  4] objcall 429 ............................. <me.getRendererID()>
+  [  7] pusharglist 1 ........................... <me.getRendererID()>
+  [  9] extcall 85 .............................. <getObject(me.getRendererID())>
+  [ 11] setlocal 0 .............................. tRenderObj = getObject(me.getRendererID())
+  [ 13] getlocal 0 .............................. <tRenderObj>
+  [ 15] pushzero ................................ <0>
+  [ 16] eq ...................................... <tRenderObj = 0>
+  [ 17] jmpifz [ 26] ............................ if tRenderObj = 0 then
+  [ 20] pushint8 1 .............................. <1>
+  [ 22] pusharglistnoret 1 ...................... <1>
+  [ 24] extcall 38 .............................. return 1
+  [ 26] getlocal 0 .............................. <tRenderObj>
+  [ 28] getparam 1 .............................. <tID>
+  [ 30] pusharglist 2 ........................... <tRenderObj, tID>
+  [ 32] objcall 421 ............................. <tRenderObj.resetSubComponent(tID)>
+  [ 35] pusharglistnoret 1 ...................... <tRenderObj.resetSubComponent(tID)>
+  [ 37] extcall 38 .............................. return tRenderObj.resetSubComponent(tID)
+  [ 39] ret
+end
+
+on getIGComponent me, tServiceId
+  [  0] getparam 0 .............................. <me>
+  [  2] pusharglist 1 ........................... <me>
+  [  4] objcall 419 ............................. <me.getMainThread()>
+  [  7] setlocal 0 .............................. tMainThreadRef = me.getMainThread()
+  [  9] getlocal 0 .............................. <tMainThreadRef>
+  [ 11] pusharglist 1 ........................... <tMainThreadRef>
+  [ 13] extcall 97 .............................. <objectp(tMainThreadRef)>
+  [ 15] not ..................................... <not objectp(tMainThreadRef)>
+  [ 16] jmpifz [ 24] ............................ if not objectp(tMainThreadRef) then
+  [ 19] pushzero ................................ <0>
+  [ 20] pusharglistnoret 1 ...................... <0>
+  [ 22] extcall 38 .............................. return 0
+  [ 24] getlocal 0 .............................. <tMainThreadRef>
+  [ 26] getparam 1 .............................. <tServiceId>
+  [ 28] pusharglist 2 ........................... <tMainThreadRef, tServiceId>
+  [ 30] objcall 52 .............................. <tMainThreadRef.getIGComponent(tServiceId)>
+  [ 32] pusharglistnoret 1 ...................... <tMainThreadRef.getIGComponent(tServiceId)>
+  [ 34] extcall 38 .............................. return tMainThreadRef.getIGComponent(tServiceId)
+  [ 36] ret
+end
+
+on registerForIGComponentUpdates me, tServiceId
+  [  0] getparam 0 .............................. <me>
+  [  2] getparam 1 .............................. <tServiceId>
+  [  4] pusharglist 2 ........................... <me, tServiceId>
+  [  6] objcall 52 .............................. <me.getIGComponent(tServiceId)>
+  [  8] setlocal 0 .............................. tService = me.getIGComponent(tServiceId)
+  [ 10] getlocal 0 .............................. <tService>
+  [ 12] pushzero ................................ <0>
+  [ 13] eq ...................................... <tService = 0>
+  [ 14] jmpifz [ 22] ............................ if tService = 0 then
+  [ 17] pushzero ................................ <0>
+  [ 18] pusharglistnoret 1 ...................... <0>
+  [ 20] extcall 38 .............................. return 0
+  [ 22] getlocal 0 .............................. <tService>
+  [ 24] getprop 392 ............................. <pIGComponentId>
+  [ 27] pusharglist 2 ........................... <tService, pIGComponentId>
+  [ 29] objcall 424 ............................. <tService.registerUpdates(pIGComponentId)>
+  [ 32] jmpifz [ 58] ............................ if tService.registerUpdates(pIGComponentId) then
+  [ 35] getprop 439 ............................. <pFeederList>
+  [ 38] getparam 1 .............................. <tServiceId>
+  [ 40] pusharglist 2 ........................... <pFeederList, tServiceId>
+  [ 42] objcall 255 ............................. <pFeederList.findPos(tServiceId)>
+  [ 44] pushzero ................................ <0>
+  [ 45] eq ...................................... <pFeederList.findPos(tServiceId) = 0>
+  [ 46] jmpifz [ 58] ............................ if pFeederList.findPos(tServiceId) = 0 then
+  [ 49] getprop 439 ............................. <pFeederList>
+  [ 52] getparam 1 .............................. <tServiceId>
+  [ 54] pusharglistnoret 2 ...................... <pFeederList, tServiceId>
+  [ 56] objcall 224 ............................. pFeederList.append(tServiceId)
+  [ 58] pushint8 1 .............................. <1>
+  [ 60] pusharglistnoret 1 ...................... <1>
+  [ 62] extcall 38 .............................. return 1
+  [ 64] ret
+end
+
+on unregisterFromIGComponentUpdates me, tServiceId
+  [  0] getparam 0 .............................. <me>
+  [  2] getparam 1 .............................. <tServiceId>
+  [  4] pusharglist 2 ........................... <me, tServiceId>
+  [  6] objcall 52 .............................. <me.getIGComponent(tServiceId)>
+  [  8] setlocal 0 .............................. tService = me.getIGComponent(tServiceId)
+  [ 10] getlocal 0 .............................. <tService>
+  [ 12] pushzero ................................ <0>
+  [ 13] eq ...................................... <tService = 0>
+  [ 14] jmpifz [ 22] ............................ if tService = 0 then
+  [ 17] pushzero ................................ <0>
+  [ 18] pusharglistnoret 1 ...................... <0>
+  [ 20] extcall 38 .............................. return 0
+  [ 22] getlocal 0 .............................. <tService>
+  [ 24] getprop 392 ............................. <pIGComponentId>
+  [ 27] pusharglist 2 ........................... <tService, pIGComponentId>
+  [ 29] objcall 425 ............................. <tService.unregisterUpdates(pIGComponentId)>
+  [ 32] jmpifz [ 45] ............................ if tService.unregisterUpdates(pIGComponentId) then
+  [ 35] getprop 439 ............................. <pFeederList>
+  [ 38] getparam 1 .............................. <tServiceId>
+  [ 40] pusharglistnoret 2 ...................... <pFeederList, tServiceId>
+  [ 42] objcall 447 ............................. pFeederList.deleteOne(tServiceId)
+  [ 45] pushint8 1 .............................. <1>
+  [ 47] pusharglistnoret 1 ...................... <1>
+  [ 49] extcall 38 .............................. return 1
+  [ 51] ret
+end
+
+on registerUpdates me, tServiceId
+  [  0] getparam 1 .............................. <tServiceId>
+  [  2] pusharglist 0 ........................... <>
+  [  4] extcall 47 .............................. <VOID>
+  [  6] eq ...................................... <tServiceId = VOID>
+  [  7] jmpifz [ 15] ............................ if tServiceId = VOID then
+  [ 10] pushzero ................................ <0>
+  [ 11] pusharglistnoret 1 ...................... <0>
+  [ 13] extcall 38 .............................. return 0
+  [ 15] getprop 440 ............................. <pListenerList>
+  [ 18] getparam 1 .............................. <tServiceId>
+  [ 20] pusharglist 2 ........................... <pListenerList, tServiceId>
+  [ 22] objcall 255 ............................. <pListenerList.findPos(tServiceId)>
+  [ 24] jmpifz [ 33] ............................ if pListenerList.findPos(tServiceId) then
+  [ 27] pushint8 1 .............................. <1>
+  [ 29] pusharglistnoret 1 ...................... <1>
+  [ 31] extcall 38 .............................. return 1
+  [ 33] getprop 440 ............................. <pListenerList>
+  [ 36] getparam 1 .............................. <tServiceId>
+  [ 38] pusharglistnoret 2 ...................... <pListenerList, tServiceId>
+  [ 40] objcall 224 ............................. pListenerList.append(tServiceId)
+  [ 42] pushint8 1 .............................. <1>
+  [ 44] pusharglistnoret 1 ...................... <1>
+  [ 46] extcall 38 .............................. return 1
+  [ 48] ret
+end
+
+on unregisterUpdates me, tServiceId
+  [  0] getprop 440 ............................. <pListenerList>
+  [  3] getparam 1 .............................. <tServiceId>
+  [  5] pusharglistnoret 2 ...................... <pListenerList, tServiceId>
+  [  7] objcall 447 ............................. pListenerList.deleteOne(tServiceId)
+  [ 10] pushint8 1 .............................. <1>
+  [ 12] pusharglistnoret 1 ...................... <1>
+  [ 14] extcall 38 .............................. return 1
+  [ 16] ret
+end
+
+on announceUpdate me, tUpdateId
+  [  0] getparam 0 .............................. <me>
+  [  2] pusharglist 1 ........................... <me>
+  [  4] objcall 71 .............................. <me.getActiveFlag()>
+  [  6] jmpifz [ 27] ............................ if me.getActiveFlag() then
+  [  9] getparam 0 .............................. <me>
+  [ 11] getparam 1 .............................. <tUpdateId>
+  [ 13] getprop 392 ............................. <pIGComponentId>
+  [ 16] pusharglistnoret 3 ...................... <me, tUpdateId, pIGComponentId>
+  [ 18] objcall 427 ............................. me.handleUpdate(tUpdateId, pIGComponentId)
+  [ 21] pushint8 1 .............................. <1>
+  [ 23] pusharglistnoret 1 ...................... <1>
+  [ 25] extcall 38 .............................. return 1
+  [ 27] getprop 440 ............................. <pListenerList>
+  [ 30] peek 0
+  [ 32] pusharglist 1
+  [ 34] extcall 180
+  [ 36] pushint8 1
+  [ 38] peek 0
+  [ 40] peek 2
+  [ 42] lteq
+  [ 43] jmpifz [ 99] ............................ repeat with tServiceId in pListenerList
+  [ 46] peek 2
+  [ 48] peek 1
+  [ 50] pusharglist 2
+  [ 52] extcall 181
+  [ 54] setlocal 0
+  [ 56] getparam 0 .............................. <me>
+  [ 58] getlocal 0 .............................. <tServiceId>
+  [ 60] pusharglist 2 ........................... <me, tServiceId>
+  [ 62] objcall 52 .............................. <me.getIGComponent(tServiceId)>
+  [ 64] setlocal 1 .............................. tService = me.getIGComponent(tServiceId)
+  [ 66] getlocal 1 .............................. <tService>
+  [ 68] pushzero ................................ <0>
+  [ 69] nteq .................................... <tService <> 0>
+  [ 70] jmpifz [ 94] ............................ if tService <> 0 then
+  [ 73] getlocal 1 .............................. <tService>
+  [ 75] pusharglist 1 ........................... <tService>
+  [ 77] objcall 71 .............................. <tService.getActiveFlag()>
+  [ 79] jmpifz [ 94] ............................ if tService.getActiveFlag() then
+  [ 82] getlocal 1 .............................. <tService>
+  [ 84] getparam 1 .............................. <tUpdateId>
+  [ 86] getprop 392 ............................. <pIGComponentId>
+  [ 89] pusharglistnoret 3 ...................... <tService, tUpdateId, pIGComponentId>
+  [ 91] objcall 427 ............................. tService.handleUpdate(tUpdateId, pIGComponentId)
+  [ 94] pushint8 1
+  [ 96] add
+  [ 97] endrepeat [ 38]
+  [ 99] pop 3
+  [101] pushint8 1 .............................. <1>
+  [103] pusharglistnoret 1 ...................... <1>
+  [105] extcall 38 .............................. return 1
+  [107] ret
+end
+
+on handleUpdate me, tUpdateId, tSenderId
+  [  0] getparam 0 .............................. <me>
+  [  2] pusharglist 1 ........................... <me>
+  [  4] objcall 71 .............................. <me.getActiveFlag()>
+  [  6] not ..................................... <not me.getActiveFlag()>
+  [  7] jmpifz [ 16] ............................ if not me.getActiveFlag() then
+  [ 10] pushint8 1 .............................. <1>
+  [ 12] pusharglistnoret 1 ...................... <1>
+  [ 14] extcall 38 .............................. return 1
+  [ 16] getparam 0 .............................. <me>
+  [ 18] pusharglist 1 ........................... <me>
+  [ 20] objcall 429 ............................. <me.getRendererID()>
+  [ 23] pusharglist 1 ........................... <me.getRendererID()>
+  [ 25] extcall 85 .............................. <getObject(me.getRendererID())>
+  [ 27] setlocal 0 .............................. tRenderObj = getObject(me.getRendererID())
+  [ 29] getlocal 0 .............................. <tRenderObj>
+  [ 31] pushzero ................................ <0>
+  [ 32] eq ...................................... <tRenderObj = 0>
+  [ 33] jmpifz [ 42] ............................ if tRenderObj = 0 then
+  [ 36] pushint8 1 .............................. <1>
+  [ 38] pusharglistnoret 1 ...................... <1>
+  [ 40] extcall 38 .............................. return 1
+  [ 42] pushsymb 427 ............................ <#handleUpdate>
+  [ 45] getlocal 0 .............................. <tRenderObj>
+  [ 47] pusharglist 1 ........................... <[tRenderObj]>
+  [ 49] pushlist ................................ <[tRenderObj]>
+  [ 50] getparam 1 .............................. <tUpdateId>
+  [ 52] getparam 2 .............................. <tSenderId>
+  [ 54] pusharglistnoret 4 ...................... <#handleUpdate, [tRenderObj], tUpdateId, tSenderId>
+  [ 56] extcall 109 ............................. call(#handleUpdate, [tRenderObj], tUpdateId, tSenderId)
+  [ 58] ret
+end
+
+on getRenderer me, tCreateIfMissing
+  [  0] getparam 1 .............................. <tCreateIfMissing>
+  [  2] not ..................................... <not tCreateIfMissing>
+  [  3] getparam 0 .............................. <me>
+  [  5] pusharglist 1 ........................... <me>
+  [  7] objcall 71 .............................. <me.getActiveFlag()>
+  [  9] not ..................................... <not me.getActiveFlag()>
+  [ 10] and ..................................... <not tCreateIfMissing and not me.getActiveFlag()>
+  [ 11] jmpifz [ 19] ............................ if not tCreateIfMissing and not me.getActiveFlag() then
+  [ 14] pushzero ................................ <0>
+  [ 15] pusharglistnoret 1 ...................... <0>
+  [ 17] extcall 38 .............................. return 0
+  [ 19] getparam 0 .............................. <me>
+  [ 21] pusharglist 1 ........................... <me>
+  [ 23] objcall 429 ............................. <me.getRendererID()>
+  [ 26] pusharglist 1 ........................... <me.getRendererID()>
+  [ 28] extcall 85 .............................. <getObject(me.getRendererID())>
+  [ 30] setlocal 0 .............................. tRenderObj = getObject(me.getRendererID())
+  [ 32] getlocal 0 .............................. <tRenderObj>
+  [ 34] pusharglist 1 ........................... <tRenderObj>
+  [ 36] extcall 97 .............................. <objectp(tRenderObj)>
+  [ 38] jmpifz [ 47] ............................ if objectp(tRenderObj) then
+  [ 41] getlocal 0 .............................. <tRenderObj>
+  [ 43] pusharglistnoret 1 ...................... <tRenderObj>
+  [ 45] extcall 38 .............................. return tRenderObj
+  [ 47] getparam 0 .............................. <me>
+  [ 49] pusharglist 1 ........................... <me>
+  [ 51] objcall 429 ............................. <me.getRendererID()>
+  [ 54] pushcons 1 .............................. <"IGComponentUI Base Class">
+  [ 56] pushcons 2 .............................. <"IG">
+  [ 58] getparam 0 .............................. <me>
+  [ 60] getobjprop 392 .......................... <me.pIGComponentId>
+  [ 63] joinpadstr .............................. <"IG" && me.pIGComponentId>
+  [ 64] pushcons 3 .............................. <"UI Class">
+  [ 66] joinstr ................................. <"IG" && me.pIGComponentId & "UI Class">
+  [ 67] pusharglist 2 ........................... <["IGComponentUI Base Class", "IG" && me.pIGComponentId & "UI Class"]>
+  [ 69] pushlist ................................ <["IGComponentUI Base Class", "IG" && me.pIGComponentId & "UI Class"]>
+  [ 70] pusharglist 2 ........................... <me.getRendererID(), ["IGComponentUI Base Class", "IG" && me.pIGComponentId & "UI Class"]>
+  [ 72] extcall 89 .............................. <createObject(me.getRendererID(), ["IGComponentUI Base Class", "IG" && me.pIGComponentId & "UI Class"])>
+  [ 74] setlocal 0 .............................. tRenderObj = createObject(me.getRendererID(), ["IGComponentUI Base Class", "IG" && me.pIGComponentId & "UI Class"])
+  [ 76] getlocal 0 .............................. <tRenderObj>
+  [ 78] pushzero ................................ <0>
+  [ 79] eq ...................................... <tRenderObj = 0>
+  [ 80] jmpifz [ 88] ............................ if tRenderObj = 0 then
+  [ 83] pushzero ................................ <0>
+  [ 84] pusharglistnoret 1 ...................... <0>
+  [ 86] extcall 38 .............................. return 0
+  [ 88] getlocal 0 .............................. <tRenderObj>
+  [ 90] getparam 0 .............................. <me>
+  [ 92] pusharglist 1 ........................... <me>
+  [ 94] objcall 31 .............................. <me.getID()>
+  [ 96] getprop 391 ............................. <pMainThreadId>
+  [ 99] pusharglistnoret 3 ...................... <tRenderObj, me.getID(), pMainThreadId>
+  [101] objcall 450 ............................. tRenderObj.define(me.getID(), pMainThreadId)
+  [104] getlocal 0 .............................. <tRenderObj>
+  [106] pusharglistnoret 1 ...................... <tRenderObj>
+  [108] extcall 38 .............................. return tRenderObj
+  [110] ret
+end
+
+on discardRenderer me
+  [  0] getparam 0 .............................. <me>
+  [  2] pusharglist 1 ........................... <me>
+  [  4] objcall 429 ............................. <me.getRendererID()>
+  [  7] setlocal 0 .............................. tID = me.getRendererID()
+  [  9] getlocal 0 .............................. <tID>
+  [ 11] pusharglist 1 ........................... <tID>
+  [ 13] extcall 85 .............................. <getObject(tID)>
+  [ 15] setlocal 1 .............................. tRenderObj = getObject(tID)
+  [ 17] getlocal 1 .............................. <tRenderObj>
+  [ 19] pusharglist 1 ........................... <tRenderObj>
+  [ 21] extcall 97 .............................. <objectp(tRenderObj)>
+  [ 23] jmpifz [ 39] ............................ if objectp(tRenderObj) then
+  [ 26] getlocal 1 .............................. <tRenderObj>
+  [ 28] pusharglistnoret 1 ...................... <tRenderObj>
+  [ 30] objcall 451 ............................. tRenderObj.removeWindows()
+  [ 33] getlocal 0 .............................. <tID>
+  [ 35] pusharglistnoret 1 ...................... <tID>
+  [ 37] extcall 41 .............................. removeObject(tID)
+  [ 39] pushint8 1 .............................. <1>
+  [ 41] pusharglistnoret 1 ...................... <1>
+  [ 43] extcall 38 .............................. return 1
+  [ 45] ret
+end
+
+on getRendererID me
+  [  0] getparam 0 .............................. <me>
+  [  2] pusharglist 1 ........................... <me>
+  [  4] objcall 31 .............................. <me.getID()>
+  [  6] pushcons 4 .............................. <"_UI">
+  [  8] joinstr ................................. <me.getID() & "_UI">
+  [  9] pusharglistnoret 1 ...................... <me.getID() & "_UI">
+  [ 11] extcall 38 .............................. return me.getID() & "_UI"
+  [ 13] ret
+end
+
+on setContentUpdatePollingTimeout me, tstate
+  [  0] getprop 435 ............................. <pTimeoutUpdates>
+  [  3] not ..................................... <not pTimeoutUpdates>
+  [  4] jmpifz [ 13] ............................ if not pTimeoutUpdates then
+  [  7] pushint8 1 .............................. <1>
+  [  9] pusharglistnoret 1 ...................... <1>
+  [ 11] extcall 38 .............................. return 1
+  [ 13] getparam 0 .............................. <me>
+  [ 15] getobjprop 392 .......................... <me.pIGComponentId>
+  [ 18] pusharglist 0 ........................... <>
+  [ 20] extcall 47 .............................. <VOID>
+  [ 22] eq ...................................... <me.pIGComponentId = VOID>
+  [ 23] jmpifz [ 41] ............................ if me.pIGComponentId = VOID then
+  [ 26] getparam 0 .............................. <me>
+  [ 28] pushcons 5 .............................. <"IGComponent ID not defined before setting updates!">
+  [ 30] pushsymb 430 ............................ <#setContentUpdatePollingTimeout>
+  [ 33] pusharglist 3 ........................... <me, "IGComponent ID not defined before setting updates!", #setContentUpdatePollingTimeout>
+  [ 35] extcall 210 ............................. <error(me, "IGComponent ID not defined before setting updates!", #setContentUpdatePollingTimeout)>
+  [ 37] pusharglistnoret 1 ...................... <error(me, "IGComponent ID not defined before setting updates!", #setContentUpdatePollingTimeout)>
+  [ 39] extcall 38 .............................. return error(me, "IGComponent ID not defined before setting updates!", #setContentUpdatePollingTimeout)
+  [ 41] getprop 392 ............................. <pIGComponentId>
+  [ 44] pushcons 6 .............................. <"_timer">
+  [ 46] joinstr ................................. <pIGComponentId & "_timer">
+  [ 47] setlocal 0 .............................. tUpdateTimeoutId = pIGComponentId & "_timer"
+  [ 49] getparam 1 .............................. <tstate>
+  [ 51] pushint8 1 .............................. <1>
+  [ 53] eq ...................................... <tstate = 1>
+  [ 54] getprop 436 ............................. <pHiddenUpdates>
+  [ 57] or ...................................... <(tstate = 1) or pHiddenUpdates>
+  [ 58] jmpifz [148] ............................ if (tstate = 1) or pHiddenUpdates then / else
+  [ 61] pushcons 7 .............................. <"ig.">
+  [ 63] getprop 392 ............................. <pIGComponentId>
+  [ 66] joinstr ................................. <"ig." & pIGComponentId>
+  [ 67] pushcons 8 .............................. <".update.interval">
+  [ 69] joinstr ................................. <"ig." & pIGComponentId & ".update.interval">
+  [ 70] pusharglist 1 ........................... <"ig." & pIGComponentId & ".update.interval">
+  [ 72] extcall 388 ............................. <variableExists("ig." & pIGComponentId & ".update.interval")>
+  [ 75] jmpifz [ 95] ............................ if variableExists("ig." & pIGComponentId & ".update.interval") then
+  [ 78] pushcons 7 .............................. <"ig.">
+  [ 80] getprop 392 ............................. <pIGComponentId>
+  [ 83] joinstr ................................. <"ig." & pIGComponentId>
+  [ 84] pushcons 8 .............................. <".update.interval">
+  [ 86] joinstr ................................. <"ig." & pIGComponentId & ".update.interval">
+  [ 87] pusharglist 1 ........................... <"ig." & pIGComponentId & ".update.interval">
+  [ 89] extcall 1302 ............................ <getIntVariable("ig." & pIGComponentId & ".update.interval")>
+  [ 92] setprop 438 ............................. pUpdateInterval = getIntVariable("ig." & pIGComponentId & ".update.interval")
+  [ 95] getparam 0 .............................. <me>
+  [ 97] pusharglist 1 ........................... <me>
+  [ 99] objcall 31 .............................. <me.getID()>
+  [101] pusharglist 1 ........................... <me.getID()>
+  [103] extcall 85 .............................. <getObject(me.getID())>
+  [105] pusharglistnoret 1 ...................... <getObject(me.getID())>
+  [107] objcall 431 ............................. getObject(me.getID()).pollContentUpdate()
+  [110] getlocal 0 .............................. <tUpdateTimeoutId>
+  [112] pusharglist 1 ........................... <tUpdateTimeoutId>
+  [114] extcall 452 ............................. <timeoutExists(tUpdateTimeoutId)>
+  [117] not ..................................... <not timeoutExists(tUpdateTimeoutId)>
+  [118] jmpifz [145] ............................ if not timeoutExists(tUpdateTimeoutId) then
+  [121] getlocal 0 .............................. <tUpdateTimeoutId>
+  [123] getprop 438 ............................. <pUpdateInterval>
+  [126] pushsymb 431 ............................ <#pollContentUpdate>
+  [129] getparam 0 .............................. <me>
+  [131] pusharglist 1 ........................... <me>
+  [133] objcall 31 .............................. <me.getID()>
+  [135] pusharglist 0 ........................... <>
+  [137] extcall 47 .............................. <VOID>
+  [139] pushzero ................................ <0>
+  [140] pusharglistnoret 6 ...................... <tUpdateTimeoutId, pUpdateInterval, #pollContentUpdate, me.getID(), VOID, 0>
+  [142] extcall 453 ............................. createTimeout(tUpdateTimeoutId, pUpdateInterval, #pollContentUpdate, me.getID(), VOID, 0)
+  [145] jmp [165]
+  [148] getlocal 0 .............................. <tUpdateTimeoutId>
+  [150] pusharglist 1 ........................... <tUpdateTimeoutId>
+  [152] extcall 452 ............................. <timeoutExists(tUpdateTimeoutId)>
+  [155] jmpifz [165] ............................ if timeoutExists(tUpdateTimeoutId) then
+  [158] getlocal 0 .............................. <tUpdateTimeoutId>
+  [160] pusharglistnoret 1 ...................... <tUpdateTimeoutId>
+  [162] extcall 454 ............................. removeTimeout(tUpdateTimeoutId)
+  [165] pushint8 1 .............................. <1>
+  [167] pusharglistnoret 1 ...................... <1>
+  [169] extcall 38 .............................. return 1
+  [171] ret
+end
+
+on pollContentUpdate me, tForced
+  [  0] pushzero ................................ <0>
+  [  1] pusharglistnoret 1 ...................... <0>
+  [  3] extcall 38 .............................. return 0
+  [  5] ret
+end
+
+on setUpdateTimestamp me
+  [  0] getparam 0 .............................. <me>
+  [  2] getmovieprop 457 ........................ <the milliSeconds>
+  [  5] setobjprop 437 .......................... me.pUpdateLastTimestamp = the milliSeconds
+  [  8] pushint8 1 .............................. <1>
+  [ 10] pusharglistnoret 1 ...................... <1>
+  [ 12] extcall 38 .............................. return 1
+  [ 14] ret
+end
+
+on isUpdateTimestampExpired me
+  [  0] pushcons 9 .............................. <1.05000000000000004>
+  [  2] setlocal 0 .............................. tTolerance = 1.05000000000000004
+  [  4] getlocal 0 .............................. <tTolerance>
+  [  6] getmovieprop 457 ........................ <the milliSeconds>
+  [  9] getparam 0 .............................. <me>
+  [ 11] getobjprop 437 .......................... <me.pUpdateLastTimestamp>
+  [ 14] sub ..................................... <the milliSeconds - me.pUpdateLastTimestamp>
+  [ 15] mul ..................................... <tTolerance * (the milliSeconds - me.pUpdateLastTimestamp)>
+  [ 16] getparam 0 .............................. <me>
+  [ 18] getobjprop 438 .......................... <me.pUpdateInterval>
+  [ 21] gteq .................................... <(tTolerance * (the milliSeconds - me.pUpdateLastTimestamp)) >= me.pUpdateInterval>
+  [ 22] pusharglistnoret 1 ...................... <(tTolerance * (the milliSeconds - me.pUpdateLastTimestamp)) >= me.pUpdateInterval>
+  [ 24] extcall 38 .............................. return (tTolerance * (the milliSeconds - me.pUpdateLastTimestamp)) >= me.pUpdateInterval
+  [ 26] ret
+end
+
+on getOwnPlayerName me
+  [  0] pushsymb 267 ............................ <#session>
+  [  3] pusharglist 1 ........................... <#session>
+  [  5] extcall 85 .............................. <getObject(#session)>
+  [  7] setlocal 0 .............................. tSession = getObject(#session)
+  [  9] getlocal 0 .............................. <tSession>
+  [ 11] pushzero ................................ <0>
+  [ 12] eq ...................................... <tSession = 0>
+  [ 13] jmpifz [ 21] ............................ if tSession = 0 then
+  [ 16] pushzero ................................ <0>
+  [ 17] pusharglistnoret 1 ...................... <0>
+  [ 19] extcall 38 .............................. return 0
+  [ 21] getlocal 0 .............................. <tSession>
+  [ 23] pushsymb 356 ............................ <#user_name>
+  [ 26] pusharglist 2 ........................... <tSession, #user_name>
+  [ 28] objcall 357 ............................. <tSession.GET(#user_name)>
+  [ 31] pusharglistnoret 1 ...................... <tSession.GET(#user_name)>
+  [ 33] extcall 38 .............................. return tSession.GET(#user_name)
+  [ 35] ret
+end

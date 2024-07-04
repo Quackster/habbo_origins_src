@@ -1,0 +1,152 @@
+property pUpdateCounter, pStateCounter, pBlend
+
+on deconstruct me
+  [  0] getparam 0 .............................. <me>
+  [  2] pusharglist 1 ........................... <me>
+  [  4] objcall 541 ............................. <me.getWindowId()>
+  [  7] pusharglist 1 ........................... <me.getWindowId()>
+  [  9] extcall 413 ............................. <windowExists(me.getWindowId())>
+  [ 12] jmpifz [ 27] ............................ if windowExists(me.getWindowId()) then
+  [ 15] getparam 0 .............................. <me>
+  [ 17] pusharglist 1 ........................... <me>
+  [ 19] objcall 541 ............................. <me.getWindowId()>
+  [ 22] pusharglistnoret 1 ...................... <me.getWindowId()>
+  [ 24] extcall 417 ............................. removeWindow(me.getWindowId())
+  [ 27] getparam 0 .............................. <me>
+  [ 29] getchainedprop 470 ...................... <me.ancestor>
+  [ 32] pusharglist 1 ........................... <me.ancestor>
+  [ 34] objcall 1 ............................... <me.ancestor.deconstruct()>
+  [ 36] pusharglistnoret 1 ...................... <me.ancestor.deconstruct()>
+  [ 38] extcall 38 .............................. return me.ancestor.deconstruct()
+  [ 40] ret
+end
+
+on addWindows me
+  [  0] getparam 0 .............................. <me>
+  [  2] pushcons 0 .............................. <"go">
+  [  4] setobjprop 399 .......................... me.pWindowID = "go"
+  [  7] pushint8 100 ............................ <100>
+  [  9] setprop 1027 ............................ pBlend = 100
+  [ 12] getparam 0 .............................. <me>
+  [ 14] pusharglist 1 ........................... <me>
+  [ 16] objcall 541 ............................. <me.getWindowId()>
+  [ 19] pusharglist 1 ........................... <me.getWindowId()>
+  [ 21] extcall 413 ............................. <windowExists(me.getWindowId())>
+  [ 24] jmpifz [ 33] ............................ if windowExists(me.getWindowId()) then
+  [ 27] pushint8 1 .............................. <1>
+  [ 29] pusharglistnoret 1 ...................... <1>
+  [ 31] extcall 38 .............................. return 1
+  [ 33] getparam 0 .............................. <me>
+  [ 35] pusharglist 1 ........................... <me>
+  [ 37] objcall 541 ............................. <me.getWindowId()>
+  [ 40] pushcons 1 .............................. <"ig_ag_gameover.window">
+  [ 42] pusharglistnoret 2 ...................... <me.getWindowId(), "ig_ag_gameover.window">
+  [ 44] extcall 414 ............................. createWindow(me.getWindowId(), "ig_ag_gameover.window")
+  [ 47] getparam 0 .............................. <me>
+  [ 49] pusharglist 1 ........................... <me>
+  [ 51] objcall 541 ............................. <me.getWindowId()>
+  [ 54] pusharglist 1 ........................... <me.getWindowId()>
+  [ 56] extcall 400 ............................. <getWindow(me.getWindowId())>
+  [ 59] setlocal 0 .............................. tWndObj = getWindow(me.getWindowId())
+  [ 61] getlocal 0 .............................. <tWndObj>
+  [ 63] pushzero ................................ <0>
+  [ 64] eq ...................................... <tWndObj = 0>
+  [ 65] jmpifz [ 73] ............................ if tWndObj = 0 then
+  [ 68] pushzero ................................ <0>
+  [ 69] pusharglistnoret 1 ...................... <0>
+  [ 71] extcall 38 .............................. return 0
+  [ 73] getlocal 0 .............................. <tWndObj>
+  [ 75] pushint16 270 ........................... <270>
+  [ 78] pushint16 200 ........................... <200>
+  [ 81] pusharglistnoret 3 ...................... <tWndObj, 270, 200>
+  [ 83] objcall 86 .............................. tWndObj.moveTo(270, 200)
+  [ 85] getlocal 0 .............................. <tWndObj>
+  [ 87] pusharglistnoret 1 ...................... <tWndObj>
+  [ 89] objcall 587 ............................. tWndObj.lock()
+  [ 92] pushint8 30 ............................. <30>
+  [ 94] setprop 1028 ............................ pStateCounter = 30
+  [ 97] pushint8 1 .............................. <1>
+  [ 99] pusharglistnoret 1 ...................... <1>
+  [101] extcall 38 .............................. return 1
+  [103] ret
+end
+
+on update me
+  [  0] getprop 1027 ............................ <pBlend>
+  [  3] pushzero ................................ <0>
+  [  4] lteq .................................... <pBlend <= 0>
+  [  5] jmpifz [ 14] ............................ if pBlend <= 0 then
+  [  8] pushint8 1 .............................. <1>
+  [ 10] pusharglistnoret 1 ...................... <1>
+  [ 12] extcall 38 .............................. return 1
+  [ 14] getprop 679 ............................. <pUpdateCounter>
+  [ 17] pushint8 1 .............................. <1>
+  [ 19] add ..................................... <pUpdateCounter + 1>
+  [ 20] setprop 679 ............................. pUpdateCounter = pUpdateCounter + 1
+  [ 23] getprop 679 ............................. <pUpdateCounter>
+  [ 26] pushint8 2 .............................. <2>
+  [ 28] lt ...................................... <pUpdateCounter < 2>
+  [ 29] jmpifz [ 38] ............................ if pUpdateCounter < 2 then
+  [ 32] pushint8 1 .............................. <1>
+  [ 34] pusharglistnoret 1 ...................... <1>
+  [ 36] extcall 38 .............................. return 1
+  [ 38] pushzero ................................ <0>
+  [ 39] setprop 679 ............................. pUpdateCounter = 0
+  [ 42] getprop 1028 ............................ <pStateCounter>
+  [ 45] pushzero ................................ <0>
+  [ 46] gt ...................................... <pStateCounter > 0>
+  [ 47] jmpifz [ 65] ............................ if pStateCounter > 0 then
+  [ 50] getprop 1028 ............................ <pStateCounter>
+  [ 53] pushint8 1 .............................. <1>
+  [ 55] sub ..................................... <pStateCounter - 1>
+  [ 56] setprop 1028 ............................ pStateCounter = pStateCounter - 1
+  [ 59] pushint8 1 .............................. <1>
+  [ 61] pusharglistnoret 1 ...................... <1>
+  [ 63] extcall 38 .............................. return 1
+  [ 65] getparam 0 .............................. <me>
+  [ 67] pusharglist 1 ........................... <me>
+  [ 69] objcall 541 ............................. <me.getWindowId()>
+  [ 72] pusharglist 1 ........................... <me.getWindowId()>
+  [ 74] extcall 400 ............................. <getWindow(me.getWindowId())>
+  [ 77] setlocal 0 .............................. tWndObj = getWindow(me.getWindowId())
+  [ 79] getlocal 0 .............................. <tWndObj>
+  [ 81] pushzero ................................ <0>
+  [ 82] eq ...................................... <tWndObj = 0>
+  [ 83] jmpifz [ 91] ............................ if tWndObj = 0 then
+  [ 86] pushzero ................................ <0>
+  [ 87] pusharglistnoret 1 ...................... <0>
+  [ 89] extcall 38 .............................. return 0
+  [ 91] getprop 1027 ............................ <pBlend>
+  [ 94] pushint8 15 ............................. <15>
+  [ 96] sub ..................................... <pBlend - 15>
+  [ 97] setprop 1027 ............................ pBlend = pBlend - 15
+  [100] getlocal 0 .............................. <tWndObj>
+  [102] pushcons 2 .............................. <"ig_gameover">
+  [104] pusharglist 2 ........................... <tWndObj, "ig_gameover">
+  [106] objcall 401 ............................. <tWndObj.getElement("ig_gameover")>
+  [109] setlocal 1 .............................. tElem = tWndObj.getElement("ig_gameover")
+  [111] getlocal 1 .............................. <tElem>
+  [113] pushsymb 527 ............................ <#blend>
+  [116] getprop 1027 ............................ <pBlend>
+  [119] pusharglistnoret 3 ...................... <tElem, #blend, pBlend>
+  [121] objcall 479 ............................. tElem.setProperty(#blend, pBlend)
+  [124] getprop 1027 ............................ <pBlend>
+  [127] pushint8 10 ............................. <10>
+  [129] lt ...................................... <pBlend < 10>
+  [130] jmpifz [160] ............................ if pBlend < 10 then
+  [133] getparam 0 .............................. <me>
+  [135] pusharglist 1 ........................... <me>
+  [137] objcall 541 ............................. <me.getWindowId()>
+  [140] pusharglist 1 ........................... <me.getWindowId()>
+  [142] extcall 413 ............................. <windowExists(me.getWindowId())>
+  [145] jmpifz [160] ............................ if windowExists(me.getWindowId()) then
+  [148] getparam 0 .............................. <me>
+  [150] pusharglist 1 ........................... <me>
+  [152] objcall 541 ............................. <me.getWindowId()>
+  [155] pusharglistnoret 1 ...................... <me.getWindowId()>
+  [157] extcall 417 ............................. removeWindow(me.getWindowId())
+  [160] pushint8 1 .............................. <1>
+  [162] pusharglistnoret 1 ...................... <1>
+  [164] extcall 38 .............................. return 1
+  [166] ret
+end

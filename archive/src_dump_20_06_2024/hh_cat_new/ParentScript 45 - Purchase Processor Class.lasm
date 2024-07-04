@@ -1,0 +1,935 @@
+property pProps, pWndID, pPersistentCatalogData
+
+on construct me
+  [  0] pushcons 0 .............................. <"Catalog Purchase Dialog">
+  [  2] setprop 153 ............................. pWndID = "Catalog Purchase Dialog"
+  [  4] pusharglist 0 ........................... <[:]>
+  [  6] pushproplist ............................ <[:]>
+  [  7] setprop 1069 ............................ pProps = [:]
+  [ 10] pushsymb 559 ............................ <#catalogue>
+  [ 13] pusharglist 1 ........................... <#catalogue>
+  [ 15] extcall 471 ............................. <getThread(#catalogue)>
+  [ 18] pusharglist 1 ........................... <getThread(#catalogue)>
+  [ 20] objcall 170 ............................. <getThread(#catalogue).getComponent()>
+  [ 22] pusharglist 1 ........................... <getThread(#catalogue).getComponent()>
+  [ 24] objcall 299 ............................. <getThread(#catalogue).getComponent().getPersistentCatalogDataObject()>
+  [ 27] setprop 565 ............................. pPersistentCatalogData = getThread(#catalogue).getComponent().getPersistentCatalogDataObject()
+  [ 30] ret
+end
+
+on deconstruct me
+  [  0] getprop 153 ............................. <pWndID>
+  [  2] pusharglist 1 ........................... <pWndID>
+  [  4] extcall 174 ............................. <windowExists(pWndID)>
+  [  6] jmpifz [ 15] ............................ if windowExists(pWndID) then
+  [  9] getprop 153 ............................. <pWndID>
+  [ 11] pusharglistnoret 1 ...................... <pWndID>
+  [ 13] extcall 239 ............................. removeWindow(pWndID)
+  [ 15] ret
+end
+
+on startPurchase me, tProps
+  [  0] getparam 1 .............................. <tProps>
+  [  2] setprop 1069 ............................ pProps = tProps
+  [  5] getprop 153 ............................. <pWndID>
+  [  7] pusharglist 1 ........................... <pWndID>
+  [  9] extcall 174 ............................. <windowExists(pWndID)>
+  [ 11] not ..................................... <not windowExists(pWndID)>
+  [ 12] jmpifz [ 22] ............................ if not windowExists(pWndID) then
+  [ 15] getparam 0 .............................. <me>
+  [ 17] pusharglistnoret 1 ...................... <me>
+  [ 19] objcall 1064 ............................ me.showPurchaseDialog()
+  [ 22] ret
+end
+
+on showPurchaseDialog me
+  [  0] getprop 153 ............................. <pWndID>
+  [  2] pusharglist 1 ........................... <pWndID>
+  [  4] extcall 174 ............................. <windowExists(pWndID)>
+  [  6] not ..................................... <not windowExists(pWndID)>
+  [  7] jmpifz [ 52] ............................ if not windowExists(pWndID) then / else
+  [ 10] getprop 153 ............................. <pWndID>
+  [ 12] pushcons 1 .............................. <"habbo_simple.window">
+  [ 14] pusharglist 0 ........................... <>
+  [ 16] extcall 55 .............................. <VOID>
+  [ 18] pusharglist 0 ........................... <>
+  [ 20] extcall 55 .............................. <VOID>
+  [ 22] pushsymb 193 ............................ <#modal>
+  [ 24] pusharglist 5 ........................... <pWndID, "habbo_simple.window", VOID, VOID, #modal>
+  [ 26] extcall 192 ............................. <createWindow(pWndID, "habbo_simple.window", VOID, VOID, #modal)>
+  [ 28] not ..................................... <not createWindow(pWndID, "habbo_simple.window", VOID, VOID, #modal)>
+  [ 29] jmpifz [ 49] ............................ if not createWindow(pWndID, "habbo_simple.window", VOID, VOID, #modal) then
+  [ 32] getparam 0 .............................. <me>
+  [ 34] pushcons 2 .............................. <"Unable to create purchase info dialog window">
+  [ 36] pushsymb 1064 ........................... <#showPurchaseDialog>
+  [ 39] pushsymb 47 ............................. <#major>
+  [ 41] pusharglist 4 ........................... <me, "Unable to create purchase info dialog window", #showPurchaseDialog, #major>
+  [ 43] extcall 46 .............................. <error(me, "Unable to create purchase info dialog window", #showPurchaseDialog, #major)>
+  [ 45] pusharglistnoret 1 ...................... <error(me, "Unable to create purchase info dialog window", #showPurchaseDialog, #major)>
+  [ 47] extcall 37 .............................. return error(me, "Unable to create purchase info dialog window", #showPurchaseDialog, #major)
+  [ 49] jmp [ 83]
+  [ 52] getprop 153 ............................. <pWndID>
+  [ 54] pusharglist 1 ........................... <pWndID>
+  [ 56] extcall 194 ............................. <getWindow(pWndID)>
+  [ 58] pushsymb 1068 ........................... <#eventProcKeyDown>
+  [ 61] getparam 0 .............................. <me>
+  [ 63] pusharglist 1 ........................... <me>
+  [ 65] objcall 54 .............................. <me.getID()>
+  [ 67] pusharglistnoret 3 ...................... <getWindow(pWndID), #eventProcKeyDown, me.getID()>
+  [ 69] objcall 1070 ............................ getWindow(pWndID).removeProcedure(#eventProcKeyDown, me.getID())
+  [ 72] getprop 153 ............................. <pWndID>
+  [ 74] pusharglist 1 ........................... <pWndID>
+  [ 76] extcall 194 ............................. <getWindow(pWndID)>
+  [ 78] pusharglistnoret 1 ...................... <getWindow(pWndID)>
+  [ 80] objcall 576 ............................. getWindow(pWndID).unmerge()
+  [ 83] getprop 153 ............................. <pWndID>
+  [ 85] pusharglist 1 ........................... <pWndID>
+  [ 87] extcall 194 ............................. <getWindow(pWndID)>
+  [ 89] setlocal 0 .............................. tWndObj = getWindow(pWndID)
+  [ 91] getlocal 0 .............................. <tWndObj>
+  [ 93] pushcons 3 .............................. <"habbo_orderinfo_dialog.window">
+  [ 95] pusharglist 2 ........................... <tWndObj, "habbo_orderinfo_dialog.window">
+  [ 97] objcall 195 ............................. <tWndObj.merge("habbo_orderinfo_dialog.window")>
+  [ 99] not ..................................... <not tWndObj.merge("habbo_orderinfo_dialog.window")>
+  [100] jmpifz [126] ............................ if not tWndObj.merge("habbo_orderinfo_dialog.window") then
+  [103] getlocal 0 .............................. <tWndObj>
+  [105] pusharglistnoret 1 ...................... <tWndObj>
+  [107] objcall 196 ............................. tWndObj.close()
+  [109] getparam 0 .............................. <me>
+  [111] pushcons 4 .............................. <"Unable to perform merge to purchase info dialog">
+  [113] pushsymb 1064 ........................... <#showPurchaseDialog>
+  [116] pushsymb 47 ............................. <#major>
+  [118] pusharglist 4 ........................... <me, "Unable to perform merge to purchase info dialog", #showPurchaseDialog, #major>
+  [120] extcall 46 .............................. <error(me, "Unable to perform merge to purchase info dialog", #showPurchaseDialog, #major)>
+  [122] pusharglistnoret 1 ...................... <error(me, "Unable to perform merge to purchase info dialog", #showPurchaseDialog, #major)>
+  [124] extcall 37 .............................. return error(me, "Unable to perform merge to purchase info dialog", #showPurchaseDialog, #major)
+  [126] pushsymb 351 ............................ <#credits>
+  [129] pushcons 5 .............................. <"catalog_costs_credits">
+  [131] pushsymb 535 ............................ <#creditsandpixels>
+  [134] pushcons 6 .............................. <"catalog_costs_pixelsandcredits">
+  [136] pushsymb 407 ............................ <#pixels>
+  [139] pushcons 7 .............................. <"catalog_costs_pixels">
+  [141] pusharglist 6 ........................... <[#credits: "catalog_costs_credits", #creditsandpixels: "catalog_costs_pixelsandcredits", #pixels: "catalog_costs_pixels"]>
+  [143] pushproplist ............................ <[#credits: "catalog_costs_credits", #creditsandpixels: "catalog_costs_pixelsandcredits", #pixels: "catalog_costs_pixels"]>
+  [144] setlocal 1 .............................. tOfferTypeText = [#credits: "catalog_costs_credits", #creditsandpixels: "catalog_costs_pixelsandcredits", #pixels: "catalog_costs_pixels"]
+  [146] pushcons 8 .............................. <EMPTY>
+  [148] setlocal 2 .............................. tItemName = EMPTY
+  [150] getprop 565 ............................. <pPersistentCatalogData>
+  [153] getprop 1069 ............................ <pProps>
+  [156] pushsymb 352 ............................ <#item>
+  [159] pusharglist 2 ........................... <pProps, #item>
+  [161] objcall 41 .............................. <pProps[#item]>
+  [163] pusharglist 1 ........................... <pProps[#item]>
+  [165] objcall 581 ............................. <pProps[#item].getName()>
+  [168] pusharglist 2 ........................... <pPersistentCatalogData, pProps[#item].getName()>
+  [170] objcall 487 ............................. <pPersistentCatalogData.getProps(pProps[#item].getName())>
+  [173] setlocal 3 .............................. tCatalogProps = pPersistentCatalogData.getProps(pProps[#item].getName())
+  [175] getlocal 3 .............................. <tCatalogProps>
+  [177] pusharglist 1 ........................... <tCatalogProps>
+  [179] extcall 78 .............................. <voidp(tCatalogProps)>
+  [181] not ..................................... <not voidp(tCatalogProps)>
+  [182] jmpifz [199] ............................ if not voidp(tCatalogProps) then / else
+  [185] getlocal 3 .............................. <tCatalogProps>
+  [187] pushsymb 269 ............................ <#name>
+  [190] pusharglist 2 ........................... <tCatalogProps, #name>
+  [192] objcall 41 .............................. <tCatalogProps[#name]>
+  [194] setlocal 2 .............................. tItemName = tCatalogProps[#name]
+  [196] jmp [216]
+  [199] getprop 1069 ............................ <pProps>
+  [202] pushsymb 352 ............................ <#item>
+  [205] pusharglist 2 ........................... <pProps, #item>
+  [207] objcall 41 .............................. <pProps[#item]>
+  [209] pusharglist 1 ........................... <pProps[#item]>
+  [211] objcall 581 ............................. <pProps[#item].getName()>
+  [214] setlocal 2 .............................. tItemName = pProps[#item].getName()
+  [216] getprop 1069 ............................ <pProps>
+  [219] pushsymb 602 ............................ <#disableGift>
+  [222] pusharglist 2 ........................... <pProps, #disableGift>
+  [224] objcall 41 .............................. <pProps[#disableGift]>
+  [226] pusharglist 1 ........................... <pProps[#disableGift]>
+  [228] extcall 78 .............................. <voidp(pProps[#disableGift])>
+  [230] not ..................................... <not voidp(pProps[#disableGift])>
+  [231] jmpifz [258] ............................ if not voidp(pProps[#disableGift]) then
+  [234] getlocal 0 .............................. <tWndObj>
+  [236] pushcons 9 .............................. <"buy_gift_ok">
+  [238] pusharglist 2 ........................... <tWndObj, "buy_gift_ok">
+  [240] objcall 178 ............................. <tWndObj.getElement("buy_gift_ok")>
+  [242] pusharglistnoret 1 ...................... <tWndObj.getElement("buy_gift_ok")>
+  [244] objcall 121 ............................. tWndObj.getElement("buy_gift_ok").hide()
+  [246] getlocal 0 .............................. <tWndObj>
+  [248] pushcons 10 ............................. <"shopping_asagift">
+  [250] pusharglist 2 ........................... <tWndObj, "shopping_asagift">
+  [252] objcall 178 ............................. <tWndObj.getElement("shopping_asagift")>
+  [254] pusharglistnoret 1 ...................... <tWndObj.getElement("shopping_asagift")>
+  [256] objcall 121 ............................. tWndObj.getElement("shopping_asagift").hide()
+  [258] getprop 1069 ............................ <pProps>
+  [261] pushsymb 350 ............................ <#offerType>
+  [264] pusharglist 2 ........................... <pProps, #offerType>
+  [266] objcall 41 .............................. <pProps[#offerType]>
+  [268] peek 0 .................................. case pProps[#offerType] of
+  [270] pushsymb 351 ............................ <#credits>
+  [273] eq
+  [274] jmpifz [403] ............................ (case) #credits:
+  [277] getprop 1069 ............................ <pProps>
+  [280] pushsymb 352 ............................ <#item>
+  [283] pusharglist 2 ........................... <pProps, #item>
+  [285] objcall 41 .............................. <pProps[#item]>
+  [287] pushsymb 351 ............................ <#credits>
+  [290] pusharglist 2 ........................... <pProps[#item], #credits>
+  [292] objcall 538 ............................. <pProps[#item].getPrice(#credits)>
+  [295] pusharglist 1 ........................... <pProps[#item].getPrice(#credits)>
+  [297] extcall 266 ............................. <value(pProps[#item].getPrice(#credits))>
+  [300] pusharglist 1 ........................... <value(pProps[#item].getPrice(#credits))>
+  [302] extcall 382 ............................. <integer(value(pProps[#item].getPrice(#credits)))>
+  [305] setlocal 4 .............................. tPrice = integer(value(pProps[#item].getPrice(#credits)))
+  [307] pushsymb 185 ............................ <#session>
+  [309] pusharglist 1 ........................... <#session>
+  [311] extcall 184 ............................. <getObject(#session)>
+  [313] pushcons 11 ............................. <"user_walletbalance">
+  [315] pusharglist 2 ........................... <getObject(#session), "user_walletbalance">
+  [317] objcall 186 ............................. <getObject(#session).GET("user_walletbalance")>
+  [319] pusharglist 1 ........................... <getObject(#session).GET("user_walletbalance")>
+  [321] extcall 266 ............................. <value(getObject(#session).GET("user_walletbalance"))>
+  [324] pusharglist 1 ........................... <value(getObject(#session).GET("user_walletbalance"))>
+  [326] extcall 382 ............................. <integer(value(getObject(#session).GET("user_walletbalance")))>
+  [329] setlocal 5 .............................. tWallet = integer(value(getObject(#session).GET("user_walletbalance")))
+  [331] getlocal 1 .............................. <tOfferTypeText>
+  [333] getprop 1069 ............................ <pProps>
+  [336] pushsymb 350 ............................ <#offerType>
+  [339] pusharglist 2 ........................... <pProps, #offerType>
+  [341] objcall 41 .............................. <pProps[#offerType]>
+  [343] pusharglist 2 ........................... <tOfferTypeText, pProps[#offerType]>
+  [345] objcall 41 .............................. <tOfferTypeText[pProps[#offerType]]>
+  [347] pushcons 12 ............................. <"\\x1 costs \\x2 credits">
+  [349] pusharglist 2 ........................... <tOfferTypeText[pProps[#offerType]], "\\x1 costs \\x2 credits">
+  [351] extcall 158 ............................. <getText(tOfferTypeText[pProps[#offerType]], "\\x1 costs \\x2 credits")>
+  [353] setlocal 6 .............................. tMsgA = getText(tOfferTypeText[pProps[#offerType]], "\\x1 costs \\x2 credits")
+  [355] getlocal 6 .............................. <tMsgA>
+  [357] pushcons 13 ............................. <"\\x1">
+  [359] getlocal 2 .............................. <tItemName>
+  [361] pusharglist 3 ........................... <tMsgA, "\\x1", tItemName>
+  [363] extcall 415 ............................. <replaceChunks(tMsgA, "\\x1", tItemName)>
+  [366] setlocal 6 .............................. tMsgA = replaceChunks(tMsgA, "\\x1", tItemName)
+  [368] getlocal 6 .............................. <tMsgA>
+  [370] pushcons 14 ............................. <"\\x2">
+  [372] getlocal 4 .............................. <tPrice>
+  [374] pusharglist 3 ........................... <tMsgA, "\\x2", tPrice>
+  [376] extcall 415 ............................. <replaceChunks(tMsgA, "\\x2", tPrice)>
+  [379] setlocal 6 .............................. tMsgA = replaceChunks(tMsgA, "\\x2", tPrice)
+  [381] pushcons 15 ............................. <"catalog_credits">
+  [383] pushcons 16 ............................. <"You have \\x credits in your purse.">
+  [385] pusharglist 2 ........................... <"catalog_credits", "You have \\x credits in your purse.">
+  [387] extcall 158 ............................. <getText("catalog_credits", "You have \\x credits in your purse.")>
+  [389] pushcons 17 ............................. <"\\x">
+  [391] getlocal 5 .............................. <tWallet>
+  [393] pusharglist 3 ........................... <getText("catalog_credits", "You have \\x credits in your purse."), "\\x", tWallet>
+  [395] extcall 415 ............................. <replaceChunks(getText("catalog_credits", "You have \\x credits in your purse."), "\\x", tWallet)>
+  [398] setlocal 7 .............................. tMsgB = replaceChunks(getText("catalog_credits", "You have \\x credits in your purse."), "\\x", tWallet)
+  [400] jmp [754]
+  [403] peek 0
+  [405] pushsymb 535 ............................ <#creditsandpixels>
+  [408] eq
+  [409] jmpifz [622] ............................ (case) #creditsandpixels:
+  [412] getprop 1069 ............................ <pProps>
+  [415] pushsymb 352 ............................ <#item>
+  [418] pusharglist 2 ........................... <pProps, #item>
+  [420] objcall 41 .............................. <pProps[#item]>
+  [422] pushsymb 351 ............................ <#credits>
+  [425] pusharglist 2 ........................... <pProps[#item], #credits>
+  [427] objcall 538 ............................. <pProps[#item].getPrice(#credits)>
+  [430] pusharglist 1 ........................... <pProps[#item].getPrice(#credits)>
+  [432] extcall 266 ............................. <value(pProps[#item].getPrice(#credits))>
+  [435] pusharglist 1 ........................... <value(pProps[#item].getPrice(#credits))>
+  [437] extcall 382 ............................. <integer(value(pProps[#item].getPrice(#credits)))>
+  [440] setlocal 8 .............................. tPriceX = integer(value(pProps[#item].getPrice(#credits)))
+  [442] getprop 1069 ............................ <pProps>
+  [445] pushsymb 352 ............................ <#item>
+  [448] pusharglist 2 ........................... <pProps, #item>
+  [450] objcall 41 .............................. <pProps[#item]>
+  [452] pushsymb 407 ............................ <#pixels>
+  [455] pusharglist 2 ........................... <pProps[#item], #pixels>
+  [457] objcall 538 ............................. <pProps[#item].getPrice(#pixels)>
+  [460] pusharglist 1 ........................... <pProps[#item].getPrice(#pixels)>
+  [462] extcall 266 ............................. <value(pProps[#item].getPrice(#pixels))>
+  [465] pusharglist 1 ........................... <value(pProps[#item].getPrice(#pixels))>
+  [467] extcall 382 ............................. <integer(value(pProps[#item].getPrice(#pixels)))>
+  [470] setlocal 9 .............................. tPriceY = integer(value(pProps[#item].getPrice(#pixels)))
+  [472] pushsymb 185 ............................ <#session>
+  [474] pusharglist 1 ........................... <#session>
+  [476] extcall 184 ............................. <getObject(#session)>
+  [478] pushcons 11 ............................. <"user_walletbalance">
+  [480] pusharglist 2 ........................... <getObject(#session), "user_walletbalance">
+  [482] objcall 186 ............................. <getObject(#session).GET("user_walletbalance")>
+  [484] pusharglist 1 ........................... <getObject(#session).GET("user_walletbalance")>
+  [486] extcall 266 ............................. <value(getObject(#session).GET("user_walletbalance"))>
+  [489] pusharglist 1 ........................... <value(getObject(#session).GET("user_walletbalance"))>
+  [491] extcall 382 ............................. <integer(value(getObject(#session).GET("user_walletbalance")))>
+  [494] setlocal 10 ............................. tWalletX = integer(value(getObject(#session).GET("user_walletbalance")))
+  [496] pushsymb 185 ............................ <#session>
+  [498] pusharglist 1 ........................... <#session>
+  [500] extcall 184 ............................. <getObject(#session)>
+  [502] pushcons 18 ............................. <"user_pixelbalance">
+  [504] pusharglist 2 ........................... <getObject(#session), "user_pixelbalance">
+  [506] objcall 186 ............................. <getObject(#session).GET("user_pixelbalance")>
+  [508] pusharglist 1 ........................... <getObject(#session).GET("user_pixelbalance")>
+  [510] extcall 266 ............................. <value(getObject(#session).GET("user_pixelbalance"))>
+  [513] pusharglist 1 ........................... <value(getObject(#session).GET("user_pixelbalance"))>
+  [515] extcall 382 ............................. <integer(value(getObject(#session).GET("user_pixelbalance")))>
+  [518] setlocal 11 ............................. tWalletY = integer(value(getObject(#session).GET("user_pixelbalance")))
+  [520] getlocal 1 .............................. <tOfferTypeText>
+  [522] getprop 1069 ............................ <pProps>
+  [525] pushsymb 350 ............................ <#offerType>
+  [528] pusharglist 2 ........................... <pProps, #offerType>
+  [530] objcall 41 .............................. <pProps[#offerType]>
+  [532] pusharglist 2 ........................... <tOfferTypeText, pProps[#offerType]>
+  [534] objcall 41 .............................. <tOfferTypeText[pProps[#offerType]]>
+  [536] pushcons 19 ............................. <"\\x1 costs \\x3 pixels and \\x2 credits">
+  [538] pusharglist 2 ........................... <tOfferTypeText[pProps[#offerType]], "\\x1 costs \\x3 pixels and \\x2 credits">
+  [540] extcall 158 ............................. <getText(tOfferTypeText[pProps[#offerType]], "\\x1 costs \\x3 pixels and \\x2 credits")>
+  [542] setlocal 6 .............................. tMsgA = getText(tOfferTypeText[pProps[#offerType]], "\\x1 costs \\x3 pixels and \\x2 credits")
+  [544] getlocal 6 .............................. <tMsgA>
+  [546] pushcons 13 ............................. <"\\x1">
+  [548] getlocal 2 .............................. <tItemName>
+  [550] pusharglist 3 ........................... <tMsgA, "\\x1", tItemName>
+  [552] extcall 415 ............................. <replaceChunks(tMsgA, "\\x1", tItemName)>
+  [555] setlocal 6 .............................. tMsgA = replaceChunks(tMsgA, "\\x1", tItemName)
+  [557] getlocal 6 .............................. <tMsgA>
+  [559] pushcons 14 ............................. <"\\x2">
+  [561] getlocal 8 .............................. <tPriceX>
+  [563] pusharglist 3 ........................... <tMsgA, "\\x2", tPriceX>
+  [565] extcall 415 ............................. <replaceChunks(tMsgA, "\\x2", tPriceX)>
+  [568] setlocal 6 .............................. tMsgA = replaceChunks(tMsgA, "\\x2", tPriceX)
+  [570] getlocal 6 .............................. <tMsgA>
+  [572] pushcons 20 ............................. <"\\x3">
+  [574] getlocal 9 .............................. <tPriceY>
+  [576] pusharglist 3 ........................... <tMsgA, "\\x3", tPriceY>
+  [578] extcall 415 ............................. <replaceChunks(tMsgA, "\\x3", tPriceY)>
+  [581] setlocal 6 .............................. tMsgA = replaceChunks(tMsgA, "\\x3", tPriceY)
+  [583] pushcons 21 ............................. <"catalog_creditsandpixels">
+  [585] pushcons 22 ............................. <"You have \\x credits in your purse and \\y pixels.">
+  [587] pusharglist 2 ........................... <"catalog_creditsandpixels", "You have \\x credits in your purse and \\y pixels.">
+  [589] extcall 158 ............................. <getText("catalog_creditsandpixels", "You have \\x credits in your purse and \\y pixels.")>
+  [591] setlocal 7 .............................. tMsgB = getText("catalog_creditsandpixels", "You have \\x credits in your purse and \\y pixels.")
+  [593] getlocal 7 .............................. <tMsgB>
+  [595] pushcons 17 ............................. <"\\x">
+  [597] getlocal 10 ............................. <tWalletX>
+  [599] pusharglist 3 ........................... <tMsgB, "\\x", tWalletX>
+  [601] extcall 415 ............................. <replaceChunks(tMsgB, "\\x", tWalletX)>
+  [604] setlocal 7 .............................. tMsgB = replaceChunks(tMsgB, "\\x", tWalletX)
+  [606] getlocal 7 .............................. <tMsgB>
+  [608] pushcons 23 ............................. <"\\y">
+  [610] getlocal 11 ............................. <tWalletY>
+  [612] pusharglist 3 ........................... <tMsgB, "\\y", tWalletY>
+  [614] extcall 415 ............................. <replaceChunks(tMsgB, "\\y", tWalletY)>
+  [617] setlocal 7 .............................. tMsgB = replaceChunks(tMsgB, "\\y", tWalletY)
+  [619] jmp [754]
+  [622] peek 0
+  [624] pushsymb 407 ............................ <#pixels>
+  [627] eq
+  [628] jmpifz [754] ............................ (case) #pixels:
+  [631] getprop 1069 ............................ <pProps>
+  [634] pushsymb 352 ............................ <#item>
+  [637] pusharglist 2 ........................... <pProps, #item>
+  [639] objcall 41 .............................. <pProps[#item]>
+  [641] pushsymb 407 ............................ <#pixels>
+  [644] pusharglist 2 ........................... <pProps[#item], #pixels>
+  [646] objcall 538 ............................. <pProps[#item].getPrice(#pixels)>
+  [649] pusharglist 1 ........................... <pProps[#item].getPrice(#pixels)>
+  [651] extcall 266 ............................. <value(pProps[#item].getPrice(#pixels))>
+  [654] pusharglist 1 ........................... <value(pProps[#item].getPrice(#pixels))>
+  [656] extcall 382 ............................. <integer(value(pProps[#item].getPrice(#pixels)))>
+  [659] setlocal 4 .............................. tPrice = integer(value(pProps[#item].getPrice(#pixels)))
+  [661] pushsymb 185 ............................ <#session>
+  [663] pusharglist 1 ........................... <#session>
+  [665] extcall 184 ............................. <getObject(#session)>
+  [667] pushcons 18 ............................. <"user_pixelbalance">
+  [669] pusharglist 2 ........................... <getObject(#session), "user_pixelbalance">
+  [671] objcall 186 ............................. <getObject(#session).GET("user_pixelbalance")>
+  [673] pusharglist 1 ........................... <getObject(#session).GET("user_pixelbalance")>
+  [675] extcall 266 ............................. <value(getObject(#session).GET("user_pixelbalance"))>
+  [678] pusharglist 1 ........................... <value(getObject(#session).GET("user_pixelbalance"))>
+  [680] extcall 382 ............................. <integer(value(getObject(#session).GET("user_pixelbalance")))>
+  [683] setlocal 5 .............................. tWallet = integer(value(getObject(#session).GET("user_pixelbalance")))
+  [685] getlocal 1 .............................. <tOfferTypeText>
+  [687] getprop 1069 ............................ <pProps>
+  [690] pushsymb 350 ............................ <#offerType>
+  [693] pusharglist 2 ........................... <pProps, #offerType>
+  [695] objcall 41 .............................. <pProps[#offerType]>
+  [697] pusharglist 2 ........................... <tOfferTypeText, pProps[#offerType]>
+  [699] objcall 41 .............................. <tOfferTypeText[pProps[#offerType]]>
+  [701] pushcons 24 ............................. <"\\x1 costs \\x3 pixels">
+  [703] pusharglist 2 ........................... <tOfferTypeText[pProps[#offerType]], "\\x1 costs \\x3 pixels">
+  [705] extcall 158 ............................. <getText(tOfferTypeText[pProps[#offerType]], "\\x1 costs \\x3 pixels")>
+  [707] setlocal 6 .............................. tMsgA = getText(tOfferTypeText[pProps[#offerType]], "\\x1 costs \\x3 pixels")
+  [709] getlocal 6 .............................. <tMsgA>
+  [711] pushcons 13 ............................. <"\\x1">
+  [713] getlocal 2 .............................. <tItemName>
+  [715] pusharglist 3 ........................... <tMsgA, "\\x1", tItemName>
+  [717] extcall 415 ............................. <replaceChunks(tMsgA, "\\x1", tItemName)>
+  [720] setlocal 6 .............................. tMsgA = replaceChunks(tMsgA, "\\x1", tItemName)
+  [722] getlocal 6 .............................. <tMsgA>
+  [724] pushcons 20 ............................. <"\\x3">
+  [726] getlocal 4 .............................. <tPrice>
+  [728] pusharglist 3 ........................... <tMsgA, "\\x3", tPrice>
+  [730] extcall 415 ............................. <replaceChunks(tMsgA, "\\x3", tPrice)>
+  [733] setlocal 6 .............................. tMsgA = replaceChunks(tMsgA, "\\x3", tPrice)
+  [735] pushcons 25 ............................. <"catalog_pixels">
+  [737] pushcons 26 ............................. <"You have \\x pixels.">
+  [739] pusharglist 2 ........................... <"catalog_pixels", "You have \\x pixels.">
+  [741] extcall 158 ............................. <getText("catalog_pixels", "You have \\x pixels.")>
+  [743] pushcons 17 ............................. <"\\x">
+  [745] getlocal 5 .............................. <tWallet>
+  [747] pusharglist 3 ........................... <getText("catalog_pixels", "You have \\x pixels."), "\\x", tWallet>
+  [749] extcall 415 ............................. <replaceChunks(getText("catalog_pixels", "You have \\x pixels."), "\\x", tWallet)>
+  [752] setlocal 7 .............................. tMsgB = replaceChunks(getText("catalog_pixels", "You have \\x pixels."), "\\x", tWallet)
+  [754] pop 1 ................................... end case
+  [756] getprop 153 ............................. <pWndID>
+  [758] pusharglistnoret 1 ...................... <pWndID>
+  [760] extcall 1071 ............................ activateWindowObj(pWndID)
+  [763] getlocal 0 .............................. <tWndObj>
+  [765] pushsymb 200 ............................ <#locZ>
+  [767] pusharglist 0 ........................... <>
+  [769] extcall 1072 ............................ <getWindowManager()>
+  [772] getobjprop 1073 ......................... <getWindowManager().pAvailableLocZ>
+  [775] pushint8 1 .............................. <1>
+  [777] add ..................................... <getWindowManager().pAvailableLocZ + 1>
+  [778] pusharglistnoret 3 ...................... <tWndObj, #locZ, getWindowManager().pAvailableLocZ + 1>
+  [780] objcall 201 ............................. tWndObj.setProperty(#locZ, getWindowManager().pAvailableLocZ + 1)
+  [782] getlocal 0 .............................. <tWndObj>
+  [784] pusharglistnoret 1 ...................... <tWndObj>
+  [786] objcall 230 ............................. tWndObj.center()
+  [788] getlocal 0 .............................. <tWndObj>
+  [790] pushcons 27 ............................. <"habbo_orderinfo_text_a">
+  [792] pusharglist 2 ........................... <tWndObj, "habbo_orderinfo_text_a">
+  [794] objcall 178 ............................. <tWndObj.getElement("habbo_orderinfo_text_a")>
+  [796] getlocal 6 .............................. <tMsgA>
+  [798] pusharglistnoret 2 ...................... <tWndObj.getElement("habbo_orderinfo_text_a"), tMsgA>
+  [800] objcall 188 ............................. tWndObj.getElement("habbo_orderinfo_text_a").setText(tMsgA)
+  [802] getlocal 0 .............................. <tWndObj>
+  [804] pushcons 28 ............................. <"habbo_orderinfo_text_b">
+  [806] pusharglist 2 ........................... <tWndObj, "habbo_orderinfo_text_b">
+  [808] objcall 178 ............................. <tWndObj.getElement("habbo_orderinfo_text_b")>
+  [810] getlocal 7 .............................. <tMsgB>
+  [812] pusharglistnoret 2 ...................... <tWndObj.getElement("habbo_orderinfo_text_b"), tMsgB>
+  [814] objcall 188 ............................. tWndObj.getElement("habbo_orderinfo_text_b").setText(tMsgB)
+  [816] getlocal 0 .............................. <tWndObj>
+  [818] getparam 0 .............................. <me>
+  [820] pusharglist 1 ........................... <me>
+  [822] objcall 54 .............................. <me.getID()>
+  [824] pusharglistnoret 2 ...................... <tWndObj, me.getID()>
+  [826] objcall 197 ............................. tWndObj.registerClient(me.getID())
+  [828] getlocal 0 .............................. <tWndObj>
+  [830] pushsymb 1067 ........................... <#eventProcPurchaseDialog>
+  [833] getparam 0 .............................. <me>
+  [835] pusharglist 1 ........................... <me>
+  [837] objcall 54 .............................. <me.getID()>
+  [839] pushsymb 198 ............................ <#mouseUp>
+  [841] pusharglistnoret 4 ...................... <tWndObj, #eventProcPurchaseDialog, me.getID(), #mouseUp>
+  [843] objcall 199 ............................. tWndObj.registerProcedure(#eventProcPurchaseDialog, me.getID(), #mouseUp)
+  [845] getlocal 0 .............................. <tWndObj>
+  [847] pushsymb 200 ............................ <#locZ>
+  [849] pushint32 22000000 ...................... <22000000>
+  [854] pusharglistnoret 3 ...................... <tWndObj, #locZ, 22000000>
+  [856] objcall 201 ............................. tWndObj.setProperty(#locZ, 22000000)
+  [858] getlocal 0 .............................. <tWndObj>
+  [860] pushint8 1 .............................. <1>
+  [862] pusharglistnoret 2 ...................... <tWndObj, 1>
+  [864] objcall 202 ............................. tWndObj.lock(1)
+  [866] pushsymb 185 ............................ <#session>
+  [868] pusharglist 1 ........................... <#session>
+  [870] extcall 184 ............................. <getObject(#session)>
+  [872] pushcons 29 ............................. <"user_rights">
+  [874] pusharglist 2 ........................... <getObject(#session), "user_rights">
+  [876] objcall 186 ............................. <getObject(#session).GET("user_rights")>
+  [878] pushcons 30 ............................. <"fuse_trade">
+  [880] pusharglist 2 ........................... <getObject(#session).GET("user_rights"), "fuse_trade">
+  [882] objcall 281 ............................. <getObject(#session).GET("user_rights").getOne("fuse_trade")>
+  [885] not ..................................... <not getObject(#session).GET("user_rights").getOne("fuse_trade")>
+  [886] jmpifz [917] ............................ if not getObject(#session).GET("user_rights").getOne("fuse_trade") then
+  [889] getlocal 0 .............................. <tWndObj>
+  [891] pushcons 9 .............................. <"buy_gift_ok">
+  [893] pusharglist 2 ........................... <tWndObj, "buy_gift_ok">
+  [895] objcall 253 ............................. <tWndObj.elementExists("buy_gift_ok")>
+  [897] jmpifz [917] ............................ if tWndObj.elementExists("buy_gift_ok") then
+  [900] getlocal 0 .............................. <tWndObj>
+  [902] pushcons 9 .............................. <"buy_gift_ok">
+  [904] pusharglist 2 ........................... <tWndObj, "buy_gift_ok">
+  [906] objcall 178 ............................. <tWndObj.getElement("buy_gift_ok")>
+  [908] pushsymb 850 ............................ <#blend>
+  [911] pushint8 30 ............................. <30>
+  [913] pusharglistnoret 3 ...................... <tWndObj.getElement("buy_gift_ok"), #blend, 30>
+  [915] objcall 201 ............................. tWndObj.getElement("buy_gift_ok").setProperty(#blend, 30)
+  [917] ret
+end
+
+on showGiftDialog me
+  [  0] getprop 153 ............................. <pWndID>
+  [  2] pusharglist 1 ........................... <pWndID>
+  [  4] extcall 174 ............................. <windowExists(pWndID)>
+  [  6] not ..................................... <not windowExists(pWndID)>
+  [  7] jmpifz [ 27] ............................ if not windowExists(pWndID) then
+  [ 10] getparam 0 .............................. <me>
+  [ 12] pushcons 31 ............................. <"Cannot convert nonexisting purchase dialog">
+  [ 14] pushsymb 1065 ........................... <#showGiftDialog>
+  [ 17] pushsymb 47 ............................. <#major>
+  [ 19] pusharglist 4 ........................... <me, "Cannot convert nonexisting purchase dialog", #showGiftDialog, #major>
+  [ 21] extcall 46 .............................. <error(me, "Cannot convert nonexisting purchase dialog", #showGiftDialog, #major)>
+  [ 23] pusharglistnoret 1 ...................... <error(me, "Cannot convert nonexisting purchase dialog", #showGiftDialog, #major)>
+  [ 25] extcall 37 .............................. return error(me, "Cannot convert nonexisting purchase dialog", #showGiftDialog, #major)
+  [ 27] getprop 153 ............................. <pWndID>
+  [ 29] pusharglist 1 ........................... <pWndID>
+  [ 31] extcall 194 ............................. <getWindow(pWndID)>
+  [ 33] setlocal 0 .............................. tWndObj = getWindow(pWndID)
+  [ 35] getlocal 0 .............................. <tWndObj>
+  [ 37] pushcons 27 ............................. <"habbo_orderinfo_text_a">
+  [ 39] pusharglist 2 ........................... <tWndObj, "habbo_orderinfo_text_a">
+  [ 41] objcall 178 ............................. <tWndObj.getElement("habbo_orderinfo_text_a")>
+  [ 43] pusharglist 1 ........................... <tWndObj.getElement("habbo_orderinfo_text_a")>
+  [ 45] objcall 158 ............................. <tWndObj.getElement("habbo_orderinfo_text_a").getText()>
+  [ 47] setlocal 1 .............................. tMsgA = tWndObj.getElement("habbo_orderinfo_text_a").getText()
+  [ 49] getlocal 0 .............................. <tWndObj>
+  [ 51] pushcons 28 ............................. <"habbo_orderinfo_text_b">
+  [ 53] pusharglist 2 ........................... <tWndObj, "habbo_orderinfo_text_b">
+  [ 55] objcall 178 ............................. <tWndObj.getElement("habbo_orderinfo_text_b")>
+  [ 57] pusharglist 1 ........................... <tWndObj.getElement("habbo_orderinfo_text_b")>
+  [ 59] objcall 158 ............................. <tWndObj.getElement("habbo_orderinfo_text_b").getText()>
+  [ 61] setlocal 2 .............................. tMsgB = tWndObj.getElement("habbo_orderinfo_text_b").getText()
+  [ 63] getlocal 0 .............................. <tWndObj>
+  [ 65] pusharglistnoret 1 ...................... <tWndObj>
+  [ 67] objcall 576 ............................. tWndObj.unmerge()
+  [ 70] getlocal 0 .............................. <tWndObj>
+  [ 72] pushcons 32 ............................. <"habbo_orderinfo_gift_dialog.window">
+  [ 74] pusharglist 2 ........................... <tWndObj, "habbo_orderinfo_gift_dialog.window">
+  [ 76] objcall 195 ............................. <tWndObj.merge("habbo_orderinfo_gift_dialog.window")>
+  [ 78] not ..................................... <not tWndObj.merge("habbo_orderinfo_gift_dialog.window")>
+  [ 79] jmpifz [105] ............................ if not tWndObj.merge("habbo_orderinfo_gift_dialog.window") then
+  [ 82] getlocal 0 .............................. <tWndObj>
+  [ 84] pusharglistnoret 1 ...................... <tWndObj>
+  [ 86] objcall 196 ............................. tWndObj.close()
+  [ 88] getparam 0 .............................. <me>
+  [ 90] pushcons 4 .............................. <"Unable to perform merge to purchase info dialog">
+  [ 92] pushsymb 1064 ........................... <#showPurchaseDialog>
+  [ 95] pushsymb 47 ............................. <#major>
+  [ 97] pusharglist 4 ........................... <me, "Unable to perform merge to purchase info dialog", #showPurchaseDialog, #major>
+  [ 99] extcall 46 .............................. <error(me, "Unable to perform merge to purchase info dialog", #showPurchaseDialog, #major)>
+  [101] pusharglistnoret 1 ...................... <error(me, "Unable to perform merge to purchase info dialog", #showPurchaseDialog, #major)>
+  [103] extcall 37 .............................. return error(me, "Unable to perform merge to purchase info dialog", #showPurchaseDialog, #major)
+  [105] getprop 153 ............................. <pWndID>
+  [107] pusharglistnoret 1 ...................... <pWndID>
+  [109] extcall 1071 ............................ activateWindowObj(pWndID)
+  [112] getlocal 0 .............................. <tWndObj>
+  [114] pushsymb 200 ............................ <#locZ>
+  [116] pusharglist 0 ........................... <>
+  [118] extcall 1072 ............................ <getWindowManager()>
+  [121] getobjprop 1073 ......................... <getWindowManager().pAvailableLocZ>
+  [124] pushint8 1 .............................. <1>
+  [126] add ..................................... <getWindowManager().pAvailableLocZ + 1>
+  [127] pusharglistnoret 3 ...................... <tWndObj, #locZ, getWindowManager().pAvailableLocZ + 1>
+  [129] objcall 201 ............................. tWndObj.setProperty(#locZ, getWindowManager().pAvailableLocZ + 1)
+  [131] getlocal 0 .............................. <tWndObj>
+  [133] pushcons 27 ............................. <"habbo_orderinfo_text_a">
+  [135] pusharglist 2 ........................... <tWndObj, "habbo_orderinfo_text_a">
+  [137] objcall 178 ............................. <tWndObj.getElement("habbo_orderinfo_text_a")>
+  [139] getlocal 1 .............................. <tMsgA>
+  [141] pusharglistnoret 2 ...................... <tWndObj.getElement("habbo_orderinfo_text_a"), tMsgA>
+  [143] objcall 188 ............................. tWndObj.getElement("habbo_orderinfo_text_a").setText(tMsgA)
+  [145] getlocal 0 .............................. <tWndObj>
+  [147] pushcons 28 ............................. <"habbo_orderinfo_text_b">
+  [149] pusharglist 2 ........................... <tWndObj, "habbo_orderinfo_text_b">
+  [151] objcall 178 ............................. <tWndObj.getElement("habbo_orderinfo_text_b")>
+  [153] getlocal 2 .............................. <tMsgB>
+  [155] pusharglistnoret 2 ...................... <tWndObj.getElement("habbo_orderinfo_text_b"), tMsgB>
+  [157] objcall 188 ............................. tWndObj.getElement("habbo_orderinfo_text_b").setText(tMsgB)
+  [159] getlocal 0 .............................. <tWndObj>
+  [161] pushsymb 1068 ........................... <#eventProcKeyDown>
+  [164] getparam 0 .............................. <me>
+  [166] pusharglist 1 ........................... <me>
+  [168] objcall 54 .............................. <me.getID()>
+  [170] pushsymb 234 ............................ <#keyDown>
+  [172] pusharglistnoret 4 ...................... <tWndObj, #eventProcKeyDown, me.getID(), #keyDown>
+  [174] objcall 199 ............................. tWndObj.registerProcedure(#eventProcKeyDown, me.getID(), #keyDown)
+  [176] ret
+end
+
+on finishPurchase me
+  [  0] getprop 153 ............................. <pWndID>
+  [  2] pusharglist 1 ........................... <pWndID>
+  [  4] extcall 174 ............................. <windowExists(pWndID)>
+  [  6] jmpifz [ 15] ............................ if windowExists(pWndID) then
+  [  9] getprop 153 ............................. <pWndID>
+  [ 11] pusharglistnoret 1 ...................... <pWndID>
+  [ 13] extcall 239 ............................. removeWindow(pWndID)
+  [ 15] getparam 0 .............................. <me>
+  [ 17] getchainedprop 1069 ..................... <me.pProps>
+  [ 20] pushsymb 603 ............................ <#closeCatalogue>
+  [ 23] pusharglist 2 ........................... <me.pProps, #closeCatalogue>
+  [ 25] objcall 102 ............................. <me.pProps.getaProp(#closeCatalogue)>
+  [ 27] jmpifz [ 36] ............................ if me.pProps.getaProp(#closeCatalogue) then
+  [ 30] pushsymb 164 ............................ <#hide_catalogue>
+  [ 32] pusharglistnoret 1 ...................... <#hide_catalogue>
+  [ 34] extcall 220 ............................. executeMessage(#hide_catalogue)
+  [ 36] ret
+end
+
+on eventProcPurchaseDialog me, tEvent, tSprID, tParam, tWndID
+  [  0] getparam 2 .............................. <tSprID>
+  [  2] peek 0 .................................. case tSprID of
+  [  4] pushcons 33 ............................. <"habbo_decision_ok">
+  [  6] nteq
+  [  7] jmpifz [ 26] ............................ (case) "habbo_decision_ok", ...
+  [ 10] peek 0
+  [ 12] pushcons 34 ............................. <"habbo_message_ok">
+  [ 14] nteq
+  [ 15] jmpifz [ 26] ............................ (case) ..., "habbo_message_ok", ...
+  [ 18] peek 0
+  [ 20] pushcons 35 ............................. <"button_ok">
+  [ 22] eq
+  [ 23] jmpifz [334] ............................ (case) ..., "button_ok":
+  [ 26] getprop 153 ............................. <pWndID>
+  [ 28] pusharglist 1 ........................... <pWndID>
+  [ 30] extcall 194 ............................. <getWindow(pWndID)>
+  [ 32] setlocal 0 .............................. tWndObj = getWindow(pWndID)
+  [ 34] getlocal 0 .............................. <tWndObj>
+  [ 36] pushcons 36 ............................. <"shopping_gift_target">
+  [ 38] pusharglist 2 ........................... <tWndObj, "shopping_gift_target">
+  [ 40] objcall 253 ............................. <tWndObj.elementExists("shopping_gift_target")>
+  [ 42] jmpifz [203] ............................ if tWndObj.elementExists("shopping_gift_target") then / else
+  [ 45] getlocal 0 .............................. <tWndObj>
+  [ 47] pushcons 36 ............................. <"shopping_gift_target">
+  [ 49] pusharglist 2 ........................... <tWndObj, "shopping_gift_target">
+  [ 51] objcall 178 ............................. <tWndObj.getElement("shopping_gift_target")>
+  [ 53] pusharglist 1 ........................... <tWndObj.getElement("shopping_gift_target")>
+  [ 55] objcall 158 ............................. <tWndObj.getElement("shopping_gift_target").getText()>
+  [ 57] setlocal 1 .............................. tGiftReceiver = tWndObj.getElement("shopping_gift_target").getText()
+  [ 59] getlocal 0 .............................. <tWndObj>
+  [ 61] pushcons 37 ............................. <"shopping_greeting_field">
+  [ 63] pusharglist 2 ........................... <tWndObj, "shopping_greeting_field">
+  [ 65] objcall 178 ............................. <tWndObj.getElement("shopping_greeting_field")>
+  [ 67] pusharglist 1 ........................... <tWndObj.getElement("shopping_greeting_field")>
+  [ 69] objcall 158 ............................. <tWndObj.getElement("shopping_greeting_field").getText()>
+  [ 71] pushint8 1 .............................. <1>
+  [ 73] pusharglist 2 ........................... <tWndObj.getElement("shopping_greeting_field").getText(), 1>
+  [ 75] extcall 1028 ............................ <convertSpecialChars(tWndObj.getElement("shopping_greeting_field").getText(), 1)>
+  [ 78] setlocal 2 .............................. tGiftMessage = convertSpecialChars(tWndObj.getElement("shopping_greeting_field").getText(), 1)
+  [ 80] pushcons 8 .............................. <EMPTY>
+  [ 82] setlocal 3 .............................. tExtraParam = EMPTY
+  [ 84] getprop 1069 ............................ <pProps>
+  [ 87] pushsymb 352 ............................ <#item>
+  [ 90] pusharglist 2 ........................... <pProps, #item>
+  [ 92] objcall 41 .............................. <pProps[#item]>
+  [ 94] pusharglist 1 ........................... <pProps[#item]>
+  [ 96] objcall 59 .............................. <pProps[#item].getCount()>
+  [ 98] pushzero ................................ <0>
+  [ 99] gt ...................................... <pProps[#item].getCount() > 0>
+  [100] jmpifz [136] ............................ if pProps[#item].getCount() > 0 then / else
+  [103] getprop 1069 ............................ <pProps>
+  [106] pushsymb 352 ............................ <#item>
+  [109] pusharglist 2 ........................... <pProps, #item>
+  [111] objcall 41 .............................. <pProps[#item]>
+  [113] pushint8 1 .............................. <1>
+  [115] pusharglist 2 ........................... <pProps[#item], 1>
+  [117] objcall 60 .............................. <pProps[#item].getContent(1)>
+  [119] pusharglist 1 ........................... <pProps[#item].getContent(1)>
+  [121] objcall 548 ............................. <pProps[#item].getContent(1).getExtraParam()>
+  [124] pushint8 1 .............................. <1>
+  [126] pusharglist 2 ........................... <pProps[#item].getContent(1).getExtraParam(), 1>
+  [128] extcall 1028 ............................ <convertSpecialChars(pProps[#item].getContent(1).getExtraParam(), 1)>
+  [131] setlocal 3 .............................. tExtraParam = convertSpecialChars(pProps[#item].getContent(1).getExtraParam(), 1)
+  [133] jmp [140]
+  [136] pushcons 8 .............................. <EMPTY>
+  [138] setlocal 3 .............................. tExtraParam = EMPTY
+  [140] getprop 1069 ............................ <pProps>
+  [143] pushsymb 353 ............................ <#method>
+  [146] pusharglist 2 ........................... <pProps, #method>
+  [148] objcall 41 .............................. <pProps[#method]>
+  [150] pushsymb 559 ............................ <#catalogue>
+  [153] pusharglist 1 ........................... <#catalogue>
+  [155] extcall 471 ............................. <getThread(#catalogue)>
+  [158] pusharglist 1 ........................... <getThread(#catalogue)>
+  [160] objcall 324 ............................. <getThread(#catalogue).getHandler()>
+  [163] getprop 1069 ............................ <pProps>
+  [166] pushsymb 103 ............................ <#pageid>
+  [168] pusharglist 2 ........................... <pProps, #pageid>
+  [170] objcall 41 .............................. <pProps[#pageid]>
+  [172] getprop 1069 ............................ <pProps>
+  [175] pushsymb 352 ............................ <#item>
+  [178] pusharglist 2 ........................... <pProps, #item>
+  [180] objcall 41 .............................. <pProps[#item]>
+  [182] pusharglist 1 ........................... <pProps[#item]>
+  [184] objcall 709 ............................. <pProps[#item].getCode()>
+  [187] getlocal 3 .............................. <tExtraParam>
+  [189] pushint8 1 .............................. <1>
+  [191] getlocal 1 .............................. <tGiftReceiver>
+  [193] getlocal 2 .............................. <tGiftMessage>
+  [195] pusharglistnoret 8 ...................... <pProps[#method], getThread(#catalogue).getHandler(), pProps[#pageid], pProps[#item].getCode(), tExtraParam, 1, tGiftReceiver, tGiftMessage>
+  [197] extcall 484 ............................. call(pProps[#method], getThread(#catalogue).getHandler(), pProps[#pageid], pProps[#item].getCode(), tExtraParam, 1, tGiftReceiver, tGiftMessage)
+  [200] jmp [318]
+  [203] pushcons 8 .............................. <EMPTY>
+  [205] setlocal 3 .............................. tExtraParam = EMPTY
+  [207] getprop 1069 ............................ <pProps>
+  [210] pushsymb 352 ............................ <#item>
+  [213] pusharglist 2 ........................... <pProps, #item>
+  [215] objcall 41 .............................. <pProps[#item]>
+  [217] pusharglist 1 ........................... <pProps[#item]>
+  [219] objcall 59 .............................. <pProps[#item].getCount()>
+  [221] pushzero ................................ <0>
+  [222] gt ...................................... <pProps[#item].getCount() > 0>
+  [223] jmpifz [259] ............................ if pProps[#item].getCount() > 0 then / else
+  [226] getprop 1069 ............................ <pProps>
+  [229] pushsymb 352 ............................ <#item>
+  [232] pusharglist 2 ........................... <pProps, #item>
+  [234] objcall 41 .............................. <pProps[#item]>
+  [236] pushint8 1 .............................. <1>
+  [238] pusharglist 2 ........................... <pProps[#item], 1>
+  [240] objcall 60 .............................. <pProps[#item].getContent(1)>
+  [242] pusharglist 1 ........................... <pProps[#item].getContent(1)>
+  [244] objcall 548 ............................. <pProps[#item].getContent(1).getExtraParam()>
+  [247] pushint8 1 .............................. <1>
+  [249] pusharglist 2 ........................... <pProps[#item].getContent(1).getExtraParam(), 1>
+  [251] extcall 1028 ............................ <convertSpecialChars(pProps[#item].getContent(1).getExtraParam(), 1)>
+  [254] setlocal 3 .............................. tExtraParam = convertSpecialChars(pProps[#item].getContent(1).getExtraParam(), 1)
+  [256] jmp [263]
+  [259] pushcons 8 .............................. <EMPTY>
+  [261] setlocal 3 .............................. tExtraParam = EMPTY
+  [263] getprop 1069 ............................ <pProps>
+  [266] pushsymb 353 ............................ <#method>
+  [269] pusharglist 2 ........................... <pProps, #method>
+  [271] objcall 41 .............................. <pProps[#method]>
+  [273] pushsymb 559 ............................ <#catalogue>
+  [276] pusharglist 1 ........................... <#catalogue>
+  [278] extcall 471 ............................. <getThread(#catalogue)>
+  [281] pusharglist 1 ........................... <getThread(#catalogue)>
+  [283] objcall 324 ............................. <getThread(#catalogue).getHandler()>
+  [286] getprop 1069 ............................ <pProps>
+  [289] pushsymb 103 ............................ <#pageid>
+  [291] pusharglist 2 ........................... <pProps, #pageid>
+  [293] objcall 41 .............................. <pProps[#pageid]>
+  [295] getprop 1069 ............................ <pProps>
+  [298] pushsymb 352 ............................ <#item>
+  [301] pusharglist 2 ........................... <pProps, #item>
+  [303] objcall 41 .............................. <pProps[#item]>
+  [305] pusharglist 1 ........................... <pProps[#item]>
+  [307] objcall 709 ............................. <pProps[#item].getCode()>
+  [310] getlocal 3 .............................. <tExtraParam>
+  [312] pushzero ................................ <0>
+  [313] pusharglistnoret 6 ...................... <pProps[#method], getThread(#catalogue).getHandler(), pProps[#pageid], pProps[#item].getCode(), tExtraParam, 0>
+  [315] extcall 484 ............................. call(pProps[#method], getThread(#catalogue).getHandler(), pProps[#pageid], pProps[#item].getCode(), tExtraParam, 0)
+  [318] getlocal 0 .............................. <tWndObj>
+  [320] pusharglistnoret 1 ...................... <tWndObj>
+  [322] objcall 196 ............................. tWndObj.close()
+  [324] getparam 0 .............................. <me>
+  [326] pusharglistnoret 1 ...................... <me>
+  [328] objcall 1066 ............................ me.finishPurchase()
+  [331] jmp [650]
+  [334] peek 0
+  [336] pushcons 38 ............................. <"habbo_decision_cancel">
+  [338] nteq
+  [339] jmpifz [358] ............................ (case) "habbo_decision_cancel", ...
+  [342] peek 0
+  [344] pushcons 39 ............................. <"button_cancel">
+  [346] nteq
+  [347] jmpifz [358] ............................ (case) ..., "button_cancel", ...
+  [350] peek 0
+  [352] pushcons 40 ............................. <"close">
+  [354] eq
+  [355] jmpifz [382] ............................ (case) ..., "close":
+  [358] getprop 153 ............................. <pWndID>
+  [360] pusharglist 1 ........................... <pWndID>
+  [362] extcall 194 ............................. <getWindow(pWndID)>
+  [364] setlocal 0 .............................. tWndObj = getWindow(pWndID)
+  [366] getlocal 0 .............................. <tWndObj>
+  [368] pusharglistnoret 1 ...................... <tWndObj>
+  [370] objcall 196 ............................. tWndObj.close()
+  [372] getparam 0 .............................. <me>
+  [374] pusharglistnoret 1 ...................... <me>
+  [376] objcall 1066 ............................ me.finishPurchase()
+  [379] jmp [650]
+  [382] peek 0
+  [384] pushcons 9 .............................. <"buy_gift_ok">
+  [386] eq
+  [387] jmpifz [400] ............................ (case) "buy_gift_ok":
+  [390] getparam 0 .............................. <me>
+  [392] pusharglistnoret 1 ...................... <me>
+  [394] objcall 1065 ............................ me.showGiftDialog()
+  [397] jmp [650]
+  [400] peek 0
+  [402] pushcons 41 ............................. <"buy_gift_cancel">
+  [404] eq
+  [405] jmpifz [418] ............................ (case) "buy_gift_cancel":
+  [408] getparam 0 .............................. <me>
+  [410] pusharglistnoret 1 ...................... <me>
+  [412] objcall 1064 ............................ me.showPurchaseDialog()
+  [415] jmp [650]
+  [418] peek 0
+  [420] pushcons 42 ............................. <"nobalance_ok">
+  [422] eq
+  [423] jmpifz [541] ............................ (case) "nobalance_ok":
+  [426] pushcons 43 ............................. <"url_nobalance">
+  [428] pusharglist 1 ........................... <"url_nobalance">
+  [430] extcall 209 ............................. <textExists("url_nobalance")>
+  [432] not ..................................... <not textExists("url_nobalance")>
+  [433] jmpifz [443] ............................ if not textExists("url_nobalance") then
+  [436] pop 1
+  [438] pushzero ................................ <0>
+  [439] pusharglistnoret 1 ...................... <0>
+  [441] extcall 37 .............................. return 0
+  [443] pushsymb 185 ............................ <#session>
+  [445] pusharglist 1 ........................... <#session>
+  [447] extcall 184 ............................. <getObject(#session)>
+  [449] setlocal 4 .............................. tSession = getObject(#session)
+  [451] pushcons 43 ............................. <"url_nobalance">
+  [453] pusharglist 1 ........................... <"url_nobalance">
+  [455] extcall 158 ............................. <getText("url_nobalance")>
+  [457] setlocal 5 .............................. tURL = getText("url_nobalance")
+  [459] getlocal 5 .............................. <tURL>
+  [461] getlocal 4 .............................. <tSession>
+  [463] pushsymb 286 ............................ <#userName>
+  [466] pusharglist 2 ........................... <tSession, #userName>
+  [468] objcall 186 ............................. <tSession.GET(#userName)>
+  [470] pusharglist 1 ........................... <tSession.GET(#userName)>
+  [472] extcall 285 ............................. <urlEncode(tSession.GET(#userName))>
+  [475] joinstr ................................. <tURL & urlEncode(tSession.GET(#userName))>
+  [476] setlocal 5 .............................. tURL = tURL & urlEncode(tSession.GET(#userName))
+  [478] getlocal 4 .............................. <tSession>
+  [480] pushcons 44 ............................. <"user_checksum">
+  [482] pusharglist 2 ........................... <tSession, "user_checksum">
+  [484] objcall 189 ............................. <tSession.exists("user_checksum")>
+  [486] jmpifz [510] ............................ if tSession.exists("user_checksum") then
+  [489] getlocal 5 .............................. <tURL>
+  [491] pushcons 45 ............................. <"&sum=">
+  [493] joinstr ................................. <tURL & "&sum=">
+  [494] getlocal 4 .............................. <tSession>
+  [496] pushcons 44 ............................. <"user_checksum">
+  [498] pusharglist 2 ........................... <tSession, "user_checksum">
+  [500] objcall 186 ............................. <tSession.GET("user_checksum")>
+  [502] pusharglist 1 ........................... <tSession.GET("user_checksum")>
+  [504] extcall 285 ............................. <urlEncode(tSession.GET("user_checksum"))>
+  [507] joinstr ................................. <tURL & "&sum=" & urlEncode(tSession.GET("user_checksum"))>
+  [508] setlocal 5 .............................. tURL = tURL & "&sum=" & urlEncode(tSession.GET("user_checksum"))
+  [510] pushsymb 221 ............................ <#externalLinkClick>
+  [512] getmovieprop 222 ........................ <the mouseLoc>
+  [514] pusharglistnoret 2 ...................... <#externalLinkClick, the mouseLoc>
+  [516] extcall 220 ............................. executeMessage(#externalLinkClick, the mouseLoc)
+  [518] getlocal 5 .............................. <tURL>
+  [520] pusharglistnoret 1 ...................... <tURL>
+  [522] extcall 223 ............................. openNetPage(tURL)
+  [524] getprop 153 ............................. <pWndID>
+  [526] pusharglist 1 ........................... <pWndID>
+  [528] extcall 194 ............................. <getWindow(pWndID)>
+  [530] setlocal 0 .............................. tWndObj = getWindow(pWndID)
+  [532] getlocal 0 .............................. <tWndObj>
+  [534] pusharglistnoret 1 ...................... <tWndObj>
+  [536] objcall 196 ............................. tWndObj.close()
+  [538] jmp [650]
+  [541] peek 0
+  [543] pushcons 46 ............................. <"subscribe">
+  [545] eq
+  [546] jmpifz [650] ............................ (case) "subscribe":
+  [549] pushsymb 185 ............................ <#session>
+  [551] pusharglist 1 ........................... <#session>
+  [553] extcall 184 ............................. <getObject(#session)>
+  [555] setlocal 4 .............................. tSession = getObject(#session)
+  [557] getlocal 4 .............................. <tSession>
+  [559] pushsymb 286 ............................ <#userName>
+  [562] pusharglist 2 ........................... <tSession, #userName>
+  [564] objcall 186 ............................. <tSession.GET(#userName)>
+  [566] setlocal 6 .............................. tOwnName = tSession.GET(#userName)
+  [568] pushcons 47 ............................. <"url_subscribe">
+  [570] pusharglist 1 ........................... <"url_subscribe">
+  [572] extcall 158 ............................. <getText("url_subscribe")>
+  [574] setlocal 5 .............................. tURL = getText("url_subscribe")
+  [576] getlocal 5 .............................. <tURL>
+  [578] getlocal 6 .............................. <tOwnName>
+  [580] pusharglist 1 ........................... <tOwnName>
+  [582] extcall 285 ............................. <urlEncode(tOwnName)>
+  [585] joinstr ................................. <tURL & urlEncode(tOwnName)>
+  [586] setlocal 5 .............................. tURL = tURL & urlEncode(tOwnName)
+  [588] getlocal 4 .............................. <tSession>
+  [590] pushcons 44 ............................. <"user_checksum">
+  [592] pusharglist 2 ........................... <tSession, "user_checksum">
+  [594] objcall 189 ............................. <tSession.exists("user_checksum")>
+  [596] jmpifz [620] ............................ if tSession.exists("user_checksum") then
+  [599] getlocal 5 .............................. <tURL>
+  [601] pushcons 45 ............................. <"&sum=">
+  [603] joinstr ................................. <tURL & "&sum=">
+  [604] getlocal 4 .............................. <tSession>
+  [606] pushcons 44 ............................. <"user_checksum">
+  [608] pusharglist 2 ........................... <tSession, "user_checksum">
+  [610] objcall 186 ............................. <tSession.GET("user_checksum")>
+  [612] pusharglist 1 ........................... <tSession.GET("user_checksum")>
+  [614] extcall 285 ............................. <urlEncode(tSession.GET("user_checksum"))>
+  [617] joinstr ................................. <tURL & "&sum=" & urlEncode(tSession.GET("user_checksum"))>
+  [618] setlocal 5 .............................. tURL = tURL & "&sum=" & urlEncode(tSession.GET("user_checksum"))
+  [620] pushsymb 221 ............................ <#externalLinkClick>
+  [622] getmovieprop 222 ........................ <the mouseLoc>
+  [624] pusharglistnoret 2 ...................... <#externalLinkClick, the mouseLoc>
+  [626] extcall 220 ............................. executeMessage(#externalLinkClick, the mouseLoc)
+  [628] getlocal 5 .............................. <tURL>
+  [630] pushcons 48 ............................. <"_new">
+  [632] pusharglistnoret 2 ...................... <tURL, "_new">
+  [634] extcall 223 ............................. openNetPage(tURL, "_new")
+  [636] getprop 153 ............................. <pWndID>
+  [638] pusharglist 1 ........................... <pWndID>
+  [640] extcall 194 ............................. <getWindow(pWndID)>
+  [642] setlocal 0 .............................. tWndObj = getWindow(pWndID)
+  [644] getlocal 0 .............................. <tWndObj>
+  [646] pusharglistnoret 1 ...................... <tWndObj>
+  [648] objcall 196 ............................. tWndObj.close()
+  [650] pop 1 ................................... end case
+  [652] ret
+end
+
+on eventProcKeyDown me, tEvent, tSprID, tParam
+  [  0] pusharglist 0 ........................... <>
+  [  2] thebuiltin 1085 ......................... <the key>
+  [  5] pushcons 49 ............................. <TAB>
+  [  7] eq ...................................... <the key = TAB>
+  [  8] jmpifz [104] ............................ if the key = TAB then / else
+  [ 11] getprop 153 ............................. <pWndID>
+  [ 13] pusharglist 1 ........................... <pWndID>
+  [ 15] extcall 174 ............................. <windowExists(pWndID)>
+  [ 17] not ..................................... <not windowExists(pWndID)>
+  [ 18] jmpifz [ 26] ............................ if not windowExists(pWndID) then
+  [ 21] pushzero ................................ <0>
+  [ 22] pusharglistnoret 1 ...................... <0>
+  [ 24] extcall 37 .............................. return 0
+  [ 26] getprop 153 ............................. <pWndID>
+  [ 28] pusharglist 1 ........................... <pWndID>
+  [ 30] extcall 194 ............................. <getWindow(pWndID)>
+  [ 32] setlocal 0 .............................. tWndObj = getWindow(pWndID)
+  [ 34] getparam 2 .............................. <tSprID>
+  [ 36] pushcons 37 ............................. <"shopping_greeting_field">
+  [ 38] eq ...................................... <tSprID = "shopping_greeting_field">
+  [ 39] jmpifz [ 73] ............................ if tSprID = "shopping_greeting_field" then / else
+  [ 42] getlocal 0 .............................. <tWndObj>
+  [ 44] pushcons 36 ............................. <"shopping_gift_target">
+  [ 46] pusharglist 2 ........................... <tWndObj, "shopping_gift_target">
+  [ 48] objcall 178 ............................. <tWndObj.getElement("shopping_gift_target")>
+  [ 50] setlocal 1 .............................. tElem = tWndObj.getElement("shopping_gift_target")
+  [ 52] getlocal 1 .............................. <tElem>
+  [ 54] pusharglist 1 ........................... <tElem>
+  [ 56] extcall 57 .............................. <objectp(tElem)>
+  [ 58] jmpifz [ 70] ............................ if objectp(tElem) then
+  [ 61] getlocal 1 .............................. <tElem>
+  [ 63] pushint8 1 .............................. <1>
+  [ 65] pusharglistnoret 2 ...................... <tElem, 1>
+  [ 67] objcall 1086 ............................ tElem.setFocus(1)
+  [ 70] jmp [101]
+  [ 73] getlocal 0 .............................. <tWndObj>
+  [ 75] pushcons 37 ............................. <"shopping_greeting_field">
+  [ 77] pusharglist 2 ........................... <tWndObj, "shopping_greeting_field">
+  [ 79] objcall 178 ............................. <tWndObj.getElement("shopping_greeting_field")>
+  [ 81] setlocal 1 .............................. tElem = tWndObj.getElement("shopping_greeting_field")
+  [ 83] getlocal 1 .............................. <tElem>
+  [ 85] pusharglist 1 ........................... <tElem>
+  [ 87] extcall 57 .............................. <objectp(tElem)>
+  [ 89] jmpifz [101] ............................ if objectp(tElem) then
+  [ 92] getlocal 1 .............................. <tElem>
+  [ 94] pushint8 1 .............................. <1>
+  [ 96] pusharglistnoret 2 ...................... <tElem, 1>
+  [ 98] objcall 1086 ............................ tElem.setFocus(1)
+  [101] jmp [109]
+  [104] pusharglistnoret 0 ...................... <>
+  [106] extcall 1087 ............................ pass()
+  [109] ret
+end

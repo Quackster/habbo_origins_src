@@ -1,0 +1,371 @@
+property pProcessorObjList, pUpdateBrokerList
+
+on construct me
+  [  0] pusharglist 0 ........................... <[:]>
+  [  2] pushproplist ............................ <[:]>
+  [  3] setprop 828 ............................. pProcessorObjList = [:]
+  [  6] pusharglist 0 ........................... <[:]>
+  [  8] pushproplist ............................ <[:]>
+  [  9] setprop 829 ............................. pUpdateBrokerList = [:]
+  [ 12] pushint8 1 .............................. <1>
+  [ 14] pusharglistnoret 1 ...................... <1>
+  [ 16] extcall 28 .............................. return 1
+  [ 18] ret
+end
+
+on deconstruct me
+  [  0] getparam 0 .............................. <me>
+  [  2] pusharglistnoret 1 ...................... <me>
+  [  4] objcall 692 ............................. me.removeProcessors()
+  [  7] pushint8 1 .............................. <1>
+  [  9] pusharglistnoret 1 ...................... <1>
+  [ 11] extcall 28 .............................. return 1
+  [ 13] ret
+end
+
+on defineClient me, tid
+  [  0] getparam 0 .............................. <me>
+  [  2] getparam 1 .............................. <tid>
+  [  4] pusharglist 2 ........................... <me, tid>
+  [  6] objcall 827 ............................. <me.defineProcessors(tid)>
+  [  9] pusharglistnoret 1 ...................... <me.defineProcessors(tid)>
+  [ 11] extcall 28 .............................. return me.defineProcessors(tid)
+  [ 13] ret
+end
+
+on distributeEvent me, tTopic, tdata
+  [  0] getparam 0 .............................. <me>
+  [  2] pusharglist 1 ........................... <me>
+  [  4] objcall 689 ............................. <me.getBaseLogic()>
+  [  7] pushcons 0 .............................. <"store_">
+  [  9] getparam 1 .............................. <tTopic>
+  [ 11] joinstr ................................. <"store_" & tTopic>
+  [ 12] pusharglist 1 ........................... <"store_" & tTopic>
+  [ 14] extcall 512 ............................. <symbol("store_" & tTopic)>
+  [ 17] pusharglist 2 ........................... <me.getBaseLogic(), symbol("store_" & tTopic)>
+  [ 19] objcall 830 ............................. <me.getBaseLogic().handler(symbol("store_" & tTopic))>
+  [ 22] jmpifz [ 49] ............................ if me.getBaseLogic().handler(symbol("store_" & tTopic)) then
+  [ 25] pushcons 0 .............................. <"store_">
+  [ 27] getparam 1 .............................. <tTopic>
+  [ 29] joinstr ................................. <"store_" & tTopic>
+  [ 30] pusharglist 1 ........................... <"store_" & tTopic>
+  [ 32] extcall 512 ............................. <symbol("store_" & tTopic)>
+  [ 35] getparam 0 .............................. <me>
+  [ 37] pusharglist 1 ........................... <me>
+  [ 39] objcall 689 ............................. <me.getBaseLogic()>
+  [ 42] getparam 2 .............................. <tdata>
+  [ 44] pusharglistnoret 3 ...................... <symbol("store_" & tTopic), me.getBaseLogic(), tdata>
+  [ 46] extcall 369 ............................. call(symbol("store_" & tTopic), me.getBaseLogic(), tdata)
+  [ 49] getprop 829 ............................. <pUpdateBrokerList>
+  [ 52] getparam 1 .............................. <tTopic>
+  [ 54] pusharglist 2 ........................... <pUpdateBrokerList, tTopic>
+  [ 56] objcall 35 .............................. <pUpdateBrokerList[tTopic]>
+  [ 58] setlocal 0 .............................. tList = pUpdateBrokerList[tTopic]
+  [ 60] getlocal 0 .............................. <tList>
+  [ 62] pusharglist 1 ........................... <tList>
+  [ 64] extcall 40 .............................. <listp(tList)>
+  [ 66] not ..................................... <not listp(tList)>
+  [ 67] jmpifz [ 75] ............................ if not listp(tList) then
+  [ 70] pushzero ................................ <0>
+  [ 71] pusharglistnoret 1 ...................... <0>
+  [ 73] extcall 28 .............................. return 0
+  [ 75] getlocal 0 .............................. <tList>
+  [ 77] peek 0
+  [ 79] pusharglist 1
+  [ 81] extcall 42
+  [ 83] pushint8 1
+  [ 85] peek 0
+  [ 87] peek 2
+  [ 89] lteq
+  [ 90] jmpifz [172] ............................ repeat with tListenerId in tList
+  [ 93] peek 2
+  [ 95] peek 1
+  [ 97] pusharglist 2
+  [ 99] extcall 35
+  [101] setlocal 1
+  [103] getprop 828 ............................. <pProcessorObjList>
+  [106] getlocal 1 .............................. <tListenerId>
+  [108] pusharglist 2 ........................... <pProcessorObjList, tListenerId>
+  [110] objcall 35 .............................. <pProcessorObjList[tListenerId]>
+  [112] setlocal 2 .............................. tListener = pProcessorObjList[tListenerId]
+  [114] getlocal 2 .............................. <tListener>
+  [116] pusharglist 0 ........................... <>
+  [118] extcall 31 .............................. <VOID>
+  [120] nteq .................................... <tListener <> VOID>
+  [121] jmpifz [141] ............................ if tListener <> VOID then
+  [124] pushsymb 831 ............................ <#handleUpdate>
+  [127] getlocal 2 .............................. <tListener>
+  [129] getparam 1 .............................. <tTopic>
+  [131] getparam 2 .............................. <tdata>
+  [133] pusharglistnoret 4 ...................... <#handleUpdate, tListener, tTopic, tdata>
+  [135] extcall 369 ............................. call(#handleUpdate, tListener, tTopic, tdata)
+  [138] jmp [167] ............................... next repeat
+  [141] getprop 828 ............................. <pProcessorObjList>
+  [144] getlocal 1 .............................. <tListenerId>
+  [146] pusharglistnoret 2 ...................... <pProcessorObjList, tListenerId>
+  [148] objcall 493 ............................. pProcessorObjList.deleteProp(tListenerId)
+  [151] getprop 829 ............................. <pUpdateBrokerList>
+  [154] getparam 1 .............................. <tTopic>
+  [156] pusharglist 2 ........................... <pUpdateBrokerList, tTopic>
+  [158] objcall 35 .............................. <pUpdateBrokerList[tTopic]>
+  [160] getlocal 1 .............................. <tListenerId>
+  [162] pusharglistnoret 2 ...................... <pUpdateBrokerList[tTopic], tListenerId>
+  [164] objcall 832 ............................. pUpdateBrokerList[tTopic].deleteOne(tListenerId)
+  [167] pushint8 1
+  [169] add
+  [170] endrepeat [ 85]
+  [172] pop 3
+  [174] pushint8 1 .............................. <1>
+  [176] pusharglistnoret 1 ...................... <1>
+  [178] extcall 28 .............................. return 1
+  [180] ret
+end
+
+on defineProcessors me, tid
+  [  0] getparam 0 .............................. <me>
+  [  2] pusharglistnoret 1 ...................... <me>
+  [  4] objcall 692 ............................. me.removeProcessors()
+  [  7] getparam 1 .............................. <tid>
+  [  9] pushcons 1 .............................. <".processors">
+  [ 11] joinstr ................................. <tid & ".processors">
+  [ 12] pusharglist 1 ........................... <tid & ".processors">
+  [ 14] extcall 835 ............................. <variableExists(tid & ".processors")>
+  [ 17] jmpifz [ 32] ............................ if variableExists(tid & ".processors") then
+  [ 20] getparam 1 .............................. <tid>
+  [ 22] pushcons 1 .............................. <".processors">
+  [ 24] joinstr ................................. <tid & ".processors">
+  [ 25] pusharglist 1 ........................... <tid & ".processors">
+  [ 27] extcall 640 ............................. <getVariableValue(tid & ".processors")>
+  [ 30] setlocal 0 .............................. tProcIdList = getVariableValue(tid & ".processors")
+  [ 32] getlocal 0 .............................. <tProcIdList>
+  [ 34] pusharglist 1 ........................... <tProcIdList>
+  [ 36] extcall 40 .............................. <listp(tProcIdList)>
+  [ 38] not ..................................... <not listp(tProcIdList)>
+  [ 39] jmpifz [ 61] ............................ if not listp(tProcIdList) then
+  [ 42] getparam 0 .............................. <me>
+  [ 44] pushcons 2 .............................. <"Processor list not found:">
+  [ 46] getparam 1 .............................. <tid>
+  [ 48] joinpadstr .............................. <"Processor list not found:" && tid>
+  [ 49] pushsymb 827 ............................ <#defineProcessors>
+  [ 52] pusharglist 3 ........................... <me, "Processor list not found:" && tid, #defineProcessors>
+  [ 54] extcall 504 ............................. <error(me, "Processor list not found:" && tid, #defineProcessors)>
+  [ 57] pusharglistnoret 1 ...................... <error(me, "Processor list not found:" && tid, #defineProcessors)>
+  [ 59] extcall 28 .............................. return error(me, "Processor list not found:" && tid, #defineProcessors)
+  [ 61] pushcons 3 .............................. <"gamesystem.processor.superclass">
+  [ 63] pusharglist 1 ........................... <"gamesystem.processor.superclass">
+  [ 65] extcall 835 ............................. <variableExists("gamesystem.processor.superclass")>
+  [ 68] not ..................................... <not variableExists("gamesystem.processor.superclass")>
+  [ 69] jmpifz [ 88] ............................ if not variableExists("gamesystem.processor.superclass") then
+  [ 72] getparam 0 .............................. <me>
+  [ 74] pushcons 4 .............................. <"gamesystem.processor.superclass not found.">
+  [ 76] pushsymb 827 ............................ <#defineProcessors>
+  [ 79] pusharglist 3 ........................... <me, "gamesystem.processor.superclass not found.", #defineProcessors>
+  [ 81] extcall 504 ............................. <error(me, "gamesystem.processor.superclass not found.", #defineProcessors)>
+  [ 84] pusharglistnoret 1 ...................... <error(me, "gamesystem.processor.superclass not found.", #defineProcessors)>
+  [ 86] extcall 28 .............................. return error(me, "gamesystem.processor.superclass not found.", #defineProcessors)
+  [ 88] pushcons 3 .............................. <"gamesystem.processor.superclass">
+  [ 90] pusharglist 1 ........................... <"gamesystem.processor.superclass">
+  [ 92] extcall 729 ............................. <getClassVariable("gamesystem.processor.superclass")>
+  [ 95] setlocal 1 .............................. tBaseProcClassList = getClassVariable("gamesystem.processor.superclass")
+  [ 97] getlocal 0 .............................. <tProcIdList>
+  [ 99] peek 0
+  [101] pusharglist 1
+  [103] extcall 42
+  [105] pushint8 1
+  [107] peek 0
+  [109] peek 2
+  [111] lteq
+  [112] jmpifz [419] ............................ repeat with tProcId in tProcIdList
+  [115] peek 2
+  [117] peek 1
+  [119] pusharglist 2
+  [121] extcall 35
+  [123] setlocal 2
+  [125] getparam 1 .............................. <tid>
+  [127] pushcons 5 .............................. <"_proc_">
+  [129] joinstr ................................. <tid & "_proc_">
+  [130] getlocal 2 .............................. <tProcId>
+  [132] joinstr ................................. <tid & "_proc_" & tProcId>
+  [133] pusharglist 1 ........................... <tid & "_proc_" & tProcId>
+  [135] extcall 512 ............................. <symbol(tid & "_proc_" & tProcId)>
+  [138] setlocal 3 .............................. tProcObjId = symbol(tid & "_proc_" & tProcId)
+  [140] getparam 1 .............................. <tid>
+  [142] pushcons 6 .............................. <".">
+  [144] joinstr ................................. <tid & ".">
+  [145] getlocal 2 .............................. <tProcId>
+  [147] joinstr ................................. <tid & "." & tProcId>
+  [148] pushcons 7 .............................. <".processor.class">
+  [150] joinstr ................................. <tid & "." & tProcId & ".processor.class">
+  [151] pusharglist 1 ........................... <tid & "." & tProcId & ".processor.class">
+  [153] extcall 729 ............................. <getClassVariable(tid & "." & tProcId & ".processor.class")>
+  [156] setlocal 4 .............................. tScriptList = getClassVariable(tid & "." & tProcId & ".processor.class")
+  [158] getlocal 4 .............................. <tScriptList>
+  [160] pusharglist 1 ........................... <tScriptList>
+  [162] extcall 40 .............................. <listp(tScriptList)>
+  [164] not ..................................... <not listp(tScriptList)>
+  [165] jmpifz [193] ............................ if not listp(tScriptList) then
+  [168] getparam 0 .............................. <me>
+  [170] pushcons 8 .............................. <"Script list not found:">
+  [172] getparam 1 .............................. <tid>
+  [174] joinpadstr .............................. <"Script list not found:" && tid>
+  [175] pushcons 6 .............................. <".">
+  [177] joinstr ................................. <"Script list not found:" && tid & ".">
+  [178] getlocal 2 .............................. <tProcId>
+  [180] joinstr ................................. <"Script list not found:" && tid & "." & tProcId>
+  [181] pushsymb 827 ............................ <#defineProcessors>
+  [184] pusharglist 3 ........................... <me, "Script list not found:" && tid & "." & tProcId, #defineProcessors>
+  [186] extcall 504 ............................. <error(me, "Script list not found:" && tid & "." & tProcId, #defineProcessors)>
+  [189] pusharglistnoret 1 ...................... <error(me, "Script list not found:" && tid & "." & tProcId, #defineProcessors)>
+  [191] extcall 28 .............................. return error(me, "Script list not found:" && tid & "." & tProcId, #defineProcessors)
+  [193] getlocal 4 .............................. <tScriptList>
+  [195] pushint8 1 .............................. <1>
+  [197] getlocal 1 .............................. <tBaseProcClassList>
+  [199] pusharglistnoret 3 ...................... <tScriptList, 1, tBaseProcClassList>
+  [201] objcall 69 .............................. tScriptList.addAt(1, tBaseProcClassList)
+  [203] getlocal 3 .............................. <tProcObjId>
+  [205] getlocal 4 .............................. <tScriptList>
+  [207] pusharglist 2 ........................... <tProcObjId, tScriptList>
+  [209] extcall 200 ............................. <createObject(tProcObjId, tScriptList)>
+  [211] setlocal 5 .............................. tProcObject = createObject(tProcObjId, tScriptList)
+  [213] getlocal 5 .............................. <tProcObject>
+  [215] pusharglist 1 ........................... <tProcObject>
+  [217] extcall 210 ............................. <objectp(tProcObject)>
+  [219] not ..................................... <not objectp(tProcObject)>
+  [220] jmpifz [242] ............................ if not objectp(tProcObject) then
+  [223] getparam 0 .............................. <me>
+  [225] pushcons 9 .............................. <"Unable to create processor object:">
+  [227] getlocal 3 .............................. <tProcObjId>
+  [229] joinpadstr .............................. <"Unable to create processor object:" && tProcObjId>
+  [230] pushsymb 827 ............................ <#defineProcessors>
+  [233] pusharglist 3 ........................... <me, "Unable to create processor object:" && tProcObjId, #defineProcessors>
+  [235] extcall 504 ............................. <error(me, "Unable to create processor object:" && tProcObjId, #defineProcessors)>
+  [238] pusharglistnoret 1 ...................... <error(me, "Unable to create processor object:" && tProcObjId, #defineProcessors)>
+  [240] extcall 28 .............................. return error(me, "Unable to create processor object:" && tProcObjId, #defineProcessors)
+  [242] getlocal 5 .............................. <tProcObject>
+  [244] pushsymb 836 ............................ <#pFacadeId>
+  [247] getparam 1 .............................. <tid>
+  [249] pusharglistnoret 3 ...................... <tProcObject, #pFacadeId, tid>
+  [251] objcall 71 .............................. tProcObject[#pFacadeId] = tid
+  [253] getlocal 5 .............................. <tProcObject>
+  [255] pushsymb 159 ............................ <#pID>
+  [257] getlocal 2 .............................. <tProcId>
+  [259] pusharglistnoret 3 ...................... <tProcObject, #pID, tProcId>
+  [261] objcall 71 .............................. tProcObject[#pID] = tProcId
+  [263] getlocal 5 .............................. <tProcObject>
+  [265] getlocal 2 .............................. <tProcId>
+  [267] getparam 1 .............................. <tid>
+  [269] pusharglistnoret 3 ...................... <tProcObject, tProcId, tid>
+  [271] objcall 837 ............................. tProcObject.setID(tProcId, tid)
+  [274] getprop 828 ............................. <pProcessorObjList>
+  [277] getlocal 2 .............................. <tProcId>
+  [279] getlocal 5 .............................. <tProcObject>
+  [281] pusharglistnoret 3 ...................... <pProcessorObjList, tProcId, tProcObject>
+  [283] objcall 165 ............................. pProcessorObjList.addProp(tProcId, tProcObject)
+  [285] getparam 1 .............................. <tid>
+  [287] pushcons 6 .............................. <".">
+  [289] joinstr ................................. <tid & ".">
+  [290] getlocal 2 .............................. <tProcId>
+  [292] joinstr ................................. <tid & "." & tProcId>
+  [293] pushcons 10 ............................. <".processor.updates">
+  [295] joinstr ................................. <tid & "." & tProcId & ".processor.updates">
+  [296] pusharglist 1 ........................... <tid & "." & tProcId & ".processor.updates">
+  [298] extcall 640 ............................. <getVariableValue(tid & "." & tProcId & ".processor.updates")>
+  [301] setlocal 6 .............................. tProcessorRegList = getVariableValue(tid & "." & tProcId & ".processor.updates")
+  [303] getlocal 6 .............................. <tProcessorRegList>
+  [305] pusharglist 1 ........................... <tProcessorRegList>
+  [307] extcall 40 .............................. <listp(tProcessorRegList)>
+  [309] jmpifz [413] ............................ if listp(tProcessorRegList) then
+  [312] getlocal 6 .............................. <tProcessorRegList>
+  [314] peek 0
+  [316] pusharglist 1
+  [318] extcall 42
+  [320] pushint8 1
+  [322] peek 0
+  [324] peek 2
+  [326] lteq
+  [327] jmpifz [411] ............................ repeat with tMsg in tProcessorRegList
+  [330] peek 2
+  [332] peek 1
+  [334] pusharglist 2
+  [336] extcall 35
+  [338] setlocal 7
+  [340] getprop 829 ............................. <pUpdateBrokerList>
+  [343] getlocal 7 .............................. <tMsg>
+  [345] pusharglist 2 ........................... <pUpdateBrokerList, tMsg>
+  [347] objcall 35 .............................. <pUpdateBrokerList[tMsg]>
+  [349] pusharglist 0 ........................... <>
+  [351] extcall 31 .............................. <VOID>
+  [353] eq ...................................... <pUpdateBrokerList[tMsg] = VOID>
+  [354] jmpifz [369] ............................ if pUpdateBrokerList[tMsg] = VOID then
+  [357] getprop 829 ............................. <pUpdateBrokerList>
+  [360] getlocal 7 .............................. <tMsg>
+  [362] pusharglist 0 ........................... <[]>
+  [364] pushlist ................................ <[]>
+  [365] pusharglistnoret 3 ...................... <pUpdateBrokerList, tMsg, []>
+  [367] objcall 165 ............................. pUpdateBrokerList.addProp(tMsg, [])
+  [369] getprop 829 ............................. <pUpdateBrokerList>
+  [372] getlocal 7 .............................. <tMsg>
+  [374] pusharglist 2 ........................... <pUpdateBrokerList, tMsg>
+  [376] objcall 35 .............................. <pUpdateBrokerList[tMsg]>
+  [378] getlocal 2 .............................. <tProcId>
+  [380] pusharglist 2 ........................... <pUpdateBrokerList[tMsg], tProcId>
+  [382] objcall 838 ............................. <pUpdateBrokerList[tMsg].getPos(tProcId)>
+  [385] pushzero ................................ <0>
+  [386] eq ...................................... <pUpdateBrokerList[tMsg].getPos(tProcId) = 0>
+  [387] jmpifz [406] ............................ if pUpdateBrokerList[tMsg].getPos(tProcId) = 0 then
+  [390] getprop 829 ............................. <pUpdateBrokerList>
+  [393] getlocal 7 .............................. <tMsg>
+  [395] pusharglist 2 ........................... <pUpdateBrokerList, tMsg>
+  [397] objcall 35 .............................. <pUpdateBrokerList[tMsg]>
+  [399] getlocal 2 .............................. <tProcId>
+  [401] pusharglistnoret 2 ...................... <pUpdateBrokerList[tMsg], tProcId>
+  [403] objcall 413 ............................. pUpdateBrokerList[tMsg].add(tProcId)
+  [406] pushint8 1
+  [408] add
+  [409] endrepeat [322]
+  [411] pop 3
+  [413] pushint8 1
+  [415] add
+  [416] endrepeat [107]
+  [419] pop 3
+  [421] pushint8 1 .............................. <1>
+  [423] pusharglistnoret 1 ...................... <1>
+  [425] extcall 28 .............................. return 1
+  [427] ret
+end
+
+on removeProcessors me
+  [  0] getprop 828 ............................. <pProcessorObjList>
+  [  3] peek 0
+  [  5] pusharglist 1
+  [  7] extcall 42
+  [  9] pushint8 1
+  [ 11] peek 0
+  [ 13] peek 2
+  [ 15] lteq
+  [ 16] jmpifz [ 45] ............................ repeat with pProc in pProcessorObjList
+  [ 19] peek 2
+  [ 21] peek 1
+  [ 23] pusharglist 2
+  [ 25] extcall 35
+  [ 27] setlocal 0
+  [ 29] getlocal 0 .............................. <pProc>
+  [ 31] pusharglist 1 ........................... <pProc>
+  [ 33] objcall 45 .............................. <pProc.getID()>
+  [ 35] pusharglistnoret 1 ...................... <pProc.getID()>
+  [ 37] extcall 730 ............................. removeObject(pProc.getID())
+  [ 40] pushint8 1
+  [ 42] add
+  [ 43] endrepeat [ 11]
+  [ 45] pop 3
+  [ 47] pusharglist 0 ........................... <[:]>
+  [ 49] pushproplist ............................ <[:]>
+  [ 50] setprop 828 ............................. pProcessorObjList = [:]
+  [ 53] pusharglist 0 ........................... <[:]>
+  [ 55] pushproplist ............................ <[:]>
+  [ 56] setprop 829 ............................. pUpdateBrokerList = [:]
+  [ 59] pushint8 1 .............................. <1>
+  [ 61] pusharglistnoret 1 ...................... <1>
+  [ 63] extcall 28 .............................. return 1
+  [ 65] ret
+end

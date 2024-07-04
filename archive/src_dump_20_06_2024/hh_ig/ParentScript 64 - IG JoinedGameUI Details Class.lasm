@@ -1,0 +1,985 @@
+property pOwnerFlag, pPreviousLayout, pCurrentText
+
+on addWindows me, tView
+  [  0] getparam 0 .............................. <me>
+  [  2] pushcons 0 .............................. <"jg">
+  [  4] setobjprop 399 .......................... me.pWindowID = "jg"
+  [  7] getparam 0 .............................. <me>
+  [  9] pusharglist 1 ........................... <me>
+  [ 11] objcall 485 ............................. <me.getWindowWrapper()>
+  [ 14] setlocal 0 .............................. tWrapObjRef = me.getWindowWrapper()
+  [ 16] getlocal 0 .............................. <tWrapObjRef>
+  [ 18] pushzero ................................ <0>
+  [ 19] eq ...................................... <tWrapObjRef = 0>
+  [ 20] jmpifz [ 28] ............................ if tWrapObjRef = 0 then
+  [ 23] pushzero ................................ <0>
+  [ 24] pusharglistnoret 1 ...................... <0>
+  [ 26] extcall 38 .............................. return 0
+  [ 28] getlocal 0 .............................. <tWrapObjRef>
+  [ 30] getparam 0 .............................. <me>
+  [ 32] getobjprop 501 .......................... <me.pWindowSetId>
+  [ 35] pushint8 1 .............................. <1>
+  [ 37] pusharglistnoret 3 ...................... <tWrapObjRef, me.pWindowSetId, 1>
+  [ 39] objcall 821 ............................. tWrapObjRef.initSet(me.pWindowSetId, 1)
+  [ 42] getlocal 0 .............................. <tWrapObjRef>
+  [ 44] getparam 0 .............................. <me>
+  [ 46] pusharglist 1 ........................... <me>
+  [ 48] objcall 541 ............................. <me.getWindowId()>
+  [ 51] pusharglist 0 ........................... <>
+  [ 53] extcall 47 .............................. <VOID>
+  [ 55] getparam 0 .............................. <me>
+  [ 57] getobjprop 501 .......................... <me.pWindowSetId>
+  [ 60] pusharglistnoret 4 ...................... <tWrapObjRef, me.getWindowId(), VOID, me.pWindowSetId>
+  [ 62] objcall 823 ............................. tWrapObjRef.addOneWindow(me.getWindowId(), VOID, me.pWindowSetId)
+  [ 65] pushint8 1 .............................. <1>
+  [ 67] pusharglistnoret 1 ...................... <1>
+  [ 69] extcall 38 .............................. return 1
+  [ 71] ret
+end
+
+on render me, tView
+  [  0] getparam 0 .............................. <me>
+  [  2] pushcons 1 .............................. <"GameList">
+  [  4] pusharglist 2 ........................... <me, "GameList">
+  [  6] objcall 52 .............................. <me.getIGComponent("GameList")>
+  [  8] setlocal 0 .............................. tListService = me.getIGComponent("GameList")
+  [ 10] getlocal 0 .............................. <tListService>
+  [ 12] pushzero ................................ <0>
+  [ 13] eq ...................................... <tListService = 0>
+  [ 14] jmpifz [ 22] ............................ if tListService = 0 then
+  [ 17] pushzero ................................ <0>
+  [ 18] pusharglistnoret 1 ...................... <0>
+  [ 20] extcall 38 .............................. return 0
+  [ 22] getlocal 0 .............................. <tListService>
+  [ 24] pusharglist 1 ........................... <tListService>
+  [ 26] objcall 349 ............................. <tListService.getJoinedGame()>
+  [ 29] setlocal 1 .............................. tItemRef = tListService.getJoinedGame()
+  [ 31] getlocal 1 .............................. <tItemRef>
+  [ 33] pushzero ................................ <0>
+  [ 34] eq ...................................... <tItemRef = 0>
+  [ 35] jmpifz [ 43] ............................ if tItemRef = 0 then
+  [ 38] pushzero ................................ <0>
+  [ 39] pusharglistnoret 1 ...................... <0>
+  [ 41] extcall 38 .............................. return 0
+  [ 43] getparam 0 .............................. <me>
+  [ 45] getlocal 1 .............................. <tItemRef>
+  [ 47] pusharglist 1 ........................... <tItemRef>
+  [ 49] objcall 759 ............................. <tItemRef.checkIfOwnerOfGame()>
+  [ 52] setobjprop 946 .......................... me.pOwnerFlag = tItemRef.checkIfOwnerOfGame()
+  [ 55] getlocal 1 .............................. <tItemRef>
+  [ 57] pusharglist 1 ........................... <tItemRef>
+  [ 59] objcall 590 ............................. <tItemRef.getTeamCount()>
+  [ 62] setlocal 2 .............................. tTeamCount = tItemRef.getTeamCount()
+  [ 64] getlocal 1 .............................. <tItemRef>
+  [ 66] pusharglist 1 ........................... <tItemRef>
+  [ 68] objcall 779 ............................. <tItemRef.getTeamMaxSize()>
+  [ 71] setlocal 3 .............................. tTeamMaxSize = tItemRef.getTeamMaxSize()
+  [ 73] getlocal 2 .............................. <tTeamCount>
+  [ 75] pushzero ................................ <0>
+  [ 76] eq ...................................... <tTeamCount = 0>
+  [ 77] jmpifz [ 85] ............................ if tTeamCount = 0 then
+  [ 80] pushzero ................................ <0>
+  [ 81] pusharglistnoret 1 ...................... <0>
+  [ 83] extcall 38 .............................. return 0
+  [ 85] getprop 946 ............................. <pOwnerFlag>
+  [ 88] jmpifz [ 98] ............................ if pOwnerFlag then / else
+  [ 91] pushcons 2 .............................. <"std">
+  [ 93] setlocal 4 .............................. tMode = "std"
+  [ 95] jmp [102]
+  [ 98] pushcons 3 .............................. <"jnd">
+  [100] setlocal 4 .............................. tMode = "jnd"
+  [102] getparam 1 .............................. <tView>
+  [104] pushsymb 947 ............................ <#change>
+  [107] eq ...................................... <tView = #change>
+  [108] jmpifz [118] ............................ if tView = #change then / else
+  [111] pushcons 4 .............................. <"_change_">
+  [113] setlocal 5 .............................. tLayout = "_change_"
+  [115] jmp [122]
+  [118] pushcons 5 .............................. <"_tms_plrs_">
+  [120] setlocal 5 .............................. tLayout = "_tms_plrs_"
+  [122] pushcons 6 .............................. <"ig_">
+  [124] getlocal 4 .............................. <tMode>
+  [126] joinstr ................................. <"ig_" & tMode>
+  [127] getlocal 5 .............................. <tLayout>
+  [129] joinstr ................................. <"ig_" & tMode & tLayout>
+  [130] getlocal 2 .............................. <tTeamCount>
+  [132] joinstr ................................. <"ig_" & tMode & tLayout & tTeamCount>
+  [133] pushcons 7 .............................. <"_">
+  [135] joinstr ................................. <"ig_" & tMode & tLayout & tTeamCount & "_">
+  [136] getlocal 3 .............................. <tTeamMaxSize>
+  [138] joinstr ................................. <"ig_" & tMode & tLayout & tTeamCount & "_" & tTeamMaxSize>
+  [139] pushcons 8 .............................. <".window">
+  [141] joinstr ................................. <"ig_" & tMode & tLayout & tTeamCount & "_" & tTeamMaxSize & ".window">
+  [142] setlocal 5 .............................. tLayout = "ig_" & tMode & tLayout & tTeamCount & "_" & tTeamMaxSize & ".window"
+  [144] getprop 948 ............................. <pPreviousLayout>
+  [147] getlocal 5 .............................. <tLayout>
+  [149] nteq .................................... <pPreviousLayout <> tLayout>
+  [150] jmpifz [200] ............................ if pPreviousLayout <> tLayout then
+  [153] getparam 0 .............................. <me>
+  [155] pusharglist 1 ........................... <me>
+  [157] objcall 541 ............................. <me.getWindowId()>
+  [160] pusharglist 1 ........................... <me.getWindowId()>
+  [162] extcall 400 ............................. <getWindow(me.getWindowId())>
+  [165] setlocal 6 .............................. tWndObj = getWindow(me.getWindowId())
+  [167] getlocal 6 .............................. <tWndObj>
+  [169] pushzero ................................ <0>
+  [170] eq ...................................... <tWndObj = 0>
+  [171] jmpifz [179] ............................ if tWndObj = 0 then
+  [174] pushzero ................................ <0>
+  [175] pusharglistnoret 1 ...................... <0>
+  [177] extcall 38 .............................. return 0
+  [179] getlocal 6 .............................. <tWndObj>
+  [181] pusharglistnoret 1 ...................... <tWndObj>
+  [183] objcall 825 ............................. tWndObj.unmerge()
+  [186] getlocal 6 .............................. <tWndObj>
+  [188] getlocal 5 .............................. <tLayout>
+  [190] pusharglistnoret 2 ...................... <tWndObj, tLayout>
+  [192] objcall 586 ............................. tWndObj.merge(tLayout)
+  [195] getlocal 5 .............................. <tLayout>
+  [197] setprop 948 ............................. pPreviousLayout = tLayout
+  [200] getparam 0 .............................. <me>
+  [202] getlocal 1 .............................. <tItemRef>
+  [204] pusharglistnoret 2 ...................... <me, tItemRef>
+  [206] objcall 849 ............................. me.renderTeams(tItemRef)
+  [209] getlocal 1 .............................. <tItemRef>
+  [211] pusharglist 1 ........................... <tItemRef>
+  [213] objcall 463 ............................. <tItemRef.dump()>
+  [216] setlocal 7 .............................. tPropList = tItemRef.dump()
+  [218] pushint8 1 .............................. <1>
+  [220] setlocal 8
+  [222] getlocal 8
+  [224] getlocal 7 .............................. <tPropList>
+  [226] getobjprop 180 .......................... <tPropList.count>
+  [228] lteq
+  [229] jmpifz [273] ............................ repeat with i = 1 to tPropList.count
+  [232] getlocal 7 .............................. <tPropList>
+  [234] getlocal 8 .............................. <i>
+  [236] pusharglist 2 ........................... <tPropList, i>
+  [238] objcall 380 ............................. <tPropList.getPropAt(i)>
+  [241] setlocal 9 .............................. tKey = tPropList.getPropAt(i)
+  [243] getlocal 7 .............................. <tPropList>
+  [245] getlocal 8 .............................. <i>
+  [247] pusharglist 2 ........................... <tPropList, i>
+  [249] objcall 181 ............................. <tPropList[i]>
+  [251] setlocal 10 ............................. tValue = tPropList[i]
+  [253] getparam 0 .............................. <me>
+  [255] getlocal 9 .............................. <tKey>
+  [257] getlocal 10 ............................. <tValue>
+  [259] pusharglistnoret 3 ...................... <me, tKey, tValue>
+  [261] objcall 845 ............................. me.renderProperty(tKey, tValue)
+  [264] pushint8 1
+  [266] getlocal 8
+  [268] add
+  [269] setlocal 8
+  [271] endrepeat [222]
+  [273] pushint8 1 .............................. <1>
+  [275] pusharglistnoret 1 ...................... <1>
+  [277] extcall 38 .............................. return 1
+  [279] ret
+end
+
+on renderProperty me, tKey, tValue
+  [  0] getparam 1 .............................. <tKey>
+  [  2] peek 0 .................................. case tKey of
+  [  4] pushsymb 344 ............................ <#players_required>
+  [  7] eq
+  [  8] jmpifz [ 29] ............................ (case) #players_required:
+  [ 11] pop 1
+  [ 13] getparam 0 .............................. <me>
+  [ 15] getparam 2 .............................. <tValue>
+  [ 17] pusharglist 2 ........................... <me, tValue>
+  [ 19] objcall 943 ............................. <me.renderCanStart(tValue)>
+  [ 22] pusharglistnoret 1 ...................... <me.renderCanStart(tValue)>
+  [ 24] extcall 38 .............................. return me.renderCanStart(tValue)
+  [ 26] jmp [ 80]
+  [ 29] peek 0
+  [ 31] pushsymb 334 ............................ <#game_type_icon>
+  [ 34] eq
+  [ 35] jmpifz [ 56] ............................ (case) #game_type_icon:
+  [ 38] pop 1
+  [ 40] getparam 0 .............................. <me>
+  [ 42] getparam 2 .............................. <tValue>
+  [ 44] pusharglist 2 ........................... <me, tValue>
+  [ 46] objcall 846 ............................. <me.renderType(tValue)>
+  [ 49] pusharglistnoret 1 ...................... <me.renderType(tValue)>
+  [ 51] extcall 38 .............................. return me.renderType(tValue)
+  [ 53] jmp [ 80]
+  [ 56] peek 0
+  [ 58] pushsymb 318 ............................ <#level_name>
+  [ 61] eq
+  [ 62] jmpifz [ 80] ............................ (case) #level_name:
+  [ 65] pop 1
+  [ 67] getparam 0 .............................. <me>
+  [ 69] getparam 2 .............................. <tValue>
+  [ 71] pusharglist 2 ........................... <me, tValue>
+  [ 73] objcall 847 ............................. <me.renderName(tValue)>
+  [ 76] pusharglistnoret 1 ...................... <me.renderName(tValue)>
+  [ 78] extcall 38 .............................. return me.renderName(tValue)
+  [ 80] pop 1 ................................... end case
+  [ 82] pushzero ................................ <0>
+  [ 83] pusharglistnoret 1 ...................... <0>
+  [ 85] extcall 38 .............................. return 0
+  [ 87] ret
+end
+
+on renderCanStart me, tValue
+  [  0] getparam 1 .............................. <tValue>
+  [  2] pusharglist 1 ........................... <tValue>
+  [  4] extcall 377 ............................. <listp(tValue)>
+  [  7] not ..................................... <not listp(tValue)>
+  [  8] jmpifz [ 15] ............................ if not listp(tValue) then
+  [ 11] pushint8 1 .............................. <1>
+  [ 13] setlocal 0 .............................. tstate = 1
+  [ 15] getparam 1 .............................. <tValue>
+  [ 17] getobjprop 180 .......................... <tValue.count>
+  [ 19] pushzero ................................ <0>
+  [ 20] eq ...................................... <tValue.count = 0>
+  [ 21] jmpifz [ 28] ............................ if tValue.count = 0 then
+  [ 24] pushint8 1 .............................. <1>
+  [ 26] setlocal 0 .............................. tstate = 1
+  [ 28] getparam 0 .............................. <me>
+  [ 30] pusharglist 1 ........................... <me>
+  [ 32] objcall 541 ............................. <me.getWindowId()>
+  [ 35] pusharglist 1 ........................... <me.getWindowId()>
+  [ 37] extcall 400 ............................. <getWindow(me.getWindowId())>
+  [ 40] setlocal 1 .............................. tWndObj = getWindow(me.getWindowId())
+  [ 42] getlocal 1 .............................. <tWndObj>
+  [ 44] pushzero ................................ <0>
+  [ 45] eq ...................................... <tWndObj = 0>
+  [ 46] jmpifz [ 54] ............................ if tWndObj = 0 then
+  [ 49] pushzero ................................ <0>
+  [ 50] pusharglistnoret 1 ...................... <0>
+  [ 52] extcall 38 .............................. return 0
+  [ 54] getlocal 0 .............................. <tstate>
+  [ 56] jmpifz [ 82] ............................ if tstate then / else
+  [ 59] pushcons 9 .............................. <"ig_info_can_start">
+  [ 61] pusharglist 1 ........................... <"ig_info_can_start">
+  [ 63] extcall 82 .............................. <getText("ig_info_can_start")>
+  [ 65] setlocal 2 .............................. tText = getText("ig_info_can_start")
+  [ 67] getparam 0 .............................. <me>
+  [ 69] getprop 946 ............................. <pOwnerFlag>
+  [ 72] pushint8 1 .............................. <1>
+  [ 74] pusharglistnoret 3 ...................... <me, pOwnerFlag, 1>
+  [ 76] objcall 944 ............................. me.setStartButtonState(pOwnerFlag, 1)
+  [ 79] jmp [101]
+  [ 82] pushcons 10 ............................. <"ig_info_waiting_for_players">
+  [ 84] pusharglist 1 ........................... <"ig_info_waiting_for_players">
+  [ 86] extcall 82 .............................. <getText("ig_info_waiting_for_players")>
+  [ 88] setlocal 2 .............................. tText = getText("ig_info_waiting_for_players")
+  [ 90] getparam 0 .............................. <me>
+  [ 92] getprop 946 ............................. <pOwnerFlag>
+  [ 95] pushzero ................................ <0>
+  [ 96] pusharglistnoret 3 ...................... <me, pOwnerFlag, 0>
+  [ 98] objcall 944 ............................. me.setStartButtonState(pOwnerFlag, 0)
+  [101] getparam 0 .............................. <me>
+  [103] getobjprop 946 .......................... <me.pOwnerFlag>
+  [106] not ..................................... <not me.pOwnerFlag>
+  [107] jmpifz [116] ............................ if not me.pOwnerFlag then
+  [110] pushint8 1 .............................. <1>
+  [112] pusharglistnoret 1 ...................... <1>
+  [114] extcall 38 .............................. return 1
+  [116] getlocal 1 .............................. <tWndObj>
+  [118] pushcons 11 ............................. <"ig_info_startable">
+  [120] pusharglist 2 ........................... <tWndObj, "ig_info_startable">
+  [122] objcall 401 ............................. <tWndObj.getElement("ig_info_startable")>
+  [125] setlocal 3 .............................. tElem = tWndObj.getElement("ig_info_startable")
+  [127] getlocal 3 .............................. <tElem>
+  [129] pushzero ................................ <0>
+  [130] eq ...................................... <tElem = 0>
+  [131] jmpifz [140] ............................ if tElem = 0 then
+  [134] pushint8 1 .............................. <1>
+  [136] pusharglistnoret 1 ...................... <1>
+  [138] extcall 38 .............................. return 1
+  [140] getprop 949 ............................. <pCurrentText>
+  [143] getlocal 2 .............................. <tText>
+  [145] eq ...................................... <pCurrentText = tText>
+  [146] jmpifz [155] ............................ if pCurrentText = tText then
+  [149] pushint8 1 .............................. <1>
+  [151] pusharglistnoret 1 ...................... <1>
+  [153] extcall 38 .............................. return 1
+  [155] getlocal 2 .............................. <tText>
+  [157] setprop 949 ............................. pCurrentText = tText
+  [160] getparam 0 .............................. <me>
+  [162] getobjprop 545 .......................... <me.pWriterIdBold>
+  [165] pusharglist 1 ........................... <me.pWriterIdBold>
+  [167] extcall 548 ............................. <writerExists(me.pWriterIdBold)>
+  [170] not ..................................... <not writerExists(me.pWriterIdBold)>
+  [171] jmpifz [251] ............................ if not writerExists(me.pWriterIdBold) then / else
+  [174] getparam 0 .............................. <me>
+  [176] pusharglist 1 ........................... <me>
+  [178] objcall 538 ............................. <me.getBoldWriter()>
+  [181] setlocal 4 .............................. tWriter = me.getBoldWriter()
+  [183] getlocal 4 .............................. <tWriter>
+  [185] pushzero ................................ <0>
+  [186] eq ...................................... <tWriter = 0>
+  [187] jmpifz [195] ............................ if tWriter = 0 then
+  [190] pushzero ................................ <0>
+  [191] pusharglistnoret 1 ...................... <0>
+  [193] extcall 38 .............................. return 0
+  [195] getlocal 4 .............................. <tWriter>
+  [197] pusharglist 1 ........................... <tWriter>
+  [199] objcall 864 ............................. <tWriter.getFont()>
+  [202] setlocal 5 .............................. tFont = tWriter.getFont()
+  [204] getlocal 5 .............................. <tFont>
+  [206] pushsymb 950 ............................ <#color>
+  [209] pushint16 255 ........................... <255>
+  [212] pushint16 255 ........................... <255>
+  [215] pushint16 255 ........................... <255>
+  [218] pusharglist 3 ........................... <255, 255, 255>
+  [220] extcall 951 ............................. <rgb(255, 255, 255)>
+  [223] pusharglistnoret 3 ...................... <tFont, #color, rgb(255, 255, 255)>
+  [225] objcall 220 ............................. tFont.setaProp(#color, rgb(255, 255, 255))
+  [227] getlocal 5 .............................. <tFont>
+  [229] pushsymb 554 ............................ <#fontStyle>
+  [232] pusharglist 0 ........................... <[]>
+  [234] pushlist ................................ <[]>
+  [235] pusharglistnoret 3 ...................... <tFont, #fontStyle, []>
+  [237] objcall 220 ............................. tFont.setaProp(#fontStyle, [])
+  [239] getlocal 4 .............................. <tWriter>
+  [241] getlocal 5 .............................. <tFont>
+  [243] pusharglistnoret 2 ...................... <tWriter, tFont>
+  [245] objcall 866 ............................. tWriter.setFont(tFont)
+  [248] jmp [272]
+  [251] getparam 0 .............................. <me>
+  [253] pusharglist 1 ........................... <me>
+  [255] objcall 538 ............................. <me.getBoldWriter()>
+  [258] setlocal 4 .............................. tWriter = me.getBoldWriter()
+  [260] getlocal 4 .............................. <tWriter>
+  [262] pushzero ................................ <0>
+  [263] eq ...................................... <tWriter = 0>
+  [264] jmpifz [272] ............................ if tWriter = 0 then
+  [267] pushzero ................................ <0>
+  [268] pusharglistnoret 1 ...................... <0>
+  [270] extcall 38 .............................. return 0
+  [272] getlocal 4 .............................. <tWriter>
+  [274] getlocal 2 .............................. <tText>
+  [276] pusharglist 2 ........................... <tWriter, tText>
+  [278] objcall 69 .............................. <tWriter.render(tText)>
+  [280] setlocal 6 .............................. tTextImage = tWriter.render(tText)
+  [282] pushcons 12 ............................. <"ig_frm_px_gray">
+  [284] pusharglist 1 ........................... <"ig_frm_px_gray">
+  [286] extcall 526 ............................. <getmemnum("ig_frm_px_gray")>
+  [289] pusharglist 1 ........................... <getmemnum("ig_frm_px_gray")>
+  [291] extcall 525 ............................. <member(getmemnum("ig_frm_px_gray"))>
+  [294] getobjprop 557 .......................... <member(getmemnum("ig_frm_px_gray")).image>
+  [297] setlocal 7 .............................. tBgImage = member(getmemnum("ig_frm_px_gray")).image
+  [299] getlocal 6 .............................. <tTextImage>
+  [301] getobjprop 404 .......................... <tTextImage.width>
+  [304] pushint8 32 ............................. <32>
+  [306] add ..................................... <tTextImage.width + 32>
+  [307] pushint8 20 ............................. <20>
+  [309] pushint8 32 ............................. <32>
+  [311] pusharglist 3 ........................... <tTextImage.width + 32, 20, 32>
+  [313] extcall 557 ............................. <image(tTextImage.width + 32, 20, 32)>
+  [316] setlocal 8 .............................. tImage = image(tTextImage.width + 32, 20, 32)
+  [318] getlocal 8 .............................. <tImage>
+  [320] getlocal 7 .............................. <tBgImage>
+  [322] getlocal 8 .............................. <tImage>
+  [324] getobjprop 528 .......................... <tImage.rect>
+  [327] getlocal 7 .............................. <tBgImage>
+  [329] getobjprop 528 .......................... <tBgImage.rect>
+  [332] pusharglistnoret 4 ...................... <tImage, tBgImage, tImage.rect, tBgImage.rect>
+  [334] objcall 559 ............................. tImage.copyPixels(tBgImage, tImage.rect, tBgImage.rect)
+  [337] getlocal 8 .............................. <tImage>
+  [339] getlocal 6 .............................. <tTextImage>
+  [341] getlocal 6 .............................. <tTextImage>
+  [343] getobjprop 528 .......................... <tTextImage.rect>
+  [346] pushint8 16 ............................. <16>
+  [348] pushint8 5 .............................. <5>
+  [350] pushint8 16 ............................. <16>
+  [352] pushint8 5 .............................. <5>
+  [354] pusharglist 4 ........................... <16, 5, 16, 5>
+  [356] extcall 528 ............................. <rect(16, 5, 16, 5)>
+  [359] add ..................................... <tTextImage.rect + rect(16, 5, 16, 5)>
+  [360] getlocal 6 .............................. <tTextImage>
+  [362] getobjprop 528 .......................... <tTextImage.rect>
+  [365] pusharglistnoret 4 ...................... <tImage, tTextImage, tTextImage.rect + rect(16, 5, 16, 5), tTextImage.rect>
+  [367] objcall 559 ............................. tImage.copyPixels(tTextImage, tTextImage.rect + rect(16, 5, 16, 5), tTextImage.rect)
+  [370] getlocal 3 .............................. <tElem>
+  [372] getlocal 8 .............................. <tImage>
+  [374] pusharglistnoret 2 ...................... <tElem, tImage>
+  [376] objcall 589 ............................. tElem.feedImage(tImage)
+  [379] getlocal 1 .............................. <tWndObj>
+  [381] pushsymb 404 ............................ <#width>
+  [384] pusharglist 2 ........................... <tWndObj, #width>
+  [386] objcall 63 .............................. <tWndObj.getProperty(#width)>
+  [388] getlocal 8 .............................. <tImage>
+  [390] getobjprop 404 .......................... <tImage.width>
+  [393] sub ..................................... <tWndObj.getProperty(#width) - tImage.width>
+  [394] pushint8 2 .............................. <2>
+  [396] div ..................................... <(tWndObj.getProperty(#width) - tImage.width) / 2>
+  [397] setlocal 9 .............................. tOffsetH = (tWndObj.getProperty(#width) - tImage.width) / 2
+  [399] getlocal 3 .............................. <tElem>
+  [401] getlocal 9 .............................. <tOffsetH>
+  [403] getlocal 3 .............................. <tElem>
+  [405] pushsymb 952 ............................ <#locY>
+  [408] pusharglist 2 ........................... <tElem, #locY>
+  [410] objcall 63 .............................. <tElem.getProperty(#locY)>
+  [412] pusharglistnoret 3 ...................... <tElem, tOffsetH, tElem.getProperty(#locY)>
+  [414] objcall 86 .............................. tElem.moveTo(tOffsetH, tElem.getProperty(#locY))
+  [416] getlocal 3 .............................. <tElem>
+  [418] getlocal 8 .............................. <tImage>
+  [420] getobjprop 404 .......................... <tImage.width>
+  [423] getlocal 8 .............................. <tImage>
+  [425] getobjprop 416 .......................... <tImage.height>
+  [428] pusharglistnoret 3 ...................... <tElem, tImage.width, tImage.height>
+  [430] objcall 871 ............................. tElem.resizeTo(tImage.width, tImage.height)
+  [433] pushint8 1 .............................. <1>
+  [435] pusharglistnoret 1 ...................... <1>
+  [437] extcall 38 .............................. return 1
+  [439] ret
+end
+
+on renderType me, tValue
+  [  0] getparam 0 .............................. <me>
+  [  2] pusharglist 1 ........................... <me>
+  [  4] objcall 541 ............................. <me.getWindowId()>
+  [  7] pusharglist 1 ........................... <me.getWindowId()>
+  [  9] extcall 400 ............................. <getWindow(me.getWindowId())>
+  [ 12] setlocal 0 .............................. tWndObj = getWindow(me.getWindowId())
+  [ 14] getlocal 0 .............................. <tWndObj>
+  [ 16] pushzero ................................ <0>
+  [ 17] eq ...................................... <tWndObj = 0>
+  [ 18] jmpifz [ 26] ............................ if tWndObj = 0 then
+  [ 21] pushzero ................................ <0>
+  [ 22] pusharglistnoret 1 ...................... <0>
+  [ 24] extcall 38 .............................. return 0
+  [ 26] getlocal 0 .............................. <tWndObj>
+  [ 28] pushcons 13 ............................. <"info_gamemode">
+  [ 30] pusharglist 2 ........................... <tWndObj, "info_gamemode">
+  [ 32] objcall 401 ............................. <tWndObj.getElement("info_gamemode")>
+  [ 35] setlocal 1 .............................. tElem = tWndObj.getElement("info_gamemode")
+  [ 37] getlocal 1 .............................. <tElem>
+  [ 39] pushzero ................................ <0>
+  [ 40] eq ...................................... <tElem = 0>
+  [ 41] jmpifz [ 49] ............................ if tElem = 0 then
+  [ 44] pushzero ................................ <0>
+  [ 45] pusharglistnoret 1 ...................... <0>
+  [ 47] extcall 38 .............................. return 0
+  [ 49] getparam 1 .............................. <tValue>
+  [ 51] pusharglist 1 ........................... <tValue>
+  [ 53] extcall 182 ............................. <ilk(tValue)>
+  [ 55] pushsymb 557 ............................ <#image>
+  [ 58] eq ...................................... <ilk(tValue) = #image>
+  [ 59] jmpifz [ 71] ............................ if ilk(tValue) = #image then
+  [ 62] getlocal 1 .............................. <tElem>
+  [ 64] getparam 1 .............................. <tValue>
+  [ 66] pusharglistnoret 2 ...................... <tElem, tValue>
+  [ 68] objcall 589 ............................. tElem.feedImage(tValue)
+  [ 71] pushint8 1 .............................. <1>
+  [ 73] pusharglistnoret 1 ...................... <1>
+  [ 75] extcall 38 .............................. return 1
+  [ 77] ret
+end
+
+on renderName me, tValue
+  [  0] getparam 0 .............................. <me>
+  [  2] pusharglist 1 ........................... <me>
+  [  4] objcall 541 ............................. <me.getWindowId()>
+  [  7] pusharglist 1 ........................... <me.getWindowId()>
+  [  9] extcall 400 ............................. <getWindow(me.getWindowId())>
+  [ 12] setlocal 0 .............................. tWndObj = getWindow(me.getWindowId())
+  [ 14] getlocal 0 .............................. <tWndObj>
+  [ 16] pushzero ................................ <0>
+  [ 17] eq ...................................... <tWndObj = 0>
+  [ 18] jmpifz [ 26] ............................ if tWndObj = 0 then
+  [ 21] pushzero ................................ <0>
+  [ 22] pusharglistnoret 1 ...................... <0>
+  [ 24] extcall 38 .............................. return 0
+  [ 26] getlocal 0 .............................. <tWndObj>
+  [ 28] pushcons 14 ............................. <"ig_level_name">
+  [ 30] pusharglist 2 ........................... <tWndObj, "ig_level_name">
+  [ 32] objcall 401 ............................. <tWndObj.getElement("ig_level_name")>
+  [ 35] setlocal 1 .............................. tElem = tWndObj.getElement("ig_level_name")
+  [ 37] getlocal 1 .............................. <tElem>
+  [ 39] pushzero ................................ <0>
+  [ 40] eq ...................................... <tElem = 0>
+  [ 41] jmpifz [ 49] ............................ if tElem = 0 then
+  [ 44] pushzero ................................ <0>
+  [ 45] pusharglistnoret 1 ...................... <0>
+  [ 47] extcall 38 .............................. return 0
+  [ 49] getlocal 1 .............................. <tElem>
+  [ 51] getparam 1 .............................. <tValue>
+  [ 53] pusharglistnoret 2 ...................... <tElem, tValue>
+  [ 55] objcall 415 ............................. tElem.setText(tValue)
+  [ 58] pushint8 1 .............................. <1>
+  [ 60] pusharglistnoret 1 ...................... <1>
+  [ 62] extcall 38 .............................. return 1
+  [ 64] ret
+end
+
+on renderTeams me, tGameRef
+  [  0] getparam 0 .............................. <me>
+  [  2] pusharglist 1 ........................... <me>
+  [  4] objcall 541 ............................. <me.getWindowId()>
+  [  7] pusharglist 1 ........................... <me.getWindowId()>
+  [  9] extcall 400 ............................. <getWindow(me.getWindowId())>
+  [ 12] setlocal 0 .............................. tWndObj = getWindow(me.getWindowId())
+  [ 14] getlocal 0 .............................. <tWndObj>
+  [ 16] pushzero ................................ <0>
+  [ 17] eq ...................................... <tWndObj = 0>
+  [ 18] jmpifz [ 26] ............................ if tWndObj = 0 then
+  [ 21] pushzero ................................ <0>
+  [ 22] pusharglistnoret 1 ...................... <0>
+  [ 24] extcall 38 .............................. return 0
+  [ 26] getparam 1 .............................. <tGameRef>
+  [ 28] pusharglist 1 ........................... <tGameRef>
+  [ 30] objcall 775 ............................. <tGameRef.getAllTeamData()>
+  [ 33] setlocal 1 .............................. tTeams = tGameRef.getAllTeamData()
+  [ 35] getparam 1 .............................. <tGameRef>
+  [ 37] pusharglist 1 ........................... <tGameRef>
+  [ 39] objcall 759 ............................. <tGameRef.checkIfOwnerOfGame()>
+  [ 42] setlocal 2 .............................. tOwnerFlag = tGameRef.checkIfOwnerOfGame()
+  [ 44] getparam 1 .............................. <tGameRef>
+  [ 46] pusharglist 1 ........................... <tGameRef>
+  [ 48] objcall 590 ............................. <tGameRef.getTeamCount()>
+  [ 51] setlocal 3 .............................. tTeamCount = tGameRef.getTeamCount()
+  [ 53] getparam 1 .............................. <tGameRef>
+  [ 55] pusharglist 1 ........................... <tGameRef>
+  [ 57] objcall 779 ............................. <tGameRef.getTeamMaxSize()>
+  [ 60] setlocal 4 .............................. tTeamMaxSize = tGameRef.getTeamMaxSize()
+  [ 62] pushint8 1 .............................. <1>
+  [ 64] setlocal 5
+  [ 66] getlocal 5
+  [ 68] getlocal 3 .............................. <tTeamCount>
+  [ 70] lteq
+  [ 71] jmpifz [233] ............................ repeat with tTeamIndex = 1 to tTeamCount
+  [ 74] getlocal 1 .............................. <tTeams>
+  [ 76] getlocal 5 .............................. <tTeamIndex>
+  [ 78] pusharglist 2 ........................... <tTeams, tTeamIndex>
+  [ 80] objcall 181 ............................. <tTeams[tTeamIndex]>
+  [ 82] pushsymb 226 ............................ <#players>
+  [ 84] pusharglist 2 ........................... <tTeams[tTeamIndex], #players>
+  [ 86] objcall 181 ............................. <tTeams[tTeamIndex][#players]>
+  [ 88] getobjprop 180 .......................... <tTeams[tTeamIndex][#players].count>
+  [ 90] setlocal 6 .............................. tTeamSize = tTeams[tTeamIndex][#players].count
+  [ 92] pushint8 1 .............................. <1>
+  [ 94] setlocal 7
+  [ 96] getlocal 7
+  [ 98] getlocal 4 .............................. <tTeamMaxSize>
+  [100] lteq
+  [101] jmpifz [224] ............................ repeat with tPlayerIndex = 1 to tTeamMaxSize
+  [104] getlocal 5 .............................. <tTeamIndex>
+  [106] getlocal 1 .............................. <tTeams>
+  [108] getobjprop 180 .......................... <tTeams.count>
+  [110] gt ...................................... <tTeamIndex > tTeams.count>
+  [111] jmpifz [129] ............................ if tTeamIndex > tTeams.count then
+  [114] getparam 0 .............................. <me>
+  [116] pushzero ................................ <0>
+  [117] getlocal 5 .............................. <tTeamIndex>
+  [119] getlocal 7 .............................. <tPlayerIndex>
+  [121] pusharglistnoret 4 ...................... <me, 0, tTeamIndex, tPlayerIndex>
+  [123] objcall 850 ............................. me.renderNoPlayer(0, tTeamIndex, tPlayerIndex)
+  [126] jmp [215] ............................... next repeat
+  [129] getlocal 7 .............................. <tPlayerIndex>
+  [131] getlocal 6 .............................. <tTeamSize>
+  [133] gt ...................................... <tPlayerIndex > tTeamSize>
+  [134] jmpifz [182] ............................ if tPlayerIndex > tTeamSize then
+  [137] getparam 1 .............................. <tGameRef>
+  [139] getlocal 5 .............................. <tTeamIndex>
+  [141] getlocal 7 .............................. <tPlayerIndex>
+  [143] pusharglist 3 ........................... <tGameRef, tTeamIndex, tPlayerIndex>
+  [145] objcall 780 ............................. <tGameRef.checkPlayerRequiredForSlot(tTeamIndex, tPlayerIndex)>
+  [148] jmpifz [167] ............................ if tGameRef.checkPlayerRequiredForSlot(tTeamIndex, tPlayerIndex) then / else
+  [151] getparam 0 .............................. <me>
+  [153] pushint8 1 .............................. <1>
+  [155] getlocal 5 .............................. <tTeamIndex>
+  [157] getlocal 7 .............................. <tPlayerIndex>
+  [159] pusharglistnoret 4 ...................... <me, 1, tTeamIndex, tPlayerIndex>
+  [161] objcall 850 ............................. me.renderNoPlayer(1, tTeamIndex, tPlayerIndex)
+  [164] jmp [179]
+  [167] getparam 0 .............................. <me>
+  [169] pushzero ................................ <0>
+  [170] getlocal 5 .............................. <tTeamIndex>
+  [172] getlocal 7 .............................. <tPlayerIndex>
+  [174] pusharglistnoret 4 ...................... <me, 0, tTeamIndex, tPlayerIndex>
+  [176] objcall 850 ............................. me.renderNoPlayer(0, tTeamIndex, tPlayerIndex)
+  [179] jmp [215] ............................... next repeat
+  [182] getparam 0 .............................. <me>
+  [184] getlocal 1 .............................. <tTeams>
+  [186] getlocal 5 .............................. <tTeamIndex>
+  [188] pusharglist 2 ........................... <tTeams, tTeamIndex>
+  [190] objcall 181 ............................. <tTeams[tTeamIndex]>
+  [192] pushsymb 226 ............................ <#players>
+  [194] pusharglist 2 ........................... <tTeams[tTeamIndex], #players>
+  [196] objcall 181 ............................. <tTeams[tTeamIndex][#players]>
+  [198] getlocal 7 .............................. <tPlayerIndex>
+  [200] pusharglist 2 ........................... <tTeams[tTeamIndex][#players], tPlayerIndex>
+  [202] objcall 181 ............................. <tTeams[tTeamIndex][#players][tPlayerIndex]>
+  [204] getlocal 5 .............................. <tTeamIndex>
+  [206] getlocal 7 .............................. <tPlayerIndex>
+  [208] getlocal 2 .............................. <tOwnerFlag>
+  [210] pusharglistnoret 5 ...................... <me, tTeams[tTeamIndex][#players][tPlayerIndex], tTeamIndex, tPlayerIndex, tOwnerFlag>
+  [212] objcall 851 ............................. me.renderPlayer(tTeams[tTeamIndex][#players][tPlayerIndex], tTeamIndex, tPlayerIndex, tOwnerFlag)
+  [215] pushint8 1
+  [217] getlocal 7
+  [219] add
+  [220] setlocal 7
+  [222] endrepeat [ 96]
+  [224] pushint8 1
+  [226] getlocal 5
+  [228] add
+  [229] setlocal 5
+  [231] endrepeat [ 66]
+  [233] pushint8 1 .............................. <1>
+  [235] pusharglistnoret 1 ...................... <1>
+  [237] extcall 38 .............................. return 1
+  [239] ret
+end
+
+on renderNoPlayer me, tRequired, tTeamIndex, tPlayerIndex
+  [  0] getparam 0 .............................. <me>
+  [  2] pusharglist 1 ........................... <me>
+  [  4] objcall 541 ............................. <me.getWindowId()>
+  [  7] pusharglist 1 ........................... <me.getWindowId()>
+  [  9] extcall 400 ............................. <getWindow(me.getWindowId())>
+  [ 12] setlocal 0 .............................. tWndObj = getWindow(me.getWindowId())
+  [ 14] getlocal 0 .............................. <tWndObj>
+  [ 16] pushzero ................................ <0>
+  [ 17] eq ...................................... <tWndObj = 0>
+  [ 18] jmpifz [ 26] ............................ if tWndObj = 0 then
+  [ 21] pushzero ................................ <0>
+  [ 22] pusharglistnoret 1 ...................... <0>
+  [ 24] extcall 38 .............................. return 0
+  [ 26] getparam 2 .............................. <tTeamIndex>
+  [ 28] pushcons 7 .............................. <"_">
+  [ 30] joinstr ................................. <tTeamIndex & "_">
+  [ 31] getparam 3 .............................. <tPlayerIndex>
+  [ 33] joinstr ................................. <tTeamIndex & "_" & tPlayerIndex>
+  [ 34] setlocal 1 .............................. tSuffix = tTeamIndex & "_" & tPlayerIndex
+  [ 36] getlocal 0 .............................. <tWndObj>
+  [ 38] pushcons 15 ............................. <"ig_icon_team_player_">
+  [ 40] getlocal 1 .............................. <tSuffix>
+  [ 42] joinstr ................................. <"ig_icon_team_player_" & tSuffix>
+  [ 43] pusharglist 2 ........................... <tWndObj, "ig_icon_team_player_" & tSuffix>
+  [ 45] objcall 401 ............................. <tWndObj.getElement("ig_icon_team_player_" & tSuffix)>
+  [ 48] setlocal 2 .............................. tElement = tWndObj.getElement("ig_icon_team_player_" & tSuffix)
+  [ 50] getlocal 2 .............................. <tElement>
+  [ 52] pushzero ................................ <0>
+  [ 53] nteq .................................... <tElement <> 0>
+  [ 54] jmpifz [129] ............................ if tElement <> 0 then
+  [ 57] getparam 1 .............................. <tRequired>
+  [ 59] jmpifz [123] ............................ if tRequired then / else
+  [ 62] getlocal 2 .............................. <tElement>
+  [ 64] pusharglistnoret 1 ...................... <tElement>
+  [ 66] objcall 46 .............................. tElement.show()
+  [ 68] pushcons 16 ............................. <"ig_icon_player_needed">
+  [ 70] pusharglist 1 ........................... <"ig_icon_player_needed">
+  [ 72] extcall 526 ............................. <getmemnum("ig_icon_player_needed")>
+  [ 75] setlocal 3 .............................. tMemNum = getmemnum("ig_icon_player_needed")
+  [ 77] getlocal 3 .............................. <tMemNum>
+  [ 79] pushzero ................................ <0>
+  [ 80] nteq .................................... <tMemNum <> 0>
+  [ 81] jmpifz [120] ............................ if tMemNum <> 0 then
+  [ 84] getlocal 3 .............................. <tMemNum>
+  [ 86] pusharglist 1 ........................... <tMemNum>
+  [ 88] extcall 525 ............................. <member(tMemNum)>
+  [ 91] getobjprop 557 .......................... <member(tMemNum).image>
+  [ 94] setlocal 4 .............................. tImage = member(tMemNum).image
+  [ 96] getparam 0 .............................. <me>
+  [ 98] getlocal 4 .............................. <tImage>
+  [100] pushint8 18 ............................. <18>
+  [102] pushint8 18 ............................. <18>
+  [104] pusharglist 4 ........................... <me, tImage, 18, 18>
+  [106] objcall 539 ............................. <me.alignIconImage(tImage, 18, 18)>
+  [109] setlocal 4 .............................. tImage = me.alignIconImage(tImage, 18, 18)
+  [111] getlocal 2 .............................. <tElement>
+  [113] getlocal 4 .............................. <tImage>
+  [115] pusharglistnoret 2 ...................... <tElement, tImage>
+  [117] objcall 589 ............................. tElement.feedImage(tImage)
+  [120] jmp [129]
+  [123] getlocal 2 .............................. <tElement>
+  [125] pusharglistnoret 1 ...................... <tElement>
+  [127] objcall 56 .............................. tElement.hide()
+  [129] getlocal 0 .............................. <tWndObj>
+  [131] pushcons 17 ............................. <"ig_name_team_player_">
+  [133] getlocal 1 .............................. <tSuffix>
+  [135] joinstr ................................. <"ig_name_team_player_" & tSuffix>
+  [136] pusharglist 2 ........................... <tWndObj, "ig_name_team_player_" & tSuffix>
+  [138] objcall 401 ............................. <tWndObj.getElement("ig_name_team_player_" & tSuffix)>
+  [141] setlocal 2 .............................. tElement = tWndObj.getElement("ig_name_team_player_" & tSuffix)
+  [143] getlocal 2 .............................. <tElement>
+  [145] pushzero ................................ <0>
+  [146] nteq .................................... <tElement <> 0>
+  [147] jmpifz [198] ............................ if tElement <> 0 then
+  [150] pushcons 18 ............................. <"struct.font.plain">
+  [152] pusharglist 1 ........................... <"struct.font.plain">
+  [154] extcall 551 ............................. <getStructVariable("struct.font.plain")>
+  [157] setlocal 5 .............................. tFontStruct = getStructVariable("struct.font.plain")
+  [159] getlocal 2 .............................. <tElement>
+  [161] getlocal 5 .............................. <tFontStruct>
+  [163] pusharglistnoret 2 ...................... <tElement, tFontStruct>
+  [165] objcall 866 ............................. tElement.setFont(tFontStruct)
+  [168] getparam 1 .............................. <tRequired>
+  [170] jmpifz [189] ............................ if tRequired then / else
+  [173] getlocal 2 .............................. <tElement>
+  [175] pushcons 19 ............................. <"ig_player_needed">
+  [177] pusharglist 1 ........................... <"ig_player_needed">
+  [179] extcall 82 .............................. <getText("ig_player_needed")>
+  [181] pusharglistnoret 2 ...................... <tElement, getText("ig_player_needed")>
+  [183] objcall 415 ............................. tElement.setText(getText("ig_player_needed"))
+  [186] jmp [198]
+  [189] getlocal 2 .............................. <tElement>
+  [191] pushcons 20 ............................. <"---">
+  [193] pusharglistnoret 2 ...................... <tElement, "---">
+  [195] objcall 415 ............................. tElement.setText("---")
+  [198] getlocal 0 .............................. <tWndObj>
+  [200] pushcons 21 ............................. <"ig_kick_team_player_">
+  [202] getlocal 1 .............................. <tSuffix>
+  [204] joinstr ................................. <"ig_kick_team_player_" & tSuffix>
+  [205] pusharglist 2 ........................... <tWndObj, "ig_kick_team_player_" & tSuffix>
+  [207] objcall 401 ............................. <tWndObj.getElement("ig_kick_team_player_" & tSuffix)>
+  [210] setlocal 2 .............................. tElement = tWndObj.getElement("ig_kick_team_player_" & tSuffix)
+  [212] getlocal 2 .............................. <tElement>
+  [214] pushzero ................................ <0>
+  [215] nteq .................................... <tElement <> 0>
+  [216] jmpifz [225] ............................ if tElement <> 0 then
+  [219] getlocal 2 .............................. <tElement>
+  [221] pusharglistnoret 1 ...................... <tElement>
+  [223] objcall 56 .............................. tElement.hide()
+  [225] pushint8 1 .............................. <1>
+  [227] pusharglistnoret 1 ...................... <1>
+  [229] extcall 38 .............................. return 1
+  [231] ret
+end
+
+on renderPlayer me, tInfo, tTeamIndex, tPlayerIndex, tOwnerFlag
+  [  0] getparam 0 .............................. <me>
+  [  2] pusharglist 1 ........................... <me>
+  [  4] objcall 541 ............................. <me.getWindowId()>
+  [  7] pusharglist 1 ........................... <me.getWindowId()>
+  [  9] extcall 400 ............................. <getWindow(me.getWindowId())>
+  [ 12] setlocal 0 .............................. tWndObj = getWindow(me.getWindowId())
+  [ 14] getlocal 0 .............................. <tWndObj>
+  [ 16] pushzero ................................ <0>
+  [ 17] eq ...................................... <tWndObj = 0>
+  [ 18] jmpifz [ 26] ............................ if tWndObj = 0 then
+  [ 21] pushzero ................................ <0>
+  [ 22] pusharglistnoret 1 ...................... <0>
+  [ 24] extcall 38 .............................. return 0
+  [ 26] getparam 2 .............................. <tTeamIndex>
+  [ 28] pushcons 7 .............................. <"_">
+  [ 30] joinstr ................................. <tTeamIndex & "_">
+  [ 31] getparam 3 .............................. <tPlayerIndex>
+  [ 33] joinstr ................................. <tTeamIndex & "_" & tPlayerIndex>
+  [ 34] setlocal 1 .............................. tSuffix = tTeamIndex & "_" & tPlayerIndex
+  [ 36] getlocal 0 .............................. <tWndObj>
+  [ 38] pushcons 15 ............................. <"ig_icon_team_player_">
+  [ 40] getlocal 1 .............................. <tSuffix>
+  [ 42] joinstr ................................. <"ig_icon_team_player_" & tSuffix>
+  [ 43] pusharglist 2 ........................... <tWndObj, "ig_icon_team_player_" & tSuffix>
+  [ 45] objcall 401 ............................. <tWndObj.getElement("ig_icon_team_player_" & tSuffix)>
+  [ 48] setlocal 2 .............................. tElement = tWndObj.getElement("ig_icon_team_player_" & tSuffix)
+  [ 50] getlocal 2 .............................. <tElement>
+  [ 52] pushzero ................................ <0>
+  [ 53] eq ...................................... <tElement = 0>
+  [ 54] jmpifz [ 63] ............................ if tElement = 0 then
+  [ 57] pushint8 1 .............................. <1>
+  [ 59] pusharglistnoret 1 ...................... <1>
+  [ 61] extcall 38 .............................. return 1
+  [ 63] getlocal 2 .............................. <tElement>
+  [ 65] pusharglistnoret 1 ...................... <tElement>
+  [ 67] objcall 46 .............................. tElement.show()
+  [ 69] getparam 1 .............................. <tInfo>
+  [ 71] pushsymb 221 ............................ <#name>
+  [ 73] pusharglist 2 ........................... <tInfo, #name>
+  [ 75] objcall 256 ............................. <tInfo.getaProp(#name)>
+  [ 78] getparam 0 .............................. <me>
+  [ 80] pusharglist 1 ........................... <me>
+  [ 82] objcall 171 ............................. <me.getOwnPlayerName()>
+  [ 84] eq ...................................... <tInfo.getaProp(#name) = me.getOwnPlayerName()>
+  [ 85] setlocal 3 .............................. tOwnPlayer = tInfo.getaProp(#name) = me.getOwnPlayerName()
+  [ 87] getparam 0 .............................. <me>
+  [ 89] getparam 1 .............................. <tInfo>
+  [ 91] pushsymb 252 ............................ <#figure>
+  [ 93] pusharglist 2 ........................... <tInfo, #figure>
+  [ 95] objcall 256 ............................. <tInfo.getaProp(#figure)>
+  [ 98] getparam 1 .............................. <tInfo>
+  [100] pushsymb 253 ............................ <#sex>
+  [102] pusharglist 2 ........................... <tInfo, #sex>
+  [104] objcall 256 ............................. <tInfo.getaProp(#sex)>
+  [107] pushint8 18 ............................. <18>
+  [109] pushint8 18 ............................. <18>
+  [111] pusharglist 5 ........................... <me, tInfo.getaProp(#figure), tInfo.getaProp(#sex), 18, 18>
+  [113] objcall 540 ............................. <me.getHeadImage(tInfo.getaProp(#figure), tInfo.getaProp(#sex), 18, 18)>
+  [116] setlocal 4 .............................. tImage = me.getHeadImage(tInfo.getaProp(#figure), tInfo.getaProp(#sex), 18, 18)
+  [118] getlocal 4 .............................. <tImage>
+  [120] getobjprop 182 .......................... <tImage.ilk>
+  [122] pushsymb 557 ............................ <#image>
+  [125] eq ...................................... <tImage.ilk = #image>
+  [126] jmpifz [141] ............................ if tImage.ilk = #image then
+  [129] getlocal 2 .............................. <tElement>
+  [131] pushsymb 557 ............................ <#image>
+  [134] getlocal 4 .............................. <tImage>
+  [136] pusharglistnoret 3 ...................... <tElement, #image, tImage>
+  [138] objcall 479 ............................. tElement.setProperty(#image, tImage)
+  [141] getlocal 0 .............................. <tWndObj>
+  [143] pushcons 17 ............................. <"ig_name_team_player_">
+  [145] getlocal 1 .............................. <tSuffix>
+  [147] joinstr ................................. <"ig_name_team_player_" & tSuffix>
+  [148] pusharglist 2 ........................... <tWndObj, "ig_name_team_player_" & tSuffix>
+  [150] objcall 401 ............................. <tWndObj.getElement("ig_name_team_player_" & tSuffix)>
+  [153] setlocal 2 .............................. tElement = tWndObj.getElement("ig_name_team_player_" & tSuffix)
+  [155] getlocal 2 .............................. <tElement>
+  [157] pushzero ................................ <0>
+  [158] nteq .................................... <tElement <> 0>
+  [159] jmpifz [218] ............................ if tElement <> 0 then
+  [162] getlocal 3 .............................. <tOwnPlayer>
+  [164] jmpifz [179] ............................ if tOwnPlayer then / else
+  [167] pushcons 22 ............................. <"struct.font.bold">
+  [169] pusharglist 1 ........................... <"struct.font.bold">
+  [171] extcall 551 ............................. <getStructVariable("struct.font.bold")>
+  [174] setlocal 5 .............................. tFontStruct = getStructVariable("struct.font.bold")
+  [176] jmp [188]
+  [179] pushcons 18 ............................. <"struct.font.plain">
+  [181] pusharglist 1 ........................... <"struct.font.plain">
+  [183] extcall 551 ............................. <getStructVariable("struct.font.plain")>
+  [186] setlocal 5 .............................. tFontStruct = getStructVariable("struct.font.plain")
+  [188] getlocal 2 .............................. <tElement>
+  [190] getlocal 5 .............................. <tFontStruct>
+  [192] pusharglistnoret 2 ...................... <tElement, tFontStruct>
+  [194] objcall 866 ............................. tElement.setFont(tFontStruct)
+  [197] getlocal 2 .............................. <tElement>
+  [199] getparam 1 .............................. <tInfo>
+  [201] pushsymb 221 ............................ <#name>
+  [203] pusharglist 2 ........................... <tInfo, #name>
+  [205] objcall 116 ............................. <tInfo.getProp(#name)>
+  [207] pusharglistnoret 2 ...................... <tElement, tInfo.getProp(#name)>
+  [209] objcall 415 ............................. tElement.setText(tInfo.getProp(#name))
+  [212] getlocal 2 .............................. <tElement>
+  [214] pusharglistnoret 1 ...................... <tElement>
+  [216] objcall 46 .............................. tElement.show()
+  [218] getlocal 0 .............................. <tWndObj>
+  [220] pushcons 21 ............................. <"ig_kick_team_player_">
+  [222] getlocal 1 .............................. <tSuffix>
+  [224] joinstr ................................. <"ig_kick_team_player_" & tSuffix>
+  [225] pusharglist 2 ........................... <tWndObj, "ig_kick_team_player_" & tSuffix>
+  [227] objcall 401 ............................. <tWndObj.getElement("ig_kick_team_player_" & tSuffix)>
+  [230] setlocal 2 .............................. tElement = tWndObj.getElement("ig_kick_team_player_" & tSuffix)
+  [232] getlocal 2 .............................. <tElement>
+  [234] pushzero ................................ <0>
+  [235] nteq .................................... <tElement <> 0>
+  [236] jmpifz [262] ............................ if tElement <> 0 then
+  [239] getparam 4 .............................. <tOwnerFlag>
+  [241] getlocal 3 .............................. <tOwnPlayer>
+  [243] or ...................................... <tOwnerFlag or tOwnPlayer>
+  [244] jmpifz [256] ............................ if tOwnerFlag or tOwnPlayer then / else
+  [247] getlocal 2 .............................. <tElement>
+  [249] pusharglistnoret 1 ...................... <tElement>
+  [251] objcall 46 .............................. tElement.show()
+  [253] jmp [262]
+  [256] getlocal 2 .............................. <tElement>
+  [258] pusharglistnoret 1 ...................... <tElement>
+  [260] objcall 56 .............................. tElement.hide()
+  [262] pushint8 1 .............................. <1>
+  [264] pusharglistnoret 1 ...................... <1>
+  [266] extcall 38 .............................. return 1
+  [268] ret
+end
+
+on setStartButtonState me, towner, tstate
+  [  0] getparam 0 .............................. <me>
+  [  2] pusharglist 1 ........................... <me>
+  [  4] objcall 541 ............................. <me.getWindowId()>
+  [  7] pusharglist 1 ........................... <me.getWindowId()>
+  [  9] extcall 400 ............................. <getWindow(me.getWindowId())>
+  [ 12] setlocal 0 .............................. tWndObj = getWindow(me.getWindowId())
+  [ 14] getlocal 0 .............................. <tWndObj>
+  [ 16] pushzero ................................ <0>
+  [ 17] eq ...................................... <tWndObj = 0>
+  [ 18] jmpifz [ 26] ............................ if tWndObj = 0 then
+  [ 21] pushzero ................................ <0>
+  [ 22] pusharglistnoret 1 ...................... <0>
+  [ 24] extcall 38 .............................. return 0
+  [ 26] getlocal 0 .............................. <tWndObj>
+  [ 28] pushcons 23 ............................. <"ig_startgame.button">
+  [ 30] pusharglist 2 ........................... <tWndObj, "ig_startgame.button">
+  [ 32] objcall 401 ............................. <tWndObj.getElement("ig_startgame.button")>
+  [ 35] setlocal 1 .............................. tElement = tWndObj.getElement("ig_startgame.button")
+  [ 37] getlocal 1 .............................. <tElement>
+  [ 39] pushzero ................................ <0>
+  [ 40] eq ...................................... <tElement = 0>
+  [ 41] jmpifz [ 49] ............................ if tElement = 0 then
+  [ 44] pushzero ................................ <0>
+  [ 45] pusharglistnoret 1 ...................... <0>
+  [ 47] extcall 38 .............................. return 0
+  [ 49] getparam 1 .............................. <towner>
+  [ 51] jmpifz [118] ............................ if towner then / else
+  [ 54] getlocal 1 .............................. <tElement>
+  [ 56] pusharglistnoret 1 ...................... <tElement>
+  [ 58] objcall 46 .............................. tElement.show()
+  [ 60] getparam 2 .............................. <tstate>
+  [ 62] jmpifz [ 92] ............................ if tstate then / else
+  [ 65] getlocal 1 .............................. <tElement>
+  [ 67] pushsymb 527 ............................ <#blend>
+  [ 70] pushint8 100 ............................ <100>
+  [ 72] pusharglistnoret 3 ...................... <tElement, #blend, 100>
+  [ 74] objcall 479 ............................. tElement.setProperty(#blend, 100)
+  [ 77] getlocal 1 .............................. <tElement>
+  [ 79] pushsymb 956 ............................ <#cursor>
+  [ 82] pushcons 24 ............................. <"cursor.finger">
+  [ 84] pusharglistnoret 3 ...................... <tElement, #cursor, "cursor.finger">
+  [ 86] objcall 479 ............................. tElement.setProperty(#cursor, "cursor.finger")
+  [ 89] jmp [115]
+  [ 92] getlocal 1 .............................. <tElement>
+  [ 94] pushsymb 527 ............................ <#blend>
+  [ 97] pushint8 40 ............................. <40>
+  [ 99] pusharglistnoret 3 ...................... <tElement, #blend, 40>
+  [101] objcall 479 ............................. tElement.setProperty(#blend, 40)
+  [104] getlocal 1 .............................. <tElement>
+  [106] pushsymb 956 ............................ <#cursor>
+  [109] pushzero ................................ <0>
+  [110] pusharglistnoret 3 ...................... <tElement, #cursor, 0>
+  [112] objcall 479 ............................. tElement.setProperty(#cursor, 0)
+  [115] jmp [124]
+  [118] getlocal 1 .............................. <tElement>
+  [120] pusharglistnoret 1 ...................... <tElement>
+  [122] objcall 56 .............................. tElement.hide()
+  [124] pushint8 1 .............................. <1>
+  [126] pusharglistnoret 1 ...................... <1>
+  [128] extcall 38 .............................. return 1
+  [130] ret
+end
+
+on eventProcMouseDown me, tEvent, tSprID, tParam, tWndID
+  [  0] getparam 0 .............................. <me>
+  [  2] pushcons 1 .............................. <"GameList">
+  [  4] pusharglist 2 ........................... <me, "GameList">
+  [  6] objcall 52 .............................. <me.getIGComponent("GameList")>
+  [  8] setlocal 0 .............................. tListService = me.getIGComponent("GameList")
+  [ 10] getlocal 0 .............................. <tListService>
+  [ 12] pushzero ................................ <0>
+  [ 13] eq ...................................... <tListService = 0>
+  [ 14] jmpifz [ 22] ............................ if tListService = 0 then
+  [ 17] pushzero ................................ <0>
+  [ 18] pusharglistnoret 1 ...................... <0>
+  [ 20] extcall 38 .............................. return 0
+  [ 22] getparam 2 .............................. <tSprID>
+  [ 24] peek 0 .................................. case tSprID of
+  [ 26] pushcons 25 ............................. <"ig_change_team.button">
+  [ 28] eq
+  [ 29] jmpifz [ 48] ............................ (case) "ig_change_team.button":
+  [ 32] pop 1
+  [ 34] getlocal 0 .............................. <tListService>
+  [ 36] pusharglist 1 ........................... <tListService>
+  [ 38] objcall 749 ............................. <tListService.setNextTeamInJoinedGame()>
+  [ 41] pusharglistnoret 1 ...................... <tListService.setNextTeamInJoinedGame()>
+  [ 43] extcall 38 .............................. return tListService.setNextTeamInJoinedGame()
+  [ 45] jmp [ 70]
+  [ 48] peek 0
+  [ 50] pushcons 26 ............................. <"ig_icon_gamelist">
+  [ 52] eq
+  [ 53] jmpifz [ 70] ............................ (case) "ig_icon_gamelist":
+  [ 56] pop 1
+  [ 58] getparam 0 .............................. <me>
+  [ 60] pushcons 1 .............................. <"GameList">
+  [ 62] pusharglist 2 ........................... <me, "GameList">
+  [ 64] objcall 11 .............................. <me.ChangeWindowView("GameList")>
+  [ 66] pusharglistnoret 1 ...................... <me.ChangeWindowView("GameList")>
+  [ 68] extcall 38 .............................. return me.ChangeWindowView("GameList")
+  [ 70] pop 1 ................................... end case
+  [ 72] pushint8 1 .............................. <1>
+  [ 74] pusharglistnoret 1 ...................... <1>
+  [ 76] extcall 38 .............................. return 1
+  [ 78] ret
+end

@@ -1,0 +1,391 @@
+property pDoorbellQueue, pDoorbellWinID, pRingingUser
+
+on construct me
+  [  0] pusharglist 0 ........................... <[]>
+  [  2] pushlist ................................ <[]>
+  [  3] setprop 1081 ............................ pDoorbellQueue = []
+  [  6] pushcons 0 .............................. <"win_doorbell">
+  [  8] pushcons 1 .............................. <"Doorbell">
+  [ 10] pusharglist 2 ........................... <"win_doorbell", "Doorbell">
+  [ 12] extcall 31 .............................. <getText("win_doorbell", "Doorbell")>
+  [ 14] setprop 1082 ............................ pDoorbellWinID = getText("win_doorbell", "Doorbell")
+  [ 17] ret
+end
+
+on deconstruct me
+  [  0] ret
+end
+
+on addDoorbellRinger me, tName
+  [  0] getprop 1081 ............................ <pDoorbellQueue>
+  [  3] getparam 1 .............................. <tName>
+  [  5] pusharglist 2 ........................... <pDoorbellQueue, tName>
+  [  7] objcall 194 ............................. <pDoorbellQueue.getPos(tName)>
+  [  9] pushzero ................................ <0>
+  [ 10] gt ...................................... <pDoorbellQueue.getPos(tName) > 0>
+  [ 11] jmpifz [ 19] ............................ if pDoorbellQueue.getPos(tName) > 0 then
+  [ 14] pushzero ................................ <0>
+  [ 15] pusharglistnoret 1 ...................... <0>
+  [ 17] extcall 50 .............................. return 0
+  [ 19] getprop 1082 ............................ <pDoorbellWinID>
+  [ 22] pusharglist 1 ........................... <pDoorbellWinID>
+  [ 24] extcall 72 .............................. <windowExists(pDoorbellWinID)>
+  [ 26] not ..................................... <not windowExists(pDoorbellWinID)>
+  [ 27] jmpifz [162] ............................ if not windowExists(pDoorbellWinID) then
+  [ 30] getprop 1082 ............................ <pDoorbellWinID>
+  [ 33] pushcons 2 .............................. <"habbo_basic.window">
+  [ 35] pushint16 250 ........................... <250>
+  [ 38] pushint16 200 ........................... <200>
+  [ 41] pusharglist 4 ........................... <pDoorbellWinID, "habbo_basic.window", 250, 200>
+  [ 43] extcall 86 .............................. <createWindow(pDoorbellWinID, "habbo_basic.window", 250, 200)>
+  [ 45] not ..................................... <not createWindow(pDoorbellWinID, "habbo_basic.window", 250, 200)>
+  [ 46] jmpifz [ 66] ............................ if not createWindow(pDoorbellWinID, "habbo_basic.window", 250, 200) then
+  [ 49] getparam 0 .............................. <me>
+  [ 51] pushcons 3 .............................. <"Couldn't create window to show ringing doorbell!">
+  [ 53] pushsymb 1073 ........................... <#addDoorbellRinger>
+  [ 56] pushsymb 124 ............................ <#major>
+  [ 58] pusharglist 4 ........................... <me, "Couldn't create window to show ringing doorbell!", #addDoorbellRinger, #major>
+  [ 60] extcall 123 ............................. <error(me, "Couldn't create window to show ringing doorbell!", #addDoorbellRinger, #major)>
+  [ 62] pusharglistnoret 1 ...................... <error(me, "Couldn't create window to show ringing doorbell!", #addDoorbellRinger, #major)>
+  [ 64] extcall 50 .............................. return error(me, "Couldn't create window to show ringing doorbell!", #addDoorbellRinger, #major)
+  [ 66] getprop 1082 ............................ <pDoorbellWinID>
+  [ 69] pusharglist 1 ........................... <pDoorbellWinID>
+  [ 71] extcall 87 .............................. <getWindow(pDoorbellWinID)>
+  [ 73] setlocal 0 .............................. tWndObj = getWindow(pDoorbellWinID)
+  [ 75] getlocal 0 .............................. <tWndObj>
+  [ 77] pushcons 4 .............................. <"habbo_doorbell.window">
+  [ 79] pusharglist 2 ........................... <tWndObj, "habbo_doorbell.window">
+  [ 81] objcall 88 .............................. <tWndObj.merge("habbo_doorbell.window")>
+  [ 83] not ..................................... <not tWndObj.merge("habbo_doorbell.window")>
+  [ 84] jmpifz [110] ............................ if not tWndObj.merge("habbo_doorbell.window") then
+  [ 87] getlocal 0 .............................. <tWndObj>
+  [ 89] pusharglistnoret 1 ...................... <tWndObj>
+  [ 91] objcall 8 ............................... tWndObj.close()
+  [ 93] getparam 0 .............................. <me>
+  [ 95] pushcons 3 .............................. <"Couldn't create window to show ringing doorbell!">
+  [ 97] pushsymb 1073 ........................... <#addDoorbellRinger>
+  [100] pushsymb 124 ............................ <#major>
+  [102] pusharglist 4 ........................... <me, "Couldn't create window to show ringing doorbell!", #addDoorbellRinger, #major>
+  [104] extcall 123 ............................. <error(me, "Couldn't create window to show ringing doorbell!", #addDoorbellRinger, #major)>
+  [106] pusharglistnoret 1 ...................... <error(me, "Couldn't create window to show ringing doorbell!", #addDoorbellRinger, #major)>
+  [108] extcall 50 .............................. return error(me, "Couldn't create window to show ringing doorbell!", #addDoorbellRinger, #major)
+  [110] getlocal 0 .............................. <tWndObj>
+  [112] pushsymb 308 ............................ <#locZ>
+  [115] pushint32 2000000 ....................... <2000000>
+  [120] pusharglistnoret 3 ...................... <tWndObj, #locZ, 2000000>
+  [122] objcall 81 .............................. tWndObj.setProperty(#locZ, 2000000)
+  [124] getlocal 0 .............................. <tWndObj>
+  [126] pushint8 1 .............................. <1>
+  [128] pusharglistnoret 2 ...................... <tWndObj, 1>
+  [130] objcall 1061 ............................ tWndObj.lock(1)
+  [133] getlocal 0 .............................. <tWndObj>
+  [135] getparam 0 .............................. <me>
+  [137] pusharglist 1 ........................... <me>
+  [139] objcall 89 .............................. <me.getID()>
+  [141] pusharglistnoret 2 ...................... <tWndObj, me.getID()>
+  [143] objcall 90 .............................. tWndObj.registerClient(me.getID())
+  [145] getlocal 0 .............................. <tWndObj>
+  [147] pushsymb 1080 ........................... <#eventProcDoorBell>
+  [150] getparam 0 .............................. <me>
+  [152] pusharglist 1 ........................... <me>
+  [154] objcall 89 .............................. <me.getID()>
+  [156] pushsymb 119 ............................ <#mouseUp>
+  [158] pusharglistnoret 4 ...................... <tWndObj, #eventProcDoorBell, me.getID(), #mouseUp>
+  [160] objcall 91 .............................. tWndObj.registerProcedure(#eventProcDoorBell, me.getID(), #mouseUp)
+  [162] getprop 1081 ............................ <pDoorbellQueue>
+  [165] getparam 1 .............................. <tName>
+  [167] pusharglistnoret 2 ...................... <pDoorbellQueue, tName>
+  [169] objcall 709 ............................. pDoorbellQueue.append(tName)
+  [172] getprop 1081 ............................ <pDoorbellQueue>
+  [175] getobjprop 105 .......................... <pDoorbellQueue.count>
+  [177] setprop 1083 ............................ pRingingUser = pDoorbellQueue.count
+  [180] getparam 0 .............................. <me>
+  [182] pusharglistnoret 1 ...................... <me>
+  [184] objcall 1078 ............................ me.updateDoorbellWindow()
+  [187] pushint8 1 .............................. <1>
+  [189] pusharglistnoret 1 ...................... <1>
+  [191] extcall 50 .............................. return 1
+  [193] ret
+end
+
+on removeRingingUser me
+  [  0] getprop 1081 ............................ <pDoorbellQueue>
+  [  3] getprop 1083 ............................ <pRingingUser>
+  [  6] pusharglistnoret 2 ...................... <pDoorbellQueue, pRingingUser>
+  [  8] objcall 812 ............................. pDoorbellQueue.deleteAt(pRingingUser)
+  [ 11] getparam 0 .............................. <me>
+  [ 13] pusharglistnoret 1 ...................... <me>
+  [ 15] objcall 1078 ............................ me.updateDoorbellWindow()
+  [ 18] pushint8 1 .............................. <1>
+  [ 20] pusharglistnoret 1 ...................... <1>
+  [ 22] extcall 50 .............................. return 1
+  [ 24] ret
+end
+
+on removeFromList me, tName
+  [  0] getprop 1081 ............................ <pDoorbellQueue>
+  [  3] getparam 1 .............................. <tName>
+  [  5] pusharglist 2 ........................... <pDoorbellQueue, tName>
+  [  7] objcall 220 ............................. <pDoorbellQueue.deleteOne(tName)>
+  [  9] setlocal 0 .............................. tRemoved = pDoorbellQueue.deleteOne(tName)
+  [ 11] getlocal 0 .............................. <tRemoved>
+  [ 13] jmpifz [ 23] ............................ if tRemoved then
+  [ 16] getparam 0 .............................. <me>
+  [ 18] pusharglistnoret 1 ...................... <me>
+  [ 20] objcall 1078 ............................ me.updateDoorbellWindow()
+  [ 23] ret
+end
+
+on displayNextDoorbellRinger me
+  [  0] getprop 1083 ............................ <pRingingUser>
+  [  3] pushint8 1 .............................. <1>
+  [  5] add ..................................... <pRingingUser + 1>
+  [  6] setprop 1083 ............................ pRingingUser = pRingingUser + 1
+  [  9] getprop 1083 ............................ <pRingingUser>
+  [ 12] getprop 1081 ............................ <pDoorbellQueue>
+  [ 15] getobjprop 105 .......................... <pDoorbellQueue.count>
+  [ 17] gt ...................................... <pRingingUser > pDoorbellQueue.count>
+  [ 18] jmpifz [ 26] ............................ if pRingingUser > pDoorbellQueue.count then
+  [ 21] pushint8 1 .............................. <1>
+  [ 23] setprop 1083 ............................ pRingingUser = 1
+  [ 26] getparam 0 .............................. <me>
+  [ 28] pusharglistnoret 1 ...................... <me>
+  [ 30] objcall 1078 ............................ me.updateDoorbellWindow()
+  [ 33] pushint8 1 .............................. <1>
+  [ 35] pusharglistnoret 1 ...................... <1>
+  [ 37] extcall 50 .............................. return 1
+  [ 39] ret
+end
+
+on displayPreviousDoorbellRinger me
+  [  0] getprop 1083 ............................ <pRingingUser>
+  [  3] pushint8 1 .............................. <1>
+  [  5] sub ..................................... <pRingingUser - 1>
+  [  6] setprop 1083 ............................ pRingingUser = pRingingUser - 1
+  [  9] getprop 1083 ............................ <pRingingUser>
+  [ 12] pushint8 1 .............................. <1>
+  [ 14] lt ...................................... <pRingingUser < 1>
+  [ 15] jmpifz [ 26] ............................ if pRingingUser < 1 then
+  [ 18] getprop 1081 ............................ <pDoorbellQueue>
+  [ 21] getobjprop 105 .......................... <pDoorbellQueue.count>
+  [ 23] setprop 1083 ............................ pRingingUser = pDoorbellQueue.count
+  [ 26] getparam 0 .............................. <me>
+  [ 28] pusharglistnoret 1 ...................... <me>
+  [ 30] objcall 1078 ............................ me.updateDoorbellWindow()
+  [ 33] pushint8 1 .............................. <1>
+  [ 35] pusharglistnoret 1 ...................... <1>
+  [ 37] extcall 50 .............................. return 1
+  [ 39] ret
+end
+
+on updateDoorbellWindow me
+  [  0] getprop 1081 ............................ <pDoorbellQueue>
+  [  3] pusharglist 0 ........................... <[]>
+  [  5] pushlist ................................ <[]>
+  [  6] eq ...................................... <pDoorbellQueue = []>
+  [  7] jmpifz [ 23] ............................ if pDoorbellQueue = [] then
+  [ 10] getparam 0 .............................. <me>
+  [ 12] pusharglistnoret 1 ...................... <me>
+  [ 14] objcall 1079 ............................ me.hideDoorBell()
+  [ 17] pushint8 1 .............................. <1>
+  [ 19] pusharglistnoret 1 ...................... <1>
+  [ 21] extcall 50 .............................. return 1
+  [ 23] getprop 1083 ............................ <pRingingUser>
+  [ 26] getprop 1081 ............................ <pDoorbellQueue>
+  [ 29] getobjprop 105 .......................... <pDoorbellQueue.count>
+  [ 31] gt ...................................... <pRingingUser > pDoorbellQueue.count>
+  [ 32] jmpifz [ 43] ............................ if pRingingUser > pDoorbellQueue.count then
+  [ 35] getprop 1081 ............................ <pDoorbellQueue>
+  [ 38] getobjprop 105 .......................... <pDoorbellQueue.count>
+  [ 40] setprop 1083 ............................ pRingingUser = pDoorbellQueue.count
+  [ 43] getprop 1082 ............................ <pDoorbellWinID>
+  [ 46] pusharglist 1 ........................... <pDoorbellWinID>
+  [ 48] extcall 72 .............................. <windowExists(pDoorbellWinID)>
+  [ 50] not ..................................... <not windowExists(pDoorbellWinID)>
+  [ 51] jmpifz [ 59] ............................ if not windowExists(pDoorbellWinID) then
+  [ 54] pushzero ................................ <0>
+  [ 55] pusharglistnoret 1 ...................... <0>
+  [ 57] extcall 50 .............................. return 0
+  [ 59] getprop 1082 ............................ <pDoorbellWinID>
+  [ 62] pusharglist 1 ........................... <pDoorbellWinID>
+  [ 64] extcall 87 .............................. <getWindow(pDoorbellWinID)>
+  [ 66] setlocal 0 .............................. tWndObj = getWindow(pDoorbellWinID)
+  [ 68] pushcons 5 .............................. <"room_doorbell">
+  [ 70] pushcons 6 .............................. <"rings the doorbell...">
+  [ 72] pusharglist 2 ........................... <"room_doorbell", "rings the doorbell...">
+  [ 74] extcall 31 .............................. <getText("room_doorbell", "rings the doorbell...")>
+  [ 76] setlocal 1 .............................. tText = getText("room_doorbell", "rings the doorbell...")
+  [ 78] getlocal 0 .............................. <tWndObj>
+  [ 80] pushcons 7 .............................. <"doorbell_name">
+  [ 82] pusharglist 2 ........................... <tWndObj, "doorbell_name">
+  [ 84] objcall 92 .............................. <tWndObj.getElement("doorbell_name")>
+  [ 86] getprop 1081 ............................ <pDoorbellQueue>
+  [ 89] getprop 1083 ............................ <pRingingUser>
+  [ 92] pusharglist 2 ........................... <pDoorbellQueue, pRingingUser>
+  [ 94] objcall 75 .............................. <pDoorbellQueue[pRingingUser]>
+  [ 96] pusharglistnoret 2 ...................... <tWndObj.getElement("doorbell_name"), pDoorbellQueue[pRingingUser]>
+  [ 98] objcall 93 .............................. tWndObj.getElement("doorbell_name").setText(pDoorbellQueue[pRingingUser])
+  [100] getlocal 0 .............................. <tWndObj>
+  [102] pushcons 8 .............................. <"doorbell_text">
+  [104] pusharglist 2 ........................... <tWndObj, "doorbell_text">
+  [106] objcall 92 .............................. <tWndObj.getElement("doorbell_text")>
+  [108] getlocal 1 .............................. <tText>
+  [110] pusharglistnoret 2 ...................... <tWndObj.getElement("doorbell_text"), tText>
+  [112] objcall 93 .............................. tWndObj.getElement("doorbell_text").setText(tText)
+  [114] getprop 1081 ............................ <pDoorbellQueue>
+  [117] getobjprop 105 .......................... <pDoorbellQueue.count>
+  [119] pushint8 1 .............................. <1>
+  [121] gt ...................................... <pDoorbellQueue.count > 1>
+  [122] jmpifz [168] ............................ if pDoorbellQueue.count > 1 then / else
+  [125] getlocal 0 .............................. <tWndObj>
+  [127] pushcons 9 .............................. <"doorbell_next">
+  [129] pusharglist 2 ........................... <tWndObj, "doorbell_next">
+  [131] objcall 92 .............................. <tWndObj.getElement("doorbell_next")>
+  [133] pusharglistnoret 1 ...................... <tWndObj.getElement("doorbell_next")>
+  [135] objcall 314 ............................. tWndObj.getElement("doorbell_next").show()
+  [138] getlocal 0 .............................. <tWndObj>
+  [140] pushcons 10 ............................. <"doorbell_prev">
+  [142] pusharglist 2 ........................... <tWndObj, "doorbell_prev">
+  [144] objcall 92 .............................. <tWndObj.getElement("doorbell_prev")>
+  [146] pusharglistnoret 1 ...................... <tWndObj.getElement("doorbell_prev")>
+  [148] objcall 314 ............................. tWndObj.getElement("doorbell_prev").show()
+  [151] getprop 1083 ............................ <pRingingUser>
+  [154] pushcons 11 ............................. <"/">
+  [156] joinstr ................................. <pRingingUser & "/">
+  [157] getprop 1081 ............................ <pDoorbellQueue>
+  [160] getobjprop 105 .......................... <pDoorbellQueue.count>
+  [162] joinstr ................................. <pRingingUser & "/" & pDoorbellQueue.count>
+  [163] setlocal 2 .............................. tCountText = pRingingUser & "/" & pDoorbellQueue.count
+  [165] jmp [198]
+  [168] getlocal 0 .............................. <tWndObj>
+  [170] pushcons 9 .............................. <"doorbell_next">
+  [172] pusharglist 2 ........................... <tWndObj, "doorbell_next">
+  [174] objcall 92 .............................. <tWndObj.getElement("doorbell_next")>
+  [176] pusharglistnoret 1 ...................... <tWndObj.getElement("doorbell_next")>
+  [178] objcall 315 ............................. tWndObj.getElement("doorbell_next").hide()
+  [181] getlocal 0 .............................. <tWndObj>
+  [183] pushcons 10 ............................. <"doorbell_prev">
+  [185] pusharglist 2 ........................... <tWndObj, "doorbell_prev">
+  [187] objcall 92 .............................. <tWndObj.getElement("doorbell_prev")>
+  [189] pusharglistnoret 1 ...................... <tWndObj.getElement("doorbell_prev")>
+  [191] objcall 315 ............................. tWndObj.getElement("doorbell_prev").hide()
+  [194] pushcons 12 ............................. <EMPTY>
+  [196] setlocal 2 .............................. tCountText = EMPTY
+  [198] getlocal 0 .............................. <tWndObj>
+  [200] pushcons 13 ............................. <"doorbell_req_num">
+  [202] pusharglist 2 ........................... <tWndObj, "doorbell_req_num">
+  [204] objcall 92 .............................. <tWndObj.getElement("doorbell_req_num")>
+  [206] getlocal 2 .............................. <tCountText>
+  [208] pusharglistnoret 2 ...................... <tWndObj.getElement("doorbell_req_num"), tCountText>
+  [210] objcall 93 .............................. tWndObj.getElement("doorbell_req_num").setText(tCountText)
+  [212] pushint8 1 .............................. <1>
+  [214] pusharglistnoret 1 ...................... <1>
+  [216] extcall 50 .............................. return 1
+  [218] ret
+end
+
+on hideDoorBell me
+  [  0] pushzero ................................ <0>
+  [  1] setprop 1083 ............................ pRingingUser = 0
+  [  4] pusharglist 0 ........................... <[]>
+  [  6] pushlist ................................ <[]>
+  [  7] setprop 1081 ............................ pDoorbellQueue = []
+  [ 10] getprop 1082 ............................ <pDoorbellWinID>
+  [ 13] pusharglist 1 ........................... <pDoorbellWinID>
+  [ 15] extcall 72 .............................. <windowExists(pDoorbellWinID)>
+  [ 17] not ..................................... <not windowExists(pDoorbellWinID)>
+  [ 18] jmpifz [ 26] ............................ if not windowExists(pDoorbellWinID) then
+  [ 21] pushzero ................................ <0>
+  [ 22] pusharglistnoret 1 ...................... <0>
+  [ 24] extcall 50 .............................. return 0
+  [ 26] getprop 1082 ............................ <pDoorbellWinID>
+  [ 29] pusharglistnoret 1 ...................... <pDoorbellWinID>
+  [ 31] extcall 129 ............................. removeWindow(pDoorbellWinID)
+  [ 33] pushint8 1 .............................. <1>
+  [ 35] pusharglistnoret 1 ...................... <1>
+  [ 37] extcall 50 .............................. return 1
+  [ 39] ret
+end
+
+on eventProcDoorBell me, tEvent, tSprID, tParam
+  [  0] getparam 2 .............................. <tSprID>
+  [  2] peek 0 .................................. case tSprID of
+  [  4] pushcons 14 ............................. <"doorbell_yes">
+  [  6] eq
+  [  7] jmpifz [ 62] ............................ (case) "doorbell_yes":
+  [ 10] pushsymb 77 ............................. <#room>
+  [ 12] pusharglist 1 ........................... <#room>
+  [ 14] extcall 76 .............................. <getThread(#room)>
+  [ 16] pusharglist 1 ........................... <getThread(#room)>
+  [ 18] objcall 82 .............................. <getThread(#room).getComponent()>
+  [ 20] pusharglist 1 ........................... <getThread(#room).getComponent()>
+  [ 22] objcall 791 ............................. <getThread(#room).getComponent().getRoomConnection()>
+  [ 25] pushcons 15 ............................. <"LETUSERIN">
+  [ 27] pushsymb 192 ............................ <#string>
+  [ 29] getprop 1081 ............................ <pDoorbellQueue>
+  [ 32] getprop 1083 ............................ <pRingingUser>
+  [ 35] pusharglist 2 ........................... <pDoorbellQueue, pRingingUser>
+  [ 37] objcall 75 .............................. <pDoorbellQueue[pRingingUser]>
+  [ 39] pushsymb 1086 ........................... <#boolean>
+  [ 42] pushint8 1 .............................. <1>
+  [ 44] pusharglist 4 ........................... <[#string: pDoorbellQueue[pRingingUser], #boolean: 1]>
+  [ 46] pushproplist ............................ <[#string: pDoorbellQueue[pRingingUser], #boolean: 1]>
+  [ 47] pusharglistnoret 3 ...................... <getThread(#room).getComponent().getRoomConnection(), "LETUSERIN", [#string: pDoorbellQueue[pRingingUser], #boolean: 1]>
+  [ 49] objcall 268 ............................. getThread(#room).getComponent().getRoomConnection().send("LETUSERIN", [#string: pDoorbellQueue[pRingingUser], #boolean: 1])
+  [ 52] getparam 0 .............................. <me>
+  [ 54] pusharglistnoret 1 ...................... <me>
+  [ 56] objcall 1074 ............................ me.removeRingingUser()
+  [ 59] jmp [172]
+  [ 62] peek 0
+  [ 64] pushcons 16 ............................. <"doorbell_no">
+  [ 66] eq
+  [ 67] jmpifz [121] ............................ (case) "doorbell_no":
+  [ 70] pushsymb 77 ............................. <#room>
+  [ 72] pusharglist 1 ........................... <#room>
+  [ 74] extcall 76 .............................. <getThread(#room)>
+  [ 76] pusharglist 1 ........................... <getThread(#room)>
+  [ 78] objcall 82 .............................. <getThread(#room).getComponent()>
+  [ 80] pusharglist 1 ........................... <getThread(#room).getComponent()>
+  [ 82] objcall 791 ............................. <getThread(#room).getComponent().getRoomConnection()>
+  [ 85] pushcons 15 ............................. <"LETUSERIN">
+  [ 87] pushsymb 192 ............................ <#string>
+  [ 89] getprop 1081 ............................ <pDoorbellQueue>
+  [ 92] getprop 1083 ............................ <pRingingUser>
+  [ 95] pusharglist 2 ........................... <pDoorbellQueue, pRingingUser>
+  [ 97] objcall 75 .............................. <pDoorbellQueue[pRingingUser]>
+  [ 99] pushsymb 1086 ........................... <#boolean>
+  [102] pushzero ................................ <0>
+  [103] pusharglist 4 ........................... <[#string: pDoorbellQueue[pRingingUser], #boolean: 0]>
+  [105] pushproplist ............................ <[#string: pDoorbellQueue[pRingingUser], #boolean: 0]>
+  [106] pusharglistnoret 3 ...................... <getThread(#room).getComponent().getRoomConnection(), "LETUSERIN", [#string: pDoorbellQueue[pRingingUser], #boolean: 0]>
+  [108] objcall 268 ............................. getThread(#room).getComponent().getRoomConnection().send("LETUSERIN", [#string: pDoorbellQueue[pRingingUser], #boolean: 0])
+  [111] getparam 0 .............................. <me>
+  [113] pusharglistnoret 1 ...................... <me>
+  [115] objcall 1074 ............................ me.removeRingingUser()
+  [118] jmp [172]
+  [121] peek 0
+  [123] pushcons 17 ............................. <"close">
+  [125] eq
+  [126] jmpifz [139] ............................ (case) "close":
+  [129] getparam 0 .............................. <me>
+  [131] pusharglistnoret 1 ...................... <me>
+  [133] objcall 1079 ............................ me.hideDoorBell()
+  [136] jmp [172]
+  [139] peek 0
+  [141] pushcons 9 .............................. <"doorbell_next">
+  [143] eq
+  [144] jmpifz [157] ............................ (case) "doorbell_next":
+  [147] getparam 0 .............................. <me>
+  [149] pusharglistnoret 1 ...................... <me>
+  [151] objcall 1076 ............................ me.displayNextDoorbellRinger()
+  [154] jmp [172]
+  [157] peek 0
+  [159] pushcons 10 ............................. <"doorbell_prev">
+  [161] eq
+  [162] jmpifz [172] ............................ (case) "doorbell_prev":
+  [165] getparam 0 .............................. <me>
+  [167] pusharglistnoret 1 ...................... <me>
+  [169] objcall 1077 ............................ me.displayPreviousDoorbellRinger()
+  [172] pop 1 ................................... end case
+  [174] ret
+end

@@ -1,0 +1,156 @@
+property pState
+
+on construct me
+  [  0] pushsymb 204 ............................ <#enterRoom>
+  [  2] getparam 0 .............................. <me>
+  [  4] pusharglist 1 ........................... <me>
+  [  6] objcall 51 .............................. <me.getID()>
+  [  8] pushsymb 202 ............................ <#leaveEntry>
+  [ 10] pusharglistnoret 3 ...................... <#enterRoom, me.getID(), #leaveEntry>
+  [ 12] extcall 49 .............................. registerMessage(#enterRoom, me.getID(), #leaveEntry)
+  [ 14] pushsymb 205 ............................ <#leaveRoom>
+  [ 16] getparam 0 .............................. <me>
+  [ 18] pusharglist 1 ........................... <me>
+  [ 20] objcall 51 .............................. <me.getID()>
+  [ 22] pushsymb 201 ............................ <#enterEntry>
+  [ 24] pusharglistnoret 3 ...................... <#leaveRoom, me.getID(), #enterEntry>
+  [ 26] extcall 49 .............................. registerMessage(#leaveRoom, me.getID(), #enterEntry)
+  [ 28] pushsymb 206 ............................ <#Initialize>
+  [ 30] getparam 0 .............................. <me>
+  [ 32] pusharglist 1 ........................... <me>
+  [ 34] objcall 51 .............................. <me.getID()>
+  [ 36] pushsymb 203 ............................ <#updateState>
+  [ 38] pusharglistnoret 3 ...................... <#Initialize, me.getID(), #updateState>
+  [ 40] extcall 49 .............................. registerMessage(#Initialize, me.getID(), #updateState)
+  [ 42] pushint8 1 .............................. <1>
+  [ 44] pusharglistnoret 1 ...................... <1>
+  [ 46] extcall 56 .............................. return 1
+  [ 48] ret
+end
+
+on deconstruct me
+  [  0] pushsymb 204 ............................ <#enterRoom>
+  [  2] getparam 0 .............................. <me>
+  [  4] pusharglist 1 ........................... <me>
+  [  6] objcall 51 .............................. <me.getID()>
+  [  8] pusharglistnoret 2 ...................... <#enterRoom, me.getID()>
+  [ 10] extcall 58 .............................. unregisterMessage(#enterRoom, me.getID())
+  [ 12] pushsymb 205 ............................ <#leaveRoom>
+  [ 14] getparam 0 .............................. <me>
+  [ 16] pusharglist 1 ........................... <me>
+  [ 18] objcall 51 .............................. <me.getID()>
+  [ 20] pusharglistnoret 2 ...................... <#leaveRoom, me.getID()>
+  [ 22] extcall 58 .............................. unregisterMessage(#leaveRoom, me.getID())
+  [ 24] pushsymb 206 ............................ <#Initialize>
+  [ 26] getparam 0 .............................. <me>
+  [ 28] pusharglist 1 ........................... <me>
+  [ 30] objcall 51 .............................. <me.getID()>
+  [ 32] pusharglistnoret 2 ...................... <#Initialize, me.getID()>
+  [ 34] extcall 58 .............................. unregisterMessage(#Initialize, me.getID())
+  [ 36] getparam 0 .............................. <me>
+  [ 38] pushcons 0 .............................. <"reset">
+  [ 40] pusharglistnoret 2 ...................... <me, "reset">
+  [ 42] localcall 5 ............................. updateState(me, "reset")
+  [ 44] pushint8 1 .............................. <1>
+  [ 46] pusharglistnoret 1 ...................... <1>
+  [ 48] extcall 56 .............................. return 1
+  [ 50] ret
+end
+
+on enterEntry me
+  [  0] getparam 0 .............................. <me>
+  [  2] pushsymb 207 ............................ <#hotelView>
+  [  4] pusharglistnoret 2 ...................... <me, #hotelView>
+  [  6] objcall 203 ............................. me.updateState(#hotelView)
+  [  8] getparam 0 .............................. <me>
+  [ 10] pushsymb 208 ............................ <#entryBar>
+  [ 12] pusharglistnoret 2 ...................... <me, #entryBar>
+  [ 14] objcall 203 ............................. me.updateState(#entryBar)
+  [ 16] pushint8 1 .............................. <1>
+  [ 18] pusharglistnoret 1 ...................... <1>
+  [ 20] extcall 56 .............................. return 1
+  [ 22] ret
+end
+
+on leaveEntry me
+  [  0] getparam 0 .............................. <me>
+  [  2] pushcons 0 .............................. <"reset">
+  [  4] pusharglist 2 ........................... <me, "reset">
+  [  6] objcall 203 ............................. <me.updateState("reset")>
+  [  8] pusharglistnoret 1 ...................... <me.updateState("reset")>
+  [ 10] extcall 56 .............................. return me.updateState("reset")
+  [ 12] ret
+end
+
+on getState me
+  [  0] getprop 209 ............................. <pState>
+  [  2] pusharglistnoret 1 ...................... <pState>
+  [  4] extcall 56 .............................. return pState
+  [  6] ret
+end
+
+on updateState me, tstate
+  [  0] getparam 1 .............................. <tstate>
+  [  2] peek 0 .................................. case tstate of
+  [  4] pushcons 0 .............................. <"reset">
+  [  6] eq
+  [  7] jmpifz [ 33] ............................ (case) "reset":
+  [ 10] getparam 1 .............................. <tstate>
+  [ 12] setprop 209 ............................. pState = tstate
+  [ 14] pop 1
+  [ 16] getparam 0 .............................. <me>
+  [ 18] pusharglist 1 ........................... <me>
+  [ 20] objcall 179 ............................. <me.getInterface()>
+  [ 22] pusharglist 1 ........................... <me.getInterface()>
+  [ 24] objcall 6 ............................... <me.getInterface().hideAll()>
+  [ 26] pusharglistnoret 1 ...................... <me.getInterface().hideAll()>
+  [ 28] extcall 56 .............................. return me.getInterface().hideAll()
+  [ 30] jmp [124]
+  [ 33] peek 0
+  [ 35] pushsymb 207 ............................ <#hotelView>
+  [ 37] nteq
+  [ 38] jmpifz [ 49] ............................ (case) #hotelView, ...
+  [ 41] peek 0
+  [ 43] pushcons 1 .............................. <"initialize">
+  [ 45] eq
+  [ 46] jmpifz [ 72] ............................ (case) ..., "initialize":
+  [ 49] getparam 1 .............................. <tstate>
+  [ 51] setprop 209 ............................. pState = tstate
+  [ 53] pop 1
+  [ 55] getparam 0 .............................. <me>
+  [ 57] pusharglist 1 ........................... <me>
+  [ 59] objcall 179 ............................. <me.getInterface()>
+  [ 61] pusharglist 1 ........................... <me.getInterface()>
+  [ 63] objcall 2 ............................... <me.getInterface().showHotel()>
+  [ 65] pusharglistnoret 1 ...................... <me.getInterface().showHotel()>
+  [ 67] extcall 56 .............................. return me.getInterface().showHotel()
+  [ 69] jmp [124]
+  [ 72] peek 0
+  [ 74] pushsymb 208 ............................ <#entryBar>
+  [ 76] eq
+  [ 77] jmpifz [103] ............................ (case) #entryBar:
+  [ 80] getparam 1 .............................. <tstate>
+  [ 82] setprop 209 ............................. pState = tstate
+  [ 84] pop 1
+  [ 86] getparam 0 .............................. <me>
+  [ 88] pusharglist 1 ........................... <me>
+  [ 90] objcall 179 ............................. <me.getInterface()>
+  [ 92] pusharglist 1 ........................... <me.getInterface()>
+  [ 94] objcall 4 ............................... <me.getInterface().showEntryBar()>
+  [ 96] pusharglistnoret 1 ...................... <me.getInterface().showEntryBar()>
+  [ 98] extcall 56 .............................. return me.getInterface().showEntryBar()
+  [100] jmp [124] ............................... (case) otherwise:
+  [103] pop 1
+  [105] getparam 0 .............................. <me>
+  [107] pushcons 2 .............................. <"Unknown state:">
+  [109] getparam 1 .............................. <tstate>
+  [111] joinpadstr .............................. <"Unknown state:" && tstate>
+  [112] pushsymb 203 ............................ <#updateState>
+  [114] pushsymb 79 ............................. <#minor>
+  [116] pusharglist 4 ........................... <me, "Unknown state:" && tstate, #updateState, #minor>
+  [118] extcall 78 .............................. <error(me, "Unknown state:" && tstate, #updateState, #minor)>
+  [120] pusharglistnoret 1 ...................... <error(me, "Unknown state:" && tstate, #updateState, #minor)>
+  [122] extcall 56 .............................. return error(me, "Unknown state:" && tstate, #updateState, #minor)
+  [124] pop 1 ................................... end case
+  [126] ret
+end

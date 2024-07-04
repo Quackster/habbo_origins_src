@@ -1,0 +1,936 @@
+property pDialogId, pConnectionId, pChosenLength
+
+on construct me
+  [  0] pushcons 0 .............................. <"clubinfo1">
+  [  2] setprop 12 .............................. pDialogId = "clubinfo1"
+  [  4] pushcons 1 .............................. <"connection.info.id">
+  [  6] pusharglist 1 ........................... <"connection.info.id">
+  [  8] extcall 14 .............................. <getVariable("connection.info.id")>
+  [ 10] setprop 13 .............................. pConnectionId = getVariable("connection.info.id")
+  [ 12] pushint8 1 .............................. <1>
+  [ 14] setprop 15 .............................. pChosenLength = 1
+  [ 16] pushsymb 9 .............................. <#show_clubinfo>
+  [ 18] getparam 0 .............................. <me>
+  [ 20] pusharglist 1 ........................... <me>
+  [ 22] objcall 17 .............................. <me.getID()>
+  [ 24] pushsymb 9 .............................. <#show_clubinfo>
+  [ 26] pusharglistnoret 3 ...................... <#show_clubinfo, me.getID(), #show_clubinfo>
+  [ 28] extcall 16 .............................. registerMessage(#show_clubinfo, me.getID(), #show_clubinfo)
+  [ 30] pushsymb 2 .............................. <#notify>
+  [ 32] getparam 0 .............................. <me>
+  [ 34] pusharglist 1 ........................... <me>
+  [ 36] objcall 17 .............................. <me.getID()>
+  [ 38] pushsymb 2 .............................. <#notify>
+  [ 40] pusharglistnoret 3 ...................... <#notify, me.getID(), #notify>
+  [ 42] extcall 16 .............................. registerMessage(#notify, me.getID(), #notify)
+  [ 44] pushint8 1 .............................. <1>
+  [ 46] pusharglistnoret 1 ...................... <1>
+  [ 48] extcall 18 .............................. return 1
+  [ 50] ret
+end
+
+on deconstruct me
+  [  0] pushsymb 9 .............................. <#show_clubinfo>
+  [  2] getparam 0 .............................. <me>
+  [  4] pusharglist 1 ........................... <me>
+  [  6] objcall 17 .............................. <me.getID()>
+  [  8] pusharglistnoret 2 ...................... <#show_clubinfo, me.getID()>
+  [ 10] extcall 20 .............................. unregisterMessage(#show_clubinfo, me.getID())
+  [ 12] pushsymb 2 .............................. <#notify>
+  [ 14] getparam 0 .............................. <me>
+  [ 16] pusharglist 1 ........................... <me>
+  [ 18] objcall 17 .............................. <me.getID()>
+  [ 20] pusharglistnoret 2 ...................... <#notify, me.getID()>
+  [ 22] extcall 20 .............................. unregisterMessage(#notify, me.getID())
+  [ 24] pushint8 1 .............................. <1>
+  [ 26] pusharglistnoret 1 ...................... <1>
+  [ 28] extcall 18 .............................. return 1
+  [ 30] ret
+end
+
+on notify me, ttype
+  [  0] getparam 1 .............................. <ttype>
+  [  2] peek 0 .................................. case ttype of
+  [  4] pushint16 1001 .......................... <1001>
+  [  7] eq
+  [  8] jmpifz [ 42] ............................ (case) 1001:
+  [ 11] pushsymb 22 ............................. <#alert>
+  [ 13] pushsymb 23 ............................. <#msg>
+  [ 15] pushcons 2 .............................. <"epsnotify_1001">
+  [ 17] pusharglist 2 ........................... <[#msg: "epsnotify_1001"]>
+  [ 19] pushproplist ............................ <[#msg: "epsnotify_1001"]>
+  [ 20] pusharglistnoret 2 ...................... <#alert, [#msg: "epsnotify_1001"]>
+  [ 22] extcall 21 .............................. executeMessage(#alert, [#msg: "epsnotify_1001"])
+  [ 24] getprop 13 .............................. <pConnectionId>
+  [ 26] pusharglist 1 ........................... <pConnectionId>
+  [ 28] extcall 24 .............................. <connectionExists(pConnectionId)>
+  [ 30] jmpifz [ 39] ............................ if connectionExists(pConnectionId) then
+  [ 33] getprop 13 .............................. <pConnectionId>
+  [ 35] pusharglistnoret 1 ...................... <pConnectionId>
+  [ 37] extcall 25 .............................. removeConnection(pConnectionId)
+  [ 39] jmp [ 68]
+  [ 42] peek 0
+  [ 44] pushint16 552 ........................... <552>
+  [ 47] eq
+  [ 48] jmpifz [ 68] ............................ (case) 552:
+  [ 51] pushsymb 22 ............................. <#alert>
+  [ 53] pushsymb 23 ............................. <#msg>
+  [ 55] pushcons 3 .............................. <"Alert_no_credits">
+  [ 57] pusharglist 1 ........................... <"Alert_no_credits">
+  [ 59] extcall 26 .............................. <getText("Alert_no_credits")>
+  [ 61] pusharglist 2 ........................... <[#msg: getText("Alert_no_credits")]>
+  [ 63] pushproplist ............................ <[#msg: getText("Alert_no_credits")]>
+  [ 64] pusharglistnoret 2 ...................... <#alert, [#msg: getText("Alert_no_credits")]>
+  [ 66] extcall 21 .............................. executeMessage(#alert, [#msg: getText("Alert_no_credits")])
+  [ 68] pop 1 ................................... end case
+  [ 70] ret
+end
+
+on setupEndedWindow me
+  [  0] getparam 0 .............................. <me>
+  [  2] pusharglist 1 ........................... <me>
+  [  4] objcall 28 .............................. <me.getComponent()>
+  [  6] pusharglist 1 ........................... <me.getComponent()>
+  [  8] objcall 29 .............................. <me.getComponent().getStatus()>
+  [ 10] setlocal 0 .............................. tClubInfo = me.getComponent().getStatus()
+  [ 12] getprop 12 .............................. <pDialogId>
+  [ 14] pusharglist 1 ........................... <pDialogId>
+  [ 16] extcall 30 .............................. <getWindow(pDialogId)>
+  [ 18] setlocal 1 .............................. tWndObj = getWindow(pDialogId)
+  [ 20] getlocal 1 .............................. <tWndObj>
+  [ 22] pusharglist 1 ........................... <tWndObj>
+  [ 24] extcall 31 .............................. <objectp(tWndObj)>
+  [ 26] not ..................................... <not objectp(tWndObj)>
+  [ 27] jmpifz [ 35] ............................ if not objectp(tWndObj) then
+  [ 30] pushzero ................................ <0>
+  [ 31] pusharglistnoret 1 ...................... <0>
+  [ 33] extcall 18 .............................. return 0
+  [ 35] getlocal 0 .............................. <tClubInfo>
+  [ 37] pushsymb 32 ............................. <#ElapsedPeriods>
+  [ 39] pusharglist 2 ........................... <tClubInfo, #ElapsedPeriods>
+  [ 41] objcall 33 .............................. <tClubInfo[#ElapsedPeriods]>
+  [ 43] setlocal 2 .............................. tElapsed = tClubInfo[#ElapsedPeriods]
+  [ 45] getlocal 1 .............................. <tWndObj>
+  [ 47] pushcons 4 .............................. <"club_elapsed_periods">
+  [ 49] pusharglist 2 ........................... <tWndObj, "club_elapsed_periods">
+  [ 51] objcall 34 .............................. <tWndObj.getElement("club_elapsed_periods")>
+  [ 53] setlocal 3 .............................. tElem = tWndObj.getElement("club_elapsed_periods")
+  [ 55] getlocal 3 .............................. <tElem>
+  [ 57] getlocal 2 .............................. <tElapsed>
+  [ 59] pusharglist 1 ........................... <tElapsed>
+  [ 61] extcall 35 .............................. <string(tElapsed)>
+  [ 63] pusharglistnoret 2 ...................... <tElem, string(tElapsed)>
+  [ 65] objcall 36 .............................. tElem.setText(string(tElapsed))
+  [ 67] getlocal 1 .............................. <tWndObj>
+  [ 69] pushsymb 11 ............................. <#eventProcDialogMousedown>
+  [ 71] getparam 0 .............................. <me>
+  [ 73] pusharglist 1 ........................... <me>
+  [ 75] objcall 17 .............................. <me.getID()>
+  [ 77] pushsymb 37 ............................. <#mouseDown>
+  [ 79] pusharglistnoret 4 ...................... <tWndObj, #eventProcDialogMousedown, me.getID(), #mouseDown>
+  [ 81] objcall 38 .............................. tWndObj.registerProcedure(#eventProcDialogMousedown, me.getID(), #mouseDown)
+  [ 83] pushint8 1 .............................. <1>
+  [ 85] pusharglistnoret 1 ...................... <1>
+  [ 87] extcall 18 .............................. return 1
+  [ 89] ret
+end
+
+on setupStatusWindow me, ttype
+  [  0] getparam 0 .............................. <me>
+  [  2] pusharglist 1 ........................... <me>
+  [  4] objcall 28 .............................. <me.getComponent()>
+  [  6] pusharglist 1 ........................... <me.getComponent()>
+  [  8] objcall 29 .............................. <me.getComponent().getStatus()>
+  [ 10] setlocal 0 .............................. tClubInfo = me.getComponent().getStatus()
+  [ 12] getprop 12 .............................. <pDialogId>
+  [ 14] pusharglist 1 ........................... <pDialogId>
+  [ 16] extcall 30 .............................. <getWindow(pDialogId)>
+  [ 18] setlocal 1 .............................. tWndObj = getWindow(pDialogId)
+  [ 20] getlocal 1 .............................. <tWndObj>
+  [ 22] pusharglist 1 ........................... <tWndObj>
+  [ 24] extcall 31 .............................. <objectp(tWndObj)>
+  [ 26] not ..................................... <not objectp(tWndObj)>
+  [ 27] jmpifz [ 35] ............................ if not objectp(tWndObj) then
+  [ 30] pushzero ................................ <0>
+  [ 31] pusharglistnoret 1 ...................... <0>
+  [ 33] extcall 18 .............................. return 0
+  [ 35] getlocal 0 .............................. <tClubInfo>
+  [ 37] pushsymb 43 ............................. <#daysLeft>
+  [ 39] pusharglist 2 ........................... <tClubInfo, #daysLeft>
+  [ 41] objcall 33 .............................. <tClubInfo[#daysLeft]>
+  [ 43] setlocal 2 .............................. tDaysLeft = tClubInfo[#daysLeft]
+  [ 45] getlocal 0 .............................. <tClubInfo>
+  [ 47] pushsymb 32 ............................. <#ElapsedPeriods>
+  [ 49] pusharglist 2 ........................... <tClubInfo, #ElapsedPeriods>
+  [ 51] objcall 33 .............................. <tClubInfo[#ElapsedPeriods]>
+  [ 53] setlocal 3 .............................. tElapsed = tClubInfo[#ElapsedPeriods]
+  [ 55] getlocal 0 .............................. <tClubInfo>
+  [ 57] pushsymb 44 ............................. <#PrepaidPeriods>
+  [ 59] pusharglist 2 ........................... <tClubInfo, #PrepaidPeriods>
+  [ 61] objcall 33 .............................. <tClubInfo[#PrepaidPeriods]>
+  [ 63] setlocal 4 .............................. tPrepaid = tClubInfo[#PrepaidPeriods]
+  [ 65] getlocal 1 .............................. <tWndObj>
+  [ 67] pushcons 5 .............................. <"club_arrow">
+  [ 69] pusharglist 2 ........................... <tWndObj, "club_arrow">
+  [ 71] objcall 34 .............................. <tWndObj.getElement("club_arrow")>
+  [ 73] setlocal 5 .............................. tArrowElem = tWndObj.getElement("club_arrow")
+  [ 75] getlocal 5 .............................. <tArrowElem>
+  [ 77] pushsymb 45 ............................. <#locH>
+  [ 79] pusharglist 2 ........................... <tArrowElem, #locH>
+  [ 81] objcall 46 .............................. <tArrowElem.getProperty(#locH)>
+  [ 83] setlocal 6 .............................. tLocH = tArrowElem.getProperty(#locH)
+  [ 85] getlocal 6 .............................. <tLocH>
+  [ 87] pushint8 31 ............................. <31>
+  [ 89] getlocal 2 .............................. <tDaysLeft>
+  [ 91] sub ..................................... <31 - tDaysLeft>
+  [ 92] pushint8 5 .............................. <5>
+  [ 94] mul ..................................... <(31 - tDaysLeft) * 5>
+  [ 95] add ..................................... <tLocH + ((31 - tDaysLeft) * 5)>
+  [ 96] setlocal 6 .............................. tLocH = tLocH + ((31 - tDaysLeft) * 5)
+  [ 98] getlocal 5 .............................. <tArrowElem>
+  [100] pushsymb 45 ............................. <#locH>
+  [102] getlocal 6 .............................. <tLocH>
+  [104] pusharglistnoret 3 ...................... <tArrowElem, #locH, tLocH>
+  [106] objcall 47 .............................. tArrowElem.setProperty(#locH, tLocH)
+  [108] getlocal 1 .............................. <tWndObj>
+  [110] pushcons 4 .............................. <"club_elapsed_periods">
+  [112] pusharglist 2 ........................... <tWndObj, "club_elapsed_periods">
+  [114] objcall 34 .............................. <tWndObj.getElement("club_elapsed_periods")>
+  [116] setlocal 7 .............................. tElem = tWndObj.getElement("club_elapsed_periods")
+  [118] getlocal 7 .............................. <tElem>
+  [120] getlocal 3 .............................. <tElapsed>
+  [122] pusharglist 1 ........................... <tElapsed>
+  [124] extcall 35 .............................. <string(tElapsed)>
+  [126] pusharglistnoret 2 ...................... <tElem, string(tElapsed)>
+  [128] objcall 36 .............................. tElem.setText(string(tElapsed))
+  [130] getparam 1 .............................. <ttype>
+  [132] pushsymb 48 ............................. <#FirstTimer>
+  [134] eq ...................................... <ttype = #FirstTimer>
+  [135] jmpifz [182] ............................ if ttype = #FirstTimer then
+  [138] getlocal 1 .............................. <tWndObj>
+  [140] pushcons 6 .............................. <"club_status_title">
+  [142] pusharglist 2 ........................... <tWndObj, "club_status_title">
+  [144] objcall 34 .............................. <tWndObj.getElement("club_status_title")>
+  [146] setlocal 7 .............................. tElem = tWndObj.getElement("club_status_title")
+  [148] getlocal 7 .............................. <tElem>
+  [150] pushcons 7 .............................. <"club_thanks_title">
+  [152] pusharglist 1 ........................... <"club_thanks_title">
+  [154] extcall 26 .............................. <getText("club_thanks_title")>
+  [156] pusharglistnoret 2 ...................... <tElem, getText("club_thanks_title")>
+  [158] objcall 36 .............................. tElem.setText(getText("club_thanks_title"))
+  [160] getlocal 1 .............................. <tWndObj>
+  [162] pushcons 8 .............................. <"club_status_text">
+  [164] pusharglist 2 ........................... <tWndObj, "club_status_text">
+  [166] objcall 34 .............................. <tWndObj.getElement("club_status_text")>
+  [168] setlocal 7 .............................. tElem = tWndObj.getElement("club_status_text")
+  [170] getlocal 7 .............................. <tElem>
+  [172] pushcons 9 .............................. <"club_thanks_text">
+  [174] pusharglist 1 ........................... <"club_thanks_text">
+  [176] extcall 26 .............................. <getText("club_thanks_text")>
+  [178] pusharglistnoret 2 ...................... <tElem, getText("club_thanks_text")>
+  [180] objcall 36 .............................. tElem.setText(getText("club_thanks_text"))
+  [182] getlocal 0 .............................. <tClubInfo>
+  [184] pushsymb 44 ............................. <#PrepaidPeriods>
+  [186] pusharglist 2 ........................... <tClubInfo, #PrepaidPeriods>
+  [188] objcall 33 .............................. <tClubInfo[#PrepaidPeriods]>
+  [190] pushint8 1 .............................. <1>
+  [192] inv ..................................... <-1>
+  [193] eq ...................................... <tClubInfo[#PrepaidPeriods] = -1>
+  [194] jmpifz [216] ............................ if tClubInfo[#PrepaidPeriods] = -1 then / else
+  [197] getlocal 1 .............................. <tWndObj>
+  [199] pushcons 10 ............................. <"club_button_extend">
+  [201] pusharglist 2 ........................... <tWndObj, "club_button_extend">
+  [203] objcall 34 .............................. <tWndObj.getElement("club_button_extend")>
+  [205] setlocal 7 .............................. tElem = tWndObj.getElement("club_button_extend")
+  [207] getlocal 7 .............................. <tElem>
+  [209] pusharglistnoret 1 ...................... <tElem>
+  [211] objcall 49 .............................. tElem.hide()
+  [213] jmp [276]
+  [216] getlocal 1 .............................. <tWndObj>
+  [218] pushcons 11 ............................. <"club_isp_change">
+  [220] pusharglist 2 ........................... <tWndObj, "club_isp_change">
+  [222] objcall 34 .............................. <tWndObj.getElement("club_isp_change")>
+  [224] setlocal 7 .............................. tElem = tWndObj.getElement("club_isp_change")
+  [226] getlocal 7 .............................. <tElem>
+  [228] pusharglistnoret 1 ...................... <tElem>
+  [230] objcall 49 .............................. tElem.hide()
+  [232] getlocal 1 .............................. <tWndObj>
+  [234] pushcons 12 ............................. <"club_isp_icon">
+  [236] pusharglist 2 ........................... <tWndObj, "club_isp_icon">
+  [238] objcall 34 .............................. <tWndObj.getElement("club_isp_icon")>
+  [240] setlocal 7 .............................. tElem = tWndObj.getElement("club_isp_icon")
+  [242] getlocal 7 .............................. <tElem>
+  [244] pusharglistnoret 1 ...................... <tElem>
+  [246] objcall 49 .............................. tElem.hide()
+  [248] getlocal 1 .............................. <tWndObj>
+  [250] pushcons 13 ............................. <"club_prepaid_periods">
+  [252] pusharglist 2 ........................... <tWndObj, "club_prepaid_periods">
+  [254] objcall 34 .............................. <tWndObj.getElement("club_prepaid_periods")>
+  [256] setlocal 7 .............................. tElem = tWndObj.getElement("club_prepaid_periods")
+  [258] getlocal 7 .............................. <tElem>
+  [260] getlocal 0 .............................. <tClubInfo>
+  [262] pushsymb 44 ............................. <#PrepaidPeriods>
+  [264] pusharglist 2 ........................... <tClubInfo, #PrepaidPeriods>
+  [266] objcall 33 .............................. <tClubInfo[#PrepaidPeriods]>
+  [268] pusharglist 1 ........................... <tClubInfo[#PrepaidPeriods]>
+  [270] extcall 35 .............................. <string(tClubInfo[#PrepaidPeriods])>
+  [272] pusharglistnoret 2 ...................... <tElem, string(tClubInfo[#PrepaidPeriods])>
+  [274] objcall 36 .............................. tElem.setText(string(tClubInfo[#PrepaidPeriods]))
+  [276] getlocal 3 .............................. <tElapsed>
+  [278] pushzero ................................ <0>
+  [279] eq ...................................... <tElapsed = 0>
+  [280] jmpifz [315] ............................ if tElapsed = 0 then
+  [283] getlocal 1 .............................. <tWndObj>
+  [285] pushcons 4 .............................. <"club_elapsed_periods">
+  [287] pusharglist 2 ........................... <tWndObj, "club_elapsed_periods">
+  [289] objcall 34 .............................. <tWndObj.getElement("club_elapsed_periods")>
+  [291] setlocal 7 .............................. tElem = tWndObj.getElement("club_elapsed_periods")
+  [293] getlocal 7 .............................. <tElem>
+  [295] pusharglistnoret 1 ...................... <tElem>
+  [297] objcall 49 .............................. tElem.hide()
+  [299] getlocal 1 .............................. <tWndObj>
+  [301] pushcons 14 ............................. <"club_elapsed">
+  [303] pusharglist 2 ........................... <tWndObj, "club_elapsed">
+  [305] objcall 34 .............................. <tWndObj.getElement("club_elapsed")>
+  [307] setlocal 7 .............................. tElem = tWndObj.getElement("club_elapsed")
+  [309] getlocal 7 .............................. <tElem>
+  [311] pusharglistnoret 1 ...................... <tElem>
+  [313] objcall 49 .............................. tElem.hide()
+  [315] getlocal 4 .............................. <tPrepaid>
+  [317] pushzero ................................ <0>
+  [318] eq ...................................... <tPrepaid = 0>
+  [319] jmpifz [354] ............................ if tPrepaid = 0 then
+  [322] getlocal 1 .............................. <tWndObj>
+  [324] pushcons 13 ............................. <"club_prepaid_periods">
+  [326] pusharglist 2 ........................... <tWndObj, "club_prepaid_periods">
+  [328] objcall 34 .............................. <tWndObj.getElement("club_prepaid_periods")>
+  [330] setlocal 7 .............................. tElem = tWndObj.getElement("club_prepaid_periods")
+  [332] getlocal 7 .............................. <tElem>
+  [334] pusharglistnoret 1 ...................... <tElem>
+  [336] objcall 49 .............................. tElem.hide()
+  [338] getlocal 1 .............................. <tWndObj>
+  [340] pushcons 15 ............................. <"club_prepaid">
+  [342] pusharglist 2 ........................... <tWndObj, "club_prepaid">
+  [344] objcall 34 .............................. <tWndObj.getElement("club_prepaid")>
+  [346] setlocal 7 .............................. tElem = tWndObj.getElement("club_prepaid")
+  [348] getlocal 7 .............................. <tElem>
+  [350] pusharglistnoret 1 ...................... <tElem>
+  [352] objcall 49 .............................. tElem.hide()
+  [354] pushcons 16 ............................. <"club_info_url">
+  [356] pusharglist 1 ........................... <"club_info_url">
+  [358] extcall 26 .............................. <getText("club_info_url")>
+  [360] pushcons 17 ............................. <"http">
+  [362] contains0str ............................ <getText("club_info_url") starts "http">
+  [363] not ..................................... <not (getText("club_info_url") starts "http")>
+  [364] jmpifz [386] ............................ if not (getText("club_info_url") starts "http") then
+  [367] getprop 12 .............................. <pDialogId>
+  [369] pusharglist 1 ........................... <pDialogId>
+  [371] extcall 30 .............................. <getWindow(pDialogId)>
+  [373] pushcons 18 ............................. <"club_general_infolink">
+  [375] pusharglist 2 ........................... <getWindow(pDialogId), "club_general_infolink">
+  [377] objcall 34 .............................. <getWindow(pDialogId).getElement("club_general_infolink")>
+  [379] pushsymb 50 ............................. <#visible>
+  [381] pushzero ................................ <0>
+  [382] pusharglistnoret 3 ...................... <getWindow(pDialogId).getElement("club_general_infolink"), #visible, 0>
+  [384] objcall 47 .............................. getWindow(pDialogId).getElement("club_general_infolink").setProperty(#visible, 0)
+  [386] getlocal 1 .............................. <tWndObj>
+  [388] pushsymb 11 ............................. <#eventProcDialogMousedown>
+  [390] getparam 0 .............................. <me>
+  [392] pusharglist 1 ........................... <me>
+  [394] objcall 17 .............................. <me.getID()>
+  [396] pushsymb 37 ............................. <#mouseDown>
+  [398] pusharglistnoret 4 ...................... <tWndObj, #eventProcDialogMousedown, me.getID(), #mouseDown>
+  [400] objcall 38 .............................. tWndObj.registerProcedure(#eventProcDialogMousedown, me.getID(), #mouseDown)
+  [402] pushint8 1 .............................. <1>
+  [404] pusharglistnoret 1 ...................... <1>
+  [406] extcall 18 .............................. return 1
+  [408] ret
+end
+
+on changeTextsToExtend me
+  [  0] getprop 12 .............................. <pDialogId>
+  [  2] pusharglist 1 ........................... <pDialogId>
+  [  4] extcall 30 .............................. <getWindow(pDialogId)>
+  [  6] setlocal 0 .............................. tWndObj = getWindow(pDialogId)
+  [  8] getlocal 0 .............................. <tWndObj>
+  [ 10] pusharglist 1 ........................... <tWndObj>
+  [ 12] extcall 31 .............................. <objectp(tWndObj)>
+  [ 14] not ..................................... <not objectp(tWndObj)>
+  [ 15] jmpifz [ 23] ............................ if not objectp(tWndObj) then
+  [ 18] pushzero ................................ <0>
+  [ 19] pusharglistnoret 1 ...................... <0>
+  [ 21] extcall 18 .............................. return 0
+  [ 23] pushcons 19 ............................. <"club_extend_title">
+  [ 25] pusharglist 1 ........................... <"club_extend_title">
+  [ 27] extcall 26 .............................. <getText("club_extend_title")>
+  [ 29] setlocal 1 .............................. tHeaderText = getText("club_extend_title")
+  [ 31] pushcons 20 ............................. <"club_extend_text">
+  [ 33] pusharglist 1 ........................... <"club_extend_text">
+  [ 35] extcall 26 .............................. <getText("club_extend_text")>
+  [ 37] setlocal 2 .............................. tText = getText("club_extend_text")
+  [ 39] getlocal 0 .............................. <tWndObj>
+  [ 41] pushcons 21 ............................. <"club_intro_header">
+  [ 43] pusharglist 2 ........................... <tWndObj, "club_intro_header">
+  [ 45] objcall 34 .............................. <tWndObj.getElement("club_intro_header")>
+  [ 47] getlocal 1 .............................. <tHeaderText>
+  [ 49] pusharglistnoret 2 ...................... <tWndObj.getElement("club_intro_header"), tHeaderText>
+  [ 51] objcall 36 .............................. tWndObj.getElement("club_intro_header").setText(tHeaderText)
+  [ 53] getlocal 0 .............................. <tWndObj>
+  [ 55] pushcons 22 ............................. <"club_intro_text">
+  [ 57] pusharglist 2 ........................... <tWndObj, "club_intro_text">
+  [ 59] objcall 34 .............................. <tWndObj.getElement("club_intro_text")>
+  [ 61] getlocal 2 .............................. <tText>
+  [ 63] pusharglistnoret 2 ...................... <tWndObj.getElement("club_intro_text"), tText>
+  [ 65] objcall 36 .............................. tWndObj.getElement("club_intro_text").setText(tText)
+  [ 67] pushint8 1 .............................. <1>
+  [ 69] pusharglistnoret 1 ...................... <1>
+  [ 71] extcall 18 .............................. return 1
+  [ 73] ret
+end
+
+on setupBuyWindow me
+  [  0] pushcons 16 ............................. <"club_info_url">
+  [  2] pusharglist 1 ........................... <"club_info_url">
+  [  4] extcall 26 .............................. <getText("club_info_url")>
+  [  6] pushcons 17 ............................. <"http">
+  [  8] contains0str ............................ <getText("club_info_url") starts "http">
+  [  9] not ..................................... <not (getText("club_info_url") starts "http")>
+  [ 10] jmpifz [ 32] ............................ if not (getText("club_info_url") starts "http") then
+  [ 13] getprop 12 .............................. <pDialogId>
+  [ 15] pusharglist 1 ........................... <pDialogId>
+  [ 17] extcall 30 .............................. <getWindow(pDialogId)>
+  [ 19] pushcons 23 ............................. <"club_intro_link">
+  [ 21] pusharglist 2 ........................... <getWindow(pDialogId), "club_intro_link">
+  [ 23] objcall 34 .............................. <getWindow(pDialogId).getElement("club_intro_link")>
+  [ 25] pushsymb 50 ............................. <#visible>
+  [ 27] pushzero ................................ <0>
+  [ 28] pusharglistnoret 3 ...................... <getWindow(pDialogId).getElement("club_intro_link"), #visible, 0>
+  [ 30] objcall 47 .............................. getWindow(pDialogId).getElement("club_intro_link").setProperty(#visible, 0)
+  [ 32] getprop 12 .............................. <pDialogId>
+  [ 34] pusharglist 1 ........................... <pDialogId>
+  [ 36] extcall 30 .............................. <getWindow(pDialogId)>
+  [ 38] pushsymb 11 ............................. <#eventProcDialogMousedown>
+  [ 40] getparam 0 .............................. <me>
+  [ 42] pusharglist 1 ........................... <me>
+  [ 44] objcall 17 .............................. <me.getID()>
+  [ 46] pushsymb 37 ............................. <#mouseDown>
+  [ 48] pusharglistnoret 4 ...................... <getWindow(pDialogId), #eventProcDialogMousedown, me.getID(), #mouseDown>
+  [ 50] objcall 38 .............................. getWindow(pDialogId).registerProcedure(#eventProcDialogMousedown, me.getID(), #mouseDown)
+  [ 52] ret
+end
+
+on replaceCreditsText me
+  [  0] pushsymb 58 ............................. <#session>
+  [  2] pusharglist 1 ........................... <#session>
+  [  4] extcall 57 .............................. <getObject(#session)>
+  [  6] pushcons 24 ............................. <"user_walletbalance">
+  [  8] pusharglist 2 ........................... <getObject(#session), "user_walletbalance">
+  [ 10] objcall 59 .............................. <getObject(#session).get("user_walletbalance")>
+  [ 12] setlocal 0 .............................. tCredits = getObject(#session).get("user_walletbalance")
+  [ 14] getprop 12 .............................. <pDialogId>
+  [ 16] pusharglist 1 ........................... <pDialogId>
+  [ 18] extcall 30 .............................. <getWindow(pDialogId)>
+  [ 20] setlocal 1 .............................. tWndObj = getWindow(pDialogId)
+  [ 22] pushcons 25 ............................. <"club_confirm_text">
+  [ 24] getprop 15 .............................. <pChosenLength>
+  [ 26] joinstr ................................. <"club_confirm_text" & pChosenLength>
+  [ 27] pusharglist 1 ........................... <"club_confirm_text" & pChosenLength>
+  [ 29] extcall 26 .............................. <getText("club_confirm_text" & pChosenLength)>
+  [ 31] setlocal 2 .............................. tText = getText("club_confirm_text" & pChosenLength)
+  [ 33] getlocal 2 .............................. <tText>
+  [ 35] pushcons 26 ............................. <"%credits%">
+  [ 37] getlocal 0 .............................. <tCredits>
+  [ 39] pusharglist 1 ........................... <tCredits>
+  [ 41] extcall 35 .............................. <string(tCredits)>
+  [ 43] pusharglist 3 ........................... <tText, "%credits%", string(tCredits)>
+  [ 45] extcall 60 .............................. <replaceChunks(tText, "%credits%", string(tCredits))>
+  [ 47] setlocal 2 .............................. tText = replaceChunks(tText, "%credits%", string(tCredits))
+  [ 49] getlocal 1 .............................. <tWndObj>
+  [ 51] pushcons 25 ............................. <"club_confirm_text">
+  [ 53] pusharglist 2 ........................... <tWndObj, "club_confirm_text">
+  [ 55] objcall 34 .............................. <tWndObj.getElement("club_confirm_text")>
+  [ 57] getlocal 2 .............................. <tText>
+  [ 59] pusharglistnoret 2 ...................... <tWndObj.getElement("club_confirm_text"), tText>
+  [ 61] objcall 36 .............................. tWndObj.getElement("club_confirm_text").setText(tText)
+  [ 63] pushint8 1 .............................. <1>
+  [ 65] pusharglistnoret 1 ...................... <1>
+  [ 67] extcall 18 .............................. return 1
+  [ 69] ret
+end
+
+on setupWindow me, ttype
+  [  0] getprop 12 .............................. <pDialogId>
+  [  2] pusharglist 1 ........................... <pDialogId>
+  [  4] extcall 62 .............................. <windowExists(pDialogId)>
+  [  6] jmpifz [ 15] ............................ if windowExists(pDialogId) then
+  [  9] getprop 12 .............................. <pDialogId>
+  [ 11] pusharglistnoret 1 ...................... <pDialogId>
+  [ 13] extcall 63 .............................. removeWindow(pDialogId)
+  [ 15] getparam 1 .............................. <ttype>
+  [ 17] pushsymb 64 ............................. <#modal>
+  [ 19] eq ...................................... <ttype = #modal>
+  [ 20] jmpifz [ 49] ............................ if ttype = #modal then / else
+  [ 23] getprop 12 .............................. <pDialogId>
+  [ 25] pusharglist 0 ........................... <>
+  [ 27] extcall 66 .............................. <VOID>
+  [ 29] pushzero ................................ <0>
+  [ 30] pushzero ................................ <0>
+  [ 31] pushsymb 64 ............................. <#modal>
+  [ 33] pusharglist 5 ........................... <pDialogId, VOID, 0, 0, #modal>
+  [ 35] extcall 65 .............................. <createWindow(pDialogId, VOID, 0, 0, #modal)>
+  [ 37] not ..................................... <not createWindow(pDialogId, VOID, 0, 0, #modal)>
+  [ 38] jmpifz [ 46] ............................ if not createWindow(pDialogId, VOID, 0, 0, #modal) then
+  [ 41] pushzero ................................ <0>
+  [ 42] pusharglistnoret 1 ...................... <0>
+  [ 44] extcall 18 .............................. return 0
+  [ 46] jmp [ 64]
+  [ 49] getprop 12 .............................. <pDialogId>
+  [ 51] pusharglist 1 ........................... <pDialogId>
+  [ 53] extcall 65 .............................. <createWindow(pDialogId)>
+  [ 55] not ..................................... <not createWindow(pDialogId)>
+  [ 56] jmpifz [ 64] ............................ if not createWindow(pDialogId) then
+  [ 59] pushzero ................................ <0>
+  [ 60] pusharglistnoret 1 ...................... <0>
+  [ 62] extcall 18 .............................. return 0
+  [ 64] getprop 12 .............................. <pDialogId>
+  [ 66] pusharglist 1 ........................... <pDialogId>
+  [ 68] extcall 30 .............................. <getWindow(pDialogId)>
+  [ 70] setlocal 0 .............................. tWndObj = getWindow(pDialogId)
+  [ 72] getlocal 0 .............................. <tWndObj>
+  [ 74] pushsymb 67 ............................. <#title>
+  [ 76] pushcons 27 ............................. <"club_habbo.window.title">
+  [ 78] pusharglist 1 ........................... <"club_habbo.window.title">
+  [ 80] extcall 26 .............................. <getText("club_habbo.window.title")>
+  [ 82] pusharglistnoret 3 ...................... <tWndObj, #title, getText("club_habbo.window.title")>
+  [ 84] objcall 47 .............................. tWndObj.setProperty(#title, getText("club_habbo.window.title"))
+  [ 86] getlocal 0 .............................. <tWndObj>
+  [ 88] pushcons 28 ............................. <"habbo_full.window">
+  [ 90] pusharglist 2 ........................... <tWndObj, "habbo_full.window">
+  [ 92] objcall 68 .............................. <tWndObj.merge("habbo_full.window")>
+  [ 94] not ..................................... <not tWndObj.merge("habbo_full.window")>
+  [ 95] jmpifz [108] ............................ if not tWndObj.merge("habbo_full.window") then
+  [ 98] getlocal 0 .............................. <tWndObj>
+  [100] pusharglist 1 ........................... <tWndObj>
+  [102] objcall 69 .............................. <tWndObj.close()>
+  [104] pusharglistnoret 1 ...................... <tWndObj.close()>
+  [106] extcall 18 .............................. return tWndObj.close()
+  [108] pushint8 1 .............................. <1>
+  [110] pusharglistnoret 1 ...................... <1>
+  [112] extcall 18 .............................. return 1
+  [114] ret
+end
+
+on show_clubinfo me
+  [  0] getparam 0 .............................. <me>
+  [  2] pusharglist 1 ........................... <me>
+  [  4] objcall 28 .............................. <me.getComponent()>
+  [  6] pusharglist 1 ........................... <me.getComponent()>
+  [  8] objcall 29 .............................. <me.getComponent().getStatus()>
+  [ 10] setlocal 0 .............................. tClubInfo = me.getComponent().getStatus()
+  [ 12] getlocal 0 .............................. <tClubInfo>
+  [ 14] pushzero ................................ <0>
+  [ 15] nteq .................................... <tClubInfo <> 0>
+  [ 16] jmpifz [160] ............................ if tClubInfo <> 0 then
+  [ 19] getprop 12 .............................. <pDialogId>
+  [ 21] pusharglist 1 ........................... <pDialogId>
+  [ 23] extcall 62 .............................. <windowExists(pDialogId)>
+  [ 25] not ..................................... <not windowExists(pDialogId)>
+  [ 26] jmpifz [154] ............................ if not windowExists(pDialogId) then / else
+  [ 29] getparam 0 .............................. <me>
+  [ 31] pusharglistnoret 1 ...................... <me>
+  [ 33] objcall 8 ............................... me.setupWindow()
+  [ 35] getprop 12 .............................. <pDialogId>
+  [ 37] pusharglist 1 ........................... <pDialogId>
+  [ 39] extcall 30 .............................. <getWindow(pDialogId)>
+  [ 41] setlocal 1 .............................. tWndObj = getWindow(pDialogId)
+  [ 43] getlocal 0 .............................. <tClubInfo>
+  [ 45] pushsymb 43 ............................. <#daysLeft>
+  [ 47] pusharglist 2 ........................... <tClubInfo, #daysLeft>
+  [ 49] objcall 33 .............................. <tClubInfo[#daysLeft]>
+  [ 51] pushzero ................................ <0>
+  [ 52] eq ...................................... <tClubInfo[#daysLeft] = 0>
+  [ 53] getlocal 0 .............................. <tClubInfo>
+  [ 55] pushsymb 32 ............................. <#ElapsedPeriods>
+  [ 57] pusharglist 2 ........................... <tClubInfo, #ElapsedPeriods>
+  [ 59] objcall 33 .............................. <tClubInfo[#ElapsedPeriods]>
+  [ 61] pushzero ................................ <0>
+  [ 62] eq ...................................... <tClubInfo[#ElapsedPeriods] = 0>
+  [ 63] and ..................................... <(tClubInfo[#daysLeft] = 0) and (tClubInfo[#ElapsedPeriods] = 0)>
+  [ 64] jmpifz [ 84] ............................ if (tClubInfo[#daysLeft] = 0) and (tClubInfo[#ElapsedPeriods] = 0) then / else
+  [ 67] pushcons 29 ............................. <"club_purchase_url">
+  [ 69] pusharglist 1 ........................... <"club_purchase_url">
+  [ 71] extcall 26 .............................. <getText("club_purchase_url")>
+  [ 73] setlocal 2 .............................. tURL = getText("club_purchase_url")
+  [ 75] getlocal 2 .............................. <tURL>
+  [ 77] pusharglistnoret 1 ...................... <tURL>
+  [ 79] extcall 78 .............................. openNetPage(tURL)
+  [ 81] jmp [145]
+  [ 84] getlocal 0 .............................. <tClubInfo>
+  [ 86] pushsymb 43 ............................. <#daysLeft>
+  [ 88] pusharglist 2 ........................... <tClubInfo, #daysLeft>
+  [ 90] objcall 33 .............................. <tClubInfo[#daysLeft]>
+  [ 92] pushzero ................................ <0>
+  [ 93] eq ...................................... <tClubInfo[#daysLeft] = 0>
+  [ 94] getlocal 0 .............................. <tClubInfo>
+  [ 96] pushsymb 32 ............................. <#ElapsedPeriods>
+  [ 98] pusharglist 2 ........................... <tClubInfo, #ElapsedPeriods>
+  [100] objcall 33 .............................. <tClubInfo[#ElapsedPeriods]>
+  [102] pushzero ................................ <0>
+  [103] gt ...................................... <tClubInfo[#ElapsedPeriods] > 0>
+  [104] and ..................................... <(tClubInfo[#daysLeft] = 0) and (tClubInfo[#ElapsedPeriods] > 0)>
+  [105] jmpifz [131] ............................ if (tClubInfo[#daysLeft] = 0) and (tClubInfo[#ElapsedPeriods] > 0) then / else
+  [108] getlocal 1 .............................. <tWndObj>
+  [110] pushcons 30 ............................. <"habbo_club_ended.window">
+  [112] pusharglistnoret 2 ...................... <tWndObj, "habbo_club_ended.window">
+  [114] objcall 68 .............................. tWndObj.merge("habbo_club_ended.window")
+  [116] getlocal 1 .............................. <tWndObj>
+  [118] pusharglistnoret 1 ...................... <tWndObj>
+  [120] objcall 70 .............................. tWndObj.center()
+  [122] getparam 0 .............................. <me>
+  [124] pusharglistnoret 1 ...................... <me>
+  [126] objcall 3 ............................... me.setupEndedWindow()
+  [128] jmp [145]
+  [131] getlocal 1 .............................. <tWndObj>
+  [133] pushcons 31 ............................. <"habbo_club_status.window">
+  [135] pusharglistnoret 2 ...................... <tWndObj, "habbo_club_status.window">
+  [137] objcall 68 .............................. tWndObj.merge("habbo_club_status.window")
+  [139] getparam 0 .............................. <me>
+  [141] pusharglistnoret 1 ...................... <me>
+  [143] objcall 4 ............................... me.setupStatusWindow()
+  [145] getlocal 1 .............................. <tWndObj>
+  [147] pusharglistnoret 1 ...................... <tWndObj>
+  [149] objcall 70 .............................. tWndObj.center()
+  [151] jmp [160]
+  [154] getprop 12 .............................. <pDialogId>
+  [156] pusharglistnoret 1 ...................... <pDialogId>
+  [158] extcall 63 .............................. removeWindow(pDialogId)
+  [160] pushint8 1 .............................. <1>
+  [162] pusharglistnoret 1 ...................... <1>
+  [164] extcall 18 .............................. return 1
+  [166] ret
+end
+
+on updateClubStatus me, tStatus, tResponseFlag, tOldClubStatus
+  [  0] getparam 2 .............................. <tResponseFlag>
+  [  2] pushint8 2 .............................. <2>
+  [  4] eq ...................................... <tResponseFlag = 2>
+  [  5] jmpifz [ 94] ............................ if tResponseFlag = 2 then
+  [  8] getparam 0 .............................. <me>
+  [ 10] pusharglistnoret 1 ...................... <me>
+  [ 12] objcall 8 ............................... me.setupWindow()
+  [ 14] getprop 12 .............................. <pDialogId>
+  [ 16] pusharglist 1 ........................... <pDialogId>
+  [ 18] extcall 30 .............................. <getWindow(pDialogId)>
+  [ 20] setlocal 0 .............................. tWndObj = getWindow(pDialogId)
+  [ 22] getlocal 0 .............................. <tWndObj>
+  [ 24] pusharglist 1 ........................... <tWndObj>
+  [ 26] extcall 31 .............................. <objectp(tWndObj)>
+  [ 28] not ..................................... <not objectp(tWndObj)>
+  [ 29] jmpifz [ 37] ............................ if not objectp(tWndObj) then
+  [ 32] pushzero ................................ <0>
+  [ 33] pusharglistnoret 1 ...................... <0>
+  [ 35] extcall 18 .............................. return 0
+  [ 37] getlocal 0 .............................. <tWndObj>
+  [ 39] pushcons 31 ............................. <"habbo_club_status.window">
+  [ 41] pusharglistnoret 2 ...................... <tWndObj, "habbo_club_status.window">
+  [ 43] objcall 68 .............................. tWndObj.merge("habbo_club_status.window")
+  [ 45] getlocal 0 .............................. <tWndObj>
+  [ 47] pusharglistnoret 1 ...................... <tWndObj>
+  [ 49] objcall 70 .............................. tWndObj.center()
+  [ 51] getparam 3 .............................. <tOldClubStatus>
+  [ 53] pushsymb 32 ............................. <#ElapsedPeriods>
+  [ 55] pusharglist 2 ........................... <tOldClubStatus, #ElapsedPeriods>
+  [ 57] objcall 33 .............................. <tOldClubStatus[#ElapsedPeriods]>
+  [ 59] pushzero ................................ <0>
+  [ 60] eq ...................................... <tOldClubStatus[#ElapsedPeriods] = 0>
+  [ 61] getparam 3 .............................. <tOldClubStatus>
+  [ 63] pushsymb 43 ............................. <#daysLeft>
+  [ 65] pusharglist 2 ........................... <tOldClubStatus, #daysLeft>
+  [ 67] objcall 33 .............................. <tOldClubStatus[#daysLeft]>
+  [ 69] pushzero ................................ <0>
+  [ 70] eq ...................................... <tOldClubStatus[#daysLeft] = 0>
+  [ 71] and ..................................... <(tOldClubStatus[#ElapsedPeriods] = 0) and (tOldClubStatus[#daysLeft] = 0)>
+  [ 72] jmpifz [ 86] ............................ if (tOldClubStatus[#ElapsedPeriods] = 0) and (tOldClubStatus[#daysLeft] = 0) then / else
+  [ 75] getparam 0 .............................. <me>
+  [ 77] pushsymb 48 ............................. <#FirstTimer>
+  [ 79] pusharglistnoret 2 ...................... <me, #FirstTimer>
+  [ 81] objcall 4 ............................... me.setupStatusWindow(#FirstTimer)
+  [ 83] jmp [ 94]
+  [ 86] getparam 0 .............................. <me>
+  [ 88] pushsymb 71 ............................. <#BeenHcBefore>
+  [ 90] pusharglistnoret 2 ...................... <me, #BeenHcBefore>
+  [ 92] objcall 4 ............................... me.setupStatusWindow(#BeenHcBefore)
+  [ 94] getparam 2 .............................. <tResponseFlag>
+  [ 96] pushint8 3 .............................. <3>
+  [ 98] eq ...................................... <tResponseFlag = 3>
+  [ 99] jmpifz [138] ............................ if tResponseFlag = 3 then
+  [102] getparam 0 .............................. <me>
+  [104] pushsymb 64 ............................. <#modal>
+  [106] pusharglistnoret 2 ...................... <me, #modal>
+  [108] objcall 8 ............................... me.setupWindow(#modal)
+  [110] getprop 12 .............................. <pDialogId>
+  [112] pusharglist 1 ........................... <pDialogId>
+  [114] extcall 30 .............................. <getWindow(pDialogId)>
+  [116] setlocal 0 .............................. tWndObj = getWindow(pDialogId)
+  [118] getlocal 0 .............................. <tWndObj>
+  [120] pushcons 30 ............................. <"habbo_club_ended.window">
+  [122] pusharglistnoret 2 ...................... <tWndObj, "habbo_club_ended.window">
+  [124] objcall 68 .............................. tWndObj.merge("habbo_club_ended.window")
+  [126] getlocal 0 .............................. <tWndObj>
+  [128] pusharglistnoret 1 ...................... <tWndObj>
+  [130] objcall 70 .............................. tWndObj.center()
+  [132] getparam 0 .............................. <me>
+  [134] pusharglistnoret 1 ...................... <me>
+  [136] objcall 3 ............................... me.setupEndedWindow()
+  [138] pushint8 1 .............................. <1>
+  [140] pusharglistnoret 1 ...................... <1>
+  [142] extcall 18 .............................. return 1
+  [144] ret
+end
+
+on eventProcDialogMousedown me, tEvent, tSprID, tParam
+  [  0] getparam 0 .............................. <me>
+  [  2] pusharglist 1 ........................... <me>
+  [  4] objcall 28 .............................. <me.getComponent()>
+  [  6] pusharglist 1 ........................... <me.getComponent()>
+  [  8] objcall 29 .............................. <me.getComponent().getStatus()>
+  [ 10] setlocal 0 .............................. tClubInfo = me.getComponent().getStatus()
+  [ 12] getparam 2 .............................. <tSprID>
+  [ 14] peek 0 .................................. case tSprID of
+  [ 16] pushcons 10 ............................. <"club_button_extend">
+  [ 18] eq
+  [ 19] jmpifz [ 39] ............................ (case) "club_button_extend":
+  [ 22] pushcons 29 ............................. <"club_purchase_url">
+  [ 24] pusharglist 1 ........................... <"club_purchase_url">
+  [ 26] extcall 26 .............................. <getText("club_purchase_url")>
+  [ 28] setlocal 1 .............................. tURL = getText("club_purchase_url")
+  [ 30] getlocal 1 .............................. <tURL>
+  [ 32] pusharglistnoret 1 ...................... <tURL>
+  [ 34] extcall 78 .............................. openNetPage(tURL)
+  [ 36] jmp [480]
+  [ 39] peek 0
+  [ 41] pushcons 11 ............................. <"club_isp_change">
+  [ 43] eq
+  [ 44] jmpifz [120] ............................ (case) "club_isp_change":
+  [ 47] pushsymb 58 ............................. <#session>
+  [ 49] pusharglist 1 ........................... <#session>
+  [ 51] extcall 57 .............................. <getObject(#session)>
+  [ 53] setlocal 2 .............................. tSession = getObject(#session)
+  [ 55] pushcons 32 ............................. <"club_change_url">
+  [ 57] pusharglist 1 ........................... <"club_change_url">
+  [ 59] extcall 26 .............................. <getText("club_change_url")>
+  [ 61] setlocal 1 .............................. tURL = getText("club_change_url")
+  [ 63] getlocal 1 .............................. <tURL>
+  [ 65] getlocal 2 .............................. <tSession>
+  [ 67] pushcons 33 ............................. <"user_name">
+  [ 69] pusharglist 2 ........................... <tSession, "user_name">
+  [ 71] objcall 59 .............................. <tSession.get("user_name")>
+  [ 73] pusharglist 1 ........................... <tSession.get("user_name")>
+  [ 75] extcall 76 .............................. <urlEncode(tSession.get("user_name"))>
+  [ 77] joinstr ................................. <tURL & urlEncode(tSession.get("user_name"))>
+  [ 78] setlocal 1 .............................. tURL = tURL & urlEncode(tSession.get("user_name"))
+  [ 80] getlocal 2 .............................. <tSession>
+  [ 82] pushcons 34 ............................. <"user_checksum">
+  [ 84] pusharglist 2 ........................... <tSession, "user_checksum">
+  [ 86] objcall 77 .............................. <tSession.exists("user_checksum")>
+  [ 88] jmpifz [111] ............................ if tSession.exists("user_checksum") then
+  [ 91] getlocal 1 .............................. <tURL>
+  [ 93] pushcons 35 ............................. <"&sum=">
+  [ 95] joinstr ................................. <tURL & "&sum=">
+  [ 96] getlocal 2 .............................. <tSession>
+  [ 98] pushcons 34 ............................. <"user_checksum">
+  [100] pusharglist 2 ........................... <tSession, "user_checksum">
+  [102] objcall 59 .............................. <tSession.get("user_checksum")>
+  [104] pusharglist 1 ........................... <tSession.get("user_checksum")>
+  [106] extcall 76 .............................. <urlEncode(tSession.get("user_checksum"))>
+  [108] joinstr ................................. <tURL & "&sum=" & urlEncode(tSession.get("user_checksum"))>
+  [109] setlocal 1 .............................. tURL = tURL & "&sum=" & urlEncode(tSession.get("user_checksum"))
+  [111] getlocal 1 .............................. <tURL>
+  [113] pusharglistnoret 1 ...................... <tURL>
+  [115] extcall 78 .............................. openNetPage(tURL)
+  [117] jmp [480]
+  [120] peek 0
+  [122] pushcons 23 ............................. <"club_intro_link">
+  [124] nteq
+  [125] jmpifz [136] ............................ (case) "club_intro_link", ...
+  [128] peek 0
+  [130] pushcons 18 ............................. <"club_general_infolink">
+  [132] eq
+  [133] jmpifz [145] ............................ (case) ..., "club_general_infolink":
+  [136] pushcons 16 ............................. <"club_info_url">
+  [138] pusharglistnoret 1 ...................... <"club_info_url">
+  [140] extcall 78 .............................. openNetPage("club_info_url")
+  [142] jmp [480]
+  [145] peek 0
+  [147] pushcons 36 ............................. <"club_isp_buy">
+  [149] eq
+  [150] jmpifz [228] ............................ (case) "club_isp_buy":
+  [153] pushsymb 58 ............................. <#session>
+  [155] pusharglist 1 ........................... <#session>
+  [157] extcall 57 .............................. <getObject(#session)>
+  [159] setlocal 2 .............................. tSession = getObject(#session)
+  [161] pushcons 37 ............................. <"club_paybycash_url">
+  [163] pusharglist 1 ........................... <"club_paybycash_url">
+  [165] extcall 26 .............................. <getText("club_paybycash_url")>
+  [167] setlocal 1 .............................. tURL = getText("club_paybycash_url")
+  [169] getlocal 1 .............................. <tURL>
+  [171] getlocal 2 .............................. <tSession>
+  [173] pushcons 33 ............................. <"user_name">
+  [175] pusharglist 2 ........................... <tSession, "user_name">
+  [177] objcall 59 .............................. <tSession.get("user_name")>
+  [179] pusharglist 1 ........................... <tSession.get("user_name")>
+  [181] extcall 76 .............................. <urlEncode(tSession.get("user_name"))>
+  [183] joinstr ................................. <tURL & urlEncode(tSession.get("user_name"))>
+  [184] setlocal 1 .............................. tURL = tURL & urlEncode(tSession.get("user_name"))
+  [186] getlocal 2 .............................. <tSession>
+  [188] pushcons 34 ............................. <"user_checksum">
+  [190] pusharglist 2 ........................... <tSession, "user_checksum">
+  [192] objcall 77 .............................. <tSession.exists("user_checksum")>
+  [194] jmpifz [217] ............................ if tSession.exists("user_checksum") then
+  [197] getlocal 1 .............................. <tURL>
+  [199] pushcons 35 ............................. <"&sum=">
+  [201] joinstr ................................. <tURL & "&sum=">
+  [202] getlocal 2 .............................. <tSession>
+  [204] pushcons 34 ............................. <"user_checksum">
+  [206] pusharglist 2 ........................... <tSession, "user_checksum">
+  [208] objcall 59 .............................. <tSession.get("user_checksum")>
+  [210] pusharglist 1 ........................... <tSession.get("user_checksum")>
+  [212] extcall 76 .............................. <urlEncode(tSession.get("user_checksum"))>
+  [214] joinstr ................................. <tURL & "&sum=" & urlEncode(tSession.get("user_checksum"))>
+  [215] setlocal 1 .............................. tURL = tURL & "&sum=" & urlEncode(tSession.get("user_checksum"))
+  [217] getlocal 1 .............................. <tURL>
+  [219] pushcons 38 ............................. <"_new">
+  [221] pusharglistnoret 2 ...................... <tURL, "_new">
+  [223] extcall 78 .............................. openNetPage(tURL, "_new")
+  [225] jmp [480]
+  [228] peek 0
+  [230] pushcons 39 ............................. <"club_button_1_period">
+  [232] eq
+  [233] jmpifz [288] ............................ (case) "club_button_1_period":
+  [236] getprop 12 .............................. <pDialogId>
+  [238] pusharglist 1 ........................... <pDialogId>
+  [240] extcall 30 .............................. <getWindow(pDialogId)>
+  [242] setlocal 3 .............................. tWndObj = getWindow(pDialogId)
+  [244] getlocal 3 .............................. <tWndObj>
+  [246] pusharglist 1 ........................... <tWndObj>
+  [248] extcall 31 .............................. <objectp(tWndObj)>
+  [250] not ..................................... <not objectp(tWndObj)>
+  [251] jmpifz [261] ............................ if not objectp(tWndObj) then
+  [254] pop 1
+  [256] pushzero ................................ <0>
+  [257] pusharglistnoret 1 ...................... <0>
+  [259] extcall 18 .............................. return 0
+  [261] getlocal 3 .............................. <tWndObj>
+  [263] pusharglistnoret 1 ...................... <tWndObj>
+  [265] objcall 75 .............................. tWndObj.unmerge()
+  [267] getlocal 3 .............................. <tWndObj>
+  [269] pushcons 40 ............................. <"habbo_club_confirm.window">
+  [271] pusharglistnoret 2 ...................... <tWndObj, "habbo_club_confirm.window">
+  [273] objcall 68 .............................. tWndObj.merge("habbo_club_confirm.window")
+  [275] pushint8 1 .............................. <1>
+  [277] setprop 15 .............................. pChosenLength = 1
+  [279] getparam 0 .............................. <me>
+  [281] pusharglistnoret 1 ...................... <me>
+  [283] objcall 7 ............................... me.replaceCreditsText()
+  [285] jmp [480]
+  [288] peek 0
+  [290] pushcons 41 ............................. <"club_button_2_period">
+  [292] eq
+  [293] jmpifz [348] ............................ (case) "club_button_2_period":
+  [296] getprop 12 .............................. <pDialogId>
+  [298] pusharglist 1 ........................... <pDialogId>
+  [300] extcall 30 .............................. <getWindow(pDialogId)>
+  [302] setlocal 3 .............................. tWndObj = getWindow(pDialogId)
+  [304] getlocal 3 .............................. <tWndObj>
+  [306] pusharglist 1 ........................... <tWndObj>
+  [308] extcall 31 .............................. <objectp(tWndObj)>
+  [310] not ..................................... <not objectp(tWndObj)>
+  [311] jmpifz [321] ............................ if not objectp(tWndObj) then
+  [314] pop 1
+  [316] pushzero ................................ <0>
+  [317] pusharglistnoret 1 ...................... <0>
+  [319] extcall 18 .............................. return 0
+  [321] getlocal 3 .............................. <tWndObj>
+  [323] pusharglistnoret 1 ...................... <tWndObj>
+  [325] objcall 75 .............................. tWndObj.unmerge()
+  [327] getlocal 3 .............................. <tWndObj>
+  [329] pushcons 40 ............................. <"habbo_club_confirm.window">
+  [331] pusharglistnoret 2 ...................... <tWndObj, "habbo_club_confirm.window">
+  [333] objcall 68 .............................. tWndObj.merge("habbo_club_confirm.window")
+  [335] pushint8 2 .............................. <2>
+  [337] setprop 15 .............................. pChosenLength = 2
+  [339] getparam 0 .............................. <me>
+  [341] pusharglistnoret 1 ...................... <me>
+  [343] objcall 7 ............................... me.replaceCreditsText()
+  [345] jmp [480]
+  [348] peek 0
+  [350] pushcons 42 ............................. <"club_button_3_period">
+  [352] eq
+  [353] jmpifz [408] ............................ (case) "club_button_3_period":
+  [356] getprop 12 .............................. <pDialogId>
+  [358] pusharglist 1 ........................... <pDialogId>
+  [360] extcall 30 .............................. <getWindow(pDialogId)>
+  [362] setlocal 3 .............................. tWndObj = getWindow(pDialogId)
+  [364] getlocal 3 .............................. <tWndObj>
+  [366] pusharglist 1 ........................... <tWndObj>
+  [368] extcall 31 .............................. <objectp(tWndObj)>
+  [370] not ..................................... <not objectp(tWndObj)>
+  [371] jmpifz [381] ............................ if not objectp(tWndObj) then
+  [374] pop 1
+  [376] pushzero ................................ <0>
+  [377] pusharglistnoret 1 ...................... <0>
+  [379] extcall 18 .............................. return 0
+  [381] getlocal 3 .............................. <tWndObj>
+  [383] pusharglistnoret 1 ...................... <tWndObj>
+  [385] objcall 75 .............................. tWndObj.unmerge()
+  [387] getlocal 3 .............................. <tWndObj>
+  [389] pushcons 40 ............................. <"habbo_club_confirm.window">
+  [391] pusharglistnoret 2 ...................... <tWndObj, "habbo_club_confirm.window">
+  [393] objcall 68 .............................. tWndObj.merge("habbo_club_confirm.window")
+  [395] pushint8 3 .............................. <3>
+  [397] setprop 15 .............................. pChosenLength = 3
+  [399] getparam 0 .............................. <me>
+  [401] pusharglistnoret 1 ...................... <me>
+  [403] objcall 7 ............................... me.replaceCreditsText()
+  [405] jmp [480]
+  [408] peek 0
+  [410] pushcons 43 ............................. <"club_confirm_ok">
+  [412] eq
+  [413] jmpifz [437] ............................ (case) "club_confirm_ok":
+  [416] getparam 0 .............................. <me>
+  [418] pusharglist 1 ........................... <me>
+  [420] objcall 28 .............................. <me.getComponent()>
+  [422] getprop 15 .............................. <pChosenLength>
+  [424] pusharglistnoret 2 ...................... <me.getComponent(), pChosenLength>
+  [426] objcall 79 .............................. me.getComponent().subscribe(pChosenLength)
+  [428] getprop 12 .............................. <pDialogId>
+  [430] pusharglistnoret 1 ...................... <pDialogId>
+  [432] extcall 63 .............................. removeWindow(pDialogId)
+  [434] jmp [480]
+  [437] peek 0
+  [439] pushcons 44 ............................. <"club_confirm_cancel">
+  [441] nteq
+  [442] jmpifz [453] ............................ (case) "club_confirm_cancel", ...
+  [445] peek 0
+  [447] pushcons 45 ............................. <"club_button_close">
+  [449] eq
+  [450] jmpifz [464] ............................ (case) ..., "club_button_close":
+  [453] getparam 0 .............................. <me>
+  [455] getobjprop 12 ........................... <me.pDialogId>
+  [457] pusharglistnoret 1 ...................... <me.pDialogId>
+  [459] extcall 63 .............................. removeWindow(me.pDialogId)
+  [461] jmp [480]
+  [464] peek 0
+  [466] pushcons 46 ............................. <"close">
+  [468] eq
+  [469] jmpifz [480] ............................ (case) "close":
+  [472] getparam 0 .............................. <me>
+  [474] getobjprop 12 ........................... <me.pDialogId>
+  [476] pusharglistnoret 1 ...................... <me.pDialogId>
+  [478] extcall 63 .............................. removeWindow(me.pDialogId)
+  [480] pop 1 ................................... end case
+  [482] pushint8 1 .............................. <1>
+  [484] pusharglistnoret 1 ...................... <1>
+  [486] extcall 18 .............................. return 1
+  [488] ret
+end

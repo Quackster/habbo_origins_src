@@ -1,0 +1,221 @@
+on construct me
+  [  0] getparam 0 .............................. <me>
+  [  2] pushint8 1 .............................. <1>
+  [  4] pusharglist 2 ........................... <me, 1>
+  [  6] objcall 316 ............................. <me.regMsgList(1)>
+  [  9] pusharglistnoret 1 ...................... <me.regMsgList(1)>
+  [ 11] extcall 48 .............................. return me.regMsgList(1)
+  [ 13] ret
+end
+
+on deconstruct me
+  [  0] getparam 0 .............................. <me>
+  [  2] pushzero ................................ <0>
+  [  3] pusharglist 2 ........................... <me, 0>
+  [  5] objcall 316 ............................. <me.regMsgList(0)>
+  [  8] pusharglistnoret 1 ...................... <me.regMsgList(0)>
+  [ 10] extcall 48 .............................. return me.regMsgList(0)
+  [ 12] ret
+end
+
+on handleAvailabilityStatus me, tMsg
+  [  0] getparam 1 .............................. <tMsg>
+  [  2] getchainedprop 321 ...................... <tMsg.connection>
+  [  5] pusharglist 1 ........................... <tMsg.connection>
+  [  7] objcall 330 ............................. <tMsg.connection.GetIntFrom()>
+  [ 10] setlocal 0 .............................. tIsOpen = tMsg.connection.GetIntFrom()
+  [ 12] getparam 1 .............................. <tMsg>
+  [ 14] getchainedprop 321 ...................... <tMsg.connection>
+  [ 17] pusharglist 1 ........................... <tMsg.connection>
+  [ 19] objcall 330 ............................. <tMsg.connection.GetIntFrom()>
+  [ 22] setlocal 1 .............................. tShutDown = tMsg.connection.GetIntFrom()
+  [ 24] pushzero ................................ <0>
+  [ 25] setlocal 2 .............................. tClosingState = 0
+  [ 27] getlocal 0 .............................. <tIsOpen>
+  [ 29] not ..................................... <not tIsOpen>
+  [ 30] jmpifz [ 49] ............................ if not tIsOpen then
+  [ 33] getlocal 1 .............................. <tShutDown>
+  [ 35] jmpifz [ 45] ............................ if tShutDown then / else
+  [ 38] pushint8 1 .............................. <1>
+  [ 40] setlocal 2 .............................. tClosingState = 1
+  [ 42] jmp [ 49]
+  [ 45] pushint8 2 .............................. <2>
+  [ 47] setlocal 2 .............................. tClosingState = 2
+  [ 49] getparam 0 .............................. <me>
+  [ 51] pusharglist 1 ........................... <me>
+  [ 53] objcall 73 .............................. <me.getComponent()>
+  [ 55] getlocal 2 .............................. <tClosingState>
+  [ 57] pusharglistnoret 2 ...................... <me.getComponent(), tClosingState>
+  [ 59] objcall 501 ............................. me.getComponent().setHotelClosingStatus(tClosingState)
+  [ 62] ret
+end
+
+on handleInfoHotelClosing me, tMsg
+  [  0] getparam 1 .............................. <tMsg>
+  [  2] getchainedprop 321 ...................... <tMsg.connection>
+  [  5] pusharglist 1 ........................... <tMsg.connection>
+  [  7] objcall 330 ............................. <tMsg.connection.GetIntFrom()>
+  [ 10] setlocal 0 .............................. tMinutesUntil = tMsg.connection.GetIntFrom()
+  [ 12] getparam 0 .............................. <me>
+  [ 14] pusharglist 1 ........................... <me>
+  [ 16] objcall 64 .............................. <me.getInterface()>
+  [ 18] getlocal 0 .............................. <tMinutesUntil>
+  [ 20] pusharglistnoret 2 ...................... <me.getInterface(), tMinutesUntil>
+  [ 22] objcall 474 ............................. me.getInterface().showHotelClosingAlert(tMinutesUntil)
+  [ 25] ret
+end
+
+on handleInfoHotelClosed me, tMsg
+  [  0] getparam 1 .............................. <tMsg>
+  [  2] getchainedprop 321 ...................... <tMsg.connection>
+  [  5] pusharglist 1 ........................... <tMsg.connection>
+  [  7] objcall 330 ............................. <tMsg.connection.GetIntFrom()>
+  [ 10] setlocal 0 .............................. tOpenHour = tMsg.connection.GetIntFrom()
+  [ 12] getparam 1 .............................. <tMsg>
+  [ 14] getchainedprop 321 ...................... <tMsg.connection>
+  [ 17] pusharglist 1 ........................... <tMsg.connection>
+  [ 19] objcall 330 ............................. <tMsg.connection.GetIntFrom()>
+  [ 22] setlocal 1 .............................. tOpenMinute = tMsg.connection.GetIntFrom()
+  [ 24] getparam 1 .............................. <tMsg>
+  [ 26] getchainedprop 321 ...................... <tMsg.connection>
+  [ 29] pusharglist 1 ........................... <tMsg.connection>
+  [ 31] objcall 330 ............................. <tMsg.connection.GetIntFrom()>
+  [ 34] setlocal 2 .............................. tDisconnect = tMsg.connection.GetIntFrom()
+  [ 36] getlocal 2 .............................. <tDisconnect>
+  [ 38] jmpifz [ 59] ............................ if tDisconnect then / else
+  [ 41] getparam 0 .............................. <me>
+  [ 43] pusharglist 1 ........................... <me>
+  [ 45] objcall 73 .............................. <me.getComponent()>
+  [ 47] getlocal 0 .............................. <tOpenHour>
+  [ 49] getlocal 1 .............................. <tOpenMinute>
+  [ 51] pusharglistnoret 3 ...................... <me.getComponent(), tOpenHour, tOpenMinute>
+  [ 53] objcall 503 ............................. me.getComponent().setHotelClosedDisconnect(tOpenHour, tOpenMinute)
+  [ 56] jmp [ 74]
+  [ 59] getparam 0 .............................. <me>
+  [ 61] pusharglist 1 ........................... <me>
+  [ 63] objcall 64 .............................. <me.getInterface()>
+  [ 65] getlocal 0 .............................. <tOpenHour>
+  [ 67] getlocal 1 .............................. <tOpenMinute>
+  [ 69] pusharglistnoret 3 ...................... <me.getInterface(), tOpenHour, tOpenMinute>
+  [ 71] objcall 477 ............................. me.getInterface().showHotelClosedNotice(tOpenHour, tOpenMinute)
+  [ 74] ret
+end
+
+on handleAvailabilityTime me, tMsg
+  [  0] getparam 1 .............................. <tMsg>
+  [  2] getchainedprop 321 ...................... <tMsg.connection>
+  [  5] pusharglist 1 ........................... <tMsg.connection>
+  [  7] objcall 330 ............................. <tMsg.connection.GetIntFrom()>
+  [ 10] setlocal 0 .............................. tIsOpen = tMsg.connection.GetIntFrom()
+  [ 12] getparam 1 .............................. <tMsg>
+  [ 14] getchainedprop 321 ...................... <tMsg.connection>
+  [ 17] pusharglist 1 ........................... <tMsg.connection>
+  [ 19] objcall 330 ............................. <tMsg.connection.GetIntFrom()>
+  [ 22] setlocal 1 .............................. tTimeUntil = tMsg.connection.GetIntFrom()
+  [ 24] pushsymb 520 ............................ <#hotelAvailabilityTime>
+  [ 27] getlocal 0 .............................. <tIsOpen>
+  [ 29] getlocal 1 .............................. <tTimeUntil>
+  [ 31] pusharglistnoret 3 ...................... <#hotelAvailabilityTime, tIsOpen, tTimeUntil>
+  [ 33] extcall 66 .............................. executeMessage(#hotelAvailabilityTime, tIsOpen, tTimeUntil)
+  [ 35] ret
+end
+
+on handleLoginFailedHotelClosed me, tMsg
+  [  0] getparam 1 .............................. <tMsg>
+  [  2] getchainedprop 321 ...................... <tMsg.connection>
+  [  5] pusharglist 1 ........................... <tMsg.connection>
+  [  7] objcall 330 ............................. <tMsg.connection.GetIntFrom()>
+  [ 10] setlocal 0 .............................. tOpenHour = tMsg.connection.GetIntFrom()
+  [ 12] getparam 1 .............................. <tMsg>
+  [ 14] getchainedprop 321 ...................... <tMsg.connection>
+  [ 17] pusharglist 1 ........................... <tMsg.connection>
+  [ 19] objcall 330 ............................. <tMsg.connection.GetIntFrom()>
+  [ 22] setlocal 1 .............................. tOpenMinute = tMsg.connection.GetIntFrom()
+  [ 24] getparam 0 .............................. <me>
+  [ 26] pusharglist 1 ........................... <me>
+  [ 28] objcall 73 .............................. <me.getComponent()>
+  [ 30] getlocal 0 .............................. <tOpenHour>
+  [ 32] getlocal 1 .............................. <tOpenMinute>
+  [ 34] pusharglistnoret 3 ...................... <me.getComponent(), tOpenHour, tOpenMinute>
+  [ 36] objcall 503 ............................. me.getComponent().setHotelClosedDisconnect(tOpenHour, tOpenMinute)
+  [ 39] ret
+end
+
+on regMsgList me, tBool
+  [  0] pusharglist 0 ........................... <[:]>
+  [  2] pushproplist ............................ <[:]>
+  [  3] setlocal 0 .............................. tMsgs = [:]
+  [  5] getlocal 0 .............................. <tMsgs>
+  [  7] pushint16 290 ........................... <290>
+  [ 10] pushsymb 510 ............................ <#handleAvailabilityStatus>
+  [ 13] pusharglistnoret 3 ...................... <tMsgs, 290, #handleAvailabilityStatus>
+  [ 15] objcall 85 .............................. tMsgs.setaProp(290, #handleAvailabilityStatus)
+  [ 17] getlocal 0 .............................. <tMsgs>
+  [ 19] pushint16 291 ........................... <291>
+  [ 22] pushsymb 511 ............................ <#handleInfoHotelClosing>
+  [ 25] pusharglistnoret 3 ...................... <tMsgs, 291, #handleInfoHotelClosing>
+  [ 27] objcall 85 .............................. tMsgs.setaProp(291, #handleInfoHotelClosing)
+  [ 29] getlocal 0 .............................. <tMsgs>
+  [ 31] pushint16 292 ........................... <292>
+  [ 34] pushsymb 512 ............................ <#handleInfoHotelClosed>
+  [ 37] pusharglistnoret 3 ...................... <tMsgs, 292, #handleInfoHotelClosed>
+  [ 39] objcall 85 .............................. tMsgs.setaProp(292, #handleInfoHotelClosed)
+  [ 41] getlocal 0 .............................. <tMsgs>
+  [ 43] pushint16 293 ........................... <293>
+  [ 46] pushsymb 513 ............................ <#handleAvailabilityTime>
+  [ 49] pusharglistnoret 3 ...................... <tMsgs, 293, #handleAvailabilityTime>
+  [ 51] objcall 85 .............................. tMsgs.setaProp(293, #handleAvailabilityTime)
+  [ 53] getlocal 0 .............................. <tMsgs>
+  [ 55] pushint16 294 ........................... <294>
+  [ 58] pushsymb 514 ............................ <#handleLoginFailedHotelClosed>
+  [ 61] pusharglistnoret 3 ...................... <tMsgs, 294, #handleLoginFailedHotelClosed>
+  [ 63] objcall 85 .............................. tMsgs.setaProp(294, #handleLoginFailedHotelClosed)
+  [ 65] pusharglist 0 ........................... <[:]>
+  [ 67] pushproplist ............................ <[:]>
+  [ 68] setlocal 1 .............................. tCmds = [:]
+  [ 70] getlocal 1 .............................. <tCmds>
+  [ 72] pushcons 0 .............................. <"GET_AVAILABILITY_TIME">
+  [ 74] pushint16 212 ........................... <212>
+  [ 77] pusharglistnoret 3 ...................... <tCmds, "GET_AVAILABILITY_TIME", 212>
+  [ 79] objcall 85 .............................. tCmds.setaProp("GET_AVAILABILITY_TIME", 212)
+  [ 81] pushcons 1 .............................. <"connection.info.id">
+  [ 83] pushsymb 55 ............................. <#Info>
+  [ 85] pusharglist 2 ........................... <"connection.info.id", #Info>
+  [ 87] extcall 29 .............................. <getVariable("connection.info.id", #Info)>
+  [ 89] setlocal 2 .............................. tConn = getVariable("connection.info.id", #Info)
+  [ 91] getparam 1 .............................. <tBool>
+  [ 93] jmpifz [129] ............................ if tBool then / else
+  [ 96] getlocal 2 .............................. <tConn>
+  [ 98] getparam 0 .............................. <me>
+  [100] pusharglist 1 ........................... <me>
+  [102] objcall 42 .............................. <me.getID()>
+  [104] getlocal 0 .............................. <tMsgs>
+  [106] pusharglistnoret 3 ...................... <tConn, me.getID(), tMsgs>
+  [108] extcall 466 ............................. registerListener(tConn, me.getID(), tMsgs)
+  [111] getlocal 2 .............................. <tConn>
+  [113] getparam 0 .............................. <me>
+  [115] pusharglist 1 ........................... <me>
+  [117] objcall 42 .............................. <me.getID()>
+  [119] getlocal 1 .............................. <tCmds>
+  [121] pusharglistnoret 3 ...................... <tConn, me.getID(), tCmds>
+  [123] extcall 467 ............................. registerCommands(tConn, me.getID(), tCmds)
+  [126] jmp [159]
+  [129] getlocal 2 .............................. <tConn>
+  [131] getparam 0 .............................. <me>
+  [133] pusharglist 1 ........................... <me>
+  [135] objcall 42 .............................. <me.getID()>
+  [137] getlocal 0 .............................. <tMsgs>
+  [139] pusharglistnoret 3 ...................... <tConn, me.getID(), tMsgs>
+  [141] extcall 468 ............................. unregisterListener(tConn, me.getID(), tMsgs)
+  [144] getlocal 2 .............................. <tConn>
+  [146] getparam 0 .............................. <me>
+  [148] pusharglist 1 ........................... <me>
+  [150] objcall 42 .............................. <me.getID()>
+  [152] getlocal 1 .............................. <tCmds>
+  [154] pusharglistnoret 3 ...................... <tConn, me.getID(), tCmds>
+  [156] extcall 469 ............................. unregisterCommands(tConn, me.getID(), tCmds)
+  [159] pushint8 1 .............................. <1>
+  [161] pusharglistnoret 1 ...................... <1>
+  [163] extcall 48 .............................. return 1
+  [165] ret
+end
