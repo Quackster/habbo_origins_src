@@ -977,11 +977,16 @@ on createRoomObject me, tdata, tList, tClass
 end
 
 on removeRoomObject me, tid, tList
-  if voidp(tList[tid]) then
+  tItemID = tid
+  if not voidp(tList.getaProp(tid)) then
+    tItemID = integer(tid)
+    tItemID = string(tItemID)
+  end if
+  if voidp(tList[tItemID]) then
     return error(me, "Object not found:" && tid, #removeRoomObject)
   end if
-  tList[tid].deconstruct()
-  tList.deleteProp(tid)
+  tList[tItemID].deconstruct()
+  tList.deleteProp(tItemID)
   return 1
 end
 
@@ -989,15 +994,24 @@ on getRoomObject me, tid, tList
   if tid = #list then
     return tList
   end if
-  if voidp(tList.getaProp(tid)) then
-    return 0
-  else
+  if not voidp(tList.getaProp(tid)) then
     return tList.getaProp(tid)
   end if
+  tItemIdInt = integer(tid)
+  tItemIdStr = string(tItemIdInt)
+  if not voidp(tList.getaProp(tItemIdStr)) then
+    return tList.getaProp(tItemIdStr)
+  end if
+  return 0
 end
 
 on roomObjectExists me, tid, tList
-  return not voidp(tList[tid])
+  tItemID = tid
+  if not voidp(tList.getaProp(tid)) then
+    tItemID = integer(tid)
+    tItemID = string(tItemID)
+  end if
+  return not voidp(tList[tItemID])
 end
 
 on startTeleport me, tTeleId, tFlatID

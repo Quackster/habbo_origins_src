@@ -277,11 +277,9 @@ on showInterface me, tObjType
         end if
         tTargetIsOwner = tUserInfo.name = me.getComponent().getRoomData().owner
         if tTargetIsOwner then
+          tButtonList.deleteOne("ban")
           if not tUserRights.getOne("fuse_kick") then
             tButtonList.deleteOne("kick")
-          end if
-          if not tUserRights.getOne("fuse_ignore_room_owner") then
-            tButtonList.deleteOne("ignore")
           end if
         end if
       end if
@@ -290,6 +288,7 @@ on showInterface me, tObjType
     tButtonList.deleteOne("take_rights")
     tButtonList.deleteOne("give_rights")
     tButtonList.deleteOne("kick")
+    tButtonList.deleteOne("ban")
   end if
   if tObjType = "user" then
     tUserInfo = me.getComponent().getUserObject(pSelectedObj).getInfo()
@@ -359,21 +358,6 @@ on showInterface me, tObjType
     end if
   end if
   return 1
-end
-
-on hideInterface me, tHideOrRemove
-  if voidp(tHideOrRemove) then
-    tHideOrRemove = #Remove
-  end if
-  tWndObj = getWindow(pInterfaceId)
-  if tWndObj <> 0 then
-    if tHideOrRemove = #Remove then
-      return removeWindow(pInterfaceId)
-    else
-      return tWndObj.hide()
-    end if
-  end if
-  return 0
 end
 
 on showObjectInfo me, tObjType
@@ -1362,7 +1346,15 @@ on eventProcInterface me, tEvent, tSprID, tParam
       else
         tUserName = EMPTY
       end if
-      tComponent.getRoomConnection().send("KICKUSER", tUserName)
+      tComponent.getRoomConnection().send("KICKUSER", [#string: string(tUserName)])
+      return me.hideInterface(#hide)
+    "ban.button":
+      if tComponent.userObjectExists(pSelectedObj) then
+        tUserName = tComponent.getUserObject(pSelectedObj).getName()
+      else
+        tUserName = EMPTY
+      end if
+      tComponent.getRoomConnection().send("ROOMBAN", [#string: string(tUserName), #string: string("BAN_USER_DAY")])
       return me.hideInterface(#hide)
     "give_rights.button":
       if tComponent.userObjectExists(pSelectedObj) then
@@ -1580,9 +1572,6 @@ on eventProcActiveObj me, tEvent, tSprID, tParam
     return 1
   end if
   tObject = me.getComponent().getActiveObject(tSprID)
-  if the shiftDown then
-    return me.outputObjectInfo(tSprID, "active", the rollover)
-  end if
   if (pClickAction = "moveActive") or (pClickAction = "placeActive") then
     return me.eventProcRoom(tEvent, tSprID, tParam)
   end if
@@ -1613,11 +1602,41 @@ on eventProcActiveObj me, tEvent, tSprID, tParam
   if the optionDown and tIsController then
     return me.startObjectMover(pSelectedObj)
   end if
+  if the shiftDown and tIsController then
+    me.getComponent().getActiveObject(pSelectedObj).rotate()
+  end if
+  tUserCanPickup = getObject(#session).get("room_owner") or getObject(#session).get("user_rights").getOne("fuse_pick_up_any_furni")
+  if the controlDown and tUserCanPickup then
+    if pSelectedType = "active" then
+      ttype = "stuff"
+    else
+      if pSelectedType = "item" then
+        ttype = "item"
+      end if
+    end if
+    me.hideInterface(#hide)
+    return me.getComponent().getRoomConnection().send("ADDSTRIPITEM", "new" && ttype && pSelectedObj)
+  end if
   if tObject.select() then
     return 1
   else
     return me.eventProcRoom(tEvent, "floor", "object_selection")
   end if
+end
+
+on hideInterface me, tHideOrRemove
+  if voidp(tHideOrRemove) then
+    tHideOrRemove = #Remove
+  end if
+  tWndObj = getWindow(pInterfaceId)
+  if tWndObj <> 0 then
+    if tHideOrRemove = #Remove then
+      return removeWindow(pInterfaceId)
+    else
+      return tWndObj.hide()
+    end if
+  end if
+  return 0
 end
 
 on eventProcPassiveObj me, tEvent, tSprID, tParam

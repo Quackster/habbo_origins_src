@@ -7,9 +7,9 @@ on construct me
   pPageView = 1
   pPageLineHeight = 20
   pPageList = []
-  pPurseWriterID = getUniqueID()
-  pPurseBigTextWriterID = getUniqueID()
-  pPurseBigTextWriter2ID = getUniqueID()
+  pPurseWriterID = "purse_writer_id"
+  pPurseBigTextWriterID = "purse_writer_big_text_id"
+  pPurseBigTextWriter2ID = "purse_writer_big_text_id2"
   pItemObjList = []
   pFrameCounter = 0
   pDataReceived = 0
@@ -328,7 +328,7 @@ on getPurseAd me, tSourceURL, tClickURL
   end if
   if not voidp(tSourceURL) then
     if not (tSourceURL starts "http") then
-      return error(me, "Incorrect URL!", #getPurseAd)
+      return error(me, "Incorrect URL!", #getPurseAd, #minor)
     end if
     if not memberExists("purse-ad") then
       pAdMemNum = queueDownload(tSourceURL, "purse-ad", #bitmap, 1)
@@ -439,7 +439,7 @@ on changePurseWindowView me, tWindowName
       tWndObj.registerProcedure(#eventProcPurse, me.getID(), #mouseLeave)
       me.showPurseAd()
       if objectExists("Figure_Preview") then
-        getObject("Figure_Preview").createHumanPartPreview(pWindowTitle, "habbo_head", ["hd", "fc", "ey", "hr"])
+        getObject("Figure_Preview").createHumanPartPreview(pWindowTitle, "habbo_head", #head)
       end if
       if tWndObj.elementExists("header_name") then
         tWndObj.getElement("header_name").setText(getObject(#session).get("user_name"))
@@ -792,12 +792,8 @@ on eventProcPurse me, tEvent, tElemID, tParm
         me.drawPage(pPageView - 1)
       "purse_buy":
         tSession = getObject(#session)
-        if tSession.get("user_rights").getOne("can_buy_credits") then
-          tURL = getText("url_purselink")
-        else
-          tURL = getText("url_purse_subscribe")
-        end if
-        openNetPage(tURL, "_new")
+        tURL = getText("url_purselink")
+        openNetPage(tURL)
       "purse_voucher":
         if getObject(#session).get("conf_voucher") then
           me.showVoucherWindow()

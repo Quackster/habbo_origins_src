@@ -91,7 +91,7 @@ on openPhoto me, tItemID, tLocX, tLocY
   end if
   pLocX = tLocX
   pLocY = tLocY
-  registerMessage(symbol("itemdata_received" & integer(tItemID)), me.getID(), #setItemData)
+  registerMessage(symbol("itemdata_received" & tItemID), me.getID(), #setItemData)
   getConnection(getVariable("connection.room.id")).send("G_IDATA", [#integer: integer(tItemID)])
 end
 

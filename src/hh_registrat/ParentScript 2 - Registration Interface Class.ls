@@ -1734,7 +1734,10 @@ on eventProcFigurecreator me, tEvent, tSprID, tParm, tWndID
     end case
   else
     if tEvent = #keyDown then
+      put "Debug: " & the keyCode
       case tSprID of
+        "char_email_field":
+          pEmailChecked = 0
         "char_name_field":
           if charToNum(the key) = 0 then
             return 0

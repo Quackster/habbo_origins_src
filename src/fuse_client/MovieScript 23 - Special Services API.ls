@@ -66,6 +66,10 @@ on readValueFromField tFieldName, tDelimiter, tSearchedKey
   return getSpecialServices().readValueFromField(tFieldName, tDelimiter, tSearchedKey)
 end
 
+on callJavaScriptFunction tCallString, tdata
+  getSpecialServices().callJavaScriptFunction(tCallString, tdata)
+end
+
 on performance
   if objectExists(#perfTester) then
     return removeObject(#perfTester)

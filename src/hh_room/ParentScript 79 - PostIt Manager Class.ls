@@ -20,7 +20,7 @@ on open me, tid, tColor, tLocX, tLocY
   if windowExists(pWindowID) then
     removeWindow(pWindowID)
   end if
-  registerMessage(symbol("itemdata_received" & tid), #postit_manager, #setItemData)
+  registerMessage(symbol("itemdata_received" & integer(tid)), #postit_manager, #setItemData)
   getThread(#room).getComponent().getRoomConnection().send("G_IDATA", [#integer: integer(tid)])
   pIsController = getObject(#session).get("room_controller")
   if getObject(#session).get("user_rights").getOne("fuse_any_room_controller") then
@@ -60,7 +60,7 @@ on setItemData me, tMsg
   tid = tMsg[#id]
   ttype = tMsg[#type]
   tText = tMsg[#text].word[2..tMsg[#text].word.count]
-  unregisterMessage(symbol("itemdata_received" & tid), #postit_manager)
+  unregisterMessage(symbol("itemdata_received" & integer(tid)), #postit_manager)
   if windowExists(pWindowID) then
     removeWindow(pWindowID)
   end if

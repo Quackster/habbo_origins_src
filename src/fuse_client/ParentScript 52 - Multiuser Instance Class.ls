@@ -73,6 +73,8 @@ on send me, tMsg
     tPartOne = tMsg.word[1]
     tPartTwo = tMsg.word[2..tMsg.word.count]
     if not pUnicodeDirector then
+      tPartOne = encodeUTF8(tPartOne)
+      tPartTwo = encodeUTF8(tPartTwo)
     end if
     pXtra.sendNetMessage("*", tPartOne, tPartTwo)
   else

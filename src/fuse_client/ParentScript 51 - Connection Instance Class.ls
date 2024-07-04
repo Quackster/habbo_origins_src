@@ -1,4 +1,4 @@
-property pHost, pPort, pXtra, pMsgStruct, pConnectionOk, pConnectionSecured, pConnectionShouldBeKilled, pEncryptionOn, pDecoder, pLastContent, pContentChunk, pLogMode, pLogfield, pCommandsPntr, pListenersPntr, pUnicodeDirector
+property pHost, pPort, pXtra, pMsgStruct, pConnectionOk, pConnectionSecured, pConnectionShouldBeKilled, pEncryptionOn, pDecoder, pEncoder, pHeaderDecoder, pHeaderEncoder, pLastContent, pContentChunk, pLogMode, pLogfield, pCommandsPntr, pListenersPntr, pDecipherOn, pD, pUnicodeDirector, pMsgOffset, pMsgSize, pToken, pMsgCount, pTx, pRx, pHelloReceived
 
 on construct me
   if value(chars(_player.productVersion, 1, 2)) >= 11 then
@@ -9,12 +9,22 @@ on construct me
   pEncryptionOn = 0
   pMsgStruct = getStructVariable("struct.message")
   pMsgStruct.setaProp(#connection, me)
+  pMsgOffset = 0
+  pMsgSize = 0
   pDecoder = 0
+  pEncoder = 0
+  pHeaderDecoder = 0
+  pHeaderEncoder = 0
   pLastContent = EMPTY
   pConnectionShouldBeKilled = 0
   pCommandsPntr = getStructVariable("struct.pointer")
   pListenersPntr = getStructVariable("struct.pointer")
   me.setLogMode(getIntVariable("connection.log.level", 0))
+  pToken = EMPTY
+  pMsgCount = 0
+  pTx = 0
+  pRx = 0
+  pHelloReceived = 0
   return 1
 end
 
@@ -23,6 +33,12 @@ on deconstruct me
 end
 
 on connect me, tHost, tPort
+  if the traceScript then
+    return 0
+  end if
+  the traceScript = 0
+  _movie.traceScript = 0
+  _player.traceScript = 0
   pHost = tHost
   pPort = tPort
   pXtra = new(xtra("Multiuser"))
@@ -73,6 +89,45 @@ on getDecoder me
   return pDecoder
 end
 
+on setEncoder me, tEncoder
+  if not objectp(tEncoder) then
+    return error(me, "Encoder object expected:" && tEncoder, #setEncoder, #major)
+  else
+    pEncoder = tEncoder
+    return 1
+  end if
+end
+
+on getEncoder me
+  return pEncoder
+end
+
+on setHeaderDecoder me, tDecoder
+  if not objectp(tDecoder) then
+    return error(me, "Decoder object expected:" && tDecoder, #setHeaderDecoder, #major)
+  else
+    pHeaderDecoder = tDecoder
+    return 1
+  end if
+end
+
+on getHeaderDecoder me
+  return pHeaderDecoder
+end
+
+on setHeaderEncoder me, tEncoder
+  if not objectp(tEncoder) then
+    return error(me, "Encoder object expected:" && tEncoder, #setHeaderEncoder, #major)
+  else
+    pHeaderEncoder = tEncoder
+    return 1
+  end if
+end
+
+on getHeaderEncoder me
+  return pHeaderEncoder
+end
+
 on setLogMode me, tMode
   if tMode.ilk <> #integer then
     return error(me, "Invalid argument:" && tMode, #setLogMode)
@@ -106,6 +161,9 @@ on send me, tCmd, tMsg
   the traceScript = 0
   _movie.traceScript = 0
   _player.traceScript = 0
+  if pConnectionShouldBeKilled then
+    return 0
+  end if
   if tMsg.ilk = #propList then
     return me.sendNew(tCmd, tMsg)
   end if
@@ -142,11 +200,29 @@ on send me, tCmd, tMsg
   tL1 = numToChar(bitOr(bitAnd(tLength, 63), 64))
   tL2 = numToChar(bitOr(bitAnd(tLength / 64, 63), 64))
   tL3 = numToChar(bitOr(bitAnd(tLength / 4096, 63), 64))
-  tMsg = tL3 & tL2 & tL1 & tMsg
-  if pEncryptionOn and objectp(pDecoder) then
-    tMsg = pDecoder.encipher(tMsg)
+  tHeader = tL3 & tL2 & tL1
+  if pEncryptionOn and objectp(pEncoder) then
+    tOriginalContent = tMsg
+    tOriginalMessageLength = tMsg.char.count
+    pTx = me.iterateRandom(pTx)
+    tMsg = pEncoder.encipher(tMsg)
+    tLength = tMsg.char.count
+    tL1 = numToChar(bitOr(bitAnd(tLength, 63), 64))
+    tL2 = numToChar(bitOr(bitAnd(tLength / 64, 63), 64))
+    tL3 = numToChar(bitOr(bitAnd(tLength / 4096, 63), 64))
+    tHeader = numToChar(random(127)) & tL3 & tL2 & tL1
+    tHeaderUncData = []
+    repeat with i = 1 to tHeader.char.count
+      tHeaderUncData.add(charToNum(tHeader.char[i]))
+    end repeat
+    tHeader = pHeaderEncoder.encipher(tHeader)
+    tHeaderDecData = []
+    repeat with i = 1 to tHeader.char.count
+      tHeaderDecData.add(charToNum(tHeader.char[i]))
+    end repeat
+    put "Uncrypted message length " & tOriginalMessageLength & ", Message length " & tLength & ", Header " & tHeaderUncData & ", Encrypted header " & tHeaderDecData & ", Message content : " & tOriginalContent
   end if
-  pXtra.sendNetMessage(0, 0, tMsg)
+  pXtra.sendNetMessage(0, 0, tHeader & tMsg)
   return 1
 end
 
@@ -238,12 +314,91 @@ on sendNew me, tCmd, tParmArr
   tL1 = numToChar(bitOr(bitAnd(tLength, 63), 64))
   tL2 = numToChar(bitOr(bitAnd(tLength / 64, 63), 64))
   tL3 = numToChar(bitOr(bitAnd(tLength / 4096, 63), 64))
-  tMsg = tL3 & tL2 & tL1 & tMsg
-  if pEncryptionOn and objectp(pDecoder) then
-    tMsg = pDecoder.encipher(tMsg)
+  tHeader = tL3 & tL2 & tL1
+  if pEncryptionOn and objectp(pEncoder) then
+    tOriginalContent = tMsg
+    tOriginalMessageLength = tMsg.char.count
+    pTx = me.iterateRandom(pTx)
+    tMsg = pEncoder.encipher(tMsg)
+    tLength = tMsg.char.count
+    tL1 = numToChar(bitOr(bitAnd(tLength, 63), 64))
+    tL2 = numToChar(bitOr(bitAnd(tLength / 64, 63), 64))
+    tL3 = numToChar(bitOr(bitAnd(tLength / 4096, 63), 64))
+    tHeader = numToChar(random(127)) & tL3 & tL2 & tL1
+    tHeaderUncData = []
+    repeat with i = 1 to tHeader.char.count
+      tHeaderUncData.add(charToNum(tHeader.char[i]))
+    end repeat
+    tHeader = pHeaderEncoder.encipher(tHeader)
+    tHeaderDecData = []
+    repeat with i = 1 to tHeader.char.count
+      tHeaderDecData.add(charToNum(tHeader.char[i]))
+    end repeat
+    put "Uncrypted message length " & tOriginalMessageLength & ", Message length " & tLength & ", Header " & tHeaderUncData & ", Encrypted header " & tHeaderDecData & ", Message content : " & tOriginalContent
   end if
-  pXtra.sendNetMessage(0, 0, tMsg)
+  pXtra.sendNetMessage(0, 0, tHeader & tMsg)
   return 1
+end
+
+on randomPad me, tMsg, tTarget
+  if the traceScript then
+    return 0
+  end if
+  the traceScript = 0
+  _movie.traceScript = 0
+  _player.traceScript = 0
+  tEscapeList = [0, 103]
+  tContent = tMsg
+  repeat with i = tContent.char.count to tTarget - 1
+    tRandom = random(255)
+    repeat while tEscapeList.getPos(tRandom) <> 0
+      tRandom = random(255)
+    end repeat
+    tChar = numToChar(tRandom)
+    tContent = tChar & tContent
+  end repeat
+  return tContent
+end
+
+on unPad me, tMsg
+  if the traceScript then
+    return 0
+  end if
+  the traceScript = 0
+  _movie.traceScript = 0
+  _player.traceScript = 0
+  tEscapeChar = 103
+  tCount = 0
+  repeat with i = 1 to tMsg.char.count
+    if charToNum(chars(tMsg, i, i)) = tEscapeChar then
+      tCount = tCount + 1
+    end if
+  end repeat
+  return chars(tMsg, 4 - tCount, tMsg.length)
+end
+
+on addPad me, tMsg, tAmount
+  if the traceScript then
+    return 0
+  end if
+  the traceScript = 0
+  _movie.traceScript = 0
+  _player.traceScript = 0
+  tContent = tMsg
+  repeat with i = 1 to tAmount
+    tContent = numToChar(random(255)) & tContent
+  end repeat
+  return tContent
+end
+
+on removePad me, tMsg, tAmount
+  if the traceScript then
+    return 0
+  end if
+  the traceScript = 0
+  _movie.traceScript = 0
+  _player.traceScript = 0
+  return chars(tMsg, tAmount + 1, tMsg.length)
 end
 
 on getWaitingMessagesCount me
@@ -304,6 +459,12 @@ on setProperty me, tProp, tValue
 end
 
 on GetBoolFrom me
+  if the traceScript then
+    return 0
+  end if
+  the traceScript = 0
+  _movie.traceScript = 0
+  _player.traceScript = 0
   tByteStr = pMsgStruct.getaProp(#content)
   tByte = bitAnd(charToNum(char 1 of tByteStr), 63)
   pMsgStruct.setaProp(#content, tByteStr.char[2..length(tByteStr)])
@@ -311,6 +472,12 @@ on GetBoolFrom me
 end
 
 on GetByteFrom me
+  if the traceScript then
+    return 0
+  end if
+  the traceScript = 0
+  _movie.traceScript = 0
+  _player.traceScript = 0
   tByteStr = pMsgStruct.getaProp(#content)
   tByte = bitAnd(charToNum(char 1 of tByteStr), 63)
   pMsgStruct.setaProp(#content, tByteStr.char[2..length(tByteStr)])
@@ -318,6 +485,12 @@ on GetByteFrom me
 end
 
 on GetIntFrom me
+  if the traceScript then
+    return 0
+  end if
+  the traceScript = 0
+  _movie.traceScript = 0
+  _player.traceScript = 0
   tByteStr = pMsgStruct.getaProp(#content)
   tByte = bitAnd(charToNum(char 1 of tByteStr), 63)
   tByCnt = bitOr(bitAnd(tByte, 56) / 8, 0)
@@ -338,6 +511,12 @@ on GetIntFrom me
 end
 
 on GetStrFrom me
+  if the traceScript then
+    return 0
+  end if
+  the traceScript = 0
+  _movie.traceScript = 0
+  _player.traceScript = 0
   tArr = pMsgStruct.getaProp(#content)
   tLen = offset(numToChar(2), tArr)
   if tLen > 1 then
@@ -371,7 +550,46 @@ on print me
   return 1
 end
 
+on SetToken me, tToken
+  if the traceScript then
+    return 0
+  end if
+  the traceScript = 0
+  _movie.traceScript = 0
+  _player.traceScript = 0
+  pToken = tToken
+  tSeedHex = chars(pToken, pToken.length - 3, pToken.length)
+  pTx = 0
+  tVals = ["0": 0, "1": 1, "2": 2, "3": 3, "4": 4, "5": 5, "6": 6, "7": 7, "8": 8, "9": 9, "a": 10, "b": 11, "c": 12, "d": 13, "e": 14, "f": 15, "A": 10, "B": 11, "C": 12, "D": 13, "E": 14, "F": 15]
+  repeat with i = 0 to 3
+    pTx = pTx + (integer(power(16, i)) * tVals[tSeedHex.char[4 - i]])
+  end repeat
+  pRx = 0
+  tSeedHex = chars(pToken, 1, 4)
+  repeat with i = 0 to 3
+    pRx = pRx + (integer(power(16, i)) * tVals[tSeedHex.char[4 - i]])
+  end repeat
+end
+
+on iterateRandom me, tSeed
+  if the traceScript then
+    return 0
+  end if
+  the traceScript = 0
+  _movie.traceScript = 0
+  _player.traceScript = 0
+  if 1 then
+    return ((19979 * tSeed) + 5) mod 65536
+  end if
+end
+
 on xtraMsgHandler me
+  if the traceScript then
+    return 0
+  end if
+  the traceScript = 0
+  _movie.traceScript = 0
+  _player.traceScript = 0
   if pConnectionShouldBeKilled <> 0 then
     return 0
   end if
@@ -388,10 +606,20 @@ on xtraMsgHandler me
     me.disconnect()
     return 0
   end if
-  me.msghandler(tContent)
+  if voidp(tContent) then
+    return 0
+  else
+    me.msghandler(tContent)
+  end if
 end
 
 on msghandler me, tContent
+  if the traceScript then
+    return 0
+  end if
+  the traceScript = 0
+  _movie.traceScript = 0
+  _player.traceScript = 0
   if tContent.ilk <> #string then
     return 0
   end if
@@ -401,33 +629,48 @@ on msghandler me, tContent
     put "Start of new Message: " && tContent
     pLastContent = EMPTY
   end if
-  if tContent.length < 3 then
-    pLastContent = pLastContent & tContent
-    put "Not enough content for: " && tContent
-    if offset("Ab", pLastContent) <> 0 then
-      put "Hack, erasing Ab"
+  repeat while tContent.length > 0
+    if tContent.length < 3 then
+      pLastContent = pLastContent & tContent
+      return 
+    end if
+    tByte1 = bitAnd(charToNum(char 2 of tContent), 63)
+    tByte2 = bitAnd(charToNum(char 1 of tContent), 63)
+    tMsgType = bitOr(tByte2 * 64, tByte1)
+    tLength = offset(numToChar(1), tContent)
+    if (tLength = 0) and not pUnicodeDirector then
+      repeat with i = 3 to tContent.length
+        tCharVal = charToNum(tContent.char[i])
+        if (tCharVal mod 256) = 1 then
+          tContent = tContent.char[1..i - 1] & numToChar(tCharVal - 1) & numToChar(1) & tContent.char[i + 1..tContent.length]
+          tLength = i + 1
+          exit repeat
+        end if
+      end repeat
+    end if
+    if tLength = 0 then
+      pLastContent = tContent
+      return 
+    else
       pLastContent = EMPTY
     end if
-    return 
-  end if
-  tByte1 = bitAnd(charToNum(char 2 of tContent), 63)
-  tByte2 = bitAnd(charToNum(char 1 of tContent), 63)
-  tMsgType = bitOr(tByte2 * 64, tByte1)
-  put "<----- Handling message" & tMsgType
-  tLength = offset(numToChar(1), tContent)
-  if tLength = 0 then
-    pLastContent = tContent
-    return 
-  end if
-  tParams = char 3 to tLength - 1 of tContent
-  tContent = char tLength + 1 to tContent.length of tContent
-  me.forwardMsg(tMsgType, tParams)
-  if tContent.length > 0 then
-    me.msghandler(tContent)
-  end if
+    tParams = char 3 to tLength - 1 of tContent
+    tContent = char tLength + 1 to tContent.length of tContent
+    tParams = decodeUTF8(tParams, 0)
+    if (tMsgType = 0) and pHelloReceived then
+      return 0
+    end if
+    me.forwardMsg(tMsgType, tParams)
+  end repeat
 end
 
 on forwardMsg me, tSubject, tParams
+  if the traceScript then
+    return 0
+  end if
+  the traceScript = 0
+  _movie.traceScript = 0
+  _player.traceScript = 0
   if pLogMode > 0 then
     me.log("-->" && tSubject & RETURN & tParams)
   end if
